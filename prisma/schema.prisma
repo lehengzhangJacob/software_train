@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../database/food_tracker.db"
+}
+
+model UserProfile {
+  userId              Int       @id @default(autoincrement()) @map("user_id")
+  username            String
+  gender              String
+  age                 Int
+  heightCm            Float     @map("height_cm")
+  weightKg            Float     @map("weight_kg")
+  dailyCalorieTarget  Int       @default(2000) @map("daily_calorie_target")
+  dailyProteinTarget  Float     @default(60.0) @map("daily_protein_target")
+  dailyFatTarget      Float     @default(60.0) @map("daily_fat_target")
+  dailyCarbsTarget    Float     @default(250.0) @map("daily_carbs_target")
+  bmr                 Float?
+  activityLevel       String    @default("sedentary") @map("activity_level")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @default(now()) @map("updated_at")
+
+  mealRecords          MealRecord[]
+  exerciseSuggestions  ExerciseSuggestion[]
+
+  @@map("user_profile")
+}
+
+model MealRecord {
+  recordId       Int      @id @default(autoincrement()) @map("record_id")
+  userId         Int      @map("user_id")
+  foodName       String   @map("food_name")
+  mealType       String   @map("meal_type")
+  calories       Float
+  proteinG       Float    @default(0) @map("protein_g")
+  fatG           Float    @default(0) @map("fat_g")
+  carbsG         Float    @default(0) @map("carbs_g")
+  portionDesc    String?  @map("portion_desc")
+  photoPath      String?  @map("photo_path")
+  recognitionRaw String?  @map("recognition_raw")
+  recordDate     String   @map("record_date")
+  recordTime     String   @map("record_time")
+  notes          String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId, recordDate], name: "idx_meal_user_date")
+  @@index([recordDate], name: "idx_meal_date")
+  @@index([mealType], name: "idx_meal_type")
+  @@index([userId, recordDate, mealType], name: "idx_meal_user_date_type")
+  @@map("meal_records")
+}
+
+model ExerciseSuggestion {
+  suggestionId        Int      @id @default(autoincrement()) @map("suggestion_id")
+  userId              Int      @map("user_id")
+  suggestionDate      String   @map("suggestion_date")
+  calorieSurplus      Float?   @map("calorie_surplus")
+  exerciseType        String   @map("exercise_type")
+  durationMinutes     Int      @map("duration_minutes")
+  calorieBurnEstimate Float    @map("calorie_burn_estimate")
+  intensity           String?
+  suggestionDetail    String?  @map("suggestion_detail")
+  isAdopted           Int      @default(0) @map("is_adopted")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  user UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId, suggestionDate], name: "idx_exercise_user_date")
+  @@map("exercise_suggestions")
+}
+
+model ExerciseCalorieReference {
+  exerciseId       Int    @id @default(autoincrement()) @map("exercise_id")
+  exerciseName     String @unique @map("exercise_name")
+  CaloriesPer30min Float  @map("calories_per_30min")
+  category         String?
+  metValue         Float? @map("met_value")
+  description      String?
+
+  @@map("exercise_calorie_reference")
+}
