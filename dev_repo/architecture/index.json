@@ -1,0 +1,16 @@
+{
+  "files": [
+    { "path": "dev_repo/architecture/README.md", "description": "架构目录入口" },
+    { "path": "dev_repo/architecture/ARCHITECTURE.md", "description": "架构总览 — 技术栈、原则、管理层" },
+    { "path": "dev_repo/architecture/graph.json", "description": "架构节点与依赖图" },
+    { "path": "dev_repo/architecture/index.json", "description": "本索引文件" },
+    { "path": "dev_repo/architecture/invariants.md", "description": "不可违反的架构规则" },
+    { "path": "dev_repo/architecture/data-model/README.md", "description": "数据模型目录入口" },
+    { "path": "dev_repo/architecture/data-model/ER.md", "description": "实体关系描述" },
+    { "path": "dev_repo/architecture/data-model/er.mmd", "description": "Mermaid ER 图" },
+    { "path": "dev_repo/architecture/data-model/entities.json", "description": "实体定义" },
+    { "path": "dev_repo/architecture/data-model/relationships.json", "description": "关系定义" },
+    { "path": "dev_repo/architecture/data-model/invariants.md", "description": "数据模型不可违反规则" },
+    { "path": "dev_repo/architecture/data-model/migrations.md", "description": "迁移计划" }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "campaign_id": "food-tracker",
+  "root_goal": "从 DB schema 到全栈可用的饮食记录系统",
+  "root_contract_id": "C-01",
+  "active_contract_id": "C-01",
+  "status": "active",
+  "contracts": {
+    "C-01": {
+      "status": "active",
+      "summary": "全栈饮食记录系统 — Next.js + shadcn/ui + Step-3.7 Flash",
+      "current_slice": "C-01-S0",
+      "completed_slices": [],
+      "return_to": null
+    }
+  }
+}

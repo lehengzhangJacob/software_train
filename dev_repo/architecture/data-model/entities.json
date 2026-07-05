@@ -1,0 +1,80 @@
+{
+  "entities": [
+    {
+      "name": "user_profile",
+      "source": "database/schema.sql",
+      "derived": false,
+      "fields": [
+        { "name": "user_id", "type": "INTEGER", "pk": true, "nullable": false },
+        { "name": "username", "type": "TEXT", "nullable": false },
+        { "name": "gender", "type": "TEXT", "nullable": false, "check": "male/female/other" },
+        { "name": "age", "type": "INTEGER", "nullable": false, "check": ">0 AND <150" },
+        { "name": "height_cm", "type": "REAL", "nullable": false, "check": ">0" },
+        { "name": "weight_kg", "type": "REAL", "nullable": false, "check": ">0" },
+        { "name": "daily_calorie_target", "type": "INTEGER", "nullable": false, "default": 2000 },
+        { "name": "daily_protein_target", "type": "REAL", "nullable": false, "default": 60.0 },
+        { "name": "daily_fat_target", "type": "REAL", "nullable": false, "default": 60.0 },
+        { "name": "daily_carbs_target", "type": "REAL", "nullable": false, "default": 250.0 },
+        { "name": "bmr", "type": "REAL", "nullable": true, "derived": true },
+        { "name": "activity_level", "type": "TEXT", "nullable": false, "default": "sedentary" },
+        { "name": "created_at", "type": "DATETIME", "nullable": false },
+        { "name": "updated_at", "type": "DATETIME", "nullable": false }
+      ],
+      "triggers": ["trg_user_profile_updated_at", "trg_calc_bmr_insert", "trg_calc_bmr_update"]
+    },
+    {
+      "name": "meal_records",
+      "source": "database/schema.sql",
+      "derived": false,
+      "fields": [
+        { "name": "record_id", "type": "INTEGER", "pk": true, "nullable": false },
+        { "name": "user_id", "type": "INTEGER", "fk": "user_profile.user_id", "nullable": false },
+        { "name": "food_name", "type": "TEXT", "nullable": false },
+        { "name": "meal_type", "type": "TEXT", "nullable": false, "check": "breakfast/lunch/dinner/snack" },
+        { "name": "calories", "type": "REAL", "nullable": false, "check": ">=0" },
+        { "name": "protein_g", "type": "REAL", "nullable": false, "default": 0, "check": ">=0" },
+        { "name": "fat_g", "type": "REAL", "nullable": false, "default": 0, "check": ">=0" },
+        { "name": "carbs_g", "type": "REAL", "nullable": false, "default": 0, "check": ">=0" },
+        { "name": "portion_desc", "type": "TEXT", "nullable": true },
+        { "name": "photo_path", "type": "TEXT", "nullable": true },
+        { "name": "recognition_raw", "type": "TEXT", "nullable": true },
+        { "name": "record_date", "type": "DATE", "nullable": false },
+        { "name": "record_time", "type": "TIME", "nullable": false },
+        { "name": "notes", "type": "TEXT", "nullable": true },
+        { "name": "created_at", "type": "DATETIME", "nullable": false }
+      ],
+      "triggers": ["trg_meal_record_time"]
+    },
+    {
+      "name": "exercise_suggestions",
+      "source": "database/schema.sql",
+      "derived": false,
+      "fields": [
+        { "name": "suggestion_id", "type": "INTEGER", "pk": true, "nullable": false },
+        { "name": "user_id", "type": "INTEGER", "fk": "user_profile.user_id", "nullable": false },
+        { "name": "suggestion_date", "type": "DATE", "nullable": false },
+        { "name": "calorie_surplus", "type": "REAL", "nullable": true },
+        { "name": "exercise_type", "type": "TEXT", "nullable": false },
+        { "name": "duration_minutes", "type": "INTEGER", "nullable": false, "check": ">0" },
+        { "name": "calorie_burn_estimate", "type": "REAL", "nullable": false },
+        { "name": "intensity", "type": "TEXT", "nullable": true, "check": "low/moderate/high" },
+        { "name": "suggestion_detail", "type": "TEXT", "nullable": true },
+        { "name": "is_adopted", "type": "INTEGER", "nullable": false, "default": 0, "check": "0/1" },
+        { "name": "created_at", "type": "DATETIME", "nullable": false }
+      ]
+    },
+    {
+      "name": "exercise_calorie_reference",
+      "source": "database/schema.sql",
+      "derived": false,
+      "fields": [
+        { "name": "exercise_id", "type": "INTEGER", "pk": true, "nullable": false },
+        { "name": "exercise_name", "type": "TEXT", "unique": true, "nullable": false },
+        { "name": "calories_per_30min", "type": "REAL", "nullable": false },
+        { "name": "category", "type": "TEXT", "nullable": true, "check": "aerobic/strength/flexibility/other" },
+        { "name": "met_value", "type": "REAL", "nullable": true },
+        { "name": "description", "type": "TEXT", "nullable": true }
+      ]
+    }
+  ]
+}

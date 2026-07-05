@@ -1,0 +1,2 @@
+{"event":"contract_created","contract_id":"C-01","timestamp":"2026-07-05T00:00:00Z","summary":"全栈饮食记录系统 — 架构普查 + 8 slices 合同"}
+{"event":"slice_started","contract_id":"C-01","slice_id":"C-01-S0","timestamp":"2026-07-05T00:00:00Z","summary":"架构普查 — 写入架构文档 + 数据模型文档"}

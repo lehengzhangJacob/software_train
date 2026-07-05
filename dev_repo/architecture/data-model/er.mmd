@@ -1,0 +1,61 @@
+erDiagram
+    user_profile {
+        INTEGER user_id PK "用户ID"
+        TEXT username "用户名"
+        TEXT gender "性别: male/female/other"
+        INTEGER age "年龄"
+        REAL height_cm "身高(cm)"
+        REAL weight_kg "体重(kg)"
+        INTEGER daily_calorie_target "每日热量目标"
+        REAL daily_protein_target "每日蛋白质目标"
+        REAL daily_fat_target "每日脂肪目标"
+        REAL daily_carbs_target "每日碳水目标"
+        REAL bmr "基础代谢率"
+        TEXT activity_level "活动水平"
+        DATETIME created_at
+        DATETIME updated_at
+    }
+
+    meal_records {
+        INTEGER record_id PK "记录ID"
+        INTEGER user_id FK "用户ID"
+        TEXT food_name "食物名称"
+        TEXT meal_type "餐别"
+        REAL calories "热量"
+        REAL protein_g "蛋白质"
+        REAL fat_g "脂肪"
+        REAL carbs_g "碳水"
+        TEXT portion_desc "份量"
+        TEXT photo_path "照片路径"
+        TEXT recognition_raw "AI原始识别JSON"
+        DATE record_date "记录日期"
+        TIME record_time "记录时间"
+        TEXT notes "备注"
+        DATETIME created_at
+    }
+
+    exercise_suggestions {
+        INTEGER suggestion_id PK "建议ID"
+        INTEGER user_id FK "用户ID"
+        DATE suggestion_date "建议日期"
+        REAL calorie_surplus "热量盈余"
+        TEXT exercise_type "运动类型"
+        INTEGER duration_minutes "时长(分钟)"
+        REAL calorie_burn_estimate "预估消耗"
+        TEXT intensity "强度"
+        TEXT suggestion_detail "详细建议"
+        INTEGER is_adopted "已采纳标志"
+        DATETIME created_at
+    }
+
+    exercise_calorie_reference {
+        INTEGER exercise_id PK "运动ID"
+        TEXT exercise_name UK "运动名称"
+        REAL calories_per_30min "每30分钟消耗"
+        TEXT category "类别"
+        REAL met_value "MET值"
+        TEXT description "描述"
+    }
+
+    user_profile ||--o{ meal_records : "拥有"
+    user_profile ||--o{ exercise_suggestions : "接收"

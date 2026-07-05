@@ -1,0 +1,12 @@
+{
+  "C-01-S0": [
+    { "type": "architecture", "path": "dev_repo/architecture/ARCHITECTURE.md", "description": "架构总览" },
+    { "type": "architecture", "path": "dev_repo/architecture/graph.json", "description": "架构节点依赖图" },
+    { "type": "architecture", "path": "dev_repo/architecture/invariants.md", "description": "架构不变项" },
+    { "type": "data-model", "path": "dev_repo/architecture/data-model/ER.md", "description": "实体关系描述" },
+    { "type": "data-model", "path": "dev_repo/architecture/data-model/entities.json", "description": "实体定义" },
+    { "type": "data-model", "path": "dev_repo/architecture/data-model/relationships.json", "description": "关系定义" },
+    { "type": "data-model", "path": "dev_repo/architecture/data-model/invariants.md", "description": "数据模型不变项" },
+    { "type": "data-model", "path": "dev_repo/architecture/data-model/migrations.md", "description": "迁移计划" }
+  ]
+}

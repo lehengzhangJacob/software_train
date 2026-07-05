@@ -1,0 +1,32 @@
+{
+  "relationships": [
+    {
+      "source": "user_profile",
+      "target": "meal_records",
+      "type": "1:N",
+      "via": "user_id",
+      "description": "一个用户拥有多条饮食记录"
+    },
+    {
+      "source": "user_profile",
+      "target": "exercise_suggestions",
+      "type": "1:N",
+      "via": "user_id",
+      "description": "一个用户接收多条运动建议"
+    },
+    {
+      "source": "meal_records",
+      "target": "user_profile",
+      "type": "N:1",
+      "via": "user_id",
+      "description": "每条饮食记录属于一个用户"
+    },
+    {
+      "source": "exercise_suggestions",
+      "target": "user_profile",
+      "type": "N:1",
+      "via": "user_id",
+      "description": "每条运动建议属于一个用户"
+    }
+  ]
+}
