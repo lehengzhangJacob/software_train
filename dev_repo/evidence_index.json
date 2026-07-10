@@ -14,5 +14,12 @@
     { "type": "implementation", "path": "src/app/api/ai/recognize/route.ts", "description": "安全失败、请求限制、超时和响应校验" },
     { "type": "implementation", "path": "src/components/exercise/exercise-content.tsx", "description": "移除 NEXT_PUBLIC 密钥引用" },
     { "type": "git", "path": "git:codex/release-hardening", "description": "基于 672e56b，6d9f0b0 不可达" }
+  ],
+  "C-02-A1": [
+    { "type": "architecture", "path": "dev_repo/architecture/README.md", "description": "架构宪法入口与课程项目边界" },
+    { "type": "architecture", "path": "dev_repo/architecture/graph.json", "description": "12 个可行动节点、依赖与实现状态" },
+    { "type": "architecture-decision", "path": "dev_repo/architecture/decisions/ADR-0001-private-course-boundary.md", "description": "私有单用户边界修宪决策" },
+    { "type": "data-model", "path": "dev_repo/architecture/data-model/entities.json", "description": "四实体的身份、所有权、派生与迁移责任" },
+    { "type": "data-model", "path": "dev_repo/architecture/data-model/migrations.md", "description": "S1 迁移、回填、兼容与回滚要求" }
   ]
 }

@@ -1,0 +1,7 @@
+flowchart LR
+  user[课程演示用户] --> browser[Browser UI]
+  browser --> next[Next.js 16 Server]
+  next --> prisma[Prisma]
+  prisma --> sqlite[(SQLite)]
+  next --> stepfun[StepFun API]
+  next --> evidence[dev_repo evidence]

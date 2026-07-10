@@ -1,0 +1,17 @@
+sequenceDiagram
+  actor User
+  participant UI as Browser UI
+  participant API as Next API
+  participant AI as StepFun
+  participant DB as SQLite
+  User->>UI: 选择食物图片
+  UI->>API: POST /api/ai/recognize
+  API->>AI: 服务端凭据调用
+  AI-->>API: 结构化食物候选
+  API-->>UI: data/error
+  UI-->>User: 展示可编辑审核单
+  User->>UI: 确认保存
+  UI->>API: POST /api/meals
+  API->>DB: 绑定 primary profile 后写入
+  DB-->>API: 已保存记录
+  API-->>UI: data/error

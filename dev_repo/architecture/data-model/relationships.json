@@ -1,32 +1,36 @@
 {
+  "schema_version": 2,
   "relationships": [
     {
-      "source": "user_profile",
-      "target": "meal_records",
-      "type": "1:N",
-      "via": "user_id",
-      "description": "一个用户拥有多条饮食记录"
+      "name": "UserProfile_has_MealRecords",
+      "source": "UserProfile",
+      "target": "MealRecord",
+      "cardinality": "1:N",
+      "via": "MealRecord.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma"],
+      "invariant": "API 只能读写 primary profile 的记录",
+      "confidence": "confirmed"
     },
     {
-      "source": "user_profile",
-      "target": "exercise_suggestions",
-      "type": "1:N",
-      "via": "user_id",
-      "description": "一个用户接收多条运动建议"
-    },
+      "name": "UserProfile_has_ExerciseSuggestions",
+      "source": "UserProfile",
+      "target": "ExerciseSuggestion",
+      "cardinality": "1:N",
+      "via": "ExerciseSuggestion.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma"],
+      "invariant": "采纳状态属于建议所有者",
+      "confidence": "confirmed"
+    }
+  ],
+  "non_relationships": [
     {
-      "source": "meal_records",
-      "target": "user_profile",
-      "type": "N:1",
-      "via": "user_id",
-      "description": "每条饮食记录属于一个用户"
-    },
-    {
-      "source": "exercise_suggestions",
-      "target": "user_profile",
-      "type": "N:1",
-      "via": "user_id",
-      "description": "每条运动建议属于一个用户"
+      "source": "ExerciseCalorieReference",
+      "target": "ExerciseSuggestion",
+      "reason": "建议保存生成时快照，不以外键追随参考值变化"
     }
   ]
 }

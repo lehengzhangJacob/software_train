@@ -1,23 +1,32 @@
-# 实体关系描述
+# 实体关系与所有权
 
-## 实体一览
+## 实体
 
-| 实体 | 表名 | 说明 |
-|------|------|------|
-| 用户 | user_profile | 身体参数、营养目标、BMR |
-| 饮食记录 | meal_records | 每餐食物项，含营养素和 AI 识别结果 |
-| 运动建议 | exercise_suggestions | 基于热量盈余的运动推荐 |
-| 运动参考 | exercise_calorie_reference | 常见运动消耗参考值 |
+| 实体 | 表 | 来源 | 身份 | 所有者 |
+|---|---|---|---|---|
+| UserProfile | user_profile | 用户输入 + 派生 BMR | user_id | 课程应用 |
+| MealRecord | meal_records | 用户输入或审核后的 AI 结果 | record_id | UserProfile |
+| ExerciseSuggestion | exercise_suggestions | 规则/AI 建议与采纳状态 | suggestion_id | UserProfile |
+| ExerciseCalorieReference | exercise_calorie_reference | 版本化 reference seed | exercise_id | 应用参考目录 |
 
-## 核心关系
+## 关系
 
-- 用户 1:N 饮食记录 (user_id FK)
-- 用户 1:N 运动建议 (user_id FK)
-- 运动参考独立引用 (无 FK)
+- UserProfile 1:N MealRecord，通过 user_id，删除档案时级联删除。
+- UserProfile 1:N ExerciseSuggestion，通过 user_id，删除档案时级联删除。
+- ExerciseCalorieReference 不与建议建立持久外键；建议保存生成时的名称和估算，避免 reference 更新改变历史。
 
-## 视图
+## Primary profile
 
-- v_daily_nutrition_summary: 用户 x 日汇总 + 目标对比
-- v_weekly_nutrition_summary: 用户 x ISO 周平均
-- v_monthly_nutrition_summary: 用户 x 月平均
-- v_meal_type_summary: 用户 x 日 x 餐别汇总
+表结构保留多个 UserProfile 以兼容已有 demo 数据，但课程应用只呈现一个 primary profile：
+
+1. 空库时允许用户首次创建。
+2. 有记录时服务端稳定选择最小 user_id。
+3. 客户端 userId 不参与所有权决定。
+4. 若未来需要多用户身份，必须增加正式身份实体与会话映射，并开 ER 修宪。
+
+## 派生与持久
+
+- bmr：由 gender、age、height_cm、weight_kg 计算后持久化，S1 回填旧空值。
+- 报告、每日汇总、7/30 日趋势：运行时派生，不建立持久视图。
+- recognition_raw：可选脱敏 JSON，不含图片 data URL、密钥或供应商错误正文。
+- is_adopted：ExerciseSuggestion 的持久用户决策，不是临时 UI 状态。

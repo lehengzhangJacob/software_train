@@ -1,16 +1,31 @@
 {
+  "schema_version": 2,
+  "architecture_entry": "dev_repo/architecture/README.md",
   "files": [
-    { "path": "dev_repo/architecture/README.md", "description": "架构目录入口" },
-    { "path": "dev_repo/architecture/ARCHITECTURE.md", "description": "架构总览 — 技术栈、原则、管理层" },
-    { "path": "dev_repo/architecture/graph.json", "description": "架构节点与依赖图" },
-    { "path": "dev_repo/architecture/index.json", "description": "本索引文件" },
-    { "path": "dev_repo/architecture/invariants.md", "description": "不可违反的架构规则" },
-    { "path": "dev_repo/architecture/data-model/README.md", "description": "数据模型目录入口" },
-    { "path": "dev_repo/architecture/data-model/ER.md", "description": "实体关系描述" },
-    { "path": "dev_repo/architecture/data-model/er.mmd", "description": "Mermaid ER 图" },
-    { "path": "dev_repo/architecture/data-model/entities.json", "description": "实体定义" },
-    { "path": "dev_repo/architecture/data-model/relationships.json", "description": "关系定义" },
-    { "path": "dev_repo/architecture/data-model/invariants.md", "description": "数据模型不可违反规则" },
-    { "path": "dev_repo/architecture/data-model/migrations.md", "description": "迁移计划" }
+    {"path": "dev_repo/architecture/README.md", "node": "dev_repo", "description": "架构宪法入口"},
+    {"path": "dev_repo/architecture/ARCHITECTURE.md", "node": "dev_repo", "description": "系统上下文、容器与关键流"},
+    {"path": "dev_repo/architecture/graph.json", "node": "dev_repo", "description": "机器可读节点与依赖"},
+    {"path": "dev_repo/architecture/index.json", "node": "dev_repo", "description": "文件与节点索引"},
+    {"path": "dev_repo/architecture/invariants.md", "node": "dev_repo", "description": "架构不变量"},
+    {"path": "dev_repo/architecture/decisions/ADR-0001-private-course-boundary.md", "node": "dev_repo", "description": "私有单用户课程项目决策"},
+    {"path": "dev_repo/architecture/diagrams/context.mmd", "node": "dev_repo", "description": "系统上下文图"},
+    {"path": "dev_repo/architecture/diagrams/runtime-flow.mmd", "node": "dev_repo", "description": "AI 餐食运行流"},
+    {"path": "dev_repo/architecture/data-model/README.md", "node": "database.prisma", "description": "数据模型入口"},
+    {"path": "dev_repo/architecture/data-model/ER.md", "node": "database.prisma", "description": "实体关系与所有权"},
+    {"path": "dev_repo/architecture/data-model/er.mmd", "node": "database.prisma", "description": "Mermaid ER 图"},
+    {"path": "dev_repo/architecture/data-model/entities.json", "node": "database.prisma", "description": "机器可读实体目录"},
+    {"path": "dev_repo/architecture/data-model/relationships.json", "node": "database.prisma", "description": "机器可读关系目录"},
+    {"path": "dev_repo/architecture/data-model/invariants.md", "node": "database.prisma", "description": "数据不变量"},
+    {"path": "dev_repo/architecture/data-model/migrations.md", "node": "database.prisma", "description": "迁移、回填与兼容责任"}
+  ],
+  "ownership": [
+    {"glob": "src/app/api/ai/**", "node": "backend.ai"},
+    {"glob": "src/app/api/{users,meals,reports,exercise}/**", "node": "backend.api"},
+    {"glob": "src/app/{dashboard,profile,meals,calendar,exercise,reports}/**", "node": "frontend.pages"},
+    {"glob": "src/components/**", "node": "frontend.components"},
+    {"glob": "prisma/**", "node": "database.prisma"},
+    {"glob": "database/*.db", "node": "database.sqlite"},
+    {"glob": "database/*.sql", "node": "database.legacy_design"},
+    {"glob": "dev_repo/**", "node": "dev_repo"}
   ]
 }
