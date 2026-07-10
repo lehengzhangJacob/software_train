@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:../database/food_tracker.db"
+  url      = env("DATABASE_URL")
 }
 
 model UserProfile {
@@ -21,7 +21,7 @@ model UserProfile {
   bmr                 Float?
   activityLevel       String    @default("sedentary") @map("activity_level")
   createdAt           DateTime  @default(now()) @map("created_at")
-  updatedAt           DateTime  @default(now()) @map("updated_at")
+  updatedAt           DateTime  @default(now()) @updatedAt @map("updated_at")
 
   mealRecords          MealRecord[]
   exerciseSuggestions  ExerciseSuggestion[]

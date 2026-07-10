@@ -114,9 +114,9 @@
       "allowed_change_types": ["migration", "indexes", "constraints", "reference seed"],
       "requires_amendment_when": ["改变实体身份或关系", "更换数据库 provider"],
       "verification": ["prisma validate", "fresh migrate", "copy migration"],
-      "known_debt": ["C-02-S1 待实现"],
+      "known_debt": ["未来 UserProfile 写入的 BMR 计算由 C-02-S2 实现"],
       "confidence": "confirmed",
-      "implementation_status": "approved_target"
+      "implementation_status": "confirmed"
     },
     {
       "id": "database.sqlite",

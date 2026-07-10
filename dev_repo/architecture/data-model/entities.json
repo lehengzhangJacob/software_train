@@ -29,9 +29,9 @@
         {"name": "created_at", "type": "DATETIME", "nullable": false},
         {"name": "updated_at", "type": "DATETIME", "nullable": false}
       ],
-      "migration_notes": "S1 将 datasource 改为环境变量、updatedAt 改为 ORM 管理并回填旧 bmr 空值",
+      "migration_notes": "S1 已将 datasource 改为环境变量、updatedAt 改为 ORM 管理并在兼容副本回填旧 bmr 空值；S2 负责未来写入计算",
       "requires_amendment_when": ["改变 primary identity", "增加登录主体", "改变 BMR 来源", "强制单行唯一"],
-      "confidence": "approved_target"
+      "confidence": "confirmed"
     },
     {
       "name": "MealRecord",

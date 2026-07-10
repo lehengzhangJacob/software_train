@@ -1,3 +1,5 @@
+-- LEGACY DESIGN REFERENCE ONLY.
+-- Runtime schema authority is prisma/migrations/**. Do not execute this file during normal startup.
 -- ============================================================
 -- 食物热量识别与饮食管理系统的SQLite数据库建表脚本
 -- 版本: 1.0

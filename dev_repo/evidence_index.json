@@ -21,5 +21,13 @@
     { "type": "architecture-decision", "path": "dev_repo/architecture/decisions/ADR-0001-private-course-boundary.md", "description": "私有单用户边界修宪决策" },
     { "type": "data-model", "path": "dev_repo/architecture/data-model/entities.json", "description": "四实体的身份、所有权、派生与迁移责任" },
     { "type": "data-model", "path": "dev_repo/architecture/data-model/migrations.md", "description": "S1 迁移、回填、兼容与回滚要求" }
+  ],
+  "C-02-S1": [
+    { "type": "migration", "path": "prisma/migrations/20260710130000_baseline/migration.sql", "description": "四表与索引 baseline" },
+    { "type": "migration", "path": "prisma/migrations/20260710130100_backfill_profile_bmr/migration.sql", "description": "现有 profile BMR 回填" },
+    { "type": "data-model", "path": "prisma/schema.prisma", "description": "DATABASE_URL 与 ORM updatedAt" },
+    { "type": "seed", "path": "prisma/seed.ts", "description": "25 条运动参考幂等 upsert，不创建 demo 用户" },
+    { "type": "runtime", "path": "scripts/ensure-sqlite-database.mjs", "description": "迁移前安全创建 SQLite 文件" },
+    { "type": "verification", "path": "dev_repo/architecture/data-model/migrations.md", "description": "全新库与旧库副本的同案验证结果" }
   ]
 }

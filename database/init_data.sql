@@ -1,3 +1,5 @@
+-- OPTIONAL LEGACY DEMO FIXTURE ONLY.
+-- Normal initialization uses prisma/seed.ts and does not create demo users or meals.
 -- ============================================================
 -- 初始化数据脚本
 -- 包含：运动热量参考数据、示例用户数据
