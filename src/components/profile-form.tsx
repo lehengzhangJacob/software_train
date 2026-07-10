@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { type FormEvent, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,7 +11,6 @@ import { toast } from "sonner"
 import { Save, Calculator, Info } from "lucide-react"
 
 interface UserData {
-  userId?: number
   username: string
   gender: string
   age: number
@@ -48,48 +48,105 @@ function calcTDEE(bmr: number, activity: string): number {
   return Math.round(bmr * mult)
 }
 
+function createDefaultUserData(): UserData {
+  const defaults = {
+    username: "",
+    gender: "male",
+    age: 25,
+    heightCm: 170,
+    weightKg: 65,
+    dailyProteinTarget: 60,
+    dailyFatTarget: 60,
+    dailyCarbsTarget: 250,
+    activityLevel: "sedentary",
+  }
+  const bmr = calcBMR(defaults.gender, defaults.weightKg, defaults.heightCm, defaults.age)
+
+  return {
+    ...defaults,
+    dailyCalorieTarget: calcTDEE(bmr, defaults.activityLevel),
+    bmr,
+  }
+}
+
 export function ProfileForm({ user }: ProfileFormProps) {
-  const [form, setForm] = useState<UserData>(
-    user ?? {
-      username: "",
-      gender: "male",
-      age: 25,
-      heightCm: 170,
-      weightKg: 65,
-      dailyCalorieTarget: 2000,
-      dailyProteinTarget: 60,
-      dailyFatTarget: 60,
-      dailyCarbsTarget: 250,
-      activityLevel: "sedentary",
-    }
-  )
+  const router = useRouter()
+  const [form, setForm] = useState<UserData>(() => user ?? createDefaultUserData())
+  const [hasProfile, setHasProfile] = useState(Boolean(user))
   const [saving, setSaving] = useState(false)
 
   const bmr = calcBMR(form.gender, form.weightKg, form.heightCm, form.age)
   const tdee = calcTDEE(bmr, form.activityLevel)
-
-  useEffect(() => {
-    if (!user) {
-      setForm((prev) => ({ ...prev, dailyCalorieTarget: tdee }))
-    }
-  }, [tdee, user])
 
   const update = (key: keyof UserData, value: string | number | null) => {
     if (value === null) return
     setForm((prev) => ({ ...prev, [key]: value }))
   }
 
-  const handleSave = async () => {
+  const handleSave = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!form.username.trim()) {
+      toast.error("请输入昵称")
+      return
+    }
+
+    const positiveValues = [form.age, form.heightCm, form.weightKg, form.dailyCalorieTarget]
+    const nonNegativeTargets = [form.dailyProteinTarget, form.dailyFatTarget, form.dailyCarbsTarget]
+    if (positiveValues.some((value) => !Number.isFinite(value) || value <= 0) || form.age >= 150) {
+      toast.error("请填写有效的年龄、身高和体重")
+      return
+    }
+    if (nonNegativeTargets.some((value) => !Number.isFinite(value) || value < 0)) {
+      toast.error("营养目标不能为负数")
+      return
+    }
+
     setSaving(true)
     try {
+      const payload = {
+        username: form.username.trim(),
+        gender: form.gender,
+        age: form.age,
+        heightCm: form.heightCm,
+        weightKg: form.weightKg,
+        dailyCalorieTarget: form.dailyCalorieTarget,
+        dailyProteinTarget: form.dailyProteinTarget,
+        dailyFatTarget: form.dailyFatTarget,
+        dailyCarbsTarget: form.dailyCarbsTarget,
+        activityLevel: form.activityLevel,
+      }
       const res = await fetch("/api/users", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, userId: user?.userId }),
+        body: JSON.stringify(payload),
       })
       const json = await res.json()
-      if (json.error) throw new Error(json.error)
-      toast.success(user ? "已更新个人信息" : "已创建个人信息")
+      if (!res.ok || json.error || !json.data) throw new Error(json.error || "保存失败")
+
+      const saved = json.data as UserData
+      setForm({
+        username: saved.username,
+        gender: saved.gender,
+        age: saved.age,
+        heightCm: saved.heightCm,
+        weightKg: saved.weightKg,
+        dailyCalorieTarget: saved.dailyCalorieTarget,
+        dailyProteinTarget: saved.dailyProteinTarget,
+        dailyFatTarget: saved.dailyFatTarget,
+        dailyCarbsTarget: saved.dailyCarbsTarget,
+        bmr: saved.bmr,
+        activityLevel: saved.activityLevel,
+      })
+
+      const wasFirstSave = !hasProfile
+      setHasProfile(true)
+      toast.success(wasFirstSave ? "已创建个人信息" : "已更新个人信息")
+      if (wasFirstSave) {
+        router.replace("/dashboard")
+      } else {
+        router.refresh()
+      }
     } catch (e) {
       toast.error("保存失败: " + (e instanceof Error ? e.message : String(e)))
     } finally {
@@ -98,7 +155,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <form className="space-y-6" onSubmit={handleSave}>
       <Card>
         <CardHeader>
           <CardTitle className="text-base">身体参数</CardTitle>
@@ -112,7 +169,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             <div className="space-y-2">
               <Label htmlFor="gender">性别</Label>
               <Select value={form.gender} onValueChange={(v) => update("gender", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger type="button"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="male">男性</SelectItem>
                   <SelectItem value="female">女性</SelectItem>
@@ -135,7 +192,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             <div className="space-y-2">
               <Label htmlFor="activity">活动水平</Label>
               <Select value={form.activityLevel} onValueChange={(v) => update("activityLevel", v)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger type="button"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {ACTIVITY_LEVELS.map((l) => (
                     <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
@@ -169,6 +226,15 @@ export function ProfileForm({ user }: ProfileFormProps) {
             <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
             <span>BMR 基于 Mifflin-St Jeor 公式计算。TDEE = BMR x 活动系数。建议每日热量目标设定在 TDEE 附近。</span>
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="mt-4 border-emerald-300 bg-white text-emerald-800 hover:bg-emerald-100"
+            onClick={() => update("dailyCalorieTarget", tdee)}
+          >
+            使用 TDEE 作为热量目标
+          </Button>
         </CardContent>
       </Card>
 
@@ -198,10 +264,10 @@ export function ProfileForm({ user }: ProfileFormProps) {
         </CardContent>
       </Card>
 
-      <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">
+      <Button type="submit" disabled={saving} className="w-full sm:w-auto">
         <Save className="h-4 w-4 mr-2" />
         {saving ? "保存中..." : "保存设置"}
       </Button>
-    </div>
+    </form>
   )
 }

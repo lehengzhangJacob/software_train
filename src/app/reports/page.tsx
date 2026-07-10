@@ -1,7 +1,12 @@
 import { ReportsContent } from "@/components/reports/reports-content"
-import { prisma } from "@/lib/prisma"
+import { getCurrentUser } from "@/lib/current-user"
+import { redirect } from "next/navigation"
+
+export const dynamic = "force-dynamic"
 
 export default async function ReportsPage() {
-  const user = await prisma.userProfile.findFirst({ orderBy: { userId: "asc" } })
-  return <ReportsContent userId={user?.userId ?? 1} />
+  const user = await getCurrentUser()
+  if (!user) redirect("/profile?onboarding=1")
+
+  return <ReportsContent />
 }

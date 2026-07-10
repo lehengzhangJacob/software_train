@@ -1,10 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { ChevronLeft, ChevronRight, Beef, Droplet, Wheat, Trash2, Pencil } from "lucide-react"
@@ -24,13 +24,13 @@ interface MealItem {
 }
 
 interface CalendarContentProps {
-  userId: number
   today: string
   availableDates: string[]
   initialMeals: MealItem[]
 }
 
-export function CalendarContent({ userId, today, availableDates, initialMeals }: CalendarContentProps) {
+export function CalendarContent({ today, availableDates, initialMeals }: CalendarContentProps) {
+  const router = useRouter()
   const [currentDate, setCurrentDate] = useState(today)
   const [meals, setMeals] = useState<MealItem[]>(initialMeals)
   const [editingMeal, setEditingMeal] = useState<MealItem | null>(null)
@@ -39,14 +39,14 @@ export function CalendarContent({ userId, today, availableDates, initialMeals }:
   const dateSet = new Set(availableDates)
 
   useEffect(() => {
-    fetchMeals(currentDate)
-  }, [currentDate])
+    const fetchMeals = async () => {
+      const res = await fetch(`/api/meals?date=${currentDate}`, { cache: "no-store" })
+      const json = await res.json()
+      if (json.data) setMeals(json.data)
+    }
 
-  const fetchMeals = async (date: string) => {
-    const res = await fetch(`/api/meals?userId=${userId}&date=${date}`)
-    const json = await res.json()
-    if (json.data) setMeals(json.data)
-  }
+    void fetchMeals()
+  }, [currentDate])
 
   const changeDate = (delta: number) => {
     const d = new Date(currentDate)
@@ -73,6 +73,7 @@ export function CalendarContent({ userId, today, availableDates, initialMeals }:
     if (json.error) { toast.error("删除失败"); return }
     setMeals((prev) => prev.filter((m) => m.recordId !== recordId))
     toast.success("已删除")
+    router.refresh()
   }
 
   const openEdit = (meal: MealItem) => {
@@ -92,6 +93,7 @@ export function CalendarContent({ userId, today, availableDates, initialMeals }:
     setMeals((prev) => prev.map((m) => m.recordId === editingMeal.recordId ? { ...m, ...editForm } : m))
     setEditingMeal(null)
     toast.success("已更新")
+    router.refresh()
   }
 
   return (

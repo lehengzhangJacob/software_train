@@ -29,5 +29,13 @@
     { "type": "seed", "path": "prisma/seed.ts", "description": "25 条运动参考幂等 upsert，不创建 demo 用户" },
     { "type": "runtime", "path": "scripts/ensure-sqlite-database.mjs", "description": "迁移前安全创建 SQLite 文件" },
     { "type": "verification", "path": "dev_repo/architecture/data-model/migrations.md", "description": "全新库与旧库副本的同案验证结果" }
+  ],
+  "C-02-S2": [
+    { "type": "implementation", "path": "src/lib/current-user.ts", "description": "服务端稳定选择 primary profile，客户端 ID 不参与归属" },
+    { "type": "implementation", "path": "src/lib/validation.ts", "description": "用户与餐食 DTO 白名单、BMR 派生、枚举/数值/日期校验" },
+    { "type": "implementation", "path": "src/app/api/meals/route.ts", "description": "餐食 CRUD 的 primary profile 绑定与更新/删除所有权校验" },
+    { "type": "implementation", "path": "src/app/api/{users,reports,exercise}/route.ts", "description": "统一 data/error 信封、错误脱敏与伪造 userId 忽略" },
+    { "type": "frontend", "path": "src/app/{dashboard,profile,meals,calendar,exercise,reports}/page.tsx", "description": "动态个性页面与无档案 onboarding 跳转" },
+    { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "临时 SQLite 同案、构建清单、PII 哨兵和静态质量门结果" }
   ]
 }

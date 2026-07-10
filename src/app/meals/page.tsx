@@ -1,16 +1,20 @@
 import { prisma } from "@/lib/prisma"
 import { getTodayStr } from "@/lib/utils"
+import { getCurrentUser } from "@/lib/current-user"
 import { MealsContent } from "@/components/food/meals-content"
+import { redirect } from "next/navigation"
+
+export const dynamic = "force-dynamic"
 
 export default async function MealsPage() {
   const today = getTodayStr()
-  const user = await prisma.userProfile.findFirst({ orderBy: { userId: "asc" } })
-  const meals = user
-    ? await prisma.mealRecord.findMany({
-        where: { userId: user.userId, recordDate: today },
-        orderBy: [{ recordTime: "asc" }],
-      })
-    : []
+  const user = await getCurrentUser()
+  if (!user) redirect("/profile?onboarding=1")
+
+  const meals = await prisma.mealRecord.findMany({
+    where: { userId: user.userId, recordDate: today },
+    orderBy: [{ recordTime: "asc" }],
+  })
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -19,7 +23,6 @@ export default async function MealsPage() {
         <p className="text-sm text-neutral-500 mt-1">拍照或手动输入你吃了什么</p>
       </div>
       <MealsContent
-        userId={user?.userId ?? 1}
         today={today}
         initialMeals={meals.map((m) => ({
           recordId: m.recordId,

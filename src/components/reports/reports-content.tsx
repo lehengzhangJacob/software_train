@@ -22,24 +22,24 @@ interface ReportData {
   target: { calories: number; protein: number; fat: number; carbs: number }
 }
 
-interface ReportsContentProps {
-  userId: number
-}
-
-export function ReportsContent({ userId }: ReportsContentProps) {
+export function ReportsContent() {
   const [period, setPeriod] = useState("weekly")
   const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    setLoading(true)
-    fetch(`/api/reports?userId=${userId}&period=${period}`)
+    fetch(`/api/reports?period=${period}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((j) => {
         if (j.data) setData(j.data)
         setLoading(false)
       })
-  }, [userId, period])
+  }, [period])
+
+  const changePeriod = (value: string) => {
+    setLoading(true)
+    setPeriod(value)
+  }
 
   if (loading || !data) {
     return (
@@ -56,7 +56,7 @@ export function ReportsContent({ userId }: ReportsContentProps) {
         <p className="text-sm text-neutral-500 mt-1">查看饮食趋势和达标情况</p>
       </div>
 
-      <Tabs value={period} onValueChange={setPeriod}>
+      <Tabs value={period} onValueChange={changePeriod}>
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="weekly">近 7 天</TabsTrigger>
           <TabsTrigger value="monthly">近 30 天</TabsTrigger>

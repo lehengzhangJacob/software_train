@@ -16,11 +16,10 @@ interface Suggestion {
 }
 
 interface ExerciseContentProps {
-  userId: number
   today: string
 }
 
-export function ExerciseContent({ userId, today }: ExerciseContentProps) {
+export function ExerciseContent({ today }: ExerciseContentProps) {
   const [data, setData] = useState<{
     totalCalories: number
     dailyTarget: number
@@ -31,12 +30,12 @@ export function ExerciseContent({ userId, today }: ExerciseContentProps) {
   const [loadingAi, setLoadingAi] = useState(false)
 
   useEffect(() => {
-    fetch(`/api/exercise/suggest?userId=${userId}&date=${today}`)
+    fetch(`/api/exercise/suggest?date=${today}`, { cache: "no-store" })
       .then((r) => r.json())
       .then((j) => {
         if (j.data) setData(j.data)
       })
-  }, [userId, today])
+  }, [today])
 
   const getAiSuggestion = async () => {
     if (!data) return

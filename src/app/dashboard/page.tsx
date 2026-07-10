@@ -1,21 +1,17 @@
 import { prisma } from "@/lib/prisma"
 import { getTodayStr } from "@/lib/utils"
+import { getCurrentUser } from "@/lib/current-user"
 import { DashboardContent } from "@/components/dashboard/dashboard-content"
+import { redirect } from "next/navigation"
+
+export const dynamic = "force-dynamic"
 
 export default async function DashboardPage() {
   const today = getTodayStr()
-  const user = await prisma.userProfile.findFirst()
+  const user = await getCurrentUser()
 
   if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center">
-        <h2 className="text-xl font-semibold text-neutral-800 mb-2">欢迎使用 Food Tracker</h2>
-        <p className="text-neutral-500 mb-6">请先在个人设置中创建你的档案</p>
-        <a href="/profile" className="inline-flex items-center rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors">
-          前往设置
-        </a>
-      </div>
-    )
+    redirect("/profile?onboarding=1")
   }
 
   const dailySummary = await prisma.mealRecord.groupBy({
@@ -46,7 +42,13 @@ export default async function DashboardPage() {
 
   return (
     <DashboardContent
-      user={user}
+      user={{
+        username: user.username,
+        dailyCalorieTarget: user.dailyCalorieTarget,
+        dailyProteinTarget: user.dailyProteinTarget,
+        dailyFatTarget: user.dailyFatTarget,
+        dailyCarbsTarget: user.dailyCarbsTarget,
+      }}
       today={today}
       totalCalories={totalCalories}
       totalProtein={totalProtein}

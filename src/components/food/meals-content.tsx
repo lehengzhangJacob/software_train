@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { Camera, Plus, UtensilsCrossed, Beef, Droplet, Wheat, Trash2 } from "lucide-react"
 import { MEAL_LABELS, formatCalories, formatGrams } from "@/lib/utils"
@@ -25,12 +25,12 @@ interface MealItem {
 }
 
 interface MealsContentProps {
-  userId: number
   today: string
   initialMeals: MealItem[]
 }
 
-export function MealsContent({ userId, today, initialMeals }: MealsContentProps) {
+export function MealsContent({ today, initialMeals }: MealsContentProps) {
+  const router = useRouter()
   const [meals, setMeals] = useState<MealItem[]>(initialMeals)
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({
@@ -60,7 +60,7 @@ export function MealsContent({ userId, today, initialMeals }: MealsContentProps)
       const res = await fetch("/api/meals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, userId, recordDate: today }),
+        body: JSON.stringify({ ...form, recordDate: today }),
       })
       const json = await res.json()
       if (json.error) throw new Error(json.error)
@@ -78,6 +78,7 @@ export function MealsContent({ userId, today, initialMeals }: MealsContentProps)
       setMeals((prev) => [...prev, newMeal])
       toast.success("已添加饮食记录")
       resetForm()
+      router.refresh()
     } catch (e) {
       toast.error("保存失败: " + (e instanceof Error ? e.message : String(e)))
     } finally {
@@ -101,7 +102,6 @@ export function MealsContent({ userId, today, initialMeals }: MealsContentProps)
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId,
           recordDate: today,
           recognitionRaw: aiData.imageData ? JSON.stringify({ imageDataLength: aiData.imageData.length }) : null,
           ...aiData,
@@ -122,6 +122,7 @@ export function MealsContent({ userId, today, initialMeals }: MealsContentProps)
       }
       setMeals((prev) => [...prev, newMeal])
       toast.success("AI 识别并保存成功")
+      router.refresh()
     } catch (e) {
       toast.error("保存失败: " + (e instanceof Error ? e.message : String(e)))
     } finally {
@@ -136,6 +137,7 @@ export function MealsContent({ userId, today, initialMeals }: MealsContentProps)
       if (json.error) throw new Error(json.error)
       setMeals((prev) => prev.filter((m) => m.recordId !== recordId))
       toast.success("已删除记录")
+      router.refresh()
     } catch (e) {
       toast.error("删除失败: " + (e instanceof Error ? e.message : String(e)))
     }

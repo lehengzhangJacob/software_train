@@ -1,29 +1,32 @@
-import { NextResponse } from "next/server"
+import { apiError, apiSuccess } from "@/lib/api-response"
+import { getCurrentUser } from "@/lib/current-user"
 import { prisma } from "@/lib/prisma"
+import { parseUserProfileInput, ValidationError } from "@/lib/validation"
+
+export const dynamic = "force-dynamic"
 
 export async function GET() {
-  const user = await prisma.userProfile.findFirst({
-    orderBy: { userId: "asc" },
-  })
-  return NextResponse.json({ data: user ?? null })
+  try {
+    return apiSuccess(await getCurrentUser())
+  } catch {
+    return apiError("读取个人档案失败", 500)
+  }
 }
 
 export async function PUT(request: Request) {
   try {
-    const body = await request.json()
-    const { userId, ...data } = body
-
-    if (!userId) {
-      const user = await prisma.userProfile.create({ data })
-      return NextResponse.json({ data: user })
-    }
-
-    const user = await prisma.userProfile.update({
-      where: { userId },
-      data,
+    const input = parseUserProfileInput(await request.json())
+    const user = await prisma.$transaction(async (tx) => {
+      const current = await tx.userProfile.findFirst({ orderBy: { userId: "asc" } })
+      return current
+        ? tx.userProfile.update({ where: { userId: current.userId }, data: input })
+        : tx.userProfile.create({ data: input })
     })
-    return NextResponse.json({ data: user })
+
+    return apiSuccess(user)
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 })
+    if (error instanceof ValidationError) return apiError(error.message, 422)
+    if (error instanceof SyntaxError) return apiError("请求 JSON 格式无效", 400)
+    return apiError("保存个人档案失败", 500)
   }
 }

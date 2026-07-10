@@ -1,9 +1,14 @@
-import { prisma } from "@/lib/prisma"
 import { getTodayStr } from "@/lib/utils"
+import { getCurrentUser } from "@/lib/current-user"
 import { ExerciseContent } from "@/components/exercise/exercise-content"
+import { redirect } from "next/navigation"
+
+export const dynamic = "force-dynamic"
 
 export default async function ExercisePage() {
-  const user = await prisma.userProfile.findFirst({ orderBy: { userId: "asc" } })
+  const user = await getCurrentUser()
+  if (!user) redirect("/profile?onboarding=1")
+
   const today = getTodayStr()
 
   return (
@@ -12,7 +17,7 @@ export default async function ExercisePage() {
         <h1 className="text-2xl font-semibold text-neutral-900">运动建议</h1>
         <p className="text-sm text-neutral-500 mt-1">根据饮食情况获取个性化运动推荐</p>
       </div>
-      <ExerciseContent userId={user?.userId ?? 1} today={today} />
+      <ExerciseContent today={today} />
     </div>
   )
 }

@@ -61,7 +61,7 @@ Prisma migration 是生产 schema 唯一真相；database/schema.sql 降级为�
 | 债务 | 负责切片 |
 |---|---|
 | 正式 migration、BMR/updatedAt 来源与 seed 幂等 | C-02-S1 |
-| primary profile、DTO 校验、动态渲染 | C-02-S2 |
+| primary profile、DTO 校验、动态渲染 | C-02-S2 已完成 |
 | 多食物审核后保存 | C-02-S3 |
 | 运动建议与 AI 文本链路诚实闭环 | C-02-S4 |
 | 日期窗口、请求竞态与错误态 | C-02-S5 |

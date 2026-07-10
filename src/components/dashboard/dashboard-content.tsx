@@ -6,11 +6,10 @@ import { formatCalories, formatGrams, calcCaloriePercent } from "@/lib/utils"
 import { CalorieTrendChart } from "@/components/charts/calorie-trend"
 import { MacroDonut } from "@/components/charts/macro-donut"
 import { MealBreakdown } from "@/components/dashboard/meal-breakdown"
-import { Flame, Wheat, Beef, Droplet, Target, Utensils } from "lucide-react"
+import { Flame, Wheat, Beef, Droplet, Utensils } from "lucide-react"
 
 interface DashboardContentProps {
   user: {
-    userId: number
     username: string
     dailyCalorieTarget: number
     dailyProteinTarget: number
