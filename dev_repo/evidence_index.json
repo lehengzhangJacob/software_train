@@ -37,5 +37,12 @@
     { "type": "implementation", "path": "src/app/api/{users,reports,exercise}/route.ts", "description": "统一 data/error 信封、错误脱敏与伪造 userId 忽略" },
     { "type": "frontend", "path": "src/app/{dashboard,profile,meals,calendar,exercise,reports}/page.tsx", "description": "动态个性页面与无档案 onboarding 跳转" },
     { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "临时 SQLite 同案、构建清单、PII 哨兵和静态质量门结果" }
+  ],
+  "C-02-S3": [
+    { "type": "implementation", "path": "src/components/food/photo-upload.tsx", "description": "只负责图片识别和全量候选回传，不直接写入餐食" },
+    { "type": "implementation", "path": "src/components/food/meals-content.tsx", "description": "多食物审核草稿、10 项上限、明确确认和失败保留" },
+    { "type": "implementation", "path": "src/app/api/meals/route.ts", "description": "items[] 全量预校验后的 Prisma 事务保存" },
+    { "type": "implementation", "path": "src/lib/validation.ts", "description": "批量餐食白名单 DTO 与 1-10 项边界" },
+    { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "临时 SQLite 批量、回滚、所有权和图片隔离同案结果" }
   ]
 }

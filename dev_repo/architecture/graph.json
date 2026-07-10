@@ -63,7 +63,7 @@
       "allowed_change_types": ["component behavior", "visual tokens", "forms"],
       "requires_amendment_when": ["改变持久化所有权", "直接调用外部 AI"],
       "verification": ["component tests", "browser E2E", "axe"],
-      "known_debt": ["C-02-S3~S6 待实现"],
+      "known_debt": ["C-02-S4~S6 待实现"],
       "confidence": "confirmed",
       "implementation_status": "partial"
     },
@@ -84,7 +84,7 @@
       "allowed_change_types": ["DTO validation", "same-origin API behavior"],
       "requires_amendment_when": ["新增公网身份", "改变所有权或 API 版本"],
       "verification": ["route integration tests", "invalid input matrix"],
-      "known_debt": ["C-02-S3~S5 批量保存、运动闭环和日期窗口待实现"],
+      "known_debt": ["C-02-S4~S5 运动闭环和日期窗口待实现"],
       "confidence": "confirmed",
       "implementation_status": "partial"
     },

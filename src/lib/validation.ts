@@ -48,6 +48,10 @@ export interface MealCreateInput {
 
 export type MealUpdateInput = Partial<MealCreateInput>
 
+export interface MealBatchCreateInput {
+  items: MealCreateInput[]
+}
+
 function asObject(value: unknown): JsonObject {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new ValidationError("请求内容必须是对象")
@@ -215,6 +219,34 @@ export function parseMealCreateInput(value: unknown, defaults: { date: string; t
     recordDate: parseDate(body.recordDate ?? defaults.date, "记录日期"),
     recordTime: parseTime(body.recordTime ?? defaults.time, "记录时间"),
     notes: optionalString(body.notes, "备注", 1_000),
+  }
+}
+
+/**
+ * Parse every item before the route starts its database transaction. The
+ * returned DTO intentionally contains only persisted meal fields, so caller
+ * supplied ownership ids, image data, and other presentation-only values are
+ * never passed to Prisma.
+ */
+export function parseMealBatchCreateInput(
+  value: unknown,
+  defaults: { date: string; time: string }
+): MealBatchCreateInput {
+  const body = asObject(value)
+  if (!Array.isArray(body.items)) {
+    throw new ValidationError("items must be an array")
+  }
+  if (body.items.length === 0 || body.items.length > 10) {
+    throw new ValidationError("items must contain between 1 and 10 meals")
+  }
+
+  const itemDefaults = {
+    date: body.recordDate === undefined ? defaults.date : parseDate(body.recordDate, "recordDate"),
+    time: body.recordTime === undefined ? defaults.time : parseTime(body.recordTime, "recordTime"),
+  }
+
+  return {
+    items: body.items.map((item) => parseMealCreateInput(item, itemDefaults)),
   }
 }
 

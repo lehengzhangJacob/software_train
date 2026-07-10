@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { getTodayStr } from "@/lib/utils"
 import {
   parseDate,
+  parseMealBatchCreateInput,
   parseMealCreateInput,
   parseMealUpdateInput,
   parsePositiveInteger,
@@ -46,10 +47,32 @@ export async function POST(request: Request) {
     const user = await getCurrentUser()
     if (!user) return apiError("请先创建个人档案", 404)
 
-    const input = parseMealCreateInput(await request.json(), {
+    const body: unknown = await request.json()
+    const defaults = {
       date: getTodayStr(),
       time: getCurrentTime(),
-    })
+    }
+
+    if (
+      body &&
+      typeof body === "object" &&
+      !Array.isArray(body) &&
+      Object.hasOwn(body as Record<string, unknown>, "items")
+    ) {
+      // Validate all items before entering the transaction to guarantee an
+      // invalid batch cannot leave a partially saved meal log.
+      const { items } = parseMealBatchCreateInput(body, defaults)
+      const records = await prisma.$transaction(
+        items.map((input) =>
+          prisma.mealRecord.create({
+            data: { userId: user.userId, ...input },
+          })
+        )
+      )
+      return apiSuccess(records, 201)
+    }
+
+    const input = parseMealCreateInput(body, defaults)
     const record = await prisma.mealRecord.create({
       data: { userId: user.userId, ...input },
     })
