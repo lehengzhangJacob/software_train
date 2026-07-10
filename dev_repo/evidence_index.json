@@ -8,5 +8,11 @@
     { "type": "data-model", "path": "dev_repo/architecture/data-model/relationships.json", "description": "关系定义" },
     { "type": "data-model", "path": "dev_repo/architecture/data-model/invariants.md", "description": "数据模型不变项" },
     { "type": "data-model", "path": "dev_repo/architecture/data-model/migrations.md", "description": "迁移计划" }
+  ],
+  "C-02-S0": [
+    { "type": "security", "path": ".env.example", "description": "仅服务端 AI 环境变量契约，无实际密钥" },
+    { "type": "implementation", "path": "src/app/api/ai/recognize/route.ts", "description": "安全失败、请求限制、超时和响应校验" },
+    { "type": "implementation", "path": "src/components/exercise/exercise-content.tsx", "description": "移除 NEXT_PUBLIC 密钥引用" },
+    { "type": "git", "path": "git:codex/release-hardening", "description": "基于 672e56b，6d9f0b0 不可达" }
   ]
 }

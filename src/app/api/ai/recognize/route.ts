@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server"
 
+export const dynamic = "force-dynamic"
+export const runtime = "nodejs"
+
 interface FoodItem {
   name: string
   calories: number
@@ -13,6 +16,38 @@ interface FoodItem {
 interface RecognitionResult {
   foods: FoodItem[]
   totalCalories: number
+}
+
+const MAX_REQUEST_BYTES = 14 * 1024 * 1024
+const SUPPORTED_IMAGE_PATTERN = /^data:image\/(?:jpeg|png|webp);base64,/i
+
+function jsonError(message: string, status: number) {
+  return NextResponse.json({ data: null, error: message }, { status })
+}
+
+function isRecognitionResult(value: unknown): value is RecognitionResult {
+  if (!value || typeof value !== "object") return false
+
+  const result = value as Partial<RecognitionResult>
+  if (!Array.isArray(result.foods) || typeof result.totalCalories !== "number") return false
+
+  return result.foods.every((food) => {
+    if (!food || typeof food !== "object") return false
+    const item = food as Partial<FoodItem>
+    return (
+      typeof item.name === "string" &&
+      typeof item.portion === "string" &&
+      [item.calories, item.protein, item.fat, item.carbs, item.confidence].every(
+        (number) => typeof number === "number" && Number.isFinite(number)
+      ) &&
+      (item.calories ?? -1) >= 0 &&
+      (item.protein ?? -1) >= 0 &&
+      (item.fat ?? -1) >= 0 &&
+      (item.carbs ?? -1) >= 0 &&
+      (item.confidence ?? -1) >= 0 &&
+      (item.confidence ?? 2) <= 1
+    )
+  })
 }
 
 const SYSTEM_PROMPT = `你是一个专业的食物营养识别专家。分析图片中的食物，返回JSON格式的识别结果。
@@ -39,34 +74,40 @@ const SYSTEM_PROMPT = `你是一个专业的食物营养识别专家。分析图
 
 export async function POST(request: Request) {
   try {
+    const contentLength = Number(request.headers.get("content-length") ?? 0)
+    if (contentLength > MAX_REQUEST_BYTES) {
+      return jsonError("图片请求过大", 413)
+    }
+
     const body = await request.json()
     const { image } = body as { image?: string }
 
-    if (!image) {
-      return NextResponse.json({ error: "No image provided" }, { status: 400 })
+    if (!image || typeof image !== "string") {
+      return jsonError("请提供食物图片", 400)
+    }
+    if (image.length > MAX_REQUEST_BYTES) {
+      return jsonError("图片请求过大", 413)
+    }
+    if (!SUPPORTED_IMAGE_PATTERN.test(image)) {
+      return jsonError("仅支持 JPEG、PNG 或 WebP 图片", 415)
     }
 
-    const apiKey = process.env.STEP_API_KEY
+    const apiKey = process.env.STEP_API_KEY?.trim()
     if (!apiKey) {
-      return NextResponse.json({
-        data: {
-          foods: [
-            { name: "示例识别结果（需配置 STEP_API_KEY）", calories: 250, protein: 15, fat: 8, carbs: 30, portion: "1份", confidence: 0.85 },
-          ],
-          totalCalories: 250,
-        } satisfies RecognitionResult,
-        warning: "STEP_API_KEY not configured",
-      })
+      return jsonError("AI 识别服务尚未配置", 503)
     }
 
-    const response = await fetch("https://api.stepfun.com/v1/chat/completions", {
+    const baseUrl = (process.env.STEP_API_BASE_URL ?? "https://api.stepfun.com/v1").replace(/\/$/, "")
+    const model = process.env.STEP_API_MODEL ?? "step-3.7-flash"
+    const response = await fetch(`${baseUrl}/chat/completions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
+      signal: AbortSignal.timeout(30_000),
       body: JSON.stringify({
-        model: "step-3.7-flash",
+        model,
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
           {
@@ -83,25 +124,30 @@ export async function POST(request: Request) {
     })
 
     if (!response.ok) {
-      const errText = await response.text()
-      console.error("Step API error:", response.status, errText)
-      return NextResponse.json({ error: `AI API error: ${response.status}` }, { status: 502 })
+      console.error("Step API request failed", { status: response.status })
+      return jsonError("AI 识别服务暂时不可用", 502)
     }
 
     const result = await response.json()
     const content = result.choices?.[0]?.message?.content
 
     if (!content) {
-      return NextResponse.json({ error: "Empty AI response" }, { status: 502 })
+      return jsonError("AI 识别结果为空", 502)
     }
 
     try {
-      const parsed: RecognitionResult = JSON.parse(content)
-      return NextResponse.json({ data: parsed })
+      const parsed: unknown = JSON.parse(content)
+      if (!isRecognitionResult(parsed)) {
+        return jsonError("AI 识别结果格式无效", 502)
+      }
+      return NextResponse.json({ data: parsed, error: null })
     } catch {
-      return NextResponse.json({ error: "Failed to parse AI response", raw: content }, { status: 502 })
+      return jsonError("AI 识别结果格式无效", 502)
     }
   } catch (error) {
-    return NextResponse.json({ error: String(error) }, { status: 500 })
+    if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) {
+      return jsonError("AI 识别请求超时", 504)
+    }
+    return jsonError("AI 识别请求失败", 500)
   }
 }

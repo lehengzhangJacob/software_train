@@ -1,2 +1,5 @@
 {"event":"contract_created","contract_id":"C-01","timestamp":"2026-07-05T00:00:00Z","summary":"全栈饮食记录系统 — 架构普查 + 8 slices 合同"}
 {"event":"slice_started","contract_id":"C-01","slice_id":"C-01-S0","timestamp":"2026-07-05T00:00:00Z","summary":"架构普查 — 写入架构文档 + 数据模型文档"}
+{"event":"contract_created","contract_id":"C-02","parent_contract_id":"C-01","timestamp":"2026-07-10T12:33:30Z","summary":"课程项目接手验收与上线质感收口","return_to":"web_completion_audit"}
+{"event":"slice_started","contract_id":"C-02","slice_id":"C-02-S0","timestamp":"2026-07-10T12:33:30Z","summary":"隔离泄漏提交并恢复服务端密钥边界"}
+{"event":"slice_completed","contract_id":"C-02","slice_id":"C-02-S0","timestamp":"2026-07-10T12:37:27Z","summary":"交付分支排除泄漏提交，AI 密钥改为服务端环境变量且缺失时安全失败","verification":{"secret_branch_check":"pass","missing_key_contract":"pass","eslint":"pass","typecheck":"pass","diff_check":"pass"},"architecture_delta":"恢复 backend.ai 既有密钥不变量","data_model_delta":"none"}

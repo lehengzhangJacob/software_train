@@ -4,8 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { toast } from "sonner"
-import { Dumbbell, Flame, Target, Clock, ArrowDownToLine, CheckCircle2, Loader2, Brain } from "lucide-react"
+import { Dumbbell, Flame, Clock, Loader2, Brain } from "lucide-react"
 import { formatCalories } from "@/lib/utils"
 
 interface Suggestion {
@@ -43,7 +42,6 @@ export function ExerciseContent({ userId, today }: ExerciseContentProps) {
     if (!data) return
     setLoadingAi(true)
     try {
-      const apiKey = process.env.NEXT_PUBLIC_STEP_API_KEY
       const res = await fetch("/api/ai/recognize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -2,8 +2,8 @@
   "campaign_id": "food-tracker",
   "root_goal": "从 DB schema 到全栈可用的饮食记录系统",
   "root_contract_id": "C-01",
-  "active_contract_id": null,
-  "status": "completed",
+  "active_contract_id": "C-02",
+  "status": "active",
   "contracts": {
     "C-01": {
       "status": "completed",
@@ -11,6 +11,17 @@
       "current_slice": null,
       "completed_slices": ["C-01-S0", "C-01-S1", "C-01-S2", "C-01-S3", "C-01-S4", "C-01-S5", "C-01-S6", "C-01-S7"],
       "return_to": null
+    },
+    "C-02": {
+      "contract_id": "C-02",
+      "parent_contract_id": "C-01",
+      "root_campaign": "food-tracker",
+      "status": "active",
+      "summary": "课程项目接手验收与上线质感收口",
+      "goal": "在私有单用户课程项目边界内修复核心断链并建立可复现发布证据",
+      "current_slice": null,
+      "completed_slices": ["C-02-S0"],
+      "return_to": "web_completion_audit"
     }
   }
 }
