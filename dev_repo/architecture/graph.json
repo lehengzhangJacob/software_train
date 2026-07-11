@@ -48,7 +48,7 @@
       "allowed_change_types": ["page composition", "loading/error states"],
       "requires_amendment_when": ["页面改为公开缓存", "新增身份上下文"],
       "verification": ["build manifest PII gate", "browser E2E"],
-      "known_debt": ["C-02-S5 日期窗口与异步状态待收口"],
+      "known_debt": [],
       "confidence": "confirmed",
       "implementation_status": "partial"
     },
@@ -63,7 +63,7 @@
       "allowed_change_types": ["component behavior", "visual tokens", "forms"],
       "requires_amendment_when": ["改变持久化所有权", "直接调用外部 AI"],
       "verification": ["component tests", "browser E2E", "axe"],
-      "known_debt": ["C-02-S5~S6 待实现"],
+      "known_debt": ["C-02-S6 响应式与无障碍收口待实现"],
       "confidence": "confirmed",
       "implementation_status": "partial"
     },
@@ -84,7 +84,7 @@
       "allowed_change_types": ["DTO validation", "same-origin API behavior"],
       "requires_amendment_when": ["新增公网身份", "改变所有权或 API 版本"],
       "verification": ["route integration tests", "invalid input matrix"],
-      "known_debt": ["C-02-S5 日期窗口待实现"],
+      "known_debt": [],
       "confidence": "confirmed",
       "implementation_status": "partial"
     },

@@ -64,6 +64,6 @@ Prisma migration 是生产 schema 唯一真相；database/schema.sql 降级为�
 | primary profile、DTO 校验、动态渲染 | C-02-S2 已完成 |
 | 多食物审核后保存 | C-02-S3 已完成 |
 | 运动建议采用/取消闭环；移除伪 AI 文本卡 | C-02-S4 已完成 |
-| 日期窗口、请求竞态与错误态 | C-02-S5 |
+| 本地日期窗口、连续报告与请求竞态 | C-02-S5 已完成 |
 | 响应式、a11y 与视觉系统 | C-02-S6 |
 | build/E2E/CI/发布证据 | C-02-S7 |

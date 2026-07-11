@@ -64,36 +64,65 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
   const [data, setData] = useState<ExerciseData | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
+  const [loadedDate, setLoadedDate] = useState<string | null>(null)
+  const [errorDate, setErrorDate] = useState<string | null>(null)
+  const [reloadKey, setReloadKey] = useState(0)
   const [savingCandidates, setSavingCandidates] = useState<Set<number>>(new Set())
   const [savingPlans, setSavingPlans] = useState<Set<number>>(new Set())
   const [rowErrors, setRowErrors] = useState<Record<string, string>>({})
 
-  const loadSuggestions = useCallback(async () => {
+  const reloadSuggestions = useCallback(() => {
     setLoading(true)
+    setData(null)
+    setLoadedDate(null)
     setLoadError(null)
-
-    try {
-      const response = await fetch(`/api/exercise/suggest?date=${today}`, {
-        cache: "no-store",
-      })
-      const result = await readApiEnvelope<ExerciseData>(response)
-
-      if (!response.ok || !result.data) {
-        setLoadError(result.error || "暂时无法读取活动建议")
-        return
-      }
-
-      setData(result.data)
-    } catch (error) {
-      setLoadError(error instanceof Error ? error.message : "暂时无法读取活动建议")
-    } finally {
-      setLoading(false)
-    }
-  }, [today])
+    setErrorDate(null)
+    setReloadKey((current) => current + 1)
+  }, [])
 
   useEffect(() => {
+    const controller = new AbortController()
+
+    const loadSuggestions = async () => {
+      setLoading(true)
+      setData(null)
+      setLoadedDate(null)
+      setLoadError(null)
+      setErrorDate(null)
+
+      try {
+        const response = await fetch(`/api/exercise/suggest?date=${today}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        })
+        const result = await readApiEnvelope<ExerciseData>(response)
+
+        if (controller.signal.aborted) return
+
+        if (!response.ok || !result.data) {
+          setLoadError(result.error || "暂时无法读取活动建议，请稍后重试")
+          setErrorDate(today)
+          return
+        }
+
+        setData(result.data)
+        setLoadedDate(today)
+      } catch {
+        if (!controller.signal.aborted) {
+          setLoadError("暂时无法读取活动建议，请稍后重试")
+          setErrorDate(today)
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
+      }
+    }
+
     void loadSuggestions()
-  }, [loadSuggestions])
+
+    return () => controller.abort()
+  }, [reloadKey, today])
 
   const adoptCandidate = async (candidate: Candidate) => {
     const errorKey = `candidate-${candidate.exerciseId}`
@@ -119,7 +148,7 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
         throw new Error(result.error || "采用计划失败")
       }
 
-      await loadSuggestions()
+      reloadSuggestions()
       router.refresh()
     } catch (error) {
       setRowErrors((current) => ({
@@ -155,7 +184,7 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
         throw new Error(result.error || "取消采用失败")
       }
 
-      await loadSuggestions()
+      reloadSuggestions()
       router.refresh()
     } catch (error) {
       setRowErrors((current) => ({
@@ -171,7 +200,10 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
     }
   }
 
-  if (loading && !data) {
+  const hasCurrentData = data !== null && loadedDate === today
+  const hasCurrentError = loadError !== null && errorDate === today
+
+  if (loading || (!hasCurrentData && !hasCurrentError)) {
     return (
       <Card>
         <CardContent className="py-12 text-center text-sm text-neutral-500">加载中...</CardContent>
@@ -179,12 +211,12 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
     )
   }
 
-  if (!data) {
+  if (!hasCurrentData) {
     return (
       <Card>
         <CardContent className="space-y-3 py-12 text-center">
-          <p className="text-sm text-neutral-600">{loadError || "暂时无法读取活动建议"}</p>
-          <Button type="button" variant="outline" onClick={() => void loadSuggestions()}>
+          <p className="text-sm text-neutral-600" role="alert">{loadError || "暂时无法读取活动建议"}</p>
+          <Button type="button" variant="outline" onClick={reloadSuggestions}>
             重试
           </Button>
         </CardContent>

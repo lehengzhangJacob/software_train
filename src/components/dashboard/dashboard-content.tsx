@@ -16,12 +16,11 @@ interface DashboardContentProps {
     dailyFatTarget: number
     dailyCarbsTarget: number
   }
-  today: string
   totalCalories: number
   totalProtein: number
   totalFat: number
   totalCarbs: number
-  trends: [string, number][]
+  trends: { date: string; calories: number | null }[]
   dailySummary: {
     mealType: string
     calories: number

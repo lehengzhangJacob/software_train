@@ -51,5 +51,12 @@
     { "type": "implementation", "path": "src/lib/validation.ts", "description": "采用/取消计划 DTO，仅接受引用 ID、时长、日期和布尔状态" },
     { "type": "architecture", "path": "dev_repo/architecture/graph.json", "description": "移除未实现的 AI 文本接口目标，确认图片识别代理边界" },
     { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "临时 SQLite 采用、重复采用、取消、越权和输入矩阵结果" }
+  ],
+  "C-02-S5": [
+    { "type": "implementation", "path": "src/lib/date.ts", "description": "本地 YYYY-MM-DD 解析、移日和严格含终点的自然日窗口" },
+    { "type": "implementation", "path": "src/app/api/reports/route.ts", "description": "7/30 天精确查询、连续日期序列和未记录日显式空值" },
+    { "type": "implementation", "path": "src/app/dashboard/page.tsx", "description": "近 7 日趋势严格限定窗口并保留断档" },
+    { "type": "frontend", "path": "src/components/{calendar,reports,exercise}/", "description": "请求取消、竞态归属、防旧响应回写和可重试错误态" },
+    { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "隔离 SQLite 加实际 Next HTTP 的 7/30 天边界、空档和连续日期验证" }
   ]
 }

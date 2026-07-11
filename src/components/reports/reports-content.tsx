@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts"
 import { formatCalories, formatGrams } from "@/lib/utils"
@@ -18,36 +19,146 @@ interface ReportData {
   complianceRate: number
   onTargetDays: number
   totalDays: number
-  daily: { date: string; calories: number; protein: number; fat: number; carbs: number; target: number; diff: number }[]
+  daily: {
+    date: string
+    calories: number | null
+    protein: number | null
+    fat: number | null
+    carbs: number | null
+    target: number
+    diff: number | null
+    recorded: boolean
+  }[]
   target: { calories: number; protein: number; fat: number; carbs: number }
+}
+
+interface ApiEnvelope<T> {
+  data?: T
+  error?: string
+}
+
+type DailyReport = ReportData["daily"][number]
+
+function NutritionTooltip({
+  active,
+  label,
+  dailyByDate,
+}: {
+  active?: boolean
+  label?: string | number
+  dailyByDate: Map<string, DailyReport>
+}) {
+  if (!active || label === undefined) return null
+
+  const day = dailyByDate.get(String(label))
+  if (!day) return null
+
+  return (
+    <div className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-xs shadow-sm">
+      <p className="font-medium text-neutral-800">日期: {day.date}</p>
+      <p className="mt-1 text-neutral-600">
+        {day.recorded ? `摄入: ${formatCalories(day.calories ?? 0)}` : "无饮食记录"}
+      </p>
+      <p className="text-neutral-500">目标: {formatCalories(day.target)}</p>
+    </div>
+  )
+}
+
+async function readApiEnvelope<T>(response: Response): Promise<ApiEnvelope<T>> {
+  try {
+    return (await response.json()) as ApiEnvelope<T>
+  } catch {
+    return { error: "暂时无法读取营养报告，请稍后重试" }
+  }
 }
 
 export function ReportsContent() {
   const [period, setPeriod] = useState("weekly")
   const [data, setData] = useState<ReportData | null>(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
-    fetch(`/api/reports?period=${period}`, { cache: "no-store" })
-      .then((r) => r.json())
-      .then((j) => {
-        if (j.data) setData(j.data)
-        setLoading(false)
-      })
-  }, [period])
+    const controller = new AbortController()
+
+    const loadReport = async () => {
+      setLoading(true)
+      setData(null)
+      setLoadError(null)
+
+      try {
+        const response = await fetch(`/api/reports?period=${period}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        })
+        const result = await readApiEnvelope<ReportData>(response)
+
+        if (controller.signal.aborted) return
+
+        if (!response.ok || !result.data) {
+          setLoadError(result.error || "暂时无法读取营养报告，请稍后重试")
+          return
+        }
+
+        setData(result.data)
+      } catch {
+        if (!controller.signal.aborted) {
+          setLoadError("暂时无法读取营养报告，请稍后重试")
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadReport()
+
+    return () => controller.abort()
+  }, [period, reloadKey])
 
   const changePeriod = (value: string) => {
+    if (value === period) return
     setLoading(true)
+    setData(null)
+    setLoadError(null)
     setPeriod(value)
   }
 
-  if (loading || !data) {
+  const retryLoad = () => {
+    setLoading(true)
+    setData(null)
+    setLoadError(null)
+    setReloadKey((current) => current + 1)
+  }
+
+  if (loading) {
     return (
       <Card>
         <CardContent className="py-12 text-center text-sm text-neutral-400">加载中...</CardContent>
       </Card>
     )
   }
+
+  if (!data) {
+    return (
+      <Card>
+        <CardContent className="space-y-3 py-12 text-center">
+          <p className="text-sm text-neutral-600" role="alert">{loadError || "暂时无法读取营养报告，请稍后重试"}</p>
+          <Button type="button" variant="outline" onClick={retryLoad}>
+            重试
+          </Button>
+        </CardContent>
+      </Card>
+    )
+  }
+
+  const chartDaily = data.daily.map((day) => ({
+    ...day,
+    calories: day.recorded === false ? null : day.calories,
+  }))
+  const dailyByDate = new Map(chartDaily.map((day) => [day.date, day]))
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -112,20 +223,10 @@ export function ReportsContent() {
             <CardContent>
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.daily}>
+                  <BarChart data={chartDaily}>
                     <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#a3a3a3" tickFormatter={(v: string) => v.slice(5)} />
                     <YAxis tick={{ fontSize: 11 }} stroke="#a3a3a3" tickFormatter={(v) => formatCalories(Number(v))} />
-                    <Tooltip
-                      formatter={(value, name) => {
-                        const v = Number(value)
-                        const n = String(name)
-                        if (n === "calories") return [formatCalories(v), "摄入"]
-                        if (n === "target") return [formatCalories(v), "目标"]
-                        return [v, n]
-                      }}
-                      labelFormatter={(label) => `日期: ${label}`}
-                      contentStyle={{ borderRadius: 8, border: "1px solid #e5e5e5", fontSize: 13 }}
-                    />
+                    <Tooltip content={<NutritionTooltip dailyByDate={dailyByDate} />} />
                     <ReferenceLine y={data.target.calories} stroke="#f97316" strokeDasharray="4 4" label={{ value: "目标", position: "right", fontSize: 11 }} />
                     <Bar dataKey="calories" fill="#059669" radius={[4, 4, 0, 0]} maxBarSize={period === "weekly" ? 40 : 20} />
                   </BarChart>

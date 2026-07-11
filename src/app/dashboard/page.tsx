@@ -1,13 +1,13 @@
 import { prisma } from "@/lib/prisma"
-import { getTodayStr } from "@/lib/utils"
 import { getCurrentUser } from "@/lib/current-user"
+import { getLocalDateRange, toLocalDateString } from "@/lib/date"
 import { DashboardContent } from "@/components/dashboard/dashboard-content"
 import { redirect } from "next/navigation"
 
 export const dynamic = "force-dynamic"
 
 export default async function DashboardPage() {
-  const today = getTodayStr()
+  const today = toLocalDateString()
   const user = await getCurrentUser()
 
   if (!user) {
@@ -26,19 +26,24 @@ export default async function DashboardPage() {
   const totalFat = dailySummary.reduce((s, r) => s + (r._sum.fatG ?? 0), 0)
   const totalCarbs = dailySummary.reduce((s, r) => s + (r._sum.carbsG ?? 0), 0)
 
+  const recentDateRange = getLocalDateRange(7)
   const recentDays = await prisma.mealRecord.findMany({
-    where: { userId: user.userId },
+    where: {
+      userId: user.userId,
+      recordDate: { gte: recentDateRange[0], lte: recentDateRange[recentDateRange.length - 1] },
+    },
     select: { recordDate: true, calories: true },
-    orderBy: { recordDate: "desc" },
+    orderBy: { recordDate: "asc" },
   })
 
   const trendMap = new Map<string, number>()
   for (const r of recentDays) {
     trendMap.set(r.recordDate, (trendMap.get(r.recordDate) ?? 0) + r.calories)
   }
-  const trends = Array.from(trendMap.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
-    .slice(-7)
+  const trends = recentDateRange.map((date) => ({
+    date,
+    calories: trendMap.get(date) ?? null,
+  }))
 
   return (
     <DashboardContent
@@ -49,7 +54,6 @@ export default async function DashboardPage() {
         dailyFatTarget: user.dailyFatTarget,
         dailyCarbsTarget: user.dailyCarbsTarget,
       }}
-      today={today}
       totalCalories={totalCalories}
       totalProtein={totalProtein}
       totalFat={totalFat}

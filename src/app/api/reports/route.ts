@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server"
 import { apiError, apiSuccess } from "@/lib/api-response"
 import { getCurrentUser } from "@/lib/current-user"
+import { getLocalDateRange } from "@/lib/date"
 import { prisma } from "@/lib/prisma"
 import { parseReportPeriod, ValidationError } from "@/lib/validation"
 
@@ -14,14 +15,14 @@ export async function GET(request: NextRequest) {
     if (!user) return apiError("请先创建个人档案", 404)
 
     const days = period === "monthly" ? 30 : 7
-    const startDate = new Date()
-    startDate.setDate(startDate.getDate() - days)
-    const start = startDate.toISOString().slice(0, 10)
+    const dates = getLocalDateRange(days)
+    const start = dates[0]
+    const end = dates[dates.length - 1]
 
     const records = await prisma.mealRecord.findMany({
       where: {
         userId: user.userId,
-        recordDate: { gte: start },
+        recordDate: { gte: start, lte: end },
       },
       select: { recordDate: true, calories: true, proteinG: true, fatG: true, carbsG: true },
       orderBy: { recordDate: "asc" },
@@ -38,19 +39,42 @@ export async function GET(request: NextRequest) {
       dailyMap.set(record.recordDate, existing)
     }
 
-    const dailyData = Array.from(dailyMap.entries()).map(([date, data]) => ({
-      date,
-      ...data,
-      target: user.dailyCalorieTarget,
-      diff: data.calories - user.dailyCalorieTarget,
-    }))
+    const dailyData = dates.map((date) => {
+      const data = dailyMap.get(date)
+      if (!data) {
+        return {
+          date,
+          calories: null,
+          protein: null,
+          fat: null,
+          carbs: null,
+          count: 0,
+          recorded: false,
+          target: user.dailyCalorieTarget,
+          diff: null,
+        }
+      }
 
-    const daysRecorded = dailyData.length
-    const avgCalories = daysRecorded > 0 ? Math.round(dailyData.reduce((sum, day) => sum + day.calories, 0) / daysRecorded) : 0
-    const avgProtein = daysRecorded > 0 ? Math.round((dailyData.reduce((sum, day) => sum + day.protein, 0) / daysRecorded) * 10) / 10 : 0
-    const avgFat = daysRecorded > 0 ? Math.round((dailyData.reduce((sum, day) => sum + day.fat, 0) / daysRecorded) * 10) / 10 : 0
-    const avgCarbs = daysRecorded > 0 ? Math.round((dailyData.reduce((sum, day) => sum + day.carbs, 0) / daysRecorded) * 10) / 10 : 0
-    const onTargetDays = dailyData.filter((day) => day.calories <= user.dailyCalorieTarget).length
+      return {
+        date,
+        calories: data.calories,
+        protein: data.protein,
+        fat: data.fat,
+        carbs: data.carbs,
+        count: data.count,
+        recorded: true,
+        target: user.dailyCalorieTarget,
+        diff: data.calories - user.dailyCalorieTarget,
+      }
+    })
+
+    const recordedDays = Array.from(dailyMap.values())
+    const daysRecorded = recordedDays.length
+    const avgCalories = daysRecorded > 0 ? Math.round(recordedDays.reduce((sum, day) => sum + day.calories, 0) / daysRecorded) : 0
+    const avgProtein = daysRecorded > 0 ? Math.round((recordedDays.reduce((sum, day) => sum + day.protein, 0) / daysRecorded) * 10) / 10 : 0
+    const avgFat = daysRecorded > 0 ? Math.round((recordedDays.reduce((sum, day) => sum + day.fat, 0) / daysRecorded) * 10) / 10 : 0
+    const avgCarbs = daysRecorded > 0 ? Math.round((recordedDays.reduce((sum, day) => sum + day.carbs, 0) / daysRecorded) * 10) / 10 : 0
+    const onTargetDays = recordedDays.filter((day) => day.calories <= user.dailyCalorieTarget).length
     const complianceRate = daysRecorded > 0 ? Math.round((onTargetDays / daysRecorded) * 100) : 0
 
     return apiSuccess({
