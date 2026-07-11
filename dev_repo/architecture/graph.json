@@ -63,7 +63,7 @@
       "allowed_change_types": ["component behavior", "visual tokens", "forms"],
       "requires_amendment_when": ["改变持久化所有权", "直接调用外部 AI"],
       "verification": ["component tests", "browser E2E", "axe"],
-      "known_debt": ["C-02-S4~S6 待实现"],
+      "known_debt": ["C-02-S5~S6 待实现"],
       "confidence": "confirmed",
       "implementation_status": "partial"
     },
@@ -84,24 +84,24 @@
       "allowed_change_types": ["DTO validation", "same-origin API behavior"],
       "requires_amendment_when": ["新增公网身份", "改变所有权或 API 版本"],
       "verification": ["route integration tests", "invalid input matrix"],
-      "known_debt": ["C-02-S4~S5 运动闭环和日期窗口待实现"],
+      "known_debt": ["C-02-S5 日期窗口待实现"],
       "confidence": "confirmed",
       "implementation_status": "partial"
     },
     {
       "id": "backend.ai",
-      "purpose": "服务端 StepFun 代理与 AI 输出校验",
+      "purpose": "服务端 StepFun 图片识别代理与 AI 输出校验",
       "owned_files": ["src/app/api/ai/**", "src/lib/ai*.ts"],
-      "public_interfaces": ["/api/ai/recognize", "/api/ai/exercise (approved target)"],
+      "public_interfaces": ["/api/ai/recognize"],
       "depends_on": ["external.stepfun"],
       "depended_on_by": ["frontend.components"],
       "invariants": ["服务端密钥", "体积和超时限制", "失败不伪装成功"],
       "allowed_change_types": ["prompt", "provider adapter", "response schema"],
       "requires_amendment_when": ["浏览器直连供应商", "更换数据外发目的地"],
       "verification": ["mock provider contract tests", "missing-key test"],
-      "known_debt": ["文本建议接口由 C-02-S4 实现"],
+      "known_debt": [],
       "confidence": "confirmed",
-      "implementation_status": "partial"
+      "implementation_status": "confirmed"
     },
     {
       "id": "database.prisma",
@@ -150,7 +150,7 @@
     },
     {
       "id": "external.stepfun",
-      "purpose": "外部食物图片识别与可选文本建议",
+      "purpose": "外部食物图片识别",
       "owned_files": [],
       "public_interfaces": ["OpenAI-compatible chat completions"],
       "depends_on": [],

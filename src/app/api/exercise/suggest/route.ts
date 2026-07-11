@@ -3,9 +3,62 @@ import { apiError, apiSuccess } from "@/lib/api-response"
 import { getCurrentUser } from "@/lib/current-user"
 import { prisma } from "@/lib/prisma"
 import { getTodayStr } from "@/lib/utils"
-import { parseDate, ValidationError } from "@/lib/validation"
+import {
+  parseDate,
+  parseExerciseAdoptionInput,
+  parseExerciseSuggestionStatusInput,
+  ValidationError,
+} from "@/lib/validation"
 
 export const dynamic = "force-dynamic"
+
+const MIN_SUGGESTED_MINUTES = 15
+const MAX_SUGGESTED_MINUTES = 90
+
+class NotFoundError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = "NotFoundError"
+  }
+}
+
+function requestFailure(error: unknown, fallback: string) {
+  if (error instanceof ValidationError) return apiError(error.message, 422)
+  if (error instanceof SyntaxError) return apiError("请求 JSON 格式无效", 400)
+  if (error instanceof NotFoundError) return apiError(error.message, 404)
+  return apiError(fallback, 500)
+}
+
+function roundToOneDecimal(value: number) {
+  return Math.round(value * 10) / 10
+}
+
+function caloriesForDuration(caloriesPer30min: number, durationMinutes: number) {
+  return roundToOneDecimal((caloriesPer30min * durationMinutes) / 30)
+}
+
+function caloriesPer30Minutes(referenceCalories: number, weightKg: number) {
+  return Math.round(referenceCalories * (weightKg / 60))
+}
+
+function intensityForCategory(category: string | null) {
+  if (category === "flexibility") return "low"
+  if (category === "aerobic" || category === "strength") return "moderate"
+  return "low"
+}
+
+function suggestedDuration(caloriesPer30min: number, surplus: number) {
+  const minutes = surplus > 0 ? Math.ceil((surplus / caloriesPer30min) * 30) : 30
+  return Math.max(MIN_SUGGESTED_MINUTES, Math.min(minutes, MAX_SUGGESTED_MINUTES))
+}
+
+async function dailyCalorieTotal(userId: number, date: string) {
+  const totals = await prisma.mealRecord.aggregate({
+    where: { userId, recordDate: date },
+    _sum: { calories: true },
+  })
+  return totals._sum.calories ?? 0
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,38 +67,36 @@ export async function GET(request: NextRequest) {
     const user = await getCurrentUser()
     if (!user) return apiError("请先创建个人档案", 404)
 
-    const meals = await prisma.mealRecord.findMany({
-      where: { userId: user.userId, recordDate: date },
-      select: { calories: true },
-    })
-    const totalCalories = meals.reduce((sum, meal) => sum + meal.calories, 0)
-    const existingSuggestions = await prisma.exerciseSuggestion.findMany({
-      where: { userId: user.userId, suggestionDate: date },
-    })
+    const [totalCalories, references, adopted] = await Promise.all([
+      dailyCalorieTotal(user.userId, date),
+      prisma.exerciseCalorieReference.findMany({
+        where: { category: "aerobic" },
+        orderBy: { CaloriesPer30min: "asc" },
+      }),
+      prisma.exerciseSuggestion.findMany({
+        where: { userId: user.userId, suggestionDate: date, isAdopted: 1 },
+        orderBy: { createdAt: "asc" },
+      }),
+    ])
     const surplus = totalCalories - user.dailyCalorieTarget
-    const reference = await prisma.exerciseCalorieReference.findMany({
-      where: { category: "aerobic" },
-      orderBy: { CaloriesPer30min: "asc" },
-    })
 
-    const suggestions = reference.map((exercise) => {
-      const weightFactor = user.weightKg / 60
-      const caloriesPer30min = Math.round(exercise.CaloriesPer30min * weightFactor)
-      const suggestedMinutes = surplus > 0 ? Math.ceil((surplus / caloriesPer30min) * 30) : 30
-      return {
-        exerciseId: exercise.exerciseId,
-        exerciseName: exercise.exerciseName,
-        caloriesPer30min,
-        category: exercise.category,
-        suggestedMinutes: Math.max(15, Math.min(suggestedMinutes, 90)),
-        description: exercise.description,
-      }
-    })
-
-    const topSuggestions = suggestions
-      .filter((suggestion) => surplus > 0 ? suggestion.caloriesPer30min > 0 : true)
+    const candidates = references
+      .map((reference) => {
+        const caloriesPer30min = caloriesPer30Minutes(reference.CaloriesPer30min, user.weightKg)
+        const durationMinutes = suggestedDuration(caloriesPer30min, surplus)
+        return {
+          exerciseId: reference.exerciseId,
+          exerciseName: reference.exerciseName,
+          category: reference.category,
+          description: reference.description,
+          caloriesPer30min,
+          suggestedMinutes: durationMinutes,
+          calorieBurnEstimate: caloriesForDuration(caloriesPer30min, durationMinutes),
+        }
+      })
+      .filter((candidate) => surplus > 0 ? candidate.caloriesPer30min > 0 : true)
       .sort((left, right) => surplus > 0
-        ? Math.abs(left.caloriesPer30min - surplus / 0.5) - Math.abs(right.caloriesPer30min - surplus / 0.5)
+        ? Math.abs(left.calorieBurnEstimate - surplus) - Math.abs(right.calorieBurnEstimate - surplus)
         : left.caloriesPer30min - right.caloriesPer30min
       )
       .slice(0, 5)
@@ -54,12 +105,92 @@ export async function GET(request: NextRequest) {
       date,
       totalCalories,
       dailyTarget: user.dailyCalorieTarget,
-      surplus: Math.round(surplus),
-      suggestions: topSuggestions,
-      existing: existingSuggestions,
+      surplus: roundToOneDecimal(surplus),
+      candidates,
+      adopted,
     })
   } catch (error) {
-    if (error instanceof ValidationError) return apiError(error.message, 422)
-    return apiError("读取运动建议失败", 500)
+    return requestFailure(error, "读取运动建议失败")
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const user = await getCurrentUser()
+    if (!user) return apiError("请先创建个人档案", 404)
+
+    const input = parseExerciseAdoptionInput(await request.json())
+    const adopted = await prisma.$transaction(async (tx) => {
+      const reference = await tx.exerciseCalorieReference.findUnique({
+        where: { exerciseId: input.exerciseId },
+      })
+      if (!reference) throw new NotFoundError("运动参考不存在")
+
+      const mealTotals = await tx.mealRecord.aggregate({
+        where: { userId: user.userId, recordDate: input.date },
+        _sum: { calories: true },
+      })
+      const calorieSurplus = (mealTotals._sum.calories ?? 0) - user.dailyCalorieTarget
+      const caloriesPer30min = caloriesPer30Minutes(reference.CaloriesPer30min, user.weightKg)
+      const data = {
+        calorieSurplus: roundToOneDecimal(calorieSurplus),
+        exerciseType: reference.exerciseName,
+        durationMinutes: input.durationMinutes,
+        calorieBurnEstimate: caloriesForDuration(caloriesPer30min, input.durationMinutes),
+        intensity: intensityForCategory(reference.category),
+        suggestionDetail: reference.description,
+        isAdopted: 1,
+      }
+
+      const existing = await tx.exerciseSuggestion.findFirst({
+        where: {
+          userId: user.userId,
+          suggestionDate: input.date,
+          exerciseType: reference.exerciseName,
+        },
+        orderBy: { suggestionId: "asc" },
+      })
+
+      if (existing) {
+        return tx.exerciseSuggestion.update({
+          where: { suggestionId: existing.suggestionId },
+          data,
+        })
+      }
+
+      return tx.exerciseSuggestion.create({
+        data: {
+          userId: user.userId,
+          suggestionDate: input.date,
+          ...data,
+        },
+      })
+    })
+
+    return apiSuccess(adopted)
+  } catch (error) {
+    return requestFailure(error, "采用运动计划失败")
+  }
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const user = await getCurrentUser()
+    if (!user) return apiError("请先创建个人档案", 404)
+
+    const input = parseExerciseSuggestionStatusInput(await request.json())
+    const owned = await prisma.exerciseSuggestion.findFirst({
+      where: { suggestionId: input.suggestionId, userId: user.userId },
+      select: { suggestionId: true },
+    })
+    if (!owned) return apiError("运动计划不存在", 404)
+
+    const suggestion = await prisma.exerciseSuggestion.update({
+      where: { suggestionId: owned.suggestionId },
+      data: { isAdopted: input.isAdopted ? 1 : 0 },
+    })
+    return apiSuccess(suggestion)
+  } catch (error) {
+    return requestFailure(error, "更新运动计划失败")
   }
 }

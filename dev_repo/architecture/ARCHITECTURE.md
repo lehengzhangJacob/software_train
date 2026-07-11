@@ -21,7 +21,7 @@ flowchart LR
 | Next API | 校验输入、绑定 primary profile、编排 DB 与 AI | src/app/api/**, src/lib/** | partial；C-02-S2~S5 收口 |
 | Prisma | 类型化持久化和正式 migration | prisma/schema.prisma, prisma/migrations/** | approved_target；C-02-S1 落地 |
 | SQLite | 单实例课程数据 | DATABASE_URL 指向的文件 | confirmed |
-| StepFun | 图片识别与可选文本建议 | 服务端代理 | image confirmed；text approved_target |
+| StepFun | 图片识别 | 服务端代理 | confirmed |
 | Delivery | lint、test、build、smoke 与可选容器 | package scripts、CI、Docker | approved_target；C-02-S7 落地 |
 | dev_repo | 合同、架构、ER 与证据真相 | dev_repo/** | active |
 
@@ -63,7 +63,7 @@ Prisma migration 是生产 schema 唯一真相；database/schema.sql 降级为�
 | 正式 migration、BMR/updatedAt 来源与 seed 幂等 | C-02-S1 |
 | primary profile、DTO 校验、动态渲染 | C-02-S2 已完成 |
 | 多食物审核后保存 | C-02-S3 已完成 |
-| 运动建议与 AI 文本链路诚实闭环 | C-02-S4 |
+| 运动建议采用/取消闭环；移除伪 AI 文本卡 | C-02-S4 已完成 |
 | 日期窗口、请求竞态与错误态 | C-02-S5 |
 | 响应式、a11y 与视觉系统 | C-02-S6 |
 | build/E2E/CI/发布证据 | C-02-S7 |

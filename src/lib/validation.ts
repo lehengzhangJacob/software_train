@@ -52,6 +52,17 @@ export interface MealBatchCreateInput {
   items: MealCreateInput[]
 }
 
+export interface ExerciseAdoptionInput {
+  exerciseId: number
+  durationMinutes: number
+  date: string
+}
+
+export interface ExerciseSuggestionStatusInput {
+  suggestionId: number
+  isAdopted: boolean
+}
+
 function asObject(value: unknown): JsonObject {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     throw new ValidationError("请求内容必须是对象")
@@ -268,6 +279,31 @@ export function parseMealUpdateInput(value: unknown) {
 
   if (Object.keys(data).length === 0) throw new ValidationError("没有可更新的饮食字段")
   return data
+}
+
+/**
+ * Exercise calories and ownership are always derived on the server. This DTO
+ * deliberately reads only the reference id, requested duration, and date.
+ */
+export function parseExerciseAdoptionInput(value: unknown): ExerciseAdoptionInput {
+  const body = asObject(value)
+  return {
+    exerciseId: parsePositiveInteger(body.exerciseId, "运动参考 ID"),
+    durationMinutes: integerInRange(body.durationMinutes, "时长（分钟）", 1, 720),
+    date: parseDate(body.date, "计划日期"),
+  }
+}
+
+export function parseExerciseSuggestionStatusInput(value: unknown): ExerciseSuggestionStatusInput {
+  const body = asObject(value)
+  if (typeof body.isAdopted !== "boolean") {
+    throw new ValidationError("采用状态必须是布尔值")
+  }
+
+  return {
+    suggestionId: parsePositiveInteger(body.suggestionId, "运动计划 ID"),
+    isAdopted: body.isAdopted,
+  }
 }
 
 export function parseReportPeriod(value: unknown) {

@@ -44,5 +44,12 @@
     { "type": "implementation", "path": "src/app/api/meals/route.ts", "description": "items[] 全量预校验后的 Prisma 事务保存" },
     { "type": "implementation", "path": "src/lib/validation.ts", "description": "批量餐食白名单 DTO 与 1-10 项边界" },
     { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "临时 SQLite 批量、回滚、所有权和图片隔离同案结果" }
+  ],
+  "C-02-S4": [
+    { "type": "implementation", "path": "src/app/api/exercise/suggest/route.ts", "description": "候选总消耗、采用幂等、取消采用和 primary profile 所有权" },
+    { "type": "implementation", "path": "src/components/exercise/exercise-content.tsx", "description": "真实候选与已采用计划、行级保存和失败状态；无伪 AI 文本卡" },
+    { "type": "implementation", "path": "src/lib/validation.ts", "description": "采用/取消计划 DTO，仅接受引用 ID、时长、日期和布尔状态" },
+    { "type": "architecture", "path": "dev_repo/architecture/graph.json", "description": "移除未实现的 AI 文本接口目标，确认图片识别代理边界" },
+    { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "临时 SQLite 采用、重复采用、取消、越权和输入矩阵结果" }
   ]
 }
