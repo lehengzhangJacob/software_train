@@ -20,7 +20,7 @@
       "summary": "课程项目接手验收与上线质感收口",
       "goal": "在私有单用户课程项目边界内修复核心断链并建立可复现发布证据",
       "current_slice": null,
-      "completed_slices": ["C-02-S0", "C-02-A1", "C-02-S1", "C-02-S2", "C-02-S3", "C-02-S4", "C-02-S5"],
+      "completed_slices": ["C-02-S0", "C-02-A1", "C-02-S1", "C-02-S2", "C-02-S3", "C-02-S4", "C-02-S5", "C-02-S6"],
       "return_to": "web_completion_audit"
     }
   }

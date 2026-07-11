@@ -169,7 +169,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             <div className="space-y-2">
               <Label htmlFor="gender">性别</Label>
               <Select value={form.gender} onValueChange={(v) => update("gender", v)}>
-                <SelectTrigger type="button"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="gender" type="button"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="male">男性</SelectItem>
                   <SelectItem value="female">女性</SelectItem>
@@ -192,7 +192,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
             <div className="space-y-2">
               <Label htmlFor="activity">活动水平</Label>
               <Select value={form.activityLevel} onValueChange={(v) => update("activityLevel", v)}>
-                <SelectTrigger type="button"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="activity" type="button"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {ACTIVITY_LEVELS.map((l) => (
                     <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>

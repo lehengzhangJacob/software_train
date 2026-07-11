@@ -58,5 +58,12 @@
     { "type": "implementation", "path": "src/app/dashboard/page.tsx", "description": "近 7 日趋势严格限定窗口并保留断档" },
     { "type": "frontend", "path": "src/components/{calendar,reports,exercise}/", "description": "请求取消、竞态归属、防旧响应回写和可重试错误态" },
     { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "隔离 SQLite 加实际 Next HTTP 的 7/30 天边界、空档和连续日期验证" }
+  ],
+  "C-02-S6": [
+    { "type": "implementation", "path": "src/app/layout.tsx", "description": "移动端安全区域与固定导航预留、跳过导航目标" },
+    { "type": "implementation", "path": "src/components/sidebar.tsx", "description": "具名导航、当前页语义、高对比焦点与等宽移动端触控目标" },
+    { "type": "implementation", "path": "src/components/{profile-form.tsx,food/meals-content.tsx}", "description": "设置和餐食选择器的 Label/Trigger 关联" },
+    { "type": "implementation", "path": "src/components/{charts/macro-donut.tsx,ui/*}", "description": "窄屏图表纵排、高对比焦点环和可操作图标对比度" },
+    { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "375px/desktop 浏览器布局、DOM 语义、lint/typecheck/build 与样式哨兵" }
   ]
 }

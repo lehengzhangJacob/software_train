@@ -33,7 +33,7 @@
       "allowed_change_types": ["layout", "styling", "accessibility"],
       "requires_amendment_when": ["改变客户端/服务端边界", "引入新的前端运行时"],
       "verification": ["responsive browser matrix", "axe"],
-      "known_debt": ["C-02-S6 待收口"],
+      "known_debt": [],
       "confidence": "confirmed",
       "implementation_status": "partial"
     },
@@ -63,7 +63,7 @@
       "allowed_change_types": ["component behavior", "visual tokens", "forms"],
       "requires_amendment_when": ["改变持久化所有权", "直接调用外部 AI"],
       "verification": ["component tests", "browser E2E", "axe"],
-      "known_debt": ["C-02-S6 响应式与无障碍收口待实现"],
+      "known_debt": [],
       "confidence": "confirmed",
       "implementation_status": "partial"
     },

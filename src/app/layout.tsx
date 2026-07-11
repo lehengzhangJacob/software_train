@@ -16,9 +16,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-CN">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <a
+          href="#main-content"
+          className="sr-only fixed top-3 left-3 z-50 rounded-md bg-emerald-700 px-3 py-2 text-sm font-medium text-white focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-emerald-950 focus:ring-offset-2"
+        >
+          跳至主要内容
+        </a>
         <div className="flex min-h-screen bg-neutral-50">
           <Sidebar />
-          <main className="flex-1 ml-0 lg:ml-64 p-4 lg:p-8 pt-16 lg:pt-8">
+          <main id="main-content" tabIndex={-1} className="ml-0 flex-1 p-4 pt-16 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:ml-64 lg:p-8 lg:pt-8 lg:pb-8">
             {children}
           </main>
         </div>

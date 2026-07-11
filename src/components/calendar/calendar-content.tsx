@@ -382,7 +382,7 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-neutral-400"
+                        className="h-8 w-8 text-neutral-600"
                         aria-label={"编辑 " + item.foodName}
                         disabled={isMutating}
                         onClick={() => openEdit(item)}
@@ -393,7 +393,7 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-neutral-400 hover:text-red-500"
+                        className="h-8 w-8 text-neutral-600 hover:text-red-600"
                         aria-label={"删除 " + item.foodName}
                         disabled={isMutating}
                         onClick={() => setDialogState({ kind: "delete", meal: item })}

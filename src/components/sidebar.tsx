@@ -32,15 +32,16 @@ export function Sidebar() {
           <Salad className="h-6 w-6 text-emerald-600" />
           <span className="text-lg font-semibold text-neutral-800">Food Tracker</span>
         </div>
-        <nav className="flex-1 space-y-1 p-4">
+        <nav aria-label="主导航" className="flex-1 space-y-1 p-4">
           {navItems.map((item) => {
             const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2",
                   isActive
                     ? "bg-emerald-50 text-emerald-700"
                     : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
@@ -57,16 +58,17 @@ export function Sidebar() {
         </div>
       </aside>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-30 flex h-16 items-center justify-around border-t bg-white shadow-sm lg:hidden">
+      <nav aria-label="移动端主导航" className="fixed bottom-0 left-0 right-0 z-30 flex h-[calc(4rem+env(safe-area-inset-bottom))] items-center border-t bg-white pb-[env(safe-area-inset-bottom)] shadow-sm lg:hidden">
         {navItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
           return (
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex flex-col items-center gap-0.5 px-2 py-1 text-xs",
-                isActive ? "text-emerald-600" : "text-neutral-500"
+                "flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-md px-1 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset",
+                isActive ? "text-emerald-700" : "text-neutral-500"
               )}
             >
               <item.icon className="h-5 w-5" />

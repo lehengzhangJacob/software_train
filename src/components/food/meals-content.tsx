@@ -291,7 +291,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                         type="button"
                         variant="ghost"
                         size="icon-sm"
-                        className="text-neutral-400 hover:text-red-500"
+                        className="text-neutral-600 hover:text-red-600"
                         aria-label={`移除 ${draft.foodName || `识别项 ${index + 1}`}`}
                         disabled={savingDrafts}
                         onClick={() => setDrafts((current) => current.filter((item) => item.id !== draft.id))}
@@ -311,13 +311,13 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label>餐别</Label>
+                      <Label htmlFor={`draft-meal-type-${draft.id}`}>餐别</Label>
                       <Select
                         value={draft.mealType}
                         disabled={savingDrafts}
                         onValueChange={(value) => value && updateDraft(draft.id, "mealType", value)}
                       >
-                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectTrigger id={`draft-meal-type-${draft.id}`}><SelectValue /></SelectTrigger>
                         <SelectContent>
                           {Object.entries(MEAL_LABELS).map(([value, label]) => (
                             <SelectItem key={value} value={value}>{label}</SelectItem>
@@ -426,9 +426,9 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                 <Input id="manual-food-name" value={form.foodName} onChange={(event) => setForm((current) => ({ ...current, foodName: event.target.value }))} placeholder="如：鸡蛋、米饭" />
               </div>
               <div className="space-y-2">
-                <Label>餐别</Label>
+                <Label htmlFor="manual-meal-type">餐别</Label>
                 <Select value={form.mealType} onValueChange={(value) => value && setForm((current) => ({ ...current, mealType: value }))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="manual-meal-type"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {Object.entries(MEAL_LABELS).map(([value, label]) => (
                       <SelectItem key={value} value={value}>{label}</SelectItem>
@@ -498,7 +498,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                             type="button"
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-neutral-400 hover:text-red-500"
+                            className="h-8 w-8 text-neutral-600 hover:text-red-600"
                             aria-label={`删除 ${item.foodName}`}
                             onClick={() => void handleDelete(item.recordId)}
                           >

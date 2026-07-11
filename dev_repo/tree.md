@@ -2,7 +2,7 @@
 
 - 当前合同：`C-02 — 课程项目接手验收与上线质感收口 [active]`
 - 当前切片：无
-- 下一步：进入 `C-02-S6 — 响应式与无障碍收口`，最终返回 `web_completion_audit`
+- 下一步：进入 `C-02-S7 — 发布证据`，最终返回 `web_completion_audit`
 
 ```text
 C-01 — 全栈功能初版 [completed, evidence incomplete]
@@ -14,6 +14,6 @@ C-01 — 全栈功能初版 [completed, evidence incomplete]
     ├── S3 AI 餐食审核 [completed]
     ├── S4 运动建议闭环 [completed]
     ├── S5 日期与异步正确性 [completed]
-    ├── S6 响应式与无障碍收口 [pending]
+    ├── S6 响应式与无障碍收口 [completed]
     └── S7 发布证据 [pending]
 ```

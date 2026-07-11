@@ -28,7 +28,7 @@ export function MacroDonut({ protein, fat, carbs }: MacroDonutProps) {
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex flex-col items-center gap-4 sm:flex-row">
       <div className="h-48 w-48 shrink-0">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -47,7 +47,7 @@ export function MacroDonut({ protein, fat, carbs }: MacroDonutProps) {
           </PieChart>
         </ResponsiveContainer>
       </div>
-      <div className="space-y-2">
+      <div className="w-full space-y-2 sm:w-auto">
         {data.map((d) => (
           <div key={d.name} className="flex items-center gap-2 text-sm">
             <div className="h-3 w-3 rounded-full" style={{ backgroundColor: d.color }} />
