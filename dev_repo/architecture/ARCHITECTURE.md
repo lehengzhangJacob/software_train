@@ -22,7 +22,7 @@ flowchart LR
 | Prisma | 类型化持久化和正式 migration | prisma/schema.prisma, prisma/migrations/** | approved_target；C-02-S1 落地 |
 | SQLite | 单实例课程数据 | DATABASE_URL 指向的文件 | confirmed |
 | StepFun | 图片识别 | 服务端代理 | confirmed |
-| Delivery | lint、test、build、smoke 与可选容器 | package scripts、CI、Docker | approved_target；C-02-S7 落地 |
+| Delivery | lint、typecheck、build、production smoke 与 CI | package scripts、release smoke、CI | confirmed；C-02-S7 已完成 |
 | dev_repo | 合同、架构、ER 与证据真相 | dev_repo/** | active |
 
 ## 关键运行流
@@ -66,4 +66,4 @@ Prisma migration 是生产 schema 唯一真相；database/schema.sql 降级为�
 | 运动建议采用/取消闭环；移除伪 AI 文本卡 | C-02-S4 已完成 |
 | 本地日期窗口、连续报告与请求竞态 | C-02-S5 已完成 |
 | 响应式、a11y 与视觉系统 | C-02-S6 已完成 |
-| build/E2E/CI/发布证据 | C-02-S7 |
+| build/production smoke/CI/发布证据 | C-02-S7 已完成 |

@@ -65,5 +65,12 @@
     { "type": "implementation", "path": "src/components/{profile-form.tsx,food/meals-content.tsx}", "description": "设置和餐食选择器的 Label/Trigger 关联" },
     { "type": "implementation", "path": "src/components/{charts/macro-donut.tsx,ui/*}", "description": "窄屏图表纵排、高对比焦点环和可操作图标对比度" },
     { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "375px/desktop 浏览器布局、DOM 语义、lint/typecheck/build 与样式哨兵" }
+  ],
+  "C-02-S7": [
+    { "type": "delivery", "path": "package.json", "description": "typecheck、verify、smoke 与 release:check 的可组合发布命令" },
+    { "type": "delivery", "path": "scripts/release-smoke.mjs", "description": "生产 next start loopback smoke；验证页面、报表 API 信封和无效参数，不调用 AI" },
+    { "type": "delivery", "path": ".github/workflows/ci.yml", "description": "空 STEP_API_KEY 的干净环境迁移、seed、verify 与 smoke CI" },
+    { "type": "documentation", "path": "README.md", "description": "PowerShell 与 macOS/Linux 的本地启动、发布检查和私有课程边界" },
+    { "type": "verification", "path": "dev_repo/journal.jsonl", "description": "全新 SQLite 的 db:init 到 release:check 实测证据" }
   ]
 }

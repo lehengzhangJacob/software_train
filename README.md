@@ -14,10 +14,40 @@
 ## Quick Start
 
 ```bash
-npm install
+# PowerShell
+Copy-Item .env.example .env
+npm ci
 npm run db:init
 npm run dev
 ```
+
+On macOS or Linux, replace the first command with `cp .env.example .env`.
+
+## Release Check
+
+The project is intended for a private, single-user course demonstration. It does not deploy a public service, create accounts, or call the AI provider during verification.
+
+```bash
+# PowerShell
+Copy-Item .env.example .env
+npm ci
+npm run db:init
+npm run release:check
+npm run start
+```
+
+On macOS or Linux, replace the first command with `cp .env.example .env`.
+
+`STEP_API_KEY` is optional for manual meal entry and all release checks. Keep it only in the local `.env` file. The quality commands are:
+
+| Command | Purpose |
+| --- | --- |
+| `npm run db:init` | Creates the SQLite file, applies migrations, and seeds only exercise reference data. |
+| `npm run verify` | Runs ESLint, TypeScript, and the production build. |
+| `npm run smoke` | Starts the production server on loopback, verifies HTML and API error envelopes, then stops it. |
+| `npm run release:check` | Runs migration status, verification, and the production smoke in sequence. |
+
+After the first start, create the one local profile from `/profile`. The database is intentionally local and ignored by Git; copy it before experimenting with an existing course demo.
 
 首次运行前把 .env.example 复制为 .env。STEP_API_KEY 只写入本地 .env；留空时手动录入仍可使用，AI 识别会明确提示未配置。
 

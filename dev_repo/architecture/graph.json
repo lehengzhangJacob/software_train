@@ -166,17 +166,17 @@
     {
       "id": "delivery",
       "purpose": "可复现安装、质量门、构建与课程演示",
-      "owned_files": ["package.json", "package-lock.json", "README.md", ".github/**", "playwright.config.*", "tests/**"],
+      "owned_files": ["package.json", "package-lock.json", "README.md", "scripts/release-smoke.mjs", ".github/**", "playwright.config.*", "tests/**"],
       "public_interfaces": ["npm scripts", "CI workflow"],
       "depends_on": ["frontend", "backend.api", "database.prisma"],
       "depended_on_by": ["course_user"],
       "invariants": ["CI 不调用真实 AI", "默认只监听 loopback", "绿测后才称 RC"],
       "allowed_change_types": ["scripts", "test harness", "CI"],
       "requires_amendment_when": ["公网部署", "容器成为必选运行时"],
-      "verification": ["clean install", "lint", "typecheck", "build", "E2E"],
-      "known_debt": ["C-02-S7 待实现"],
-      "confidence": "approved_target",
-      "implementation_status": "pending"
+      "verification": ["clean install", "prisma migrate deploy", "seed", "lint", "typecheck", "build", "production loopback smoke", "manual browser E2E"],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
     },
     {
       "id": "dev_repo",
