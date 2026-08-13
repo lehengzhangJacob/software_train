@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS meal_records (
     carbs_g          REAL    NOT NULL DEFAULT 0 CHECK(carbs_g >= 0),     -- 碳水化合物（克）
     portion_desc     TEXT,                                            -- 份量描述（如"1碗约200g"）
     photo_path       TEXT,                                            -- 食物照片存储路径
-    recognition_raw  TEXT,                                            -- Qwen-VL API原始识别结果（JSON）
+    recognition_raw  TEXT,                                            -- GLM API原始识别结果（JSON）
     record_date      DATE    NOT NULL,                                -- 记录日期（YYYY-MM-DD）
     record_time      TIME    NOT NULL,                                -- 记录时间（HH:MM:SS）
     notes            TEXT,                                            -- 备注

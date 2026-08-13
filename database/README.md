@@ -50,7 +50,7 @@ erDiagram
         REAL carbs_g "碳水化合物（克）"
         TEXT portion_desc "份量描述"
         TEXT photo_path "食物照片路径"
-        TEXT recognition_raw "Qwen-VL原始识别结果JSON"
+        TEXT recognition_raw "GLM原始识别结果JSON"
         DATE record_date "记录日期"
         TIME record_time "记录时间"
         TEXT notes "备注"
@@ -147,7 +147,7 @@ erDiagram
 | `carbs_g` | REAL | NOT NULL, DEFAULT 0 | 碳水化合物含量（克） |
 | `portion_desc` | TEXT | — | 份量描述（如"1碗约200g"） |
 | `photo_path` | TEXT | — | 食物照片文件路径 |
-| `recognition_raw` | TEXT | — | Qwen-VL API 原始返回的 JSON |
+| `recognition_raw` | TEXT | — | GLM API 原始返回的 JSON |
 | `record_date` | DATE | NOT NULL | 记录日期（YYYY-MM-DD） |
 | `record_time` | TIME | NOT NULL | 记录时间（HH:MM:SS） |
 | `notes` | TEXT | — | 用户备注 |
@@ -166,7 +166,7 @@ erDiagram
 
 ```json
 {
-    "model": "qwen-vl-plus",
+    "model": "glm-4v-plus",
     "foods": [
         {"name": "鸡蛋", "confidence": 0.95, "portion": "2个", "calories": 144, "protein": 12.6, "fat": 9.6, "carbs": 1.2},
         {"name": "米饭", "confidence": 0.88, "portion": "1碗", "calories": 260, "protein": 5.2, "fat": 0.6, "carbs": 57.0}
@@ -368,13 +368,13 @@ LIMIT 1;
 ```mermaid
 sequenceDiagram
     participant F as 前端
-    participant B as Java后端
+    participant B as FastAPI后端
     participant D as SQLite数据库
-    participant A as 通义千问API
+    participant A as 智谱GLM API
 
     Note over F,A: 场景1：拍照识别食物
     F->>B: 上传食物照片
-    B->>A: 调用Qwen-VL API
+    B->>A: 调用GLM API
     A-->>B: 返回识别结果(JSON)
     B->>D: INSERT meal_records<br/>(含recognition_raw)
     B-->>F: 返回营养成分数据

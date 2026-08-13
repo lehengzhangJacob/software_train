@@ -8,3 +8,15 @@
 .idea/
 *.iml
 .vscode/
+
+# Secrets & runtime
+.env
+backend/.env
+data/*.db
+data/uploads/
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+frontend/dist/
+.DS_Store
