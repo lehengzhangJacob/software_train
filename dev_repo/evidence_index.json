@@ -332,5 +332,22 @@
       "path": "dev_repo/journal.jsonl",
       "description": "旧库逐行、主键、序列、关系、BMR、完整性、migration status 与零 schema diff 同案；全新空库迁移同样通过"
     }
+  ],
+  "C-03-M1": [
+    {
+      "type": "runtime-data",
+      "path": "database/food_tracker.db",
+      "description": "由已验证迁移副本切换的本地运行库；文件被 Git 忽略"
+    },
+    {
+      "type": "backup",
+      "path": "data/backups/",
+      "description": "原始旧库、旧运行库和各轮只读/失败副本；目录被 Git 忽略"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "原始 SHA-256、逐行/主键/序列一致性、零 schema diff、运行库 status 与 production smoke 结果"
+    }
   ]
 }

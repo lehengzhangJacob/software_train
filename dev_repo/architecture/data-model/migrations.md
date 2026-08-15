@@ -26,6 +26,15 @@
 6. 只有在主键、关系、行数、BMR、integrity、foreign key、schema diff 与 migration status 全部通过后，工作副本才能替换 `.env` 已指向的 `database/food_tracker.db`。
 7. 原始旧库及其备份不参与运行时切换，也不进入 Git。
 
+## C-03-M1 实测结果
+
+- 原始旧库 SHA-256：`F0FF607BBC9FAB5F2AD7539EEBA2ADE323D9D9451F88FC6280524702C7B59C85`，迁移和切换后保持不变。
+- 原样备份、迁移工作副本和旧运行库备份均保存在忽略目录 `data/backups/`。
+- 旧库与迁移副本四表逐行相等，行数为 `2 / 14 / 2 / 32`，四张表主键集合与 `sqlite_sequence` 完全一致。
+- 两个 profile 的 BMR 分别为 `1658.8` 与 `1276.5`，均与公式一致。
+- 迁移副本和切换后的 `database/food_tracker.db` 均通过 integrity、foreign key、4 migration、零 schema diff 与 production smoke。
+- 旧运行库已备份后由验证副本替换；`.env` 的 `file:../database/food_tracker.db` 无需改写。
+
 ## 兼容验证结果
 
 - 全新库：0 用户、0 餐食、0 建议、25 条 reference、2 个 migration，重复 seed 幂等。
