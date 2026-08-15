@@ -61,6 +61,16 @@
 6. 全新空库必须可从零应用全部 migration；旧运行库副本迁移后新增三表行数均为 0，不自动从餐食或档案回填记忆。
 7. Prisma schema、migration SQL、ER 文档与 relationships.json 的级联/置空语义必须一致。
 
+## C-03-M4A 实测结果
+
+- 迁移前运行库备份：`data/backups/food_tracker.pre-agent-memory.20260815-2055.db`，与迁移前源文件 SHA-256 同为 `622D0BD19A90DFBE14734E135C6BA809661D8889066E88D5E4DD2B9E6BB069EF`。
+- 旧运行库副本应用 5 条 migration 后，旧四表行数仍为 `2 / 14 / 2 / 32`，主键集合与旧表 sqlite_sequence 不变。
+- agent_threads、agent_messages、memory_items 均为 0 行，没有从档案、餐食或建议自动回填。
+- 全新空 SQLite 文件可从零应用 5 条 migration，并创建全部 7 张业务表。
+- Thread 删除级联 Message；Message 删除将 MemoryItem.source_message_id 置空且保留 MemoryItem。
+- 真实运行库应用新增 migration 后通过 integrity_check、foreign_key_check 和 migration status。
+- production HTTP 临时副本验证 primary profile 隔离、服务端来源字段、停用筛选、硬删除和第二档案越权拒绝。
+
 ## 验证
 
 - prisma validate

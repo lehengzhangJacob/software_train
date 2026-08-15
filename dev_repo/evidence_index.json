@@ -440,5 +440,37 @@
       "path": "dev_repo/architecture/data-model/er.mmd",
       "description": "ER、JSON 和 Markdown 实体/关系命名一致且机器可读 JSON 解析通过"
     }
+  ],
+  "C-03-M4A": [
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260815205500_add_agent_memory/migration.sql",
+      "description": "纯新增 AgentThread、AgentMessage、MemoryItem 表、索引与 CASCADE/SET NULL 外键"
+    },
+    {
+      "type": "data-model",
+      "path": "prisma/schema.prisma",
+      "description": "三实体 Prisma 关系、primary profile 所有权与 updatedAt 语义"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/memory/**",
+      "description": "DTO 白名单、凭据内容拒绝、primary profile repository、active/unexpired 检索"
+    },
+    {
+      "type": "api",
+      "path": "src/app/api/memories/route.ts",
+      "description": "列表、手工创建、修正、停用/恢复和硬删除 API"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/verify-memory-migration.mjs",
+      "description": "旧库副本与空库 migration、零回填、旧表快照和删除语义同案"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/verify-memory-api.mjs",
+      "description": "production HTTP 临时副本的所有权、来源、筛选和删除验证"
+    }
   ]
 }

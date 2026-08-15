@@ -96,6 +96,13 @@ async function main() {
     const invalidReport = await fetch(`${baseUrl}/api/reports?period=invalid`)
     assert(invalidReport.status === 422, "Invalid report period should be rejected before any external call")
 
+    const memories = await fetch(`${baseUrl}/api/memories?status=all`)
+    const memoriesBody = await memories.json()
+    assert([200, 404].includes(memories.status), "Memory endpoint returned an unexpected status")
+    if (memories.status === 200) {
+      assert(Array.isArray(memoriesBody?.data) && memoriesBody?.error === null, "Memory API success envelope is invalid")
+    }
+
     console.log(`Release smoke passed on ${baseUrl}`)
   } catch (error) {
     const detail = output ? `\nServer output:\n${output}` : ""

@@ -29,8 +29,8 @@
       "status": "active",
       "summary": "迁移成熟能力并升级为本地个人营养 Agent",
       "goal": "完成仓库与数据迁移、个人工具体验、多提供商、长期记忆和受控 MCP 工具层",
-      "current_slice": "C-03-M4",
-      "completed_slices": ["C-03-M0", "C-03-M1", "C-03-M2", "C-03-M3", "C-03-A1"],
+      "current_slice": "C-03-M4B",
+      "completed_slices": ["C-03-M0", "C-03-M1", "C-03-M2", "C-03-M3", "C-03-A1", "C-03-M4A"],
       "return_to": "web_completion_audit"
     },
     "C-03-A1": {

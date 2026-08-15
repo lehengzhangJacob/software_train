@@ -137,7 +137,7 @@
       ],
       "migration_notes": "C-03-M4 仅新增表、索引与 UserProfile 外键，不回填旧业务行",
       "requires_amendment_when": ["改变 primary profile 所有权", "增加共享对话", "改变删除消息的级联语义"],
-      "confidence": "approved_target"
+      "confidence": "confirmed"
     },
     {
       "name": "AgentMessage",
@@ -160,7 +160,7 @@
       ],
       "migration_notes": "C-03-M4 新增表；无历史消息回填",
       "requires_amendment_when": ["增加新角色语义", "持久化 system prompt", "改变 Thread 删除级联"],
-      "confidence": "approved_target"
+      "confidence": "confirmed"
     },
     {
       "name": "MemoryItem",
@@ -193,7 +193,7 @@
       ],
       "migration_notes": "C-03-M4 新增表；不从旧餐食自动生成记忆，推断记忆由后续显式流程创建",
       "requires_amendment_when": ["改变删除语义", "引入向量或云端存储", "允许跨 profile 共享", "改变确认与来源含义"],
-      "confidence": "approved_target"
+      "confidence": "confirmed"
     }
   ]
 }

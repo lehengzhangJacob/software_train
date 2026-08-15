@@ -8,23 +8,25 @@ datasource db {
 }
 
 model UserProfile {
-  userId              Int       @id @default(autoincrement()) @map("user_id")
-  username            String
-  gender              String
-  age                 Int
-  heightCm            Float     @map("height_cm")
-  weightKg            Float     @map("weight_kg")
-  dailyCalorieTarget  Int       @default(2000) @map("daily_calorie_target")
-  dailyProteinTarget  Float     @default(60.0) @map("daily_protein_target")
-  dailyFatTarget      Float     @default(60.0) @map("daily_fat_target")
-  dailyCarbsTarget    Float     @default(250.0) @map("daily_carbs_target")
-  bmr                 Float?
-  activityLevel       String    @default("sedentary") @map("activity_level")
-  createdAt           DateTime  @default(now()) @map("created_at")
-  updatedAt           DateTime  @default(now()) @updatedAt @map("updated_at")
+  userId             Int      @id @default(autoincrement()) @map("user_id")
+  username           String
+  gender             String
+  age                Int
+  heightCm           Float    @map("height_cm")
+  weightKg           Float    @map("weight_kg")
+  dailyCalorieTarget Int      @default(2000) @map("daily_calorie_target")
+  dailyProteinTarget Float    @default(60.0) @map("daily_protein_target")
+  dailyFatTarget     Float    @default(60.0) @map("daily_fat_target")
+  dailyCarbsTarget   Float    @default(250.0) @map("daily_carbs_target")
+  bmr                Float?
+  activityLevel      String   @default("sedentary") @map("activity_level")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @updatedAt @map("updated_at")
 
-  mealRecords          MealRecord[]
-  exerciseSuggestions  ExerciseSuggestion[]
+  mealRecords         MealRecord[]
+  exerciseSuggestions ExerciseSuggestion[]
+  agentThreads        AgentThread[]
+  memoryItems         MemoryItem[]
 
   @@map("user_profile")
 }
@@ -75,12 +77,69 @@ model ExerciseSuggestion {
 }
 
 model ExerciseCalorieReference {
-  exerciseId       Int    @id @default(autoincrement()) @map("exercise_id")
-  exerciseName     String @unique @map("exercise_name")
-  CaloriesPer30min Float  @map("calories_per_30min")
+  exerciseId       Int     @id @default(autoincrement()) @map("exercise_id")
+  exerciseName     String  @unique @map("exercise_name")
+  CaloriesPer30min Float   @map("calories_per_30min")
   category         String?
-  metValue         Float? @map("met_value")
+  metValue         Float?  @map("met_value")
   description      String?
 
   @@map("exercise_calorie_reference")
+}
+
+model AgentThread {
+  threadId  Int      @id @default(autoincrement()) @map("thread_id")
+  userId    Int      @map("user_id")
+  title     String
+  status    String   @default("active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user     UserProfile    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  messages AgentMessage[]
+
+  @@index([userId, updatedAt], name: "idx_agent_thread_user_updated")
+  @@map("agent_threads")
+}
+
+model AgentMessage {
+  messageId    Int      @id @default(autoincrement()) @map("message_id")
+  threadId     Int      @map("thread_id")
+  role         String
+  content      String
+  metadataJson String?  @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  thread          AgentThread  @relation(fields: [threadId], references: [threadId], onDelete: Cascade)
+  sourcedMemories MemoryItem[] @relation("MemorySourceMessage")
+
+  @@index([threadId, createdAt], name: "idx_agent_message_thread_created")
+  @@map("agent_messages")
+}
+
+model MemoryItem {
+  memoryId        Int       @id @default(autoincrement()) @map("memory_id")
+  userId          Int       @map("user_id")
+  sourceMessageId Int?      @map("source_message_id")
+  category        String
+  content         String
+  sourceKind      String    @map("source_kind")
+  sourceRef       String?   @map("source_ref")
+  confidence      Float     @default(1)
+  importance      Float     @default(0.5)
+  status          String    @default("active")
+  isUserConfirmed Boolean   @default(false) @map("is_user_confirmed")
+  userEditedAt    DateTime? @map("user_edited_at")
+  lastUsedAt      DateTime? @map("last_used_at")
+  expiresAt       DateTime? @map("expires_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  user          UserProfile   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  sourceMessage AgentMessage? @relation("MemorySourceMessage", fields: [sourceMessageId], references: [messageId], onDelete: SetNull)
+
+  @@index([userId, status, importance], name: "idx_memory_user_status_importance")
+  @@index([userId, updatedAt], name: "idx_memory_user_updated")
+  @@index([sourceMessageId], name: "idx_memory_source_message")
+  @@map("memory_items")
 }

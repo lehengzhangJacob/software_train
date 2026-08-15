@@ -35,7 +35,7 @@
       "on_delete": "CASCADE",
       "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
       "invariant": "API 只能访问 primary profile 的对话",
-      "confidence": "approved_target"
+      "confidence": "confirmed"
     },
     {
       "name": "AgentThread_has_AgentMessages",
@@ -47,7 +47,7 @@
       "on_delete": "CASCADE",
       "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
       "invariant": "删除对话必须删除其消息",
-      "confidence": "approved_target"
+      "confidence": "confirmed"
     },
     {
       "name": "UserProfile_has_MemoryItems",
@@ -59,7 +59,7 @@
       "on_delete": "CASCADE",
       "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
       "invariant": "记忆只属于 primary profile 且可由用户治理",
-      "confidence": "approved_target"
+      "confidence": "confirmed"
     },
     {
       "name": "AgentMessage_sources_MemoryItems",
@@ -72,7 +72,7 @@
       "on_delete": "SET NULL",
       "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
       "invariant": "删除来源消息不得连带删除长期记忆",
-      "confidence": "approved_target"
+      "confidence": "confirmed"
     }
   ],
   "non_relationships": [

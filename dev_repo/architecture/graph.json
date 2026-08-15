@@ -559,10 +559,11 @@
         "forget test"
       ],
       "known_debt": [
-        "C-03-M4 migration、repository、API 与治理界面"
+        "C-03-M4B 治理界面",
+        "C-03-S2 对话写入与推断记忆生成"
       ],
       "confidence": "confirmed",
-      "implementation_status": "approved_target"
+      "implementation_status": "partial"
     },
     {
       "id": "agent.runtime",
