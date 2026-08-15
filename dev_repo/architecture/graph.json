@@ -558,11 +558,9 @@
         "cross-session recall",
         "forget test"
       ],
-      "known_debt": [
-        "C-03-S2 对话写入与推断记忆生成"
-      ],
+      "known_debt": [],
       "confidence": "confirmed",
-      "implementation_status": "partial"
+      "implementation_status": "confirmed"
     },
     {
       "id": "agent.runtime",
@@ -603,11 +601,9 @@
         "memory tests",
         "tool policy tests"
       ],
-      "known_debt": [
-        "C-03-S2 实现"
-      ],
+      "known_debt": [],
       "confidence": "confirmed",
-      "implementation_status": "planned"
+      "implementation_status": "confirmed"
     },
     {
       "id": "mcp.gateway",
@@ -647,10 +643,10 @@
         "malicious output"
       ],
       "known_debt": [
-        "C-03-S3 实现"
+        "真实外卖平台取决于用户配置的官方或授权 MCP 连接器"
       ],
       "confidence": "confirmed",
-      "implementation_status": "planned"
+      "implementation_status": "confirmed"
     },
     {
       "id": "action.policy",
@@ -682,11 +678,9 @@
       "verification": [
         "confirmation bypass tests"
       ],
-      "known_debt": [
-        "C-03-S3 实现"
-      ],
+      "known_debt": [],
       "confidence": "confirmed",
-      "implementation_status": "planned"
+      "implementation_status": "confirmed"
     },
     {
       "id": "external.mcp_services",

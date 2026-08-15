@@ -21,17 +21,17 @@ flowchart LR
 | 容器 | 职责 | 权威文件 | 状态 |
 |---|---|---|---|
 | Browser UI | 页面、表单、图表、审核与交互状态 | src/app/**, src/components/** | confirmed |
-| Next API | 校验输入、绑定 primary profile、编排 DB、AI 与工具 | src/app/api/**, src/lib/** | mature baseline；C-03 扩展中 |
+| Next API | 校验输入、绑定 primary profile、编排 DB、AI 与工具 | src/app/api/**, src/lib/** | confirmed；C-03 已完成 |
 | Prisma | 类型化持久化和正式 migration | prisma/schema.prisma, prisma/migrations/** | confirmed；C-03-M1 迁移现有数据库 |
 | SQLite | 单实例本地数据 | DATABASE_URL 指向的文件 | confirmed |
 | AI Gateway | StepFun、OpenAI、DeepSeek、Qwen、Kimi、GLM、SiliconFlow、OpenRouter、Ollama 与自定义兼容服务 | src/lib/ai/**, src/app/api/ai/**, src/app/api/settings/ai/** | confirmed；C-03-M3 已实现 |
 | Secret Store | GUI 配置的本机凭据、环境变量兼容回退与脱敏读取 | src/lib/ai/settings.ts, data/credentials.json | confirmed；C-03-M3 已实现 |
-| Agent Runtime | 营养上下文、长期记忆与工具编排 | src/app/agent/**, src/lib/agent/** | planned |
-| Memory Store | 对话、记忆来源、置信度、过期与用户治理 | Prisma + src/lib/memory/** + src/app/api/memories/** | partial；长期记忆存储/API/治理界面已完成，对话写入待 C-03-S2 |
-| MCP Gateway | 工具发现、白名单、超时与输出隔离 | src/lib/mcp/** | planned |
-| Action Policy | 搜索、草案和外部写操作确认边界 | src/lib/actions/** | planned |
+| Agent Runtime | 营养上下文、长期记忆与工具编排 | src/app/agent/**, src/lib/agent/** | confirmed；C-03-S2 已实现 |
+| Memory Store | 对话、记忆来源、置信度、过期与用户治理 | Prisma + src/lib/memory/** + src/app/api/memories/** | confirmed；C-03-M4/S2 已实现 |
+| MCP Gateway | 工具发现、白名单、超时与输出隔离 | src/app/api/mcp/**, src/lib/mcp/** | confirmed；C-03-S3 已实现，真实平台取决于用户授权连接器 |
+| Action Policy | 搜索、草案和外部写操作确认边界 | src/lib/actions/** | confirmed；C-03-S3 已实现 |
 | Delivery | lint、typecheck、build、production smoke 与 CI | package scripts、release smoke、CI | confirmed；C-02-S7 已完成 |
-| dev_repo | 合同、架构、ER 与证据真相 | dev_repo/** | active |
+| dev_repo | 合同、架构、ER 与证据真相 | dev_repo/** | confirmed；C-03 已收口 |
 
 ## 关键运行流
 
@@ -52,6 +52,12 @@ flowchart LR
 ### 个性化页面
 
 档案、餐食、看板、日历、运动和报告包含个人数据，必须按请求动态渲染，禁止在构建产物中静态固化。
+
+### Agent 与受控工具
+
+Agent 对话只持久化 user/assistant 消息，不保存 system prompt。每次请求注入当前档案、近 14 天餐食和 active/unexpired 记忆；模型推断的长期记忆必须由用户确认后才写入 MemoryItem。
+
+MCP Gateway 只暴露白名单工具，并限制输入、超时和输出体积。附近外卖搜索是只读动作；订单草案不触发外部写入；提交订单需要绑定最终参数的短时一次性确认令牌。没有官方或用户授权的连接器时，系统明确返回未配置，不声称订单已经完成。
 
 ### 数据与发布
 

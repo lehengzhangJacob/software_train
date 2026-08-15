@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
+  Bot,
   LayoutDashboard,
   UtensilsCrossed,
   CalendarDays,
@@ -12,9 +13,17 @@ import {
   ShieldCheck,
   User,
   Salad,
+  MoreHorizontal,
 } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const navItems = [
+  { href: "/agent", label: "Agent", icon: Bot },
   { href: "/dashboard", label: "营养看板", icon: LayoutDashboard },
   { href: "/meals", label: "饮食记录", icon: UtensilsCrossed },
   { href: "/calendar", label: "日历", icon: CalendarDays },
@@ -23,8 +32,12 @@ const navItems = [
   { href: "/profile", label: "个人设置", icon: User },
 ]
 
+const mobilePrimaryItems = navItems.filter((item) => ["/agent", "/dashboard", "/meals", "/reports"].includes(item.href))
+const mobileMoreItems = navItems.filter((item) => ["/calendar", "/exercise", "/profile"].includes(item.href))
+
 export function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
 
   return (
     <>
@@ -75,8 +88,8 @@ export function Sidebar() {
         <span className="text-xs text-neutral-500">本机</span>
       </header>
 
-      <nav aria-label="移动端主导航" className="fixed bottom-0 left-0 right-0 z-30 flex h-[calc(4rem+env(safe-area-inset-bottom))] items-center border-t bg-white pb-[env(safe-area-inset-bottom)] shadow-sm lg:hidden">
-        {navItems.map((item) => {
+      <nav aria-label="移动端主导航" className="fixed bottom-0 left-0 right-0 z-30 grid h-[calc(4rem+env(safe-area-inset-bottom))] grid-cols-5 items-center border-t bg-white pb-[env(safe-area-inset-bottom)] shadow-sm lg:hidden">
+        {mobilePrimaryItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
           return (
             <Link
@@ -84,7 +97,7 @@ export function Sidebar() {
               href={item.href}
               aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex min-h-11 flex-1 flex-col items-center justify-center gap-0.5 rounded-md px-1 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset",
+                "flex min-h-11 min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-1 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset",
                 isActive ? "text-emerald-700" : "text-neutral-500"
               )}
             >
@@ -93,6 +106,26 @@ export function Sidebar() {
             </Link>
           )
         })}
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            className={cn(
+              "flex min-h-11 w-full min-w-0 flex-col items-center justify-center gap-0.5 rounded-md px-1 py-1 text-xs outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset",
+              mobileMoreItems.some((item) => pathname === item.href || pathname.startsWith(item.href + "/")) ? "text-emerald-700" : "text-neutral-500"
+            )}
+            aria-label="更多导航"
+          >
+            <MoreHorizontal className="h-5 w-5" />
+            <span>更多</span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent side="top" align="end" sideOffset={8} className="w-40">
+            {mobileMoreItems.map((item) => (
+              <DropdownMenuItem key={item.href} onClick={() => router.push(item.href)}>
+                <item.icon />
+                {item.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </nav>
     </>
   )

@@ -1,17 +1,25 @@
-# Food Tracker - 食物热量识别与饮食管理系统
+# Nutrition Agent - 本地个人营养工具
 
-拍照识食 | 营养看板 | 运动建议
+这是一个私有单用户、本地优先的营养 Agent。它保留饮食记录、营养看板、日历、运动建议和周期报告，并加入多 AI 提供商、跨会话长期记忆、营养对话和受控外卖工具。
 
-这是一个私有单用户课程项目，用于本机演示，不是公网多用户 SaaS。
+## 能力
 
-## Tech Stack
+- 拍照识别食物，审核后保存营养数据
+- 营养看板、日历、周/月报告和运动建议
+- GUI 配置 10 类 OpenAI-compatible AI 提供商
+- 本地 Agent 对话、个人档案/近期餐食/长期记忆注入
+- 记忆查看、修正、停用、恢复和删除
+- MCP 工具白名单、超时、输出隔离和外部写动作确认门
+- 附近外卖搜索、订单草案和明确确认后的授权连接器提交
 
-- **Frontend**: Next.js 16 + shadcn/ui + Tailwind CSS + Recharts
-- **Backend**: Next.js API Routes
-- **Database**: SQLite + Prisma ORM
-- **AI**: Step-3.7 Flash (阶跃星辰)
+## 技术栈
 
-## Quick Start
+- Next.js 16、React 19、Tailwind CSS
+- Prisma 6、SQLite
+- OpenAI-compatible AI Provider Gateway
+- 本地文件凭据存储与环境变量回退
+
+## 启动
 
 ```powershell
 Copy-Item .env.example .env
@@ -20,42 +28,47 @@ npm run db:init
 npm run dev
 ```
 
-On macOS or Linux, replace the first command with `cp .env.example .env`.
+首次启动后，在 `/profile` 创建或修正个人档案，并在“AI 服务”中保存提供商、Base URL、模型和 API Key。完整密钥只由本机服务端持有，不会回显到浏览器。
 
-## Release Check
+## 外卖 MCP
 
-The application is intended for a private, single-user course demonstration. Verification does not call the AI provider.
+可选环境变量：
+
+```dotenv
+TAKEOUT_MCP_URL="https://your-authorized-bridge.example"
+TAKEOUT_MCP_API_KEY=""
+```
+
+连接器接收 `POST` JSON：`{ "tool": "工具名", "input": { ... } }`。当前白名单工具是 `nearby_takeout_search` 和 `takeout_order_submit`。地址必须使用 HTTPS，或使用 loopback HTTP 进行本机开发。
+
+搜索是只读动作；订单草案不会提交；外部提交需要绑定最终参数、十分钟有效且只能使用一次的确认令牌。没有官方或用户授权的连接器时，应用会明确显示“未配置”，不会声称真实下单成功。
+
+## 发布检查
 
 ```powershell
-Copy-Item .env.example .env
-npm ci
-npm run db:init
 npm run release:check
-npm run start
 ```
+
+该命令检查 5 条 migration、AI/记忆/Agent/MCP 合同、lint、TypeScript、production build、临时数据库 API、假 AI/MCP 连接器和 loopback production smoke，不调用真实外部服务。
 
 | Command | Purpose |
 | --- | --- |
-| `npm run db:init` | Creates the SQLite file, applies migrations, and seeds exercise reference data. |
-| `npm run verify` | Runs ESLint, TypeScript, and the production build. |
-| `npm run smoke` | Starts the production server and verifies HTML and API error envelopes. |
-| `npm run release:check` | Runs migration status, verification, and the production smoke. |
+| `npm run db:init` | 创建 SQLite、执行 migration 并写入运动参考数据 |
+| `npm run verify` | 运行合同测试、lint、typecheck 和 production build |
+| `npm run verify:agent-api` | 使用本地假 AI 验证对话与记忆确认流 |
+| `npm run verify:mcp-api` | 使用本地假 MCP 验证输出隔离和动作确认门 |
+| `npm run smoke` | 启动 production server 并验证页面与 API 信封 |
+| `npm run release:check` | 执行完整发布门禁 |
 
-After the first start, create the local profile from `/profile`. The database is local and ignored by Git; copy it before experimenting with an existing course database.
+## 数据与迁移
 
-## Legacy Database Migration
-
-For an existing database, create a backup first and validate the migration on a copy. Do not run `db:init` over the only copy of user data.
-
-## Project Structure
+数据库位于本机且被 Git 忽略。对已有数据库操作前应先备份，并在副本上执行 migration；不要对唯一一份用户数据直接运行初始化命令。
 
 ```text
-src/app/          Next.js pages and API routes
-src/components/   Product and UI components
-src/lib/          Validation, persistence, and shared services
-prisma/           Schema, migrations, and reference seed
-scripts/          Database and release verification
-dev_repo/         Runtime, architecture, and data-model truth
+src/app/          Next.js 页面和 API
+src/components/   业务组件与 UI primitives
+src/lib/          Agent、AI、记忆、MCP 和动作策略
+prisma/           Schema、migration 和 reference seed
+scripts/          发布与端到端验证
+dev_repo/         合同、架构、数据模型和证据真相
 ```
-
-See `database/README.md` for the original schema design and `dev_repo/architecture/` for the current architecture.

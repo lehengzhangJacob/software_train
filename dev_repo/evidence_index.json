@@ -489,5 +489,71 @@
       "path": "dev_repo/journal.jsonl",
       "description": "空状态 DOM、真实 API 契约、desktop 和 342px 无横向溢出浏览器证据"
     }
+  ],
+  "C-03-S2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/**",
+      "description": "对话合同、线程/消息仓储、档案/近 14 天餐食/长期记忆上下文与提示词编排"
+    },
+    {
+      "type": "api",
+      "path": "src/app/api/agent/**",
+      "description": "线程 CRUD、AI 对话持久化和经用户确认才落库的推断记忆候选"
+    },
+    {
+      "type": "frontend",
+      "path": "src/app/agent/**, src/components/agent/agent-workspace.tsx",
+      "description": "本地 Agent 工作台、历史线程、消息与长期记忆候选确认界面"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/agent-contract.test.ts, scripts/verify-agent-api.mjs",
+      "description": "消息凭据拒绝、候选解析、production fake-provider 对话持久化、确认门、幂等和删线程保留记忆"
+    }
+  ],
+  "C-03-S3": [
+    {
+      "type": "implementation",
+      "path": "src/lib/mcp/**, src/lib/actions/**",
+      "description": "MCP 工具白名单、HTTPS/loopback 连接器、超时/限量/输出隔离与一次性参数绑定确认令牌"
+    },
+    {
+      "type": "api",
+      "path": "src/app/api/mcp/**",
+      "description": "工具发现、附近外卖只读搜索、订单草案与明确确认后的提交端点"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/agent/takeout-tools-panel.tsx",
+      "description": "连接器状态、外卖搜索、餐厅选择、草案审核和最终确认界面"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/mcp-contract.test.ts, scripts/verify-mcp-api.mjs",
+      "description": "输入边界、未确认不提交、恶意输出隔离、参数篡改拒绝与确认令牌防重放"
+    }
+  ],
+  "C-03-S4": [
+    {
+      "type": "delivery",
+      "path": "package.json, scripts/release-smoke.mjs",
+      "description": "5 条 migration、四组合同测试、production build、临时数据库 API、假 AI/MCP 和 Agent/MCP smoke 的完整发布门禁"
+    },
+    {
+      "type": "documentation",
+      "path": "README.md, .env.example",
+      "description": "本地启动、多提供商、外卖 MCP 连接器、动作确认边界和发布命令"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/sidebar.tsx",
+      "description": "移动端四个高频入口加更多菜单的稳定五列导航"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "1440px 桌面截图、342px DevTools 模拟、clientWidth=scrollWidth、五列底栏和外卖表单边界证据"
+    }
   ]
 }

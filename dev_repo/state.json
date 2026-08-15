@@ -3,7 +3,7 @@
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
   "active_contract_id": "C-03",
-  "status": "active",
+  "status": "completed",
   "contracts": {
     "C-01": {
       "status": "completed",
@@ -26,11 +26,11 @@
       "contract_id": "C-03",
       "parent_contract_id": "C-02",
       "root_campaign": "nutrition-agent",
-      "status": "active",
+      "status": "completed",
       "summary": "迁移成熟能力并升级为本地个人营养 Agent",
       "goal": "完成仓库与数据迁移、个人工具体验、多提供商、长期记忆和受控 MCP 工具层",
-      "current_slice": "C-03-S2",
-      "completed_slices": ["C-03-M0", "C-03-M1", "C-03-M2", "C-03-M3", "C-03-A1", "C-03-M4A", "C-03-M4B"],
+      "current_slice": null,
+      "completed_slices": ["C-03-M0", "C-03-M1", "C-03-M2", "C-03-M3", "C-03-A1", "C-03-M4A", "C-03-M4B", "C-03-S2", "C-03-S3", "C-03-S4"],
       "return_to": "web_completion_audit"
     },
     "C-03-A1": {

@@ -84,6 +84,9 @@ async function main() {
     const home = await waitForResponse(`${baseUrl}/`)
     assert(home.headers.get("content-type")?.includes("text/html"), "Home page did not return HTML")
 
+    const agent = await fetch(`${baseUrl}/agent`)
+    assert(agent.ok && agent.headers.get("content-type")?.includes("text/html"), "Agent page did not return HTML")
+
     const report = await fetch(`${baseUrl}/api/reports?period=weekly`)
     const reportBody = await report.json()
     assert([200, 404].includes(report.status), "Report endpoint returned an unexpected status")
@@ -102,6 +105,10 @@ async function main() {
     if (memories.status === 200) {
       assert(Array.isArray(memoriesBody?.data) && memoriesBody?.error === null, "Memory API success envelope is invalid")
     }
+
+    const mcpTools = await fetch(`${baseUrl}/api/mcp/tools`)
+    const mcpToolsBody = await mcpTools.json()
+    assert(mcpTools.status === 200 && Array.isArray(mcpToolsBody?.data?.tools), "MCP tool discovery envelope is invalid")
 
     console.log(`Release smoke passed on ${baseUrl}`)
   } catch (error) {
