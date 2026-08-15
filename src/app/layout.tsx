@@ -8,8 +8,11 @@ const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Food Tracker",
-  description: "食物热量识别与饮食管理系统",
+  title: {
+    default: "营养 Agent",
+    template: "%s | 营养 Agent",
+  },
+  description: "本地优先的个人饮食、运动与营养管理工具",
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

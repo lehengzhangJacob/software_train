@@ -381,5 +381,37 @@
       "path": "dev_repo/journal.jsonl",
       "description": "迁移 API、六个业务页面、桌面/移动图表、周/月报告切换和 release:check 实测证据"
     }
+  ],
+  "C-03-M3": [
+    {
+      "type": "implementation",
+      "path": "src/lib/ai/**",
+      "description": "十个提供商预设、OpenAI-compatible 调用、错误脱敏、配置校验与本机凭据原子存储"
+    },
+    {
+      "type": "api",
+      "path": "src/app/api/settings/ai/**",
+      "description": "脱敏读取、保存/清除密钥与连接测试；完整凭据不返回浏览器"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/ai-settings-form.tsx",
+      "description": "个人设置页中的提供商、Base URL、模型、密钥状态、保存和测试闭环"
+    },
+    {
+      "type": "security",
+      "path": ".gitignore",
+      "description": "data/credentials.json 与原子写临时文件不进入 Git"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/ai-settings.test.ts",
+      "description": "密钥保留/清除、URL/模型校验、掩码和供应商错误脱敏同案测试"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "桌面/342px UI、缺失密钥 API、客户端静态扫描和 release:check 证据"
+    }
   ]
 }

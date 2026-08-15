@@ -9,6 +9,7 @@ import {
   CalendarDays,
   Dumbbell,
   BarChart3,
+  ShieldCheck,
   User,
   Salad,
 } from "lucide-react"
@@ -28,9 +29,14 @@ export function Sidebar() {
   return (
     <>
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r bg-white shadow-sm lg:flex">
-        <div className="flex h-16 items-center gap-2 border-b px-6">
-          <Salad className="h-6 w-6 text-emerald-600" />
-          <span className="text-lg font-semibold text-neutral-800">Food Tracker</span>
+        <div className="flex h-16 items-center gap-3 border-b px-5">
+          <div className="flex size-8 items-center justify-center rounded-md bg-emerald-50">
+            <Salad className="size-4 text-emerald-700" />
+          </div>
+          <div className="min-w-0 leading-tight">
+            <p className="text-sm font-semibold text-neutral-900">营养 Agent</p>
+            <p className="mt-0.5 text-xs text-neutral-500">本地个人工具</p>
+          </div>
         </div>
         <nav aria-label="主导航" className="flex-1 space-y-1 p-4">
           {navItems.map((item) => {
@@ -53,10 +59,21 @@ export function Sidebar() {
             )
           })}
         </nav>
-        <div className="border-t p-4 text-xs text-neutral-400">
-          Food Tracker v1.0
+        <div className="flex items-center gap-2 border-t p-4 text-xs text-neutral-500">
+          <ShieldCheck className="size-3.5 text-emerald-700" />
+          <span>数据仅存本机</span>
         </div>
       </aside>
+
+      <header className="fixed inset-x-0 top-0 z-30 flex h-16 items-center justify-between border-b bg-white/95 px-4 backdrop-blur lg:hidden">
+        <div className="flex items-center gap-2">
+          <div className="flex size-7 items-center justify-center rounded-md bg-emerald-50">
+            <Salad className="size-4 text-emerald-700" />
+          </div>
+          <span className="text-sm font-semibold text-neutral-900">营养 Agent</span>
+        </div>
+        <span className="text-xs text-neutral-500">本机</span>
+      </header>
 
       <nav aria-label="移动端主导航" className="fixed bottom-0 left-0 right-0 z-30 flex h-[calc(4rem+env(safe-area-inset-bottom))] items-center border-t bg-white pb-[env(safe-area-inset-bottom)] shadow-sm lg:hidden">
         {navItems.map((item) => {

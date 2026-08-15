@@ -24,8 +24,8 @@ flowchart LR
 | Next API | 校验输入、绑定 primary profile、编排 DB、AI 与工具 | src/app/api/**, src/lib/** | mature baseline；C-03 扩展中 |
 | Prisma | 类型化持久化和正式 migration | prisma/schema.prisma, prisma/migrations/** | confirmed；C-03-M1 迁移现有数据库 |
 | SQLite | 单实例本地数据 | DATABASE_URL 指向的文件 | confirmed |
-| AI Gateway | StepFun、GLM 与 OpenAI-compatible 提供商适配 | src/lib/ai/**, src/app/api/ai/** | partial；多提供商待 C-03-M3 |
-| Secret Store | GUI 配置的本机凭据与掩码读取 | src/lib/ai/settings.ts, data/credentials.json | planned |
+| AI Gateway | StepFun、OpenAI、DeepSeek、Qwen、Kimi、GLM、SiliconFlow、OpenRouter、Ollama 与自定义兼容服务 | src/lib/ai/**, src/app/api/ai/**, src/app/api/settings/ai/** | confirmed；C-03-M3 已实现 |
+| Secret Store | GUI 配置的本机凭据、环境变量兼容回退与脱敏读取 | src/lib/ai/settings.ts, data/credentials.json | confirmed；C-03-M3 已实现 |
 | Agent Runtime | 营养上下文、长期记忆与工具编排 | src/app/agent/**, src/lib/agent/** | planned |
 | Memory Store | 对话、记忆来源、置信度与遗忘 | Prisma + src/lib/memory/** | planned |
 | MCP Gateway | 工具发现、白名单、超时与输出隔离 | src/lib/mcp/** | planned |

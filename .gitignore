@@ -28,6 +28,8 @@ backend/.env
 data/uploads/
 data/backups/
 data/*.log
+data/credentials.json
+data/credentials.json.*.tmp
 
 # generated files
 *.tsbuildinfo

@@ -1,16 +1,18 @@
 import { getCurrentUser } from "@/lib/current-user"
+import { getPublicAiSettings } from "@/lib/ai/settings"
+import { AiSettingsForm } from "@/components/ai-settings-form"
 import { ProfileForm } from "@/components/profile-form"
 
 export const dynamic = "force-dynamic"
 
 export default async function ProfilePage() {
-  const user = await getCurrentUser()
+  const [user, aiSettings] = await Promise.all([getCurrentUser(), getPublicAiSettings()])
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold text-neutral-900">个人设置</h1>
-        <p className="text-sm text-neutral-500 mt-1">管理你的身体参数和营养目标</p>
+        <p className="mt-1 text-sm text-neutral-500">身体目标和本机 AI 服务都在这里管理</p>
       </div>
       <ProfileForm
         user={user ? {
@@ -27,6 +29,7 @@ export default async function ProfilePage() {
           activityLevel: user.activityLevel,
         } : undefined}
       />
+      <AiSettingsForm initialSettings={aiSettings} />
     </div>
   )
 }

@@ -220,7 +220,8 @@
       ],
       "public_interfaces": [
         "/api/ai/recognize",
-        "/api/settings/ai"
+        "/api/settings/ai",
+        "/api/settings/ai/test"
       ],
       "depends_on": [
         "local.secret_store",
@@ -251,7 +252,7 @@
       ],
       "known_debt": [],
       "confidence": "confirmed",
-      "implementation_status": "partial"
+      "implementation_status": "confirmed"
     },
     {
       "id": "database.prisma",
@@ -518,11 +519,9 @@
         "secret scan",
         "masked readback test"
       ],
-      "known_debt": [
-        "C-03-S1 实现持久化策略"
-      ],
+      "known_debt": [],
       "confidence": "confirmed",
-      "implementation_status": "planned"
+      "implementation_status": "confirmed"
     },
     {
       "id": "memory.store",

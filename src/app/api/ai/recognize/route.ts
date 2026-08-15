@@ -1,4 +1,7 @@
-import { NextResponse } from "next/server"
+import { apiError, apiSuccess } from "@/lib/api-response"
+import { getAssistantText, requestAiChatCompletion } from "@/lib/ai/client"
+import { getPublicAiError } from "@/lib/ai/errors"
+import { getActiveAiProviderConfig } from "@/lib/ai/settings"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -21,33 +24,37 @@ interface RecognitionResult {
 const MAX_REQUEST_BYTES = 14 * 1024 * 1024
 const SUPPORTED_IMAGE_PATTERN = /^data:image\/(?:jpeg|png|webp);base64,/i
 
-function jsonError(message: string, status: number) {
-  return NextResponse.json({ data: null, error: message }, { status })
-}
-
 function isRecognitionResult(value: unknown): value is RecognitionResult {
   if (!value || typeof value !== "object") return false
 
   const result = value as Partial<RecognitionResult>
-  if (!Array.isArray(result.foods) || typeof result.totalCalories !== "number") return false
+  if (!Array.isArray(result.foods) || result.foods.length > 50 || typeof result.totalCalories !== "number" || !Number.isFinite(result.totalCalories) || result.totalCalories < 0 || result.totalCalories > 100_000) return false
 
   return result.foods.every((food) => {
     if (!food || typeof food !== "object") return false
     const item = food as Partial<FoodItem>
     return (
-      typeof item.name === "string" &&
-      typeof item.portion === "string" &&
+      typeof item.name === "string" && item.name.trim().length > 0 && item.name.length <= 100 &&
+      typeof item.portion === "string" && item.portion.trim().length > 0 && item.portion.length <= 200 &&
       [item.calories, item.protein, item.fat, item.carbs, item.confidence].every(
         (number) => typeof number === "number" && Number.isFinite(number)
       ) &&
-      (item.calories ?? -1) >= 0 &&
-      (item.protein ?? -1) >= 0 &&
-      (item.fat ?? -1) >= 0 &&
-      (item.carbs ?? -1) >= 0 &&
+      (item.calories ?? -1) >= 0 && (item.calories ?? 100_001) <= 100_000 &&
+      (item.protein ?? -1) >= 0 && (item.protein ?? 100_001) <= 100_000 &&
+      (item.fat ?? -1) >= 0 && (item.fat ?? 100_001) <= 100_000 &&
+      (item.carbs ?? -1) >= 0 && (item.carbs ?? 100_001) <= 100_000 &&
       (item.confidence ?? -1) >= 0 &&
       (item.confidence ?? 2) <= 1
     )
   })
+}
+
+function parseRecognitionJson(content: string): unknown {
+  const trimmed = content.trim()
+  const json = trimmed.startsWith("```")
+    ? trimmed.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "")
+    : trimmed
+  return JSON.parse(json)
 }
 
 const SYSTEM_PROMPT = `你是一个专业的食物营养识别专家。分析图片中的食物，返回JSON格式的识别结果。
@@ -76,78 +83,61 @@ export async function POST(request: Request) {
   try {
     const contentLength = Number(request.headers.get("content-length") ?? 0)
     if (contentLength > MAX_REQUEST_BYTES) {
-      return jsonError("图片请求过大", 413)
+      return apiError("图片请求过大", 413)
     }
 
-    const body = await request.json()
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return apiError("图片请求格式无效", 400)
+    }
     const { image } = body as { image?: string }
 
     if (!image || typeof image !== "string") {
-      return jsonError("请提供食物图片", 400)
+      return apiError("请提供食物图片", 400)
     }
     if (image.length > MAX_REQUEST_BYTES) {
-      return jsonError("图片请求过大", 413)
+      return apiError("图片请求过大", 413)
     }
     if (!SUPPORTED_IMAGE_PATTERN.test(image)) {
-      return jsonError("仅支持 JPEG、PNG 或 WebP 图片", 415)
+      return apiError("仅支持 JPEG、PNG 或 WebP 图片", 415)
     }
 
-    const apiKey = process.env.STEP_API_KEY?.trim()
-    if (!apiKey) {
-      return jsonError("AI 识别服务尚未配置", 503)
+    const config = await getActiveAiProviderConfig()
+    if (config.visionCapability === "unsupported") {
+      return apiError("当前 AI 提供商预设为文本模型，请切换到支持图片的模型", 422)
     }
-
-    const baseUrl = (process.env.STEP_API_BASE_URL ?? "https://api.stepfun.com/v1").replace(/\/$/, "")
-    const model = process.env.STEP_API_MODEL ?? "step-3.7-flash"
-    const response = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      signal: AbortSignal.timeout(30_000),
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          {
-            role: "user",
-            content: [
-              { type: "text", text: "请识别图中的食物并估算营养成分" },
-              { type: "image_url", image_url: { url: image, detail: "high" } },
-            ],
-          },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 4096,
-      }),
+    const result = await requestAiChatCompletion(config, {
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: "请识别图中的食物并估算营养成分" },
+            { type: "image_url", image_url: { url: image } },
+          ],
+        },
+      ],
+      max_tokens: 4096,
     })
-
-    if (!response.ok) {
-      console.error("Step API request failed", { status: response.status })
-      return jsonError("AI 识别服务暂时不可用", 502)
-    }
-
-    const result = await response.json()
-    const content = result.choices?.[0]?.message?.content
+    const content = getAssistantText(result)
 
     if (!content) {
-      return jsonError("AI 识别结果为空", 502)
+      return apiError("AI 识别结果为空", 502)
     }
 
     try {
-      const parsed: unknown = JSON.parse(content)
+      const parsed = parseRecognitionJson(content)
       if (!isRecognitionResult(parsed)) {
-        return jsonError("AI 识别结果格式无效", 502)
+        return apiError("AI 识别结果格式无效", 502)
       }
-      return NextResponse.json({ data: parsed, error: null })
+      return apiSuccess(parsed)
     } catch {
-      return jsonError("AI 识别结果格式无效", 502)
+      return apiError("AI 识别结果格式无效", 502)
     }
   } catch (error) {
-    if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) {
-      return jsonError("AI 识别请求超时", 504)
-    }
-    return jsonError("AI 识别请求失败", 500)
+    const failure = getPublicAiError(error)
+    return apiError(failure.message, failure.status)
   }
 }
