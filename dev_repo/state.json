@@ -29,9 +29,19 @@
       "status": "active",
       "summary": "迁移成熟能力并升级为本地个人营养 Agent",
       "goal": "完成仓库与数据迁移、个人工具体验、多提供商、长期记忆和受控 MCP 工具层",
-      "current_slice": "C-03-A1",
-      "completed_slices": ["C-03-M0", "C-03-M1", "C-03-M2", "C-03-M3"],
+      "current_slice": "C-03-M4",
+      "completed_slices": ["C-03-M0", "C-03-M1", "C-03-M2", "C-03-M3", "C-03-A1"],
       "return_to": "web_completion_audit"
+    },
+    "C-03-A1": {
+      "contract_id": "C-03-A1",
+      "parent_contract_id": "C-03",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "定义 Agent 对话与长期记忆的实体、来源、确认和删除语义",
+      "current_slice": null,
+      "completed_slices": ["C-03-A1-S1"],
+      "return_to": "C-03-M4"
     },
     "C-03-M1A": {
       "contract_id": "C-03-M1A",

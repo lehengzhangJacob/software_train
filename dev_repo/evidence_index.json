@@ -413,5 +413,32 @@
       "path": "dev_repo/journal.jsonl",
       "description": "桌面/342px UI、缺失密钥 API、客户端静态扫描和 release:check 证据"
     }
+  ],
+  "C-03-A1": [
+    {
+      "type": "data-model-decision",
+      "path": "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md",
+      "description": "将可删除对话与可独立治理的长期记忆分离，并定义推断/确认语义"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/entities.json",
+      "description": "AgentThread、AgentMessage、MemoryItem 三个 approved_target 实体"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/relationships.json",
+      "description": "Profile、Thread、Message、Memory 的级联与 SET NULL 关系"
+    },
+    {
+      "type": "migration-plan",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "零回填、旧四表不变、空库与旧库副本同案验证计划"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/architecture/data-model/er.mmd",
+      "description": "ER、JSON 和 Markdown 实体/关系命名一致且机器可读 JSON 解析通过"
+    }
   ]
 }

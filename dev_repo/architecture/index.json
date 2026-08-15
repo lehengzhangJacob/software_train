@@ -81,6 +81,11 @@
       "path": "dev_repo/architecture/decisions/ADR-0002-local-nutrition-agent.md",
       "node": "dev_repo",
       "description": "本地个人营养 Agent 架构决策"
+    },
+    {
+      "path": "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md",
+      "node": "memory.store",
+      "description": "可查看、可追溯、可治理的 Agent 对话与长期记忆数据模型"
     }
   ],
   "ownership": [

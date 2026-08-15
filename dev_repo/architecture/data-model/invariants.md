@@ -14,3 +14,11 @@
 12. ExerciseCalorieReference 通过 exercise_name 幂等 seed；生产初始化不写 demo 用户或餐食。
 13. 报告和趋势是运行时派生数据，不建立第二套持久汇总真相。
 14. 任何 destructive migration 必须先备份并在副本验证。
+15. AgentThread 与 MemoryItem 必须属于 primary profile；客户端 userId 不构成所有权证据。
+16. 删除 AgentThread 必须级联删除 AgentMessage；删除来源 AgentMessage 只能将 MemoryItem.source_message_id 置空。
+17. AgentMessage.role 仅为 user、assistant、tool；不持久化 system prompt。
+18. AgentMessage.metadata_json、MemoryItem.content 和 source_ref 不得包含密钥、支付凭据、图片 data URL 或供应商错误正文。
+19. MemoryItem.category 仅为 preference、constraint、goal、habit、context、insight；status 仅为 active、disabled。
+20. confidence 与 importance 必须在 0–1；Agent 推断默认 is_user_confirmed=false，用户创建或修正后为 true。
+21. 个性化检索只使用 active 且未过期的 MemoryItem；disabled 或 expires_at 已过期项不得进入模型上下文。
+22. 用户可查看、修正、停用和硬删除 MemoryItem；删除不得留下不可见的第二份持久记忆。

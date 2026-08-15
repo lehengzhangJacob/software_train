@@ -559,10 +559,10 @@
         "forget test"
       ],
       "known_debt": [
-        "C-03-A1 实现"
+        "C-03-M4 migration、repository、API 与治理界面"
       ],
       "confidence": "confirmed",
-      "implementation_status": "planned"
+      "implementation_status": "approved_target"
     },
     {
       "id": "agent.runtime",

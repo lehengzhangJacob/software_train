@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "relationships": [
     {
       "name": "UserProfile_has_MealRecords",
@@ -24,6 +24,55 @@
       "source_artifacts": ["prisma/schema.prisma"],
       "invariant": "采纳状态属于建议所有者",
       "confidence": "confirmed"
+    },
+    {
+      "name": "UserProfile_has_AgentThreads",
+      "source": "UserProfile",
+      "target": "AgentThread",
+      "cardinality": "1:N",
+      "via": "AgentThread.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
+      "invariant": "API 只能访问 primary profile 的对话",
+      "confidence": "approved_target"
+    },
+    {
+      "name": "AgentThread_has_AgentMessages",
+      "source": "AgentThread",
+      "target": "AgentMessage",
+      "cardinality": "1:N",
+      "via": "AgentMessage.thread_id",
+      "owner": "AgentThread",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
+      "invariant": "删除对话必须删除其消息",
+      "confidence": "approved_target"
+    },
+    {
+      "name": "UserProfile_has_MemoryItems",
+      "source": "UserProfile",
+      "target": "MemoryItem",
+      "cardinality": "1:N",
+      "via": "MemoryItem.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
+      "invariant": "记忆只属于 primary profile 且可由用户治理",
+      "confidence": "approved_target"
+    },
+    {
+      "name": "AgentMessage_sources_MemoryItems",
+      "source": "AgentMessage",
+      "target": "MemoryItem",
+      "cardinality": "1:N",
+      "target_optionality": "MemoryItem.source_message_id is optional",
+      "via": "MemoryItem.source_message_id",
+      "owner": "MemoryItem",
+      "on_delete": "SET NULL",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
+      "invariant": "删除来源消息不得连带删除长期记忆",
+      "confidence": "approved_target"
     }
   ],
   "non_relationships": [

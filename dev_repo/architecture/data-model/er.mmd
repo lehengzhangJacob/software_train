@@ -1,6 +1,10 @@
 erDiagram
   UserProfile ||--o{ MealRecord : owns
   UserProfile ||--o{ ExerciseSuggestion : owns
+  UserProfile ||--o{ AgentThread : owns
+  AgentThread ||--o{ AgentMessage : contains
+  UserProfile ||--o{ MemoryItem : owns
+  AgentMessage o|--o{ MemoryItem : sources
   ExerciseCalorieReference {
     int exercise_id PK
     string exercise_name UK
@@ -37,4 +41,35 @@ erDiagram
     int duration_minutes
     float calorie_burn_estimate
     int is_adopted
+  }
+  AgentThread {
+    int thread_id PK
+    int user_id FK
+    string title
+    string status
+    datetime created_at
+    datetime updated_at
+  }
+  AgentMessage {
+    int message_id PK
+    int thread_id FK
+    string role
+    string content
+    string metadata_json
+    datetime created_at
+  }
+  MemoryItem {
+    int memory_id PK
+    int user_id FK
+    int source_message_id FK
+    string category
+    string content
+    string source_kind
+    string source_ref
+    float confidence
+    float importance
+    string status
+    boolean is_user_confirmed
+    datetime expires_at
+    datetime updated_at
   }

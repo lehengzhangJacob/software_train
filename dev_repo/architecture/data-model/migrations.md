@@ -51,6 +51,16 @@
 - recognition_raw 旧值允许为空；新值只保存脱敏结构化 JSON。
 - 如果副本迁移无法保持主键、外键或行数，立即停止并开 red-line delta contract。
 
+## C-03-M4 Agent 记忆迁移计划
+
+1. 新增 agent_threads、agent_messages、memory_items 三张表及查询索引，不修改或重建既有四张业务表。
+2. AgentThread.user_id 与 MemoryItem.user_id 指向 user_profile.user_id，删除档案时级联删除。
+3. AgentMessage.thread_id 指向 agent_threads.thread_id，删除对话时级联删除消息。
+4. MemoryItem.source_message_id 可空并指向 agent_messages.message_id，删除来源消息时 SET NULL。
+5. 旧运行库迁移前保存副本；迁移后旧四表行数、主键集合、sqlite_sequence、integrity_check 和 foreign_key_check 必须保持有效。
+6. 全新空库必须可从零应用全部 migration；旧运行库副本迁移后新增三表行数均为 0，不自动从餐食或档案回填记忆。
+7. Prisma schema、migration SQL、ER 文档与 relationships.json 的级联/置空语义必须一致。
+
 ## 验证
 
 - prisma validate

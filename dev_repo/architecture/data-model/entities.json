@@ -1,6 +1,6 @@
 {
-  "schema_version": 2,
-  "source_of_truth": ["prisma/migrations/**", "prisma/schema.prisma"],
+  "schema_version": 3,
+  "source_of_truth": ["prisma/migrations/**", "prisma/schema.prisma", "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md"],
   "entities": [
     {
       "name": "UserProfile",
@@ -115,6 +115,85 @@
       "migration_notes": "S1 通过 exercise_name 幂等 upsert，不默认创建用户或餐食",
       "requires_amendment_when": ["改变基准体重", "改变 business key", "历史建议改为外键关联"],
       "confidence": "confirmed"
+    },
+    {
+      "name": "AgentThread",
+      "table": "agent_threads",
+      "purpose": "primary profile 的本地 Agent 对话容器",
+      "owning_architecture_node": "memory.store",
+      "source_or_derived": "source",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma", "prisma/migrations/**"],
+      "identity": {"field": "thread_id", "strategy": "autoincrement"},
+      "ownership": {"field": "user_id", "entity": "UserProfile"},
+      "state_fields": ["title", "status"],
+      "derived_from": {},
+      "fields": [
+        {"name": "thread_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "user_id", "type": "INTEGER", "fk": "UserProfile.user_id", "nullable": false},
+        {"name": "title", "type": "TEXT", "nullable": false, "max_length": 120},
+        {"name": "status", "type": "TEXT", "nullable": false, "default": "active", "allowed": ["active", "archived"]},
+        {"name": "created_at", "type": "DATETIME", "nullable": false},
+        {"name": "updated_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "C-03-M4 仅新增表、索引与 UserProfile 外键，不回填旧业务行",
+      "requires_amendment_when": ["改变 primary profile 所有权", "增加共享对话", "改变删除消息的级联语义"],
+      "confidence": "approved_target"
+    },
+    {
+      "name": "AgentMessage",
+      "table": "agent_messages",
+      "purpose": "对话中的用户、助手和工具消息本地历史",
+      "owning_architecture_node": "memory.store",
+      "source_or_derived": "source",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma", "prisma/migrations/**"],
+      "identity": {"field": "message_id", "strategy": "autoincrement"},
+      "ownership": {"field": "thread_id", "entity": "AgentThread"},
+      "state_fields": ["role", "content", "metadata_json"],
+      "derived_from": {},
+      "fields": [
+        {"name": "message_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "thread_id", "type": "INTEGER", "fk": "AgentThread.thread_id", "nullable": false},
+        {"name": "role", "type": "TEXT", "nullable": false, "allowed": ["user", "assistant", "tool"]},
+        {"name": "content", "type": "TEXT", "nullable": false, "max_length": 20000},
+        {"name": "metadata_json", "type": "TEXT_JSON", "nullable": true, "must_not_contain": ["secret", "payment credential", "image data URL", "raw provider error body", "system prompt"]},
+        {"name": "created_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "C-03-M4 新增表；无历史消息回填",
+      "requires_amendment_when": ["增加新角色语义", "持久化 system prompt", "改变 Thread 删除级联"],
+      "confidence": "approved_target"
+    },
+    {
+      "name": "MemoryItem",
+      "table": "memory_items",
+      "purpose": "可查看、可修正、可停用和可删除的长期个性化事实",
+      "owning_architecture_node": "memory.store",
+      "source_or_derived": "source_or_inference",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma", "prisma/migrations/**"],
+      "identity": {"field": "memory_id", "strategy": "autoincrement"},
+      "ownership": {"field": "user_id", "entity": "UserProfile"},
+      "state_fields": ["category", "content", "source_kind", "source_ref", "confidence", "importance", "status", "is_user_confirmed", "expires_at"],
+      "derived_from": {"source_message_id": "可选 AgentMessage 来源；删除消息后置空"},
+      "fields": [
+        {"name": "memory_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "user_id", "type": "INTEGER", "fk": "UserProfile.user_id", "nullable": false},
+        {"name": "source_message_id", "type": "INTEGER", "fk": "AgentMessage.message_id", "nullable": true, "on_delete": "SET NULL"},
+        {"name": "category", "type": "TEXT", "nullable": false, "allowed": ["preference", "constraint", "goal", "habit", "context", "insight"]},
+        {"name": "content", "type": "TEXT", "nullable": false, "max_length": 1000},
+        {"name": "source_kind", "type": "TEXT", "nullable": false, "allowed": ["user", "profile", "meal_history", "agent_inference"]},
+        {"name": "source_ref", "type": "TEXT", "nullable": true, "max_length": 240, "must_not_contain": ["secret", "payment credential"]},
+        {"name": "confidence", "type": "REAL", "nullable": false, "default": 1, "min": 0, "max": 1},
+        {"name": "importance", "type": "REAL", "nullable": false, "default": 0.5, "min": 0, "max": 1},
+        {"name": "status", "type": "TEXT", "nullable": false, "default": "active", "allowed": ["active", "disabled"]},
+        {"name": "is_user_confirmed", "type": "INTEGER_BOOLEAN", "nullable": false, "default": 0},
+        {"name": "user_edited_at", "type": "DATETIME", "nullable": true},
+        {"name": "last_used_at", "type": "DATETIME", "nullable": true},
+        {"name": "expires_at", "type": "DATETIME", "nullable": true},
+        {"name": "created_at", "type": "DATETIME", "nullable": false},
+        {"name": "updated_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "C-03-M4 新增表；不从旧餐食自动生成记忆，推断记忆由后续显式流程创建",
+      "requires_amendment_when": ["改变删除语义", "引入向量或云端存储", "允许跨 profile 共享", "改变确认与来源含义"],
+      "confidence": "approved_target"
     }
   ]
 }
