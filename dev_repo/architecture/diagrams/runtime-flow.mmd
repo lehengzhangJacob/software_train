@@ -1,0 +1,24 @@
+sequenceDiagram
+  actor User
+  participant UI as Browser UI
+  participant API as Next API
+  participant AI as Provider Gateway
+  participant DB as SQLite
+  User->>UI: 选择食物图片
+  UI->>API: POST /api/ai/recognize
+  API->>AI: 服务端凭据调用
+  AI-->>API: 结构化食物候选
+  API-->>UI: data/error
+  User->>UI: 发起营养对话或附近外卖请求
+  UI->>API: POST /api/agent
+  API->>DB: 读取档案、餐食与可用记忆
+  API->>AI: 受控上下文调用
+  AI-->>API: 建议或工具意图
+  API-->>UI: 建议、搜索结果或订单草案
+  User->>UI: 明确确认最终外部写操作
+  UI-->>User: 展示可编辑审核单
+  User->>UI: 确认保存
+  UI->>API: POST /api/meals
+  API->>DB: 绑定 primary profile 后写入
+  DB-->>API: 已保存记录
+  API-->>UI: data/error

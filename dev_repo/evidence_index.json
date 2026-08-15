@@ -1,0 +1,319 @@
+{
+  "C-01-S0": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/ARCHITECTURE.md",
+      "description": "架构总览"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "架构节点依赖图"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/invariants.md",
+      "description": "架构不变项"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/ER.md",
+      "description": "实体关系描述"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/entities.json",
+      "description": "实体定义"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/relationships.json",
+      "description": "关系定义"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/invariants.md",
+      "description": "数据模型不变项"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "迁移计划"
+    }
+  ],
+  "C-02-S0": [
+    {
+      "type": "security",
+      "path": ".env.example",
+      "description": "仅服务端 AI 环境变量契约，无实际密钥"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/ai/recognize/route.ts",
+      "description": "安全失败、请求限制、超时和响应校验"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/exercise/exercise-content.tsx",
+      "description": "移除 NEXT_PUBLIC 密钥引用"
+    },
+    {
+      "type": "git",
+      "path": "git:codex/release-hardening",
+      "description": "基于 672e56b，6d9f0b0 不可达"
+    }
+  ],
+  "C-02-A1": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/README.md",
+      "description": "架构宪法入口与课程项目边界"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "12 个可行动节点、依赖与实现状态"
+    },
+    {
+      "type": "architecture-decision",
+      "path": "dev_repo/architecture/decisions/ADR-0001-private-course-boundary.md",
+      "description": "私有单用户边界修宪决策"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/entities.json",
+      "description": "四实体的身份、所有权、派生与迁移责任"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "S1 迁移、回填、兼容与回滚要求"
+    }
+  ],
+  "C-02-S1": [
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260710130000_baseline/migration.sql",
+      "description": "四表与索引 baseline"
+    },
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260710130100_backfill_profile_bmr/migration.sql",
+      "description": "现有 profile BMR 回填"
+    },
+    {
+      "type": "data-model",
+      "path": "prisma/schema.prisma",
+      "description": "DATABASE_URL 与 ORM updatedAt"
+    },
+    {
+      "type": "seed",
+      "path": "prisma/seed.ts",
+      "description": "25 条运动参考幂等 upsert，不创建 demo 用户"
+    },
+    {
+      "type": "runtime",
+      "path": "scripts/ensure-sqlite-database.mjs",
+      "description": "迁移前安全创建 SQLite 文件"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "全新库与旧库副本的同案验证结果"
+    }
+  ],
+  "C-02-S2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/current-user.ts",
+      "description": "服务端稳定选择 primary profile，客户端 ID 不参与归属"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/validation.ts",
+      "description": "用户与餐食 DTO 白名单、BMR 派生、枚举/数值/日期校验"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/meals/route.ts",
+      "description": "餐食 CRUD 的 primary profile 绑定与更新/删除所有权校验"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/{users,reports,exercise}/route.ts",
+      "description": "统一 data/error 信封、错误脱敏与伪造 userId 忽略"
+    },
+    {
+      "type": "frontend",
+      "path": "src/app/{dashboard,profile,meals,calendar,exercise,reports}/page.tsx",
+      "description": "动态个性页面与无档案 onboarding 跳转"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "临时 SQLite 同案、构建清单、PII 哨兵和静态质量门结果"
+    }
+  ],
+  "C-02-S3": [
+    {
+      "type": "implementation",
+      "path": "src/components/food/photo-upload.tsx",
+      "description": "只负责图片识别和全量候选回传，不直接写入餐食"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/food/meals-content.tsx",
+      "description": "多食物审核草稿、10 项上限、明确确认和失败保留"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/meals/route.ts",
+      "description": "items[] 全量预校验后的 Prisma 事务保存"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/validation.ts",
+      "description": "批量餐食白名单 DTO 与 1-10 项边界"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "临时 SQLite 批量、回滚、所有权和图片隔离同案结果"
+    }
+  ],
+  "C-02-S4": [
+    {
+      "type": "implementation",
+      "path": "src/app/api/exercise/suggest/route.ts",
+      "description": "候选总消耗、采用幂等、取消采用和 primary profile 所有权"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/exercise/exercise-content.tsx",
+      "description": "真实候选与已采用计划、行级保存和失败状态；无伪 AI 文本卡"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/validation.ts",
+      "description": "采用/取消计划 DTO，仅接受引用 ID、时长、日期和布尔状态"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "移除未实现的 AI 文本接口目标，确认图片识别代理边界"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "临时 SQLite 采用、重复采用、取消、越权和输入矩阵结果"
+    }
+  ],
+  "C-02-S5": [
+    {
+      "type": "implementation",
+      "path": "src/lib/date.ts",
+      "description": "本地 YYYY-MM-DD 解析、移日和严格含终点的自然日窗口"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/reports/route.ts",
+      "description": "7/30 天精确查询、连续日期序列和未记录日显式空值"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/dashboard/page.tsx",
+      "description": "近 7 日趋势严格限定窗口并保留断档"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/{calendar,reports,exercise}/",
+      "description": "请求取消、竞态归属、防旧响应回写和可重试错误态"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "隔离 SQLite 加实际 Next HTTP 的 7/30 天边界、空档和连续日期验证"
+    }
+  ],
+  "C-02-S6": [
+    {
+      "type": "implementation",
+      "path": "src/app/layout.tsx",
+      "description": "移动端安全区域与固定导航预留、跳过导航目标"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/sidebar.tsx",
+      "description": "具名导航、当前页语义、高对比焦点与等宽移动端触控目标"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/{profile-form.tsx,food/meals-content.tsx}",
+      "description": "设置和餐食选择器的 Label/Trigger 关联"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/{charts/macro-donut.tsx,ui/*}",
+      "description": "窄屏图表纵排、高对比焦点环和可操作图标对比度"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "375px/desktop 浏览器布局、DOM 语义、lint/typecheck/build 与样式哨兵"
+    }
+  ],
+  "C-02-S7": [
+    {
+      "type": "delivery",
+      "path": "package.json",
+      "description": "typecheck、verify、smoke 与 release:check 的可组合发布命令"
+    },
+    {
+      "type": "delivery",
+      "path": "scripts/release-smoke.mjs",
+      "description": "生产 next start loopback smoke；验证页面、报表 API 信封和无效参数，不调用 AI"
+    },
+    {
+      "type": "delivery",
+      "path": ".github/workflows/ci.yml",
+      "description": "空 STEP_API_KEY 的干净环境迁移、seed、verify 与 smoke CI"
+    },
+    {
+      "type": "documentation",
+      "path": "README.md",
+      "description": "PowerShell 与 macOS/Linux 的本地启动、发布检查和私有课程边界"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "全新 SQLite 的 db:init 到 release:check 实测证据"
+    }
+  ],
+  "C-03-M0": [
+    {
+      "type": "git",
+      "path": "git:codex/local-nutrition-agent",
+      "description": "保留 software_train 与 food-tracker 双方历史的集成分支"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0002-local-nutrition-agent.md",
+      "description": "本地个人营养 Agent 的运行时、凭据、记忆与工具边界"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "新增 Agent、记忆、AI Gateway、MCP 与动作策略规划节点"
+    },
+    {
+      "type": "runtime",
+      "path": "dev_repo/state.json",
+      "description": "激活 C-03 迁移合同并保留 C-01/C-02 历史"
+    },
+    {
+      "type": "verification",
+      "path": "package.json",
+      "description": "npm 11.6.2 依赖基线通过 Prisma generate、lint、typecheck 与 production build"
+    }
+  ]
+}

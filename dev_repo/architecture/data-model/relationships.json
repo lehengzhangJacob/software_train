@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "relationships": [
+    {
+      "name": "UserProfile_has_MealRecords",
+      "source": "UserProfile",
+      "target": "MealRecord",
+      "cardinality": "1:N",
+      "via": "MealRecord.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma"],
+      "invariant": "API 只能读写 primary profile 的记录",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserProfile_has_ExerciseSuggestions",
+      "source": "UserProfile",
+      "target": "ExerciseSuggestion",
+      "cardinality": "1:N",
+      "via": "ExerciseSuggestion.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma"],
+      "invariant": "采纳状态属于建议所有者",
+      "confidence": "confirmed"
+    }
+  ],
+  "non_relationships": [
+    {
+      "source": "ExerciseCalorieReference",
+      "target": "ExerciseSuggestion",
+      "reason": "建议保存生成时快照，不以外键追随参考值变化"
+    }
+  ]
+}

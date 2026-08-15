@@ -1,0 +1,40 @@
+erDiagram
+  UserProfile ||--o{ MealRecord : owns
+  UserProfile ||--o{ ExerciseSuggestion : owns
+  ExerciseCalorieReference {
+    int exercise_id PK
+    string exercise_name UK
+    float calories_per_30min
+    string category
+    float met_value
+  }
+  UserProfile {
+    int user_id PK
+    string username
+    string gender
+    int age
+    float height_cm
+    float weight_kg
+    int daily_calorie_target
+    float bmr DERIVED
+    string activity_level
+  }
+  MealRecord {
+    int record_id PK
+    int user_id FK
+    string food_name
+    string meal_type
+    float calories
+    string record_date
+    string record_time
+    string recognition_raw
+  }
+  ExerciseSuggestion {
+    int suggestion_id PK
+    int user_id FK
+    string suggestion_date
+    string exercise_type
+    int duration_minutes
+    float calorie_burn_estimate
+    int is_adopted
+  }

@@ -1,0 +1,37 @@
+{
+  "campaign_id": "nutrition-agent",
+  "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
+  "root_contract_id": "C-01",
+  "active_contract_id": "C-03",
+  "status": "active",
+  "contracts": {
+    "C-01": {
+      "status": "completed",
+      "summary": "全栈饮食记录系统 - Next.js、Prisma 与 StepFun",
+      "current_slice": null,
+      "completed_slices": ["C-01-S0", "C-01-S1", "C-01-S2", "C-01-S3", "C-01-S4", "C-01-S5", "C-01-S6"],
+      "return_to": null
+    },
+    "C-02": {
+      "contract_id": "C-02",
+      "parent_contract_id": "C-01",
+      "root_campaign": "food-tracker",
+      "status": "completed",
+      "summary": "课程项目接手验收与发布收口",
+      "current_slice": null,
+      "completed_slices": ["C-02-S0", "C-02-A1", "C-02-S1", "C-02-S2", "C-02-S3", "C-02-S4", "C-02-S5", "C-02-S6", "C-02-S7"],
+      "return_to": "C-03"
+    },
+    "C-03": {
+      "contract_id": "C-03",
+      "parent_contract_id": "C-02",
+      "root_campaign": "nutrition-agent",
+      "status": "active",
+      "summary": "迁移成熟能力并升级为本地个人营养 Agent",
+      "goal": "完成仓库与数据迁移、个人工具体验、多提供商、长期记忆和受控 MCP 工具层",
+      "current_slice": "C-03-M1",
+      "completed_slices": ["C-03-M0"],
+      "return_to": "web_completion_audit"
+    }
+  }
+}

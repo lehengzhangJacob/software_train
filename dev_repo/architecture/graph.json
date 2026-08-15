@@ -1,0 +1,831 @@
+{
+  "schema_version": 2,
+  "amendment": {
+    "contract_id": "C-03-A0",
+    "decision": "local_first_nutrition_agent",
+    "status": "accepted",
+    "return_to": "C-03-M1"
+  },
+  "nodes": [
+    {
+      "id": "local_user",
+      "purpose": "在本机使用个人营养、记忆和工具能力的单个用户",
+      "owned_files": [],
+      "public_interfaces": [
+        "browser interaction"
+      ],
+      "depends_on": [
+        "frontend"
+      ],
+      "depended_on_by": [],
+      "invariants": [
+        "不被表述为已认证的公网身份",
+        "所有外部写操作由本人最终确认"
+      ],
+      "allowed_change_types": [
+        "local personal tool workflow"
+      ],
+      "requires_amendment_when": [
+        "引入第二个并发用户或公网身份"
+      ],
+      "verification": [
+        "course demo screenplay",
+        "browser E2E"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "frontend",
+      "purpose": "浏览器外壳、导航、全局状态与视觉系统",
+      "owned_files": [
+        "src/app/layout.tsx",
+        "src/app/globals.css",
+        "src/components/sidebar.tsx"
+      ],
+      "public_interfaces": [
+        "HTML",
+        "client navigation"
+      ],
+      "depends_on": [
+        "frontend.pages",
+        "frontend.components"
+      ],
+      "depended_on_by": [
+        "local_user"
+      ],
+      "invariants": [
+        "375px-1440px 可用",
+        "移动导航不遮挡内容"
+      ],
+      "allowed_change_types": [
+        "layout",
+        "styling",
+        "accessibility"
+      ],
+      "requires_amendment_when": [
+        "改变客户端/服务端边界",
+        "引入新的前端运行时"
+      ],
+      "verification": [
+        "responsive browser matrix",
+        "axe"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "frontend.pages",
+      "purpose": "档案、看板、餐食、日历、运动和报告页面",
+      "owned_files": [
+        "src/app/dashboard/**",
+        "src/app/profile/**",
+        "src/app/meals/**",
+        "src/app/calendar/**",
+        "src/app/exercise/**",
+        "src/app/reports/**",
+        "src/app/settings/**",
+        "src/app/agent/**"
+      ],
+      "public_interfaces": [
+        "/dashboard",
+        "/profile",
+        "/meals",
+        "/calendar",
+        "/exercise",
+        "/reports",
+        "/settings",
+        "/agent"
+      ],
+      "depends_on": [
+        "frontend.components",
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "frontend"
+      ],
+      "invariants": [
+        "个性化页面动态渲染",
+        "无 profile 时进入建档闭环"
+      ],
+      "allowed_change_types": [
+        "page composition",
+        "loading/error states"
+      ],
+      "requires_amendment_when": [
+        "页面改为公开缓存",
+        "新增身份上下文"
+      ],
+      "verification": [
+        "build manifest PII gate",
+        "browser E2E"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "frontend.components",
+      "purpose": "业务组件、图表和 UI primitives",
+      "owned_files": [
+        "src/components/**"
+      ],
+      "public_interfaces": [
+        "React component props"
+      ],
+      "depends_on": [
+        "backend.api",
+        "ai.gateway"
+      ],
+      "depended_on_by": [
+        "frontend.pages"
+      ],
+      "invariants": [
+        "AI 先审核后保存",
+        "状态可被键盘和读屏理解"
+      ],
+      "allowed_change_types": [
+        "component behavior",
+        "visual tokens",
+        "forms"
+      ],
+      "requires_amendment_when": [
+        "改变持久化所有权",
+        "直接调用外部 AI"
+      ],
+      "verification": [
+        "component tests",
+        "browser E2E",
+        "axe"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "backend.api",
+      "purpose": "同源业务 API、输入校验、错误映射与 primary profile 边界",
+      "owned_files": [
+        "src/app/api/users/**",
+        "src/app/api/meals/**",
+        "src/app/api/reports/**",
+        "src/app/api/exercise/**",
+        "src/lib/api*.ts",
+        "src/lib/validation*.ts"
+      ],
+      "public_interfaces": [
+        "/api/users GET/PUT",
+        "/api/meals GET/PUT/DELETE",
+        "/api/meals POST items[] (approved target)",
+        "/api/reports GET continuous-day series (approved target)",
+        "/api/exercise/suggest GET/POST/PATCH (approved target)"
+      ],
+      "depends_on": [
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "frontend.components",
+        "frontend.pages"
+      ],
+      "invariants": [
+        "不信任客户端 userId",
+        "响应为 data/error",
+        "错误脱敏"
+      ],
+      "allowed_change_types": [
+        "DTO validation",
+        "same-origin API behavior"
+      ],
+      "requires_amendment_when": [
+        "新增公网身份",
+        "改变所有权或 API 版本"
+      ],
+      "verification": [
+        "route integration tests",
+        "invalid input matrix"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "ai.gateway",
+      "purpose": "服务端多提供商注册表、凭据读取、模型调用与输出校验",
+      "owned_files": [
+        "src/app/api/ai/**",
+        "src/app/api/settings/ai/**",
+        "src/lib/ai/**"
+      ],
+      "public_interfaces": [
+        "/api/ai/recognize",
+        "/api/settings/ai"
+      ],
+      "depends_on": [
+        "local.secret_store",
+        "external.ai_providers"
+      ],
+      "depended_on_by": [
+        "frontend.components",
+        "agent.runtime"
+      ],
+      "invariants": [
+        "完整密钥不回传浏览器",
+        "失败不得伪装成功",
+        "提供商响应脱敏"
+      ],
+      "allowed_change_types": [
+        "provider adapter",
+        "model registry",
+        "response schema"
+      ],
+      "requires_amendment_when": [
+        "浏览器直连提供商",
+        "改变数据外发类型"
+      ],
+      "verification": [
+        "provider contract tests",
+        "missing-key test",
+        "secret scan"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "database.prisma",
+      "purpose": "ORM、schema 与正式 migration",
+      "owned_files": [
+        "prisma/schema.prisma",
+        "prisma/migrations/**",
+        "prisma/seed.ts",
+        "src/lib/prisma.ts"
+      ],
+      "public_interfaces": [
+        "PrismaClient models",
+        "prisma migrate deploy"
+      ],
+      "depends_on": [
+        "database.sqlite"
+      ],
+      "depended_on_by": [
+        "backend.api",
+        "frontend.pages"
+      ],
+      "invariants": [
+        "migration 是生产 schema 真相",
+        "seed 幂等且不默认写 demo 用户"
+      ],
+      "allowed_change_types": [
+        "migration",
+        "indexes",
+        "constraints",
+        "reference seed"
+      ],
+      "requires_amendment_when": [
+        "改变实体身份或关系",
+        "更换数据库 provider"
+      ],
+      "verification": [
+        "prisma validate",
+        "fresh migrate",
+        "copy migration"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "database.sqlite",
+      "purpose": "单实例课程项目持久化",
+      "owned_files": [
+        "database/*.db (runtime ignored)"
+      ],
+      "public_interfaces": [
+        "DATABASE_URL file path"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "database.prisma"
+      ],
+      "invariants": [
+        "仅单实例写入",
+        "真实 DB 不进入 Git",
+        "迁移前备份"
+      ],
+      "allowed_change_types": [
+        "local file location",
+        "backup/restore"
+      ],
+      "requires_amendment_when": [
+        "多实例",
+        "切换托管数据库"
+      ],
+      "verification": [
+        "PRAGMA integrity_check",
+        "foreign_key_check"
+      ],
+      "known_debt": [
+        "当前 demo DB 由 db push 创建"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "database.legacy_design",
+      "purpose": "保存最初 SQL 设计与数据库说明，仅作参考",
+      "owned_files": [
+        "database/schema.sql",
+        "database/init_data.sql",
+        "database/README.md"
+      ],
+      "public_interfaces": [],
+      "depends_on": [],
+      "depended_on_by": [
+        "database.prisma"
+      ],
+      "invariants": [
+        "不得作为部署时隐式第二 schema 真相"
+      ],
+      "allowed_change_types": [
+        "documentation alignment"
+      ],
+      "requires_amendment_when": [
+        "重新提升为生产 schema 权威"
+      ],
+      "verification": [
+        "architecture index review"
+      ],
+      "known_debt": [
+        "C-02-S1 将标注 legacy"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "legacy"
+    },
+    {
+      "id": "external.ai_providers",
+      "purpose": "StepFun、GLM 与 OpenAI-compatible 外部模型服务",
+      "owned_files": [],
+      "public_interfaces": [
+        "provider-specific or OpenAI-compatible chat completions"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "ai.gateway"
+      ],
+      "invariants": [
+        "密钥不入 Git",
+        "图片和上下文外发需用户知情"
+      ],
+      "allowed_change_types": [
+        "provider",
+        "model name",
+        "base URL through server settings"
+      ],
+      "requires_amendment_when": [
+        "新增不同风险级别的数据外发"
+      ],
+      "verification": [
+        "manual smoke with local secret",
+        "mock contract in CI"
+      ],
+      "known_debt": [
+        "真实 API 只做人工作业演示 smoke"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "delivery",
+      "purpose": "可复现安装、质量门、构建与课程演示",
+      "owned_files": [
+        "package.json",
+        "package-lock.json",
+        "README.md",
+        "scripts/release-smoke.mjs",
+        ".github/**",
+        "playwright.config.*",
+        "tests/**"
+      ],
+      "public_interfaces": [
+        "npm scripts",
+        "CI workflow"
+      ],
+      "depends_on": [
+        "frontend",
+        "backend.api",
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "local_user"
+      ],
+      "invariants": [
+        "CI 不调用真实 AI",
+        "默认只监听 loopback",
+        "绿测后才称 RC"
+      ],
+      "allowed_change_types": [
+        "scripts",
+        "test harness",
+        "CI"
+      ],
+      "requires_amendment_when": [
+        "公网部署",
+        "容器成为必选运行时"
+      ],
+      "verification": [
+        "clean install",
+        "prisma migrate deploy",
+        "seed",
+        "lint",
+        "typecheck",
+        "build",
+        "production loopback smoke",
+        "manual browser E2E"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "dev_repo",
+      "purpose": "合同、架构、ER、日志和证据真相",
+      "owned_files": [
+        "dev_repo/**"
+      ],
+      "public_interfaces": [
+        "state.json",
+        "tree.md",
+        "evidence_index.json",
+        "journal.jsonl"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "delivery"
+      ],
+      "invariants": [
+        "不补造历史证据",
+        "每片更新真实状态",
+        "子合同显式 return_to"
+      ],
+      "allowed_change_types": [
+        "contract state",
+        "architecture census",
+        "evidence index"
+      ],
+      "requires_amendment_when": [
+        "改变治理不变量"
+      ],
+      "verification": [
+        "JSON parse",
+        "path existence",
+        "git history"
+      ],
+      "known_debt": [
+        "C-01 完成声明证据不足，保留历史标注"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "active"
+    },
+    {
+      "id": "local.secret_store",
+      "purpose": "保存 GUI 提交的本机 AI 与 MCP 凭据",
+      "owned_files": [
+        "src/lib/ai/settings.ts",
+        "data/credentials.json (runtime ignored)"
+      ],
+      "public_interfaces": [
+        "masked provider settings"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "ai.gateway",
+        "mcp.gateway"
+      ],
+      "invariants": [
+        "完整密钥不回传",
+        "凭据不进入 Git、日志或 Agent 记忆"
+      ],
+      "allowed_change_types": [
+        "local credential format",
+        "OS credential adapter"
+      ],
+      "requires_amendment_when": [
+        "凭据同步到云端"
+      ],
+      "verification": [
+        "secret scan",
+        "masked readback test"
+      ],
+      "known_debt": [
+        "C-03-S1 实现持久化策略"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "memory.store",
+      "purpose": "跨会话保存可审计、可遗忘的用户记忆与对话",
+      "owned_files": [
+        "prisma/schema.prisma",
+        "prisma/migrations/**",
+        "src/lib/memory/**"
+      ],
+      "public_interfaces": [
+        "memory repository"
+      ],
+      "depends_on": [
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "agent.runtime"
+      ],
+      "invariants": [
+        "记忆带来源和置信度",
+        "用户可修正与删除",
+        "不保存凭据"
+      ],
+      "allowed_change_types": [
+        "memory policy",
+        "retrieval",
+        "retention"
+      ],
+      "requires_amendment_when": [
+        "改变记忆身份、作用域或保留语义"
+      ],
+      "verification": [
+        "migration",
+        "cross-session recall",
+        "forget test"
+      ],
+      "known_debt": [
+        "C-03-A1 实现"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "agent.runtime",
+      "purpose": "编排档案、餐食、记忆、模型与工具的营养对话运行时",
+      "owned_files": [
+        "src/app/agent/**",
+        "src/app/api/agent/**",
+        "src/lib/agent/**"
+      ],
+      "public_interfaces": [
+        "/agent",
+        "/api/agent"
+      ],
+      "depends_on": [
+        "backend.api",
+        "ai.gateway",
+        "memory.store",
+        "mcp.gateway"
+      ],
+      "depended_on_by": [
+        "frontend.pages"
+      ],
+      "invariants": [
+        "推断不冒充事实",
+        "建议不是医疗诊断",
+        "工具调用经过策略层"
+      ],
+      "allowed_change_types": [
+        "prompt orchestration",
+        "context selection",
+        "tool loop"
+      ],
+      "requires_amendment_when": [
+        "自主执行外部不可逆动作"
+      ],
+      "verification": [
+        "context tests",
+        "memory tests",
+        "tool policy tests"
+      ],
+      "known_debt": [
+        "C-03-S2 实现"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "mcp.gateway",
+      "purpose": "发现、校验并调用本机配置的 MCP 工具",
+      "owned_files": [
+        "src/app/api/mcp/**",
+        "src/lib/mcp/**"
+      ],
+      "public_interfaces": [
+        "tool discovery",
+        "guarded tool invocation"
+      ],
+      "depends_on": [
+        "local.secret_store",
+        "action.policy",
+        "external.mcp_services"
+      ],
+      "depended_on_by": [
+        "agent.runtime"
+      ],
+      "invariants": [
+        "工具白名单",
+        "超时",
+        "输出不可信"
+      ],
+      "allowed_change_types": [
+        "transport",
+        "tool adapter",
+        "capability mapping"
+      ],
+      "requires_amendment_when": [
+        "新增可绕过确认的外部写能力"
+      ],
+      "verification": [
+        "fixture MCP",
+        "timeout",
+        "malicious output"
+      ],
+      "known_debt": [
+        "C-03-S3 实现"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "action.policy",
+      "purpose": "区分只读搜索、订单草案与必须最终确认的外部写操作",
+      "owned_files": [
+        "src/lib/actions/**"
+      ],
+      "public_interfaces": [
+        "action classification",
+        "confirmation token"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "mcp.gateway",
+        "agent.runtime"
+      ],
+      "invariants": [
+        "模型不能自我确认",
+        "确认绑定最终参数",
+        "支付凭据不持久化"
+      ],
+      "allowed_change_types": [
+        "policy rules",
+        "confirmation expiry"
+      ],
+      "requires_amendment_when": [
+        "允许自动支付或账户变更"
+      ],
+      "verification": [
+        "confirmation bypass tests"
+      ],
+      "known_debt": [
+        "C-03-S3 实现"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "planned"
+    },
+    {
+      "id": "external.mcp_services",
+      "purpose": "用户授权的附近搜索、外卖与其他 MCP 服务",
+      "owned_files": [],
+      "public_interfaces": [
+        "MCP tools"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "mcp.gateway"
+      ],
+      "invariants": [
+        "位置访问需授权",
+        "真实写操作取决于官方或用户授权能力"
+      ],
+      "allowed_change_types": [
+        "configured MCP server"
+      ],
+      "requires_amendment_when": [
+        "服务获得支付或账户写权限"
+      ],
+      "verification": [
+        "real connector probe",
+        "fixture fallback"
+      ],
+      "known_debt": [
+        "尚未绑定具体外卖平台"
+      ],
+      "confidence": "unknown",
+      "implementation_status": "planned"
+    }
+  ],
+  "edges": [
+    {
+      "source": "local_user",
+      "target": "frontend",
+      "label": "local browser"
+    },
+    {
+      "source": "frontend",
+      "target": "frontend.pages",
+      "label": "renders"
+    },
+    {
+      "source": "frontend.pages",
+      "target": "frontend.components",
+      "label": "composes"
+    },
+    {
+      "source": "frontend.components",
+      "target": "backend.api",
+      "label": "same-origin fetch"
+    },
+    {
+      "source": "frontend.components",
+      "target": "ai.gateway",
+      "label": "review workflows"
+    },
+    {
+      "source": "backend.api",
+      "target": "database.prisma",
+      "label": "validated queries"
+    },
+    {
+      "source": "frontend.pages",
+      "target": "database.prisma",
+      "label": "dynamic server reads"
+    },
+    {
+      "source": "database.prisma",
+      "target": "database.sqlite",
+      "label": "single-instance persistence"
+    },
+    {
+      "source": "database.legacy_design",
+      "target": "database.prisma",
+      "label": "reference only"
+    },
+    {
+      "source": "ai.gateway",
+      "target": "external.ai_providers",
+      "label": "server-side HTTP"
+    },
+    {
+      "source": "delivery",
+      "target": "frontend",
+      "label": "build and E2E"
+    },
+    {
+      "source": "delivery",
+      "target": "backend.api",
+      "label": "integration tests"
+    },
+    {
+      "source": "delivery",
+      "target": "dev_repo",
+      "label": "evidence"
+    },
+    {
+      "source": "ai.gateway",
+      "target": "local.secret_store",
+      "label": "reads local credentials"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "backend.api",
+      "label": "nutrition context"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "ai.gateway",
+      "label": "model inference"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "memory.store",
+      "label": "recall and remember"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "mcp.gateway",
+      "label": "guarded tools"
+    },
+    {
+      "source": "memory.store",
+      "target": "database.prisma",
+      "label": "persistent records"
+    },
+    {
+      "source": "mcp.gateway",
+      "target": "action.policy",
+      "label": "classifies actions"
+    },
+    {
+      "source": "mcp.gateway",
+      "target": "external.mcp_services",
+      "label": "authorized MCP transport"
+    }
+  ]
+}
