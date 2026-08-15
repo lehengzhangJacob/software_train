@@ -349,5 +349,37 @@
       "path": "dev_repo/architecture/data-model/migrations.md",
       "description": "原始 SHA-256、逐行/主键/序列一致性、零 schema diff、运行库 status 与 production smoke 结果"
     }
+  ],
+  "C-03-M2": [
+    {
+      "type": "frontend",
+      "path": "src/components/charts/{macro-donut,calorie-trend}.tsx",
+      "description": "以响应式原生 SVG 呈现宏量营养和热量趋势，移除客户端测宽与 Recharts 空白图表风险"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/reports/reports-content.tsx",
+      "description": "7/30 天热量柱状图、目标线、缺失日和可访问日期描述"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/ui/tabs.tsx",
+      "description": "按 Base UI 的 data-orientation 属性修正水平标签页布局"
+    },
+    {
+      "type": "dependency",
+      "path": "package.json",
+      "description": "npm 11.6.2 串行清理 Recharts，升级 Next/eslint-config-next 16.3.1，生产依赖审计为 0"
+    },
+    {
+      "type": "configuration",
+      "path": "next.config.ts",
+      "description": "允许 127.0.0.1 开发来源并关闭 Next 自动生成 agent 文件"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "迁移 API、六个业务页面、桌面/移动图表、周/月报告切换和 release:check 实测证据"
+    }
   ]
 }

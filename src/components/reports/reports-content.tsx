@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts"
 import { formatCalories, formatGrams } from "@/lib/utils"
 import { TrendingUp, CalendarDays, Target, Beef, Droplet, Wheat } from "lucide-react"
 
@@ -39,27 +38,67 @@ interface ApiEnvelope<T> {
 
 type DailyReport = ReportData["daily"][number]
 
-function NutritionTooltip({
-  active,
-  label,
-  dailyByDate,
-}: {
-  active?: boolean
-  label?: string | number
-  dailyByDate: Map<string, DailyReport>
-}) {
-  if (!active || label === undefined) return null
-
-  const day = dailyByDate.get(String(label))
-  if (!day) return null
+function ReportBarChart({ daily, target }: { daily: DailyReport[]; target: number }) {
+  const values = daily.flatMap((day) => (day.calories === null ? [] : [day.calories]))
+  const observedMax = Math.max(target, ...values)
+  const chartMax = Math.max(500, Math.ceil((observedMax * 1.1) / 500) * 500)
+  const targetY = Math.max(0, 100 - (target / chartMax) * 100)
+  const yTicks = [chartMax, chartMax / 2, 0]
 
   return (
-    <div className="rounded-md border border-neutral-200 bg-white px-3 py-2 text-xs shadow-sm">
-      <p className="font-medium text-neutral-800">日期: {day.date}</p>
-      <p className="mt-1 text-neutral-600">
-        {day.recorded ? `摄入: ${formatCalories(day.calories ?? 0)}` : "无饮食记录"}
-      </p>
-      <p className="text-neutral-500">目标: {formatCalories(day.target)}</p>
+    <div className="h-72 w-full" role="img" aria-label="营养报告热量趋势">
+      <div className="flex h-full">
+        <div className="relative mb-7 w-12 shrink-0 text-[11px] text-neutral-400">
+          {yTicks.map((value, index) => (
+            <span
+              key={value}
+              className="absolute right-2 -translate-y-1/2"
+              style={{ top: `${index * 50}%` }}
+            >
+              {formatCalories(value)}
+            </span>
+          ))}
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="relative min-h-0 flex-1 border-b border-l border-neutral-200">
+            {[0, 50].map((top) => (
+              <div key={top} className="absolute inset-x-0 border-t border-dashed border-neutral-200" style={{ top: `${top}%` }} />
+            ))}
+            <div className="absolute inset-x-0 z-20 border-t border-dashed border-orange-400" style={{ top: `${targetY}%` }}>
+              <span className="absolute right-1 -top-5 rounded bg-white px-1 text-[10px] font-medium text-orange-600">目标</span>
+            </div>
+
+            <div className="absolute inset-0 z-10 flex items-end gap-1 px-1 sm:gap-2">
+              {daily.map((day) => {
+                const height = day.calories === null ? 0 : Math.max(1, (day.calories / chartMax) * 100)
+                const description = day.recorded
+                  ? `${day.date}: ${formatCalories(day.calories ?? 0)} 千卡，目标 ${formatCalories(day.target)} 千卡`
+                  : `${day.date}: 无饮食记录，目标 ${formatCalories(day.target)} 千卡`
+
+                return (
+                  <div key={day.date} className="flex h-full min-w-0 flex-1 items-end justify-center" title={description} aria-label={description}>
+                    {day.recorded ? (
+                      <div className="w-full max-w-10 rounded-t bg-emerald-600 transition-colors hover:bg-emerald-700" style={{ height: `${height}%` }} />
+                    ) : (
+                      <div className="mb-1 h-1 w-1 rounded-full bg-neutral-300" />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          <div
+            className="grid h-7 items-end pt-2 text-center text-[10px] text-neutral-400"
+            style={{ gridTemplateColumns: `repeat(${daily.length}, minmax(0, 1fr))` }}
+          >
+            {daily.map((day, index) => (
+              <span key={day.date}>{daily.length <= 10 || index % 5 === 0 || index === daily.length - 1 ? day.date.slice(5) : ""}</span>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -158,7 +197,6 @@ export function ReportsContent() {
     ...day,
     calories: day.recorded === false ? null : day.calories,
   }))
-  const dailyByDate = new Map(chartDaily.map((day) => [day.date, day]))
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -221,17 +259,7 @@ export function ReportsContent() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartDaily}>
-                    <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="#a3a3a3" tickFormatter={(v: string) => v.slice(5)} />
-                    <YAxis tick={{ fontSize: 11 }} stroke="#a3a3a3" tickFormatter={(v) => formatCalories(Number(v))} />
-                    <Tooltip content={<NutritionTooltip dailyByDate={dailyByDate} />} />
-                    <ReferenceLine y={data.target.calories} stroke="#f97316" strokeDasharray="4 4" label={{ value: "目标", position: "right", fontSize: 11 }} />
-                    <Bar dataKey="calories" fill="#059669" radius={[4, 4, 0, 0]} maxBarSize={period === "weekly" ? 40 : 20} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
+              <ReportBarChart daily={chartDaily} target={data.target.calories} />
             </CardContent>
           </Card>
 
