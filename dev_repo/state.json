@@ -32,6 +32,16 @@
       "current_slice": "C-03-M1",
       "completed_slices": ["C-03-M0"],
       "return_to": "web_completion_audit"
+    },
+    "C-03-M1A": {
+      "contract_id": "C-03-M1A",
+      "parent_contract_id": "C-03",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "归一化旧 SQLite 表结构并消除 Prisma schema diff",
+      "current_slice": null,
+      "completed_slices": ["C-03-M1A-S1"],
+      "return_to": "C-03-M1"
     }
   }
 }

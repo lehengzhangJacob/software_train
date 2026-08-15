@@ -16,6 +16,16 @@
 6. demo 用户和餐食若保留，必须迁到显式 demo fixture，不属于 db:seed。
 7. 已在当前数据库副本上回填 bmr 空值并验证行数、integrity、foreign keys 和 reference 主键稳定；原文件 SHA-256 未变化。
 
+## C-03-M1 兼容迁移
+
+1. `data/food_tracker.db` 只作为旧库来源读取，迁移前保存 SHA-256 并创建原样备份。
+2. 旧库先复制到工作副本；baseline 仅在确认四张业务表与既有字段存在后标记为已应用。
+3. `20260710130100_backfill_profile_bmr` 在副本上重算 BMR。
+4. `20260710130050_retire_legacy_schema_objects` 在 BMR 回填之前退休四个统计视图和四个触发器，避免旧 trigger 改写 `updated_at`；汇总、BMR 与更新时间由应用和 Prisma 负责。
+5. `20260815191000_normalize_legacy_tables` 快照自增序列后无损重建餐食、运动建议和运动参考表，去除旧 CHECK/default/index 命名差异、补齐外键 `ON UPDATE CASCADE`，并恢复原 `sqlite_sequence`。
+6. 只有在主键、关系、行数、BMR、integrity、foreign key、schema diff 与 migration status 全部通过后，工作副本才能替换 `.env` 已指向的 `database/food_tracker.db`。
+7. 原始旧库及其备份不参与运行时切换，也不进入 Git。
+
 ## 兼容验证结果
 
 - 全新库：0 用户、0 餐食、0 建议、25 条 reference、2 个 migration，重复 seed 幂等。

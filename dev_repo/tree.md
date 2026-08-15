@@ -2,7 +2,7 @@
 
 - 当前合同：`C-03 - 迁移成熟能力并升级为本地个人营养 Agent [active]`
 - 当前切片：`C-03-M1 - SQLite 与 Prisma 兼容迁移`
-- 下一步：备份原始数据库，在副本上完成迁移、校验与运行路径切换
+- 下一步：将已验证迁移副本切换为 `database/food_tracker.db` 并执行运行时 smoke
 
 ```text
 C-01 - 全栈功能初版 [completed]

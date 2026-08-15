@@ -315,5 +315,22 @@
       "path": "package.json",
       "description": "npm 11.6.2 依赖基线通过 Prisma generate、lint、typecheck 与 production build"
     }
+  ],
+  "C-03-M1A": [
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260710130050_retire_legacy_schema_objects/migration.sql",
+      "description": "在 BMR 回填前退休旧视图与触发器，避免 updated_at 被副作用改写"
+    },
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260815191000_normalize_legacy_tables/migration.sql",
+      "description": "无损重建三张旧表并恢复原 sqlite_sequence"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "旧库逐行、主键、序列、关系、BMR、完整性、migration status 与零 schema diff 同案；全新空库迁移同样通过"
+    }
   ]
 }
