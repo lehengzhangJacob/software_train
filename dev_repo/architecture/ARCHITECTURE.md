@@ -27,7 +27,7 @@ flowchart LR
 | AI Gateway | StepFun、OpenAI、DeepSeek、Qwen、Kimi、GLM、SiliconFlow、OpenRouter、Ollama 与自定义兼容服务 | src/lib/ai/**, src/app/api/ai/**, src/app/api/settings/ai/** | confirmed；C-03-M3 已实现 |
 | Secret Store | GUI 配置的本机凭据、环境变量兼容回退与脱敏读取 | src/lib/ai/settings.ts, data/credentials.json | confirmed；C-03-M3 已实现 |
 | Agent Runtime | 营养上下文、长期记忆与工具编排 | src/app/agent/**, src/lib/agent/** | planned |
-| Memory Store | 对话、记忆来源、置信度、过期与用户治理 | Prisma + src/lib/memory/** + src/app/api/memories/** | partial；C-03-M4A 存储/API 已实现，治理界面待 M4B |
+| Memory Store | 对话、记忆来源、置信度、过期与用户治理 | Prisma + src/lib/memory/** + src/app/api/memories/** | partial；长期记忆存储/API/治理界面已完成，对话写入待 C-03-S2 |
 | MCP Gateway | 工具发现、白名单、超时与输出隔离 | src/lib/mcp/** | planned |
 | Action Policy | 搜索、草案和外部写操作确认边界 | src/lib/actions/** | planned |
 | Delivery | lint、typecheck、build、production smoke 与 CI | package scripts、release smoke、CI | confirmed；C-02-S7 已完成 |

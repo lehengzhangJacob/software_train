@@ -472,5 +472,22 @@
       "path": "scripts/verify-memory-api.mjs",
       "description": "production HTTP 临时副本的所有权、来源、筛选和删除验证"
     }
+  ],
+  "C-03-M4B": [
+    {
+      "type": "frontend",
+      "path": "src/components/memory-settings.tsx",
+      "description": "记忆创建、分类/重要度/有效期、来源/确认展示、编辑、停用/恢复和二次确认删除"
+    },
+    {
+      "type": "frontend",
+      "path": "src/app/profile/page.tsx",
+      "description": "服务端绑定 primary profile 并向个人设置传递脱敏长期记忆"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "空状态 DOM、真实 API 契约、desktop 和 342px 无横向溢出浏览器证据"
+    }
   ]
 }
