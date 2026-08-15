@@ -52,6 +52,10 @@ chmod +x scripts/dev.sh backend/run.sh
 - 前端：http://127.0.0.1:5173  
 - API 文档：http://127.0.0.1:8000/docs  
 
+> 端口可配置：`PORT` 环境变量指定后端端口（默认 8000），`VITE_API_PROXY` 指定 Vite 代理目标（默认 http://127.0.0.1:8000）。
+> 若本机 8000 端口被系统保留（如 `netsh interface ipv4 show excludedportrange` 显示 8000 在排除范围内），可用
+> `PORT=8001 VITE_API_PROXY=http://127.0.0.1:8001 ./scripts/dev.sh` 换端口运行。
+
 ### 4. 生产 / 公网模式（单端口）
 
 ```bash

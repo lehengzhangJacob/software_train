@@ -18,8 +18,9 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-echo "Starting FastAPI on :8000 ..."
-uvicorn app.main:app --app-dir "$ROOT/backend" --host 127.0.0.1 --port 8000 --reload &
+PORT="${PORT:-8000}"
+echo "Starting FastAPI on :$PORT ..."
+uvicorn app.main:app --app-dir "$ROOT/backend" --host 127.0.0.1 --port "$PORT" --reload &
 
 echo "Starting Vite on :5173 ..."
 cd "$ROOT/frontend"

@@ -19,17 +19,18 @@ PID_FILE="$ROOT/data/uvicorn.pid"
 LOG_FILE="$ROOT/data/uvicorn.log"
 mkdir -p "$ROOT/data"
 
+PORT="${PORT:-8000}"
 if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
   echo "已在运行 pid=$(cat "$PID_FILE")"
-  echo "访问: http://$(curl -s -m 2 http://100.100.100.200/latest/meta-data/eipv4 || echo '<公网IP>'):8000"
+  echo "访问: http://$(curl -s -m 2 http://100.100.100.200/latest/meta-data/eipv4 || echo '<公网IP>'):$PORT"
   exit 0
 fi
 
 nohup uvicorn app.main:app \
   --app-dir "$ROOT/backend" \
   --host 0.0.0.0 \
-  --port 8000 \
+  --port "$PORT" \
   >"$LOG_FILE" 2>&1 &
 echo $! >"$PID_FILE"
 echo "已启动 pid=$(cat "$PID_FILE") log=$LOG_FILE"
-echo "公网地址: http://$(curl -s -m 2 http://100.100.100.200/latest/meta-data/eipv4 || echo '<公网IP>'):8000"
+echo "公网地址: http://$(curl -s -m 2 http://100.100.100.200/latest/meta-data/eipv4 || echo '<公网IP>'):$PORT"
