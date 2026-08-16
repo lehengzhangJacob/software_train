@@ -71,6 +71,14 @@
 - 真实运行库应用新增 migration 后通过 integrity_check、foreign_key_check 和 migration status。
 - production HTTP 临时副本验证 primary profile 隔离、服务端来源字段、停用筛选、硬删除和第二档案越权拒绝。
 
+## C-05-A1 自动记忆兼容说明
+
+1. 本次只改变 Agent 推断记忆的创建与检索语义，不增加、删除或重命名任何字段、索引、外键或表。
+2. `is_user_confirmed=false` 表示尚未由用户审阅，不再表示不可进入上下文；现有 active、未过期的未确认行将按新语义参与检索。
+3. 不执行历史回填。已有 user memory、confirmed memory、disabled memory 和来源关系保持原值。
+4. disabled 精确匹配是用户抑制信号；应用升级后不得自动新增同内容行或将其恢复为 active。
+5. 因 schema 不变，migration_required=false，backfill_required=false；兼容性由 Agent/Memory 合同测试和临时数据库 production API 验证负责。
+
 ## 验证
 
 - prisma validate

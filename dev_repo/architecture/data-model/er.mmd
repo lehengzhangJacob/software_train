@@ -1,4 +1,6 @@
 erDiagram
+  %% C-05-A1: active/unexpired Agent inferences are eligible before user review;
+  %% is_user_confirmed records review provenance, while disabled exact matches suppress regeneration.
   UserProfile ||--o{ MealRecord : owns
   UserProfile ||--o{ ExerciseSuggestion : owns
   UserProfile ||--o{ AgentThread : owns

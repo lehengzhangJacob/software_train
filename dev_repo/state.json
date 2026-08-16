@@ -2,8 +2,8 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": null,
-  "status": "awaiting_audit",
+  "active_contract_id": "C-05",
+  "status": "in_progress",
   "contracts": {
     "C-01": {
       "status": "completed",
@@ -63,6 +63,17 @@
       "current_slice": null,
       "completed_slices": ["C-04-S1", "C-04-S2", "C-04-S3", "C-04-S4", "C-04-S5"],
       "deferred_slices": ["C-04-S0"],
+      "return_to": "web_completion_audit"
+    },
+    "C-05": {
+      "contract_id": "C-05",
+      "parent_contract_id": "C-04",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "收敛移动导航并改为 Agent 自动生成长期记忆",
+      "goal": "分离核心任务与个人设置，并让 Agent 在对话收尾阶段自动提炼、持久化且可由用户治理长期记忆",
+      "current_slice": "C-05-S1",
+      "completed_slices": ["C-05-A1"],
       "return_to": "web_completion_audit"
     }
   }

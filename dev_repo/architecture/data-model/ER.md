@@ -39,6 +39,7 @@
 - is_adopted：ExerciseSuggestion 的持久用户决策，不是临时 UI 状态。
 - AgentMessage 保存可查看的本地历史，不保存 system prompt、完整工具原始响应或任何凭据。
 - MemoryItem 是精选长期事实，不是全量对话副本；只允许 active 且未过期的记忆进入建议上下文。
-- 推断记忆以 is_user_confirmed=false 创建；用户创建或修正后为 true，并记录 user_edited_at。
+- Agent 回复产生的合法推断记忆以 is_user_confirmed=false 自动创建；用户创建或修正后为 true，并记录 user_edited_at。该字段表示审阅来源，不控制记忆是否可被检索。
 - confidence 表示来源可信度，importance 表示未来建议相关度，二者均为 0–1。
 - 删除 MemoryItem 为硬删除；status=disabled 用于可逆停用。
+- active 且未过期的推断记忆可以参与后续建议；精确重复候选复用现有 active 行，精确匹配 disabled 行时不得新增或恢复。

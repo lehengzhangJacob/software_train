@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "relationships": [
     {
       "name": "UserProfile_has_MealRecords",
@@ -58,7 +58,7 @@
       "owner": "UserProfile",
       "on_delete": "CASCADE",
       "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
-      "invariant": "记忆只属于 primary profile 且可由用户治理",
+      "invariant": "记忆只属于 primary profile；Agent 可自动生成，但所有行都必须可由用户查看、修正、停用和删除",
       "confidence": "confirmed"
     },
     {
@@ -71,7 +71,7 @@
       "owner": "MemoryItem",
       "on_delete": "SET NULL",
       "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
-      "invariant": "删除来源消息不得连带删除长期记忆",
+      "invariant": "assistant 消息可在同一事务中生成长期记忆；删除来源消息不得连带删除长期记忆",
       "confidence": "confirmed"
     }
   ],

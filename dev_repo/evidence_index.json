@@ -650,5 +650,22 @@
       "path": "npm run verify",
       "description": "AI/Memory/Agent/MCP 合同测试 16/16、ESLint、TypeScript 与 Next.js 生产构建全部通过"
     }
+  ],
+  "C-05-A1": [
+    {
+      "type": "architecture_amendment",
+      "path": "dev_repo/architecture/ARCHITECTURE.md, dev_repo/architecture/graph.json, dev_repo/architecture/invariants.md, dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md",
+      "description": "自动物化 Agent 推断、用户治理和停用抑制的运行时边界"
+    },
+    {
+      "type": "data_model_amendment",
+      "path": "dev_repo/architecture/data-model/",
+      "description": "is_user_confirmed 审阅来源语义、active 推断检索资格与零 migration/backfill 兼容责任"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-A1/verification.json",
+      "description": "架构 JSON、过期确认门语义和 schema/migration 边界验证"
+    }
   ]
 }

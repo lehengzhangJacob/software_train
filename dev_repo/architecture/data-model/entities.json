@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "source_of_truth": ["prisma/migrations/**", "prisma/schema.prisma", "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md"],
   "entities": [
     {
@@ -155,7 +155,7 @@
         {"name": "thread_id", "type": "INTEGER", "fk": "AgentThread.thread_id", "nullable": false},
         {"name": "role", "type": "TEXT", "nullable": false, "allowed": ["user", "assistant", "tool"]},
         {"name": "content", "type": "TEXT", "nullable": false, "max_length": 20000},
-        {"name": "metadata_json", "type": "TEXT_JSON", "nullable": true, "must_not_contain": ["secret", "payment credential", "image data URL", "raw provider error body", "system prompt"]},
+        {"name": "metadata_json", "type": "TEXT_JSON", "nullable": true, "semantics": "可记录候选及其自动物化的 MemoryItem 标识", "must_not_contain": ["secret", "payment credential", "image data URL", "raw provider error body", "system prompt"]},
         {"name": "created_at", "type": "DATETIME", "nullable": false}
       ],
       "migration_notes": "C-03-M4 新增表；无历史消息回填",
@@ -184,14 +184,14 @@
         {"name": "confidence", "type": "REAL", "nullable": false, "default": 1, "min": 0, "max": 1},
         {"name": "importance", "type": "REAL", "nullable": false, "default": 0.5, "min": 0, "max": 1},
         {"name": "status", "type": "TEXT", "nullable": false, "default": "active", "allowed": ["active", "disabled"]},
-        {"name": "is_user_confirmed", "type": "INTEGER_BOOLEAN", "nullable": false, "default": 0},
+        {"name": "is_user_confirmed", "type": "INTEGER_BOOLEAN", "nullable": false, "default": 0, "semantics": "用户是否审阅或修正；不控制 active 记忆检索资格"},
         {"name": "user_edited_at", "type": "DATETIME", "nullable": true},
         {"name": "last_used_at", "type": "DATETIME", "nullable": true},
         {"name": "expires_at", "type": "DATETIME", "nullable": true},
         {"name": "created_at", "type": "DATETIME", "nullable": false},
         {"name": "updated_at", "type": "DATETIME", "nullable": false}
       ],
-      "migration_notes": "C-03-M4 新增表；不从旧餐食自动生成记忆，推断记忆由后续显式流程创建",
+      "migration_notes": "C-03-M4 新增表；C-05-A1 仅修订运行语义，无 schema migration 或 backfill；Agent 推断在 assistant 消息事务中自动物化",
       "requires_amendment_when": ["改变删除语义", "引入向量或云端存储", "允许跨 profile 共享", "改变确认与来源含义"],
       "confidence": "confirmed"
     }

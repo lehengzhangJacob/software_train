@@ -55,7 +55,9 @@ flowchart LR
 
 ### Agent 与受控工具
 
-Agent 对话只持久化 user/assistant 消息，不保存 system prompt。每次请求注入当前档案、近 14 天餐食和 active/unexpired 记忆；模型推断的长期记忆必须由用户确认后才写入 MemoryItem。
+Agent 对话只持久化 user/assistant 消息，不保存 system prompt。每次请求注入当前档案、近 14 天餐食和 active/unexpired 记忆。模型可在回复末尾返回最多 3 条结构化长期记忆候选；服务端在保存 assistant 消息的同一事务中自动物化合法候选，不要求用户逐条确认。
+
+自动生成的 MemoryItem 必须保留 `agent_inference` 来源、置信度和来源消息。`is_user_confirmed` 仅表示用户是否审阅或修正过，不再是检索资格门；用户可以查看、编辑、停用和硬删除所有记忆。Agent 不得覆盖用户修正内容，也不得重新创建或恢复已被用户停用的同类精确记忆。
 
 MCP Gateway 只暴露白名单工具，并限制输入、超时和输出体积。附近外卖搜索是只读动作；订单草案不触发外部写入；提交订单需要绑定最终参数的短时一次性确认令牌。没有官方或用户授权的连接器时，系统明确返回未配置，不声称订单已经完成。
 

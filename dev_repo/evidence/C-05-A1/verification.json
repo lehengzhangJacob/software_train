@@ -1,0 +1,10 @@
+{
+  "slice": "C-05-A1",
+  "architecture_json": "pass",
+  "stale_confirmation_semantics": "none",
+  "architecture_delta": "Agent inference candidates are automatically materialized and remain user-governed",
+  "data_model_delta": "is_user_confirmed records review provenance rather than retrieval eligibility",
+  "schema_changed": false,
+  "migration_required": false,
+  "backfill_required": false
+}

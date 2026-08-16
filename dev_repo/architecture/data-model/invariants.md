@@ -19,6 +19,7 @@
 17. AgentMessage.role 仅为 user、assistant、tool；不持久化 system prompt。
 18. AgentMessage.metadata_json、MemoryItem.content 和 source_ref 不得包含密钥、支付凭据、图片 data URL 或供应商错误正文。
 19. MemoryItem.category 仅为 preference、constraint、goal、habit、context、insight；status 仅为 active、disabled。
-20. confidence 与 importance 必须在 0–1；Agent 推断默认 is_user_confirmed=false，用户创建或修正后为 true。
-21. 个性化检索只使用 active 且未过期的 MemoryItem；disabled 或 expires_at 已过期项不得进入模型上下文。
+20. confidence 与 importance 必须在 0–1；Agent 推断默认 is_user_confirmed=false，用户创建或修正后为 true；该字段只表示用户审阅来源，不构成检索资格门。
+21. 个性化检索只使用 active 且未过期的 MemoryItem，包括尚未由用户审阅的 Agent 推断；disabled 或 expires_at 已过期项不得进入模型上下文。
 22. 用户可查看、修正、停用和硬删除 MemoryItem；删除不得留下不可见的第二份持久记忆。
+23. 自动记忆不得覆盖用户修正内容；精确 active 重复必须复用，精确 disabled 重复必须视为用户抑制并保持停用。
