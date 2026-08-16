@@ -588,7 +588,8 @@
       "invariants": [
         "推断不冒充事实",
         "建议不是医疗诊断",
-        "工具调用经过策略层"
+        "工具调用经过策略层",
+        "只有当前消息的明确点餐意图可授权创建一笔未支付订单"
       ],
       "allowed_change_types": [
         "prompt orchestration",
@@ -596,7 +597,7 @@
         "tool loop"
       ],
       "requires_amendment_when": [
-        "自主执行外部不可逆动作"
+        "扩大自主建单授权范围或新增支付能力"
       ],
       "verification": [
         "context tests",
@@ -645,14 +646,14 @@
         "malicious output"
       ],
       "known_debt": [
-        "真实外卖平台取决于用户配置的官方或授权 MCP 连接器"
+        "C-06-L2 将通用占位连接器收敛为麦当劳中国官方 MCP"
       ],
       "confidence": "confirmed",
       "implementation_status": "confirmed"
     },
     {
       "id": "action.policy",
-      "purpose": "区分只读搜索、订单草案与必须最终确认的外部写操作",
+      "purpose": "区分只读动作、明确点餐授权、未支付订单创建与始终由用户完成的支付",
       "owned_files": [
         "src/lib/actions/**"
       ],
@@ -667,7 +668,8 @@
       ],
       "invariants": [
         "模型不能自我确认",
-        "确认绑定最终参数",
+        "当前消息的明确点餐意图最多授权创建一笔未支付订单",
+        "支付和账户变更始终需要用户操作",
         "支付凭据不持久化"
       ],
       "allowed_change_types": [
@@ -675,7 +677,7 @@
         "confirmation expiry"
       ],
       "requires_amendment_when": [
-        "允许自动支付或账户变更"
+        "允许自动支付、账户变更或无明确点餐意图建单"
       ],
       "verification": [
         "confirmation bypass tests"
@@ -686,7 +688,7 @@
     },
     {
       "id": "external.mcp_services",
-      "purpose": "用户授权的附近搜索、外卖与其他 MCP 服务",
+      "purpose": "用户授权的麦当劳中国官方 MCP 与其他只读外部服务",
       "owned_files": [],
       "public_interfaces": [
         "MCP tools"
@@ -697,7 +699,8 @@
       ],
       "invariants": [
         "位置访问需授权",
-        "真实写操作取决于官方或用户授权能力"
+        "真实写操作取决于官方或用户授权能力",
+        "支付能力不暴露给 Agent"
       ],
       "allowed_change_types": [
         "configured MCP server"
@@ -710,10 +713,10 @@
         "fixture fallback"
       ],
       "known_debt": [
-        "尚未绑定具体外卖平台"
+        "C-06-L2 尚未完成麦当劳官方 MCP 适配"
       ],
-      "confidence": "unknown",
-      "implementation_status": "planned"
+      "confidence": "confirmed",
+      "implementation_status": "approved_target"
     }
   ],
   "edges": [

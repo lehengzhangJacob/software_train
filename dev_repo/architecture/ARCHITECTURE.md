@@ -29,7 +29,7 @@ flowchart LR
 | Agent Runtime | 营养上下文、长期记忆与工具编排 | src/app/agent/**, src/lib/agent/** | confirmed；C-03-S2 已实现 |
 | Memory Store | 对话、记忆来源、置信度、过期与用户治理 | Prisma + src/lib/memory/** + src/app/api/memories/** | confirmed；C-03-M4/S2 已实现 |
 | MCP Gateway | 工具发现、白名单、超时与输出隔离 | src/app/api/mcp/**, src/lib/mcp/** | confirmed；C-03-S3 已实现，真实平台取决于用户授权连接器 |
-| Action Policy | 搜索、草案和外部写操作确认边界 | src/lib/actions/** | confirmed；C-03-S3 已实现 |
+| Action Policy | 搜索、草案、明确点餐授权和外部写操作边界 | src/lib/actions/** | approved target；C-06-L1 允许在明确点餐意图内创建一笔未支付订单 |
 | Delivery | lint、typecheck、build、production smoke 与 CI | package scripts、release smoke、CI | confirmed；C-02-S7 已完成 |
 | dev_repo | 合同、架构、ER 与证据真相 | dev_repo/** | confirmed；C-03 已收口 |
 
@@ -59,7 +59,9 @@ Agent 对话只持久化 user/assistant 消息，不保存 system prompt。每�
 
 自动生成的 MemoryItem 必须保留 `agent_inference` 来源、置信度和来源消息。`is_user_confirmed` 仅表示用户是否审阅或修正过，不再是检索资格门；用户可以查看、编辑、停用和硬删除所有记忆。Agent 不得覆盖用户修正内容，也不得重新创建或恢复已被用户停用的同类精确记忆。
 
-MCP Gateway 只暴露白名单工具，并限制输入、超时和输出体积。附近外卖搜索是只读动作；订单草案不触发外部写入；提交订单需要绑定最终参数的短时一次性确认令牌。没有官方或用户授权的连接器时，系统明确返回未配置，不声称订单已经完成。
+MCP Gateway 只暴露白名单工具，并限制输入、超时和输出体积。C-06 将真实连接器收敛为麦当劳中国官方 MCP。用户在当前消息中明确表达“帮我点麦当劳”等点餐意图后，该消息构成一次有限授权：Agent 可以结合档案、近期餐食、长期记忆、菜单营养和价格自主选择商品、计价，并最多创建一笔未支付订单。普通营养咨询、模糊饥饿表达、后台任务或历史消息都不能构成点餐授权。
+
+创建未支付订单不等于支付授权。支付链接只在当前响应中交给用户，Agent 不得调用支付工具、代替用户打开确认后的支付动作、修改账户或连续创建订单；麦当劳 Token、支付链接和支付凭据不得进入 AgentMessage、MemoryItem 或日志。没有官方连接器、有效 Token、可用地址、可用门店或合法计价结果时，系统明确返回阻塞原因，不声称订单已经完成。
 
 ### 数据与发布
 

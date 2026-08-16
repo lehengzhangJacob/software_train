@@ -723,5 +723,17 @@
       "path": "dev_repo/evidence/C-05-S3/verification.json",
       "description": "全路由宽度、破损图片、聚焦移动导航、控制台和发布检查汇总"
     }
+  ],
+  "C-06-L1": [
+    {
+      "type": "architecture_amendment",
+      "path": "dev_repo/architecture/decisions/ADR-0004-autonomous-unpaid-mcdonald-order.md",
+      "description": "明确点餐意图、单请求单订单、未支付边界和支付主权决策"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-L1/verification.json",
+      "description": "架构 JSON、数据模型 JSON、diff check 与政策文本验证"
+    }
   ]
 }

@@ -86,6 +86,11 @@
       "path": "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md",
       "node": "memory.store",
       "description": "可查看、可追溯、可治理的 Agent 对话与长期记忆数据模型"
+    },
+    {
+      "path": "dev_repo/architecture/decisions/ADR-0004-autonomous-unpaid-mcdonald-order.md",
+      "node": "action.policy",
+      "description": "明确点餐意图授权 Agent 创建一笔未支付麦当劳订单"
     }
   ],
   "ownership": [

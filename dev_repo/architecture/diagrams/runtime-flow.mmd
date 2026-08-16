@@ -3,6 +3,7 @@ sequenceDiagram
   participant UI as Browser UI
   participant API as Next API
   participant AI as Provider Gateway
+  participant MCP as McDonald MCP
   participant DB as SQLite
   User->>UI: 选择食物图片
   UI->>API: POST /api/ai/recognize
@@ -15,8 +16,17 @@ sequenceDiagram
   API->>AI: 受控上下文调用
   AI-->>API: 建议或工具意图
   API-->>UI: 建议、搜索结果或订单草案
-  User->>UI: 明确确认最终外部写操作
-  UI-->>User: 展示可编辑审核单
+  alt 当前消息明确要求点麦当劳
+    API->>AI: 注入档案、记忆与可信菜单候选
+    AI-->>API: 返回结构化商品选择
+    API->>API: 校验单次建单、金额与商品参数
+    API->>MCP: 计价并创建一笔未支付订单
+    MCP-->>API: 订单号与临时支付入口
+    API-->>UI: 展示选餐理由、金额和支付按钮
+    UI-->>User: 用户自行打开支付入口
+  else 普通营养咨询或意图不明确
+    API-->>UI: 只返回建议，不创建订单
+  end
   User->>UI: 确认保存
   UI->>API: POST /api/meals
   API->>DB: 绑定 primary profile 后写入

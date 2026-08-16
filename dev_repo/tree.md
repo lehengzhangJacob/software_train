@@ -1,8 +1,8 @@
 # Campaign: nutrition-agent
 
-- 当前合同：`C-05 - 收敛移动导航并改为 Agent 自动生成长期记忆 [completed]`
-- 当前切片：无
-- 下一步：提交 Web 侧完成审计
+- 当前合同：`C-06 - 麦当劳本地点餐闭环 [in_progress]`
+- 当前切片：`C-06-L2 - 麦当劳官方 MCP 与本地 Token`
+- 下一步：接入官方 Streamable HTTP 端点并完成适配器验证
 
 ```text
 C-01 - 全栈功能初版 [completed]
@@ -19,5 +19,10 @@ C-01 - 全栈功能初版 [completed]
                 ├── A1 自动记忆架构与 ER 修宪 [completed]
                 ├── S1 移动导航与计划入口 [completed]
                 ├── S2 Agent 自动记忆闭环 [completed]
-                └── S3 全量回归与发布验证 [completed]
+                ├── S3 全量回归与发布验证 [completed]
+                └── C-06 - 麦当劳本地点餐闭环 [in_progress]
+                    ├── L1 自主创建未支付订单架构修宪 [completed]
+                    ├── L2 麦当劳官方 MCP 与本地 Token [in_progress]
+                    ├── L3 Agent 自主选餐与未支付订单 [pending]
+                    └── L4 本地发布回归 [pending]
 ```
