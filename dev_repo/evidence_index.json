@@ -667,5 +667,22 @@
       "path": "dev_repo/evidence/C-05-A1/verification.json",
       "description": "架构 JSON、过期确认门语义和 schema/migration 边界验证"
     }
+  ],
+  "C-05-S1": [
+    {
+      "type": "implementation",
+      "path": "src/components/sidebar.tsx, src/components/plan-tabs.tsx, src/app/calendar/page.tsx, src/app/exercise/page.tsx",
+      "description": "五个核心移动入口、居中记餐动作、顶部个人菜单与饮食/运动计划切换"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S1/",
+      "description": "导航、个人菜单和计划页的桌面与移动截图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S1/verification.json",
+      "description": "导航标签、More 移除、个人菜单、计划切换、宽度与控制台记录"
+    }
   ]
 }

@@ -1,0 +1,23 @@
+{
+  "slice": "C-05-S1",
+  "mobile": {
+    "viewport_override": "375x812",
+    "css_client_width": 360,
+    "scroll_width": 360,
+    "bottom_navigation": ["今天", "教练", "记一餐", "计划", "报告"],
+    "bottom_navigation_items": 5,
+    "more_navigation_buttons": 0,
+    "personal_menu": ["个人档案", "AI 与工具", "长期记忆"],
+    "plan_tabs": ["饮食日历", "运动建议"]
+  },
+  "desktop": {
+    "dashboard": { "clientWidth": 1425, "scrollWidth": 1425 },
+    "calendar": { "clientWidth": 1425, "scrollWidth": 1425 },
+    "exercise": { "clientWidth": 1425, "scrollWidth": 1425 }
+  },
+  "app_console_errors": [],
+  "commands": {
+    "npm run lint": "pass",
+    "npm run typecheck": "pass"
+  }
+}

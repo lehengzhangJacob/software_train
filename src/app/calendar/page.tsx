@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { getTodayStr } from "@/lib/utils"
 import { getCurrentUser } from "@/lib/current-user"
 import { CalendarContent } from "@/components/calendar/calendar-content"
+import { PlanTabs } from "@/components/plan-tabs"
 import { redirect } from "next/navigation"
 
 export const dynamic = "force-dynamic"
@@ -27,10 +28,13 @@ export default async function CalendarPage() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <p className="page-eyebrow">Your rhythm</p>
-        <h1 className="page-title mt-2">这个月，你在认真生活。</h1>
-        <p className="page-copy mt-2">记录不是负担，它只是帮你看见自己的节奏。</p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="page-eyebrow">Your rhythm</p>
+          <h1 className="page-title mt-2">这个月，你在认真生活。</h1>
+          <p className="page-copy mt-2">记录不是负担，它只是帮你看见自己的节奏。</p>
+        </div>
+        <PlanTabs />
       </div>
       <CalendarContent
         today={today}

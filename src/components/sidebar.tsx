@@ -10,8 +10,7 @@ import {
   CalendarDays,
   Camera,
   ChevronDown,
-  Dumbbell,
-  MoreHorizontal,
+  House,
   Settings2,
   ShieldCheck,
   UserRound,
@@ -27,30 +26,23 @@ import {
 const desktopNav = [
   { href: "/dashboard", label: "今天", matches: ["/dashboard"] },
   { href: "/agent", label: "AI 教练", matches: ["/agent"] },
-  { href: "/meals", label: "记录", matches: ["/meals"] },
+  { href: "/meals", label: "记一餐", matches: ["/meals"] },
   { href: "/calendar", label: "计划", matches: ["/calendar", "/exercise"] },
   { href: "/reports", label: "报告", matches: ["/reports"] },
 ]
 
-const mobilePrimary = [
-  { href: "/dashboard", label: "今天", icon: Camera, matches: ["/dashboard"] },
+const mobileNav = [
+  { href: "/dashboard", label: "今天", icon: House, matches: ["/dashboard"] },
   { href: "/agent", label: "教练", icon: Bot, matches: ["/agent"] },
-  { href: "/meals", label: "记录", icon: Camera, matches: ["/meals"] },
+  { href: "/meals", label: "记一餐", icon: Camera, matches: ["/meals"], action: true },
+  { href: "/calendar", label: "计划", icon: CalendarDays, matches: ["/calendar", "/exercise"] },
   { href: "/reports", label: "报告", icon: BarChart3, matches: ["/reports"] },
-]
-
-const moreNav = [
-  { href: "/calendar", label: "饮食日历", icon: CalendarDays },
-  { href: "/exercise", label: "运动建议", icon: Dumbbell },
-  { href: "/profile", label: "个人档案", icon: UserRound },
-  { href: "/settings", label: "AI 与工具", icon: Settings2 },
-  { href: "/settings/memory", label: "长期记忆", icon: Brain },
 ]
 
 const pageTitles: Record<string, string> = {
   "/dashboard": "今天",
   "/agent": "AI 私人教练",
-  "/meals": "拍照记录",
+  "/meals": "记一餐",
   "/calendar": "饮食日历",
   "/exercise": "运动建议",
   "/reports": "营养报告",
@@ -89,7 +81,24 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
-  const moreActive = moreNav.some((item) => isRouteActive(pathname, [item.href]))
+
+  const personalMenu = (
+    <DropdownMenuContent align="end" className="w-44">
+      <DropdownMenuItem onClick={() => router.push("/profile")}>
+        <UserRound />
+        个人档案
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem onClick={() => router.push("/settings")}>
+        <Settings2 />
+        AI 与工具
+      </DropdownMenuItem>
+      <DropdownMenuItem onClick={() => router.push("/settings/memory")}>
+        <Brain />
+        长期记忆
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  )
 
   return (
     <>
@@ -138,25 +147,7 @@ export function Sidebar() {
                 <ChevronDown className="size-3.5 text-white/55" />
                 <span className="sr-only">打开个人菜单</span>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem onClick={() => router.push("/profile")}>
-                  <UserRound />
-                  个人档案
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/exercise")}>
-                  <Dumbbell />
-                  运动建议
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push("/settings")}>
-                  <Settings2 />
-                  AI 与工具
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push("/settings/memory")}>
-                  <Brain />
-                  长期记忆
-                </DropdownMenuItem>
-              </DropdownMenuContent>
+              {personalMenu}
             </DropdownMenu>
           </div>
         </div>
@@ -172,14 +163,23 @@ export function Sidebar() {
             {getPageTitle(pathname)}
           </span>
         </Link>
-        <span className="text-[11px] font-medium text-muted-foreground">本机</span>
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            aria-label="打开个人菜单"
+            title="个人设置"
+            className="grid size-8 place-items-center rounded-full bg-[var(--brand-lavender)] text-xs font-bold text-white outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint-deep)]"
+          >
+            我
+          </DropdownMenuTrigger>
+          {personalMenu}
+        </DropdownMenu>
       </header>
 
       <nav
         aria-label="移动端主导航"
         className="fixed inset-x-0 bottom-0 z-40 grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-5 border-t border-border/80 bg-white/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur lg:hidden"
       >
-        {mobilePrimary.map((item) => {
+        {mobileNav.map((item) => {
           const active = isRouteActive(pathname, item.matches)
           return (
             <Link
@@ -191,31 +191,22 @@ export function Sidebar() {
                 active ? "text-[var(--brand-mint-deep)]" : "text-muted-foreground"
               )}
             >
-              <item.icon className="size-[18px]" strokeWidth={active ? 2.4 : 1.8} />
+              {item.action ? (
+                <span
+                  className={cn(
+                    "-mt-4 grid size-11 place-items-center rounded-full border-4 border-white bg-[var(--brand-mint)] text-[var(--brand-plum)] shadow-[0_8px_20px_rgba(39,211,157,.28)]",
+                    active && "bg-[var(--brand-plum)] text-[var(--brand-mint)]"
+                  )}
+                >
+                  <item.icon className="size-5" strokeWidth={2.2} />
+                </span>
+              ) : (
+                <item.icon className="size-[18px]" strokeWidth={active ? 2.4 : 1.8} />
+              )}
               <span className="truncate">{item.label}</span>
             </Link>
           )
         })}
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            aria-label="更多导航"
-            className={cn(
-              "flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-[10px] font-medium outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand-mint)]",
-              moreActive ? "text-[var(--brand-mint-deep)]" : "text-muted-foreground"
-            )}
-          >
-            <MoreHorizontal className="size-[18px]" strokeWidth={moreActive ? 2.4 : 1.8} />
-            <span>更多</span>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side="top" align="end" sideOffset={10} className="w-44">
-            {moreNav.map((item) => (
-              <DropdownMenuItem key={item.href} onClick={() => router.push(item.href)}>
-                <item.icon />
-                {item.label}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
       </nav>
     </>
   )
