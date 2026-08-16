@@ -616,5 +616,22 @@
       "path": "dev_repo/evidence/C-04-S3/verification.json",
       "description": "无横向溢出、图片加载、30 天图表、控制台和生产构建的结构化验收记录"
     }
+  ],
+  "C-04-S4": [
+    {
+      "type": "implementation",
+      "path": "src/app/profile/**, src/app/settings/**, src/components/profile-form.tsx, src/components/ai-settings-form.tsx, src/components/memory-settings.tsx, src/components/sidebar.tsx",
+      "description": "独立个人档案、GUI 多提供商凭据、真实 MCP 工具状态与长期记忆治理界面"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S4/",
+      "description": "profile、settings、settings/memory 的 1440x1000 与 375x812 双端截图及下半屏表单证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S4/verification.json",
+      "description": "无横向溢出、真实 MCP 工具、保存交互、记忆新增与确认删除、控制台和生产构建记录"
+    }
   ]
 }

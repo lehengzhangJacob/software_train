@@ -1,8 +1,8 @@
 # Campaign: nutrition-agent
 
 - 当前合同：`C-04 - 按 Keep 风格原型完成全界面产品化 [in_progress]`
-- 当前切片：`C-04-S4 - 档案、AI/MCP 与记忆设置 [in_progress]`
-- 下一步：拆分个人档案、AI/MCP 配置和长期记忆，并保持本机凭据与记忆治理边界
+- 当前切片：`C-04-S5 - 双端视觉回归与发布验证 [in_progress]`
+- 下一步：完成九个真实路由的桌面与移动端回归、全量验证和最终交付收口
 
 ```text
 C-01 - 全栈功能初版 [completed]
@@ -13,6 +13,6 @@ C-01 - 全栈功能初版 [completed]
             ├── S1 共享外壳与响应式导航 [completed]
             ├── S2 今日、拍照与日历 [completed]
             ├── S3 教练、运动与报告 [completed]
-            ├── S4 档案、AI/MCP 与记忆 [in_progress]
-            └── S5 双端视觉回归与发布验证 [pending]
+            ├── S4 档案、AI/MCP 与记忆 [completed]
+            └── S5 双端视觉回归与发布验证 [in_progress]
 ```

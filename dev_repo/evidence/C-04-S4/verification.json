@@ -1,0 +1,35 @@
+{
+  "slice": "C-04-S4",
+  "desktop": {
+    "viewport": "1440x1000",
+    "profile": { "clientWidth": 1440, "scrollWidth": 1440 },
+    "settings": { "clientWidth": 1440, "scrollWidth": 1440 },
+    "memory": { "clientWidth": 1440, "scrollWidth": 1440 }
+  },
+  "mobile": {
+    "viewport_override": "375x812",
+    "css_viewport_note": "Windows browser scrollbar leaves a 360px document client width",
+    "profile": { "clientWidth": 360, "scrollWidth": 360 },
+    "settings": { "clientWidth": 360, "scrollWidth": 360 },
+    "memory": { "clientWidth": 360, "scrollWidth": 360 }
+  },
+  "functional_checks": {
+    "profile_save": "pass",
+    "ai_settings_save": "pass",
+    "memory_create": "pass",
+    "memory_confirmed_delete": "pass",
+    "temporary_memory_cleaned": true,
+    "memory_mobile_title": "长期记忆"
+  },
+  "mcp_tools": {
+    "endpoint": "/api/mcp/tools",
+    "loaded": true,
+    "tools": ["附近外卖搜索", "外卖订单草案", "提交外卖订单"],
+    "app_console_errors": []
+  },
+  "commands": {
+    "npm run lint": "pass",
+    "npm run typecheck": "pass",
+    "npm run build": "pass"
+  }
+}

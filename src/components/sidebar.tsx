@@ -43,6 +43,8 @@ const moreNav = [
   { href: "/calendar", label: "饮食日历", icon: CalendarDays },
   { href: "/exercise", label: "运动建议", icon: Dumbbell },
   { href: "/profile", label: "个人档案", icon: UserRound },
+  { href: "/settings", label: "AI 与工具", icon: Settings2 },
+  { href: "/settings/memory", label: "长期记忆", icon: Brain },
 ]
 
 const pageTitles: Record<string, string> = {
@@ -62,7 +64,9 @@ function isRouteActive(pathname: string, matches: string[]) {
 }
 
 function getPageTitle(pathname: string) {
-  const match = Object.entries(pageTitles).find(
+  const match = Object.entries(pageTitles)
+    .sort(([left], [right]) => right.length - left.length)
+    .find(
     ([href]) => pathname === href || pathname.startsWith(`${href}/`)
   )
   return match?.[1] ?? "营养 Agent"
@@ -144,9 +148,13 @@ export function Sidebar() {
                   运动建议
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => router.push("/profile")}>
+                <DropdownMenuItem onClick={() => router.push("/settings")}>
                   <Settings2 />
-                  设置
+                  AI 与工具
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/settings/memory")}>
+                  <Brain />
+                  长期记忆
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -206,11 +214,6 @@ export function Sidebar() {
                 {item.label}
               </DropdownMenuItem>
             ))}
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => router.push("/profile")}>
-              <Brain />
-              AI 与记忆设置
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </nav>
