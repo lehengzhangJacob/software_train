@@ -1,8 +1,8 @@
 # Campaign: nutrition-agent
 
-- 当前合同：`C-05 - 收敛移动导航并改为 Agent 自动生成长期记忆 [in_progress]`
-- 当前切片：`C-05-S3 - 全量回归与发布验证 [in_progress]`
-- 下一步：运行 release:check，完成九路由双端回归并关闭 C-05
+- 当前合同：`C-05 - 收敛移动导航并改为 Agent 自动生成长期记忆 [completed]`
+- 当前切片：无
+- 下一步：提交 Web 侧完成审计
 
 ```text
 C-01 - 全栈功能初版 [completed]
@@ -15,9 +15,9 @@ C-01 - 全栈功能初版 [completed]
             ├── S3 教练、运动与报告 [completed]
             ├── S4 档案、AI/MCP 与记忆 [completed]
             ├── S5 双端视觉回归与发布验证 [completed]
-            └── C-05 - 聚焦导航与自动记忆 [in_progress]
+            └── C-05 - 聚焦导航与自动记忆 [completed]
                 ├── A1 自动记忆架构与 ER 修宪 [completed]
                 ├── S1 移动导航与计划入口 [completed]
                 ├── S2 Agent 自动记忆闭环 [completed]
-                └── S3 全量回归与发布验证 [in_progress]
+                └── S3 全量回归与发布验证 [completed]
 ```

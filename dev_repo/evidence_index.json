@@ -706,5 +706,22 @@
       "path": "dev_repo/evidence/C-05-S2/verification.json",
       "description": "S2 合同、生产 API、构建、双端视觉和零迁移边界汇总"
     }
+  ],
+  "C-05-S3": [
+    {
+      "type": "verification",
+      "path": "npm run release:check",
+      "description": "迁移状态、16 项合同测试、lint、typecheck、生产构建、Memory/Agent/MCP 真实 API 和 release smoke"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S3/*-desktop.png, dev_repo/evidence/C-05-S3/*-mobile.png",
+      "description": "九个真实路由的桌面与移动最终回归，共 18 张截图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S3/verification.json",
+      "description": "全路由宽度、破损图片、聚焦移动导航、控制台和发布检查汇总"
+    }
   ]
 }
