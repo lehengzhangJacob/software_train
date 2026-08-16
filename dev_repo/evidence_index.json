@@ -684,5 +684,27 @@
       "path": "dev_repo/evidence/C-05-S1/verification.json",
       "description": "导航标签、More 移除、个人菜单、计划切换、宽度与控制台记录"
     }
+  ],
+  "C-05-S2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/contracts.ts, src/lib/agent/repository.ts, src/lib/agent/context.ts, src/components/agent/agent-workspace.tsx, src/components/memory-settings.tsx",
+      "description": "助手消息事务内自动物化推断、精确去重与停用抑制，聊天轻提示和管理型长期记忆界面"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/agent-contract.test.ts, scripts/verify-agent-api.mjs, npm run verify:memory-api",
+      "description": "自动落库、下一轮可见、重复复用、停用抑制、兼容确认 API、线程删除脱钩与记忆治理 API"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S2/",
+      "description": "Agent 与长期记忆管理页的桌面、移动、自动记忆提示和编辑态视觉证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S2/verification.json",
+      "description": "S2 合同、生产 API、构建、双端视觉和零迁移边界汇总"
+    }
   ]
 }

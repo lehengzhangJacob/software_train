@@ -1,6 +1,7 @@
 import { spawn } from "node:child_process"
-import { copyFile, mkdtemp, rm } from "node:fs/promises"
+import { copyFile, mkdtemp, rename, rm, writeFile } from "node:fs/promises"
 import { createServer } from "node:http"
+import { existsSync } from "node:fs"
 import net from "node:net"
 import path from "node:path"
 import { DatabaseSync } from "node:sqlite"
@@ -9,6 +10,9 @@ const root = process.cwd()
 const runtimeDatabase = path.join(root, "database", "food_tracker.db")
 const nextBin = path.join(root, "node_modules", "next", "dist", "bin", "next")
 const buildId = path.join(root, ".next", "BUILD_ID")
+const candidateContent = "周三加班时倾向选择少油的热饭"
+const credentialsPath = path.join(root, "data", "credentials.json")
+const credentialsBackupPath = path.join(root, "data", "credentials.agent-api-backup.json")
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
@@ -70,11 +74,17 @@ assert(await import("node:fs").then(({ existsSync }) => existsSync(buildId)), "M
 const temporaryRoot = await mkdtemp(path.join(root, "data", "agent-api-"))
 let provider
 let app
+let database
+let credentialsBackedUp = false
 try {
   const databasePath = path.join(temporaryRoot, "agent.db")
   await copyFile(runtimeDatabase, databasePath)
-  const database = new DatabaseSync(databasePath)
-  const baselineThreadCount = Number(database.prepare("SELECT COUNT(*) AS count FROM agent_threads").get().count)
+  database = new DatabaseSync(databasePath)
+  database.exec("PRAGMA foreign_keys = ON")
+  const primaryUserId = Number(database.prepare("SELECT MIN(user_id) AS userId FROM user_profile").get().userId)
+  database.prepare("DELETE FROM memory_items WHERE user_id = ? AND category = ? AND content = ?").run(primaryUserId, "preference", candidateContent)
+  const baselineThreadCount = Number(database.prepare("SELECT COUNT(*) AS count FROM agent_threads WHERE user_id = ?").get(primaryUserId).count)
+  const providerRequests = []
 
   const providerPort = await reserveLoopbackPort()
   provider = createServer(async (request, response) => {
@@ -83,12 +93,33 @@ try {
       response.end()
       return
     }
+    let rawBody = ""
+    for await (const chunk of request) rawBody += chunk.toString()
+    providerRequests.push(JSON.parse(rawBody))
     response.setHeader("Content-Type", "application/json")
     response.end(JSON.stringify({
-      choices: [{ message: { content: "结合你的记录，今晚可以把蛋白质和蔬菜补齐。<memory-candidates>[{\"category\":\"preference\",\"content\":\"工作日晚餐希望清淡一些\",\"importance\":0.8,\"confidence\":0.75}]</memory-candidates>" } }],
+      choices: [{ message: { content: `结合你的记录，今晚可以把蛋白质和蔬菜补齐。<memory-candidates>[{"category":"preference","content":"${candidateContent}","importance":0.8,"confidence":0.75}]</memory-candidates>` } }],
     }))
   })
   await new Promise((resolve, reject) => provider.listen(providerPort, "127.0.0.1", (error) => (error ? reject(error) : resolve())))
+
+  assert(!existsSync(credentialsBackupPath), "Stale Agent API credential backup must be restored before verification")
+  if (existsSync(credentialsPath)) {
+    await rename(credentialsPath, credentialsBackupPath)
+    credentialsBackedUp = true
+  }
+  await writeFile(credentialsPath, `${JSON.stringify({
+    version: 1,
+    activeProvider: "stepfun",
+    providers: {
+      stepfun: {
+        baseUrl: `http://127.0.0.1:${providerPort}/v1`,
+        model: "local-test-model",
+        apiKey: "agent-test-key",
+        updatedAt: new Date().toISOString(),
+      },
+    },
+  }, null, 2)}\n`, "utf8")
 
   const appPort = await reserveLoopbackPort()
   const baseUrl = `http://127.0.0.1:${appPort}`
@@ -98,9 +129,6 @@ try {
       ...process.env,
       NODE_ENV: "production",
       DATABASE_URL: databaseUrl(databasePath),
-      STEP_API_KEY: "agent-test-key",
-      STEP_API_BASE_URL: `http://127.0.0.1:${providerPort}/v1`,
-      STEP_API_MODEL: "local-test-model",
     },
     stdio: ["ignore", "pipe", "pipe"],
   })
@@ -125,41 +153,72 @@ try {
 
     const threadId = chat.body.data.thread.threadId
     const messageId = chat.body.data.assistantMessage.messageId
-    assert(Number(database.prepare("SELECT COUNT(*) AS count FROM memory_items").get().count) === 0, "Candidate was persisted before confirmation")
+    const exactMemories = () => database.prepare("SELECT memory_id AS memoryId, source_message_id AS sourceMessageId, status, is_user_confirmed AS isUserConfirmed FROM memory_items WHERE user_id = ? AND category = ? AND content = ? ORDER BY memory_id").all(primaryUserId, "preference", candidateContent)
+    let memories = exactMemories()
+    assert(memories.length === 1, "Candidate was not materialized automatically")
+    const memoryId = Number(memories[0].memoryId)
+    assert(memories[0].status === "active" && Number(memories[0].isUserConfirmed) === 0, "Automatic memory provenance was incorrect")
+    assert(chat.body.data.assistantMessage.memoryCandidates[0].memoryId === memoryId, "Assistant metadata did not reference the automatic memory")
 
     const confirmed = await jsonRequest(`${baseUrl}/api/agent/memory-candidates`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ messageId, candidateIndex: 0 }),
     })
-    assert(confirmed.response.status === 201 && confirmed.body.data?.isUserConfirmed === true, "Candidate confirmation failed")
-    assert(Number(database.prepare("SELECT COUNT(*) AS count FROM memory_items").get().count) === 1, "Confirmed memory was not persisted")
+    assert(confirmed.response.status === 201 && confirmed.body.data?.memoryId === memoryId && confirmed.body.data?.isUserConfirmed === true, "Legacy candidate confirmation compatibility failed")
 
-    const confirmedAgain = await jsonRequest(`${baseUrl}/api/agent/memory-candidates`, {
+    const duplicate = await jsonRequest(`${baseUrl}/api/agent/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messageId, candidateIndex: 0 }),
+      body: JSON.stringify({ threadId, message: "这周也想保持清淡一点。" }),
     })
-    assert(confirmedAgain.response.status === 201, "Repeated confirmation was not idempotent")
-    assert(Number(database.prepare("SELECT COUNT(*) AS count FROM memory_items").get().count) === 1, "Repeated confirmation duplicated memory")
+    assert(duplicate.response.status === 200, "Second Agent turn failed")
+    assert(providerRequests.length >= 2 && providerRequests[1].messages?.[0]?.content?.includes(candidateContent), "Automatic memory was not available to the next Agent turn")
+    memories = exactMemories()
+    assert(memories.length === 1, "Repeated inference duplicated the active memory")
+    assert(duplicate.body.data?.assistantMessage?.memoryCandidates?.[0]?.memoryId === memoryId, "Repeated inference did not reuse the active memory")
+
+    const disabled = await jsonRequest(`${baseUrl}/api/memories`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ memoryId, status: "disabled" }),
+    })
+    assert(disabled.response.status === 200 && disabled.body.data?.status === "disabled", "Automatic memory could not be disabled")
+
+    const suppressed = await jsonRequest(`${baseUrl}/api/agent/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ threadId, message: "继续给我一个晚餐建议。" }),
+    })
+    assert(suppressed.response.status === 200, "Suppression verification turn failed")
+    assert(providerRequests.length >= 3 && !providerRequests[2].messages?.[0]?.content?.includes(candidateContent), "Disabled memory remained in Agent context")
+    memories = exactMemories()
+    assert(memories.length === 1 && memories[0].status === "disabled", "Disabled duplicate was recreated or reactivated")
+    assert(suppressed.body.data?.assistantMessage?.memoryCandidates?.[0]?.memoryId === null, "Suppressed inference was linked to a durable memory")
 
     const deleted = await jsonRequest(`${baseUrl}/api/agent/threads?id=${threadId}`, { method: "DELETE" })
     assert(deleted.response.status === 200, "Thread delete failed")
-    assert(Number(database.prepare("SELECT COUNT(*) AS count FROM memory_items").get().count) === 1, "Thread delete removed durable memory")
-    assert(database.prepare("SELECT source_message_id AS sourceMessageId FROM memory_items").get().sourceMessageId === null, "Memory source was not detached after thread delete")
-    database.close()
+    memories = exactMemories()
+    assert(memories.length === 1, "Thread delete removed durable memory")
+    assert(memories[0].sourceMessageId === null, "Memory source was not detached after thread delete")
   } catch (error) {
     throw new Error(`${error instanceof Error ? error.message : String(error)}\nServer output:\n${output}`)
   }
 
   console.log(JSON.stringify({
     threadPersistence: "pass",
-    candidateConfirmationGate: "pass",
-    confirmationIdempotency: "pass",
+    automaticMemoryMaterialization: "pass",
+    nextTurnContext: "pass",
+    activeDuplicateReuse: "pass",
+    disabledDuplicateSuppression: "pass",
+    legacyConfirmationCompatibility: "pass",
     memorySurvivesThreadDelete: "pass",
   }))
 } finally {
   if (app) await stopProcess(app)
   if (provider) await new Promise((resolve) => provider.close(() => resolve()))
+  if (database) database.close()
+  await rm(credentialsPath, { force: true })
+  if (credentialsBackedUp) await rename(credentialsBackupPath, credentialsPath)
   await rm(temporaryRoot, { recursive: true, force: true })
 }

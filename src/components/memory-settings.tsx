@@ -3,14 +3,11 @@
 import { useMemo, useState } from "react"
 import {
   Brain,
-  Check,
   LoaderCircle,
   PauseCircle,
   Pencil,
   PlayCircle,
-  Plus,
   Save,
-  Sparkles,
   Trash2,
   X,
 } from "lucide-react"
@@ -127,11 +124,6 @@ async function memoryRequest<T>(url: string, init?: RequestInit): Promise<T> {
 export function MemorySettings({ initialMemories, referenceNow }: MemorySettingsProps) {
   const [memories, setMemories] = useState(() => sortMemories(initialMemories))
   const [filter, setFilter] = useState<"all" | MemoryStatus>("all")
-  const [content, setContent] = useState("")
-  const [category, setCategory] = useState<MemoryCategory>("preference")
-  const [importance, setImportance] = useState("0.6")
-  const [expiresAt, setExpiresAt] = useState("")
-  const [creating, setCreating] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editContent, setEditContent] = useState("")
   const [editCategory, setEditCategory] = useState<MemoryCategory>("preference")
@@ -146,9 +138,8 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
   )
   const referenceTimestamp = Date.parse(referenceNow)
   const enabledCount = memories.filter(
-    (memory) => memory.status === "active" && memory.isUserConfirmed && (!memory.expiresAt || Date.parse(memory.expiresAt) > referenceTimestamp)
+    (memory) => memory.status === "active" && (!memory.expiresAt || Date.parse(memory.expiresAt) > referenceTimestamp)
   ).length
-  const pendingCount = memories.filter((memory) => !memory.isUserConfirmed && memory.status === "active").length
 
   const replaceMemory = (memory: MemoryItemView) => {
     setMemories((current) => sortMemories(current.map((item) => item.memoryId === memory.memoryId ? memory : item)))
@@ -166,37 +157,6 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
       return updated
     } finally {
       setSavingId(null)
-    }
-  }
-
-  const createMemory = async () => {
-    if (!content.trim()) {
-      toast.error("请填写记忆内容")
-      return
-    }
-
-    setCreating(true)
-    try {
-      const created = await memoryRequest<MemoryItemView>("/api/memories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          category,
-          content: content.trim(),
-          importance: Number(importance),
-          expiresAt: expiryPayload(expiresAt),
-        }),
-      })
-      setMemories((current) => sortMemories([created, ...current]))
-      setContent("")
-      setCategory("preference")
-      setImportance("0.6")
-      setExpiresAt("")
-      toast.success("长期记忆已添加")
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "添加长期记忆失败")
-    } finally {
-      setCreating(false)
     }
   }
 
@@ -242,24 +202,6 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
     }
   }
 
-  const confirmInference = async (memory: MemoryItemView) => {
-    try {
-      await updateMemory(memory.memoryId, { category: memory.category, content: memory.content })
-      toast.success("推断已确认为长期记忆")
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "确认推断失败")
-    }
-  }
-
-  const ignoreInference = async (memory: MemoryItemView) => {
-    try {
-      await updateMemory(memory.memoryId, { status: "disabled" })
-      toast.success("这条推断已忽略")
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "忽略推断失败")
-    }
-  }
-
   const deleteMemory = async (memoryId: number) => {
     setSavingId(memoryId)
     try {
@@ -281,18 +223,16 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
           <div>
             <p className="text-[11px] font-semibold uppercase text-[var(--brand-mint)]">What I remember</p>
             <h1 className="mt-2 text-3xl font-semibold sm:text-4xl">我正在更懂你的生活。</h1>
-            <p className="mt-2 text-sm leading-6 text-white/62">只有启用、已确认且未过期的记忆会参与后续 Agent 建议。</p>
+            <p className="mt-2 text-sm leading-6 text-white/62">Agent 会在后台整理稳定信息；启用且未过期的记忆会参与后续建议。</p>
           </div>
           <div className="text-right">
             <strong className="text-5xl font-semibold">{enabledCount}</strong>
             <p className="mt-1 text-xs text-white/55">条启用的长期记忆</p>
-            {pendingCount > 0 ? <p className="mt-1 text-[10px] text-[var(--brand-coral)]">另有 {pendingCount} 条推断待确认</p> : null}
           </div>
         </div>
       </section>
 
-      <section className="grid gap-5 lg:grid-cols-[1.16fr_.84fr]">
-        <div className="surface-card p-5 sm:p-6">
+      <section className="surface-card p-5 sm:p-6">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-4">
             <div>
               <p className="page-eyebrow">Memory library</p>
@@ -327,7 +267,6 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
               {visibleMemories.map((memory) => {
                 const expired = Boolean(memory.expiresAt && Date.parse(memory.expiresAt) <= referenceTimestamp)
                 const busy = savingId === memory.memoryId
-                const pendingInference = !memory.isUserConfirmed && memory.status === "active"
 
                 return (
                   <article key={memory.memoryId} className={cn("py-5", memory.status === "disabled" && "opacity-55")}>
@@ -362,16 +301,16 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
                         </div>
                       </div>
                     ) : (
-                      <div className={cn(pendingInference && "-mx-3 rounded-md bg-[#fff0ec] px-3 py-4")}>
+                      <div>
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
                               <span className="rounded-full bg-[var(--brand-lavender-soft)] px-2 py-0.5 text-[10px] font-semibold text-[#6658c8]">{categoryLabel(memory.category)}</span>
-                              {memory.isUserConfirmed ? (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[var(--brand-mint-deep)]"><Check className="size-3" />用户确认</span>
-                              ) : (
-                                <span className="rounded-full bg-white/75 px-2 py-0.5 text-[10px] font-semibold text-[#a34e3e]">待确认推断</span>
-                              )}
+                              <span className="text-[10px] font-semibold text-[var(--brand-mint-deep)]">
+                                {memory.sourceKind === "agent_inference"
+                                  ? memory.isUserConfirmed ? "已由你修正" : "Agent 整理"
+                                  : sourceLabels[memory.sourceKind] ?? memory.sourceKind}
+                              </span>
                               {memory.status === "disabled" ? <span className="text-[10px] text-muted-foreground">已停用</span> : null}
                               {expired ? <span className="text-[10px] text-[#a34e3e]">已过期</span> : null}
                             </div>
@@ -381,23 +320,14 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
                               {memory.expiresAt ? ` · 有效至 ${formatDate(memory.expiresAt)}` : " · 长期有效"}
                             </p>
                           </div>
-                          {memory.isUserConfirmed ? (
-                            <div className="flex shrink-0 gap-1">
-                              <Button type="button" variant="ghost" size="icon-sm" aria-label="编辑记忆" title="编辑记忆" disabled={busy} onClick={() => beginEdit(memory)}><Pencil /></Button>
-                              <Button type="button" variant="ghost" size="icon-sm" aria-label={memory.status === "active" ? "停用记忆" : "恢复记忆"} title={memory.status === "active" ? "停用记忆" : "恢复记忆"} disabled={busy} onClick={() => toggleStatus(memory)}>
-                                {memory.status === "active" ? <PauseCircle /> : <PlayCircle />}
-                              </Button>
-                              <Button type="button" variant="ghost" size="icon-sm" aria-label="删除记忆" title="删除记忆" disabled={busy} onClick={() => setPendingDeleteId(memory.memoryId)}><Trash2 /></Button>
-                            </div>
-                          ) : null}
-                        </div>
-
-                        {pendingInference ? (
-                          <div className="mt-3 flex flex-wrap gap-2">
-                            <Button type="button" size="sm" disabled={busy} onClick={() => confirmInference(memory)}>{busy ? <LoaderCircle className="animate-spin" /> : <Check />}确认</Button>
-                            <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => ignoreInference(memory)}>忽略</Button>
+                          <div className="flex shrink-0 gap-1">
+                            <Button type="button" variant="ghost" size="icon-sm" aria-label="编辑记忆" title="编辑记忆" disabled={busy} onClick={() => beginEdit(memory)}><Pencil /></Button>
+                            <Button type="button" variant="ghost" size="icon-sm" aria-label={memory.status === "active" ? "停用记忆" : "恢复记忆"} title={memory.status === "active" ? "停用记忆" : "恢复记忆"} disabled={busy} onClick={() => toggleStatus(memory)}>
+                              {memory.status === "active" ? <PauseCircle /> : <PlayCircle />}
+                            </Button>
+                            <Button type="button" variant="ghost" size="icon-sm" aria-label="删除记忆" title="删除记忆" disabled={busy} onClick={() => setPendingDeleteId(memory.memoryId)}><Trash2 /></Button>
                           </div>
-                        ) : null}
+                        </div>
                       </div>
                     )}
 
@@ -415,48 +345,6 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
               })}
             </div>
           )}
-        </div>
-
-        <aside className="rounded-lg bg-[var(--brand-lavender-soft)] p-5 sm:p-6 lg:sticky lg:top-24 lg:self-start">
-          <div className="grid size-10 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]"><Plus className="size-5" /></div>
-          <p className="mt-5 text-[11px] font-semibold uppercase text-[#6658c8]">Add a memory</p>
-          <h2 className="mt-1 text-2xl font-semibold text-[var(--brand-plum)]">有什么值得长期记住？</h2>
-          <p className="mt-2 text-xs leading-5 text-muted-foreground">只保存能长期改善建议质量的偏好、约束、目标和习惯。</p>
-
-          <div className="mt-5 space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="new-memory">内容</Label>
-              <Input id="new-memory" className="bg-white" value={content} onChange={(event) => setContent(event.target.value)} placeholder="例如：工作日晚餐希望清淡一些" maxLength={1_000} />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="new-memory-category">分类</Label>
-              <Select value={category} onValueChange={(value) => value && setCategory(value as MemoryCategory)}>
-                <SelectTrigger id="new-memory-category" type="button" className="w-full bg-white"><SelectValue>{categoryLabel(category)}</SelectValue></SelectTrigger>
-                <SelectContent>{categories.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}</SelectContent>
-              </Select>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label htmlFor="new-memory-importance">重要度</Label>
-                <Select value={importance} onValueChange={(value) => value && setImportance(value)}>
-                  <SelectTrigger id="new-memory-importance" type="button" className="w-full bg-white"><SelectValue>{importanceOptions.find((item) => item.value === importance)?.label}</SelectValue></SelectTrigger>
-                  <SelectContent>{importanceOptions.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}</SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="new-memory-expiry">有效期</Label>
-                <Input id="new-memory-expiry" className="bg-white" type="date" min={todayLocal()} value={expiresAt} onChange={(event) => setExpiresAt(event.target.value)} />
-              </div>
-            </div>
-            <Button type="button" className="w-full bg-[var(--brand-plum)] text-white hover:bg-[var(--brand-plum-soft)]" disabled={creating} onClick={createMemory}>
-              {creating ? <LoaderCircle className="animate-spin" /> : <Plus />}添加长期记忆
-            </Button>
-          </div>
-
-          <p className="mt-5 flex items-start gap-2 text-[10px] leading-4 text-muted-foreground">
-            <Sparkles className="mt-0.5 size-3 shrink-0" />密码、地址和支付凭据永远不会被保存为长期记忆。
-          </p>
-        </aside>
       </section>
     </div>
   )

@@ -24,14 +24,15 @@ test("assistant response separates safe memory candidates from visible text", ()
   assert.equal(parsed.candidates[0].category, "preference")
 })
 
-test("metadata confirmation state round-trips without exposing unknown fields", () => {
+test("metadata memory ids round-trip and accept legacy confirmation ids", () => {
   const parsed = parseAgentMessageMetadata(JSON.stringify({
     memoryCandidates: [{ category: "goal", content: "本周想规律吃早餐", importance: 0.7, confidence: 0.8 }],
     confirmedMemoryIds: { "0": 4, "bad": "nope" },
+    memoryIds: { "1": 5, "bad": -2 },
     usedMemoryIds: [1, 2, "bad"],
     apiKey: "must-not-survive",
   }))
-  assert.deepEqual(parsed.confirmedMemoryIds, { "0": 4 })
+  assert.deepEqual(parsed.memoryIds, { "0": 4, "1": 5 })
   assert.deepEqual(parsed.usedMemoryIds, [1, 2])
   assert.equal(parsed.memoryCandidates?.[0].content, "本周想规律吃早餐")
   assert.equal("apiKey" in parsed, false)

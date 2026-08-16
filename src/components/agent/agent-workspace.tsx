@@ -1,11 +1,10 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
   Bot,
-  Check,
-  CheckCircle2,
   History,
   LoaderCircle,
   MessageSquarePlus,
@@ -32,7 +31,7 @@ interface MemoryCandidate {
   content: string
   importance: number
   confidence: number
-  confirmedMemoryId: number | null
+  memoryId: number | null
 }
 
 interface AgentMessage {
@@ -65,15 +64,6 @@ interface ChatResult {
   assistantMessage: AgentMessage
 }
 
-const categoryLabels: Record<string, string> = {
-  preference: "偏好",
-  constraint: "约束",
-  goal: "目标",
-  habit: "习惯",
-  context: "情境",
-  insight: "洞察",
-}
-
 const starterPrompts = ["晚餐怎么安排更合适？", "帮我复盘今天的蛋白质", "给我一个附近外卖思路"]
 
 function formatThreadDate(value: string) {
@@ -97,6 +87,10 @@ function mergeThread(current: ThreadSummary[], next: ThreadSummary) {
   )
 }
 
+function automaticMemoryCount(candidates: MemoryCandidate[]) {
+  return new Set(candidates.flatMap((candidate) => candidate.memoryId === null ? [] : [candidate.memoryId])).size
+}
+
 export function AgentWorkspace({ username, initialThreads, initialThread }: AgentWorkspaceProps) {
   const [threads, setThreads] = useState(initialThreads)
   const [activeThreadId, setActiveThreadId] = useState<number | null>(initialThread?.threadId ?? null)
@@ -105,7 +99,6 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   const [loadingThread, setLoadingThread] = useState(false)
   const [sending, setSending] = useState(false)
   const [deletingThreadId, setDeletingThreadId] = useState<number | null>(null)
-  const [confirmingCandidate, setConfirmingCandidate] = useState<string | null>(null)
   const messageViewportRef = useRef<HTMLDivElement>(null)
 
   const activeThread = useMemo(
@@ -175,32 +168,6 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
     }
   }
 
-  const confirmCandidate = async (messageId: number, candidateIndex: number) => {
-    const requestKey = `${messageId}:${candidateIndex}`
-    setConfirmingCandidate(requestKey)
-    try {
-      await requestJson("/api/agent/memory-candidates", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messageId, candidateIndex }),
-      })
-      setMessages((current) => current.map((message) => {
-        if (message.messageId !== messageId) return message
-        return {
-          ...message,
-          memoryCandidates: message.memoryCandidates.map((candidate, index) =>
-            index === candidateIndex ? { ...candidate, confirmedMemoryId: candidate.confirmedMemoryId ?? -1 } : candidate
-          ),
-        }
-      }))
-      toast.success("已写入长期记忆")
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "确认记忆候选失败")
-    } finally {
-      setConfirmingCandidate(null)
-    }
-  }
-
   return (
     <div className="space-y-5">
       <section className="surface-card overflow-hidden border-0">
@@ -220,7 +187,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                 <p className="text-[11px] font-semibold uppercase text-[var(--brand-mint)]">Your AI coach</p>
                 <h1 className="mt-2 break-words text-2xl font-semibold leading-tight sm:text-3xl">你好，{username}。</h1>
                 <p className="mt-2 max-w-sm text-sm leading-6 text-white/72">
-                  我会结合你的饮食档案、真实记录和已确认记忆，陪你做出更轻松的下一步。
+                  我会结合你的饮食档案、真实记录和长期记忆，陪你做出更轻松的下一步。
                 </p>
               </div>
             </div>
@@ -348,33 +315,11 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                       <p className={cn("mt-1 text-[11px] text-muted-foreground", message.role === "user" ? "text-right" : "text-left")}>
                         {formatMessageTime(message.createdAt)}
                       </p>
-                      {message.role === "assistant" && message.memoryCandidates.length > 0 ? (
-                        <div className="mt-3 space-y-2 border-l-2 border-[var(--brand-coral)] bg-[#fff2ee] p-3">
-                          <div className="flex items-center gap-2 text-xs font-semibold text-[#713b32]">
-                            <Sparkles className="size-3.5" />可能值得记住
-                          </div>
-                          {message.memoryCandidates.map((candidate, index) => {
-                            const key = `${message.messageId}:${index}`
-                            const confirmed = candidate.confirmedMemoryId !== null
-                            return (
-                              <div key={key} className="flex items-start gap-2 bg-white/75 p-2 text-xs text-[#623b34]">
-                                <div className="min-w-0 flex-1 leading-5">
-                                  <span className="mr-1.5 font-semibold">{categoryLabels[candidate.category] ?? candidate.category}</span>
-                                  <span className="break-words">{candidate.content}</span>
-                                </div>
-                                <Button
-                                  type="button"
-                                  variant={confirmed ? "ghost" : "outline"}
-                                  size="xs"
-                                  disabled={confirmed || confirmingCandidate === key}
-                                  onClick={() => void confirmCandidate(message.messageId, index)}
-                                >
-                                  {confirmingCandidate === key ? <LoaderCircle className="animate-spin" /> : confirmed ? <CheckCircle2 /> : <Check />}
-                                  {confirmed ? "已记住" : "确认"}
-                                </Button>
-                              </div>
-                            )
-                          })}
+                      {message.role === "assistant" && automaticMemoryCount(message.memoryCandidates) > 0 ? (
+                        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-l-2 border-[var(--brand-coral)] bg-[#fff2ee] px-3 py-2 text-xs text-[#713b32]">
+                          <Sparkles className="size-3.5" />
+                          <span>已自动整理 {automaticMemoryCount(message.memoryCandidates)} 条长期记忆</span>
+                          <Link className="font-semibold underline-offset-2 hover:underline" href="/settings/memory">查看与管理</Link>
                         </div>
                       ) : null}
                     </div>

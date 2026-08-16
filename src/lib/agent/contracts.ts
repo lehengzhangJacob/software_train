@@ -24,7 +24,7 @@ export interface MemoryCandidate {
 
 export interface AgentMessageMetadata {
   memoryCandidates?: MemoryCandidate[]
-  confirmedMemoryIds?: Record<string, number>
+  memoryIds?: Record<string, number>
   usedMemoryIds?: number[]
 }
 
@@ -185,15 +185,16 @@ export function parseAgentMessageMetadata(value: string | null): AgentMessageMet
   try {
     const parsed: unknown = JSON.parse(value)
     if (!isRecord(parsed)) return {}
-    const confirmedMemoryIds: Record<string, number> = {}
-    if (isRecord(parsed.confirmedMemoryIds)) {
-      for (const [key, id] of Object.entries(parsed.confirmedMemoryIds)) {
-        if (typeof id === "number" && Number.isInteger(id) && id > 0) confirmedMemoryIds[key] = id
+    const memoryIds: Record<string, number> = {}
+    for (const source of [parsed.confirmedMemoryIds, parsed.memoryIds]) {
+      if (!isRecord(source)) continue
+      for (const [key, id] of Object.entries(source)) {
+        if (typeof id === "number" && Number.isInteger(id) && id > 0) memoryIds[key] = id
       }
     }
     return {
       memoryCandidates: parseMemoryCandidates(parsed.memoryCandidates),
-      confirmedMemoryIds,
+      memoryIds,
       usedMemoryIds: Array.isArray(parsed.usedMemoryIds)
         ? parsed.usedMemoryIds.filter((id): id is number => typeof id === "number" && Number.isInteger(id) && id > 0).slice(0, 50)
         : [],
