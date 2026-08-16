@@ -21,14 +21,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <a
           href="#main-content"
-          className="sr-only fixed top-3 left-3 z-50 rounded-md bg-emerald-700 px-3 py-2 text-sm font-medium text-white focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-emerald-950 focus:ring-offset-2"
+          className="sr-only fixed left-3 top-3 z-[60] rounded-md bg-[var(--brand-mint)] px-3 py-2 text-sm font-semibold text-[var(--brand-plum)] focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[var(--brand-plum)]"
         >
           跳至主要内容
         </a>
-        <div className="flex min-h-screen bg-neutral-50">
+        <div className="min-h-screen bg-[var(--app-canvas)]">
           <Sidebar />
-          <main id="main-content" tabIndex={-1} className="ml-0 flex-1 p-4 pt-16 pb-[calc(5rem+env(safe-area-inset-bottom))] lg:ml-64 lg:p-8 lg:pt-8 lg:pb-8">
-            {children}
+          <main
+            id="main-content"
+            tabIndex={-1}
+            className="min-h-screen px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-[4.5rem] sm:px-5 lg:px-8 lg:pb-10 lg:pt-[6.25rem]"
+          >
+            <div className="app-page">{children}</div>
           </main>
         </div>
         <Toaster richColors position="top-center" />

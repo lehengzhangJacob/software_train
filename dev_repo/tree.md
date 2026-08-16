@@ -1,21 +1,18 @@
 # Campaign: nutrition-agent
 
-- 当前合同：`C-03 - 迁移成熟能力并升级为本地个人营养 Agent [completed]`
-- 当前切片：无
-- 下一步：按需接入用户授权的真实外卖 MCP 连接器；不得在未配置连接器时声称真实下单完成
+- 当前合同：`C-04 - 按 Keep 风格原型完成全界面产品化 [in_progress]`
+- 当前切片：`C-04-S2 - 今日、拍照记录与饮食日历 [in_progress]`
+- 下一步：将三张核心原型映射到现有真实餐食数据、识别审核和日期查询能力
 
 ```text
 C-01 - 全栈功能初版 [completed]
 └── C-02 - 课程项目接手验收与发布收口 [completed]
     └── C-03 - 本地个人营养 Agent [completed]
-        ├── M0 历史保护与仓库收敛 [completed]
-        ├── M1 SQLite 与 Prisma 兼容迁移 [completed]
-        ├── M2 成熟业务能力迁移 [completed]
-        ├── M3 个人工具外壳与多提供商设置 [completed]
-        ├── A1 长期记忆数据模型 [completed]
-        ├── M4A 长期记忆迁移、仓储与 API [completed]
-        ├── M4B 长期记忆治理界面 [completed]
-        ├── S2 营养 Agent 工作区 [completed]
-        ├── S3 MCP、附近外卖与动作确认门 [completed]
-        └── S4 发布与视觉验收 [completed]
+        └── C-04 - Keep 风格全界面产品化 [in_progress]
+            ├── S0 生活方式视觉素材 [deferred: imagegen group permission]
+            ├── S1 共享外壳与响应式导航 [completed]
+            ├── S2 今日、拍照与日历 [in_progress]
+            ├── S3 教练、运动与报告 [pending]
+            ├── S4 档案、AI/MCP 与记忆 [pending]
+            └── S5 双端视觉回归与发布验证 [pending]
 ```

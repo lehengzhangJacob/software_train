@@ -555,5 +555,22 @@
       "path": "dev_repo/journal.jsonl",
       "description": "1440px 桌面截图、342px DevTools 模拟、clientWidth=scrollWidth、五列底栏和外卖表单边界证据"
     }
+  ],
+  "C-04-S1": [
+    {
+      "type": "implementation",
+      "path": "src/app/globals.css, src/app/layout.tsx, src/components/sidebar.tsx",
+      "description": "Keep 风格视觉变量、深紫桌面顶栏、移动标题栏和稳定五列底部导航"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S1/dashboard-desktop.png",
+      "description": "1440x900 桌面外壳截图；主导航完整且页面无横向溢出"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S1/dashboard-mobile.png",
+      "description": "375px 移动外壳截图；clientWidth 与 scrollWidth 均为 375，五栏导航完整"
+    }
   ]
 }
