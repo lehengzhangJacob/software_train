@@ -26,10 +26,11 @@ export default async function CalendarPage() {
   })
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-semibold text-neutral-900">饮食日历</h1>
-        <p className="text-sm text-neutral-500 mt-1">浏览历史饮食记录</p>
+        <p className="page-eyebrow">Your rhythm</p>
+        <h1 className="page-title mt-2">这个月，你在认真生活。</h1>
+        <p className="page-copy mt-2">记录不是负担，它只是帮你看见自己的节奏。</p>
       </div>
       <CalendarContent
         today={today}

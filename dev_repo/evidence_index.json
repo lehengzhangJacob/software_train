@@ -572,5 +572,27 @@
       "path": "dev_repo/evidence/C-04-S1/dashboard-mobile.png",
       "description": "375px 移动外壳截图；clientWidth 与 scrollWidth 均为 375，五栏导航完整"
     }
+  ],
+  "C-04-S2": [
+    {
+      "type": "implementation",
+      "path": "src/app/dashboard/**, src/components/dashboard/**, src/app/meals/**, src/components/food/**, src/app/calendar/**, src/components/calendar/**",
+      "description": "真实数据驱动的今日行动首页、AI 多食物审核记录页和完整月视图日历"
+    },
+    {
+      "type": "asset",
+      "path": "public/images/nutrition/meal-hero.webp",
+      "description": "从已批准原型资产迁入项目的健康餐响应式主图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S2/",
+      "description": "dashboard、meals、calendar 的 1440x900 与 375px 双端截图；图片加载且无横向溢出"
+    },
+    {
+      "type": "verification",
+      "path": "npm run lint; npm run typecheck; npm run build",
+      "description": "ESLint、TypeScript 与 Next.js 16.3.1 production build 全部通过"
+    }
   ]
 }

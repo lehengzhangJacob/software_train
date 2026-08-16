@@ -242,15 +242,15 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
   const selectedDraftCount = drafts.filter((draft) => draft.selected).length
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
+    <div className="grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
+      <Card className="surface-card overflow-hidden border-0 lg:col-start-1 lg:row-start-1">
+        <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-base">
-            <Camera className="h-4 w-4" />
-            拍照识别
+            <span className="grid size-8 place-items-center rounded-md bg-[var(--brand-mint)] text-[var(--brand-plum)]"><Camera className="h-4 w-4" /></span>
+            拍照识别与审核
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 pb-3 sm:px-4 sm:pb-4">
           <FoodPhotoUpload
             onRecognized={handleRecognizedFoods}
             onManualEntryRequested={() => setShowForm(true)}
@@ -260,7 +260,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
       </Card>
 
       {drafts.length > 0 && (
-        <Card className="border-primary/30">
+        <Card className="surface-card border-[var(--brand-mint)]/40 lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex flex-wrap items-center justify-between gap-3 text-base">
               <span>识别结果待审核</span>
@@ -268,12 +268,12 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="border-l-2 border-amber-400 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+            <div className="rounded-md border-l-2 border-[var(--brand-coral)] bg-[#fff3ef] px-3 py-2 text-sm text-[#874333]">
               AI 估算，请核对。确认前可修改食物、餐别、份量和营养数值；图片不会随饮食记录保存。
             </div>
             <div className="space-y-4">
               {drafts.map((draft, index) => (
-                <div key={draft.id} className="border bg-neutral-50/60 p-4">
+                <div key={draft.id} className="rounded-md border bg-[var(--brand-paper)] p-4">
                   <div className="mb-4 flex items-center justify-between gap-3">
                     <label className="flex min-w-0 cursor-pointer items-center gap-2 text-sm font-medium text-neutral-800">
                       <input
@@ -285,7 +285,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                       />
                       <span className="truncate">识别项 {index + 1}</span>
                     </label>
-                    <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 lg:col-span-2">
                       <span className="text-xs text-neutral-500">置信度 {Math.round(draft.confidence * 100)}%</span>
                       <Button
                         type="button"
@@ -415,7 +415,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
       </div>
 
       {showForm && (
-        <Card>
+        <Card className="surface-card border-0 lg:col-span-2">
           <CardHeader>
             <CardTitle className="text-base">手动录入食物</CardTitle>
           </CardHeader>
@@ -465,13 +465,24 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
         </Card>
       )}
 
-      <Card>
+      <Card className="surface-card border-0 lg:col-start-2 lg:row-start-1">
         <CardHeader>
-          <CardTitle className="text-base">今日记录</CardTitle>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="page-eyebrow">Today&apos;s log</p>
+              <CardTitle className="mt-1 text-xl text-[var(--brand-plum)]">今日记录</CardTitle>
+            </div>
+            <span className="rounded-md bg-[var(--brand-lavender-soft)] px-2.5 py-1 text-xs font-medium text-[#5f51cc]">{meals.length} 项</span>
+          </div>
         </CardHeader>
         <CardContent>
           {meals.length === 0 ? (
-            <p className="py-6 text-center text-sm text-neutral-400">今日暂无记录</p>
+            <div className="grid min-h-[380px] place-items-center rounded-md bg-[var(--brand-paper)] px-6 text-center">
+              <div>
+                <p className="text-sm font-semibold text-[var(--brand-plum)]">还没有保存今天的第一餐</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">拍照识别或手动录入后，食物会按餐别整理在这里。</p>
+              </div>
+            </div>
           ) : (
             <div className="space-y-4">
               {(["breakfast", "lunch", "dinner", "snack"] as const).map((type) => {
@@ -483,7 +494,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                     <h4 className="mb-2 text-sm font-medium text-neutral-600">{MEAL_LABELS[type]}</h4>
                     <div className="space-y-2">
                       {items.map((item) => (
-                        <div key={item.recordId} className="flex items-center justify-between gap-3 border bg-white p-3">
+                        <div key={item.recordId} className="flex items-center justify-between gap-3 rounded-md border bg-[var(--brand-paper)] p-3">
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-sm font-medium text-neutral-800">{item.foodName}</p>
                             <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-neutral-500">

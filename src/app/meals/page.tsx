@@ -17,10 +17,16 @@ export default async function MealsPage() {
   })
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-neutral-900">饮食记录</h1>
-        <p className="text-sm text-neutral-500 mt-1">拍照或手动输入你吃了什么</p>
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="page-eyebrow">Photo log</p>
+          <h1 className="page-title mt-2">拍下这一餐，再认真确认。</h1>
+          <p className="page-copy mt-2">AI 会拆分多项食物；保存前由你决定名称、餐别、份量和营养数值。</p>
+        </div>
+        <div className="rounded-md bg-[var(--brand-lavender-soft)] px-3 py-2 text-xs font-medium text-[#5f51cc]">
+          {today} · 图片不会写入数据库
+        </div>
       </div>
       <MealsContent
         today={today}

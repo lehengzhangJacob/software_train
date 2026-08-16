@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from "react"
 import Image from "next/image"
-import { Camera, Loader2, Sparkles, Upload } from "lucide-react"
+import { Camera, ImagePlus, Loader2, ShieldCheck, Sparkles, Upload } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 
@@ -103,7 +103,7 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <input
         ref={fileInputRef}
         type="file"
@@ -120,31 +120,8 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
         onChange={handleFileSelect}
       />
 
-      <div className="flex gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          className="h-24 flex-1 flex-col gap-1"
-          disabled={disabled || analyzing}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          <Upload className="h-5 w-5" />
-          <span className="text-xs">选择图片</span>
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-24 flex-1 flex-col gap-1"
-          disabled={disabled || analyzing}
-          onClick={() => cameraInputRef.current?.click()}
-        >
-          <Camera className="h-5 w-5" />
-          <span className="text-xs">拍照</span>
-        </Button>
-      </div>
-
       {preview && (
-        <div className="relative h-48 overflow-hidden rounded-lg border">
+        <div className="relative min-h-[360px] overflow-hidden rounded-lg border sm:min-h-[520px]">
           <Image src={preview} alt="待识别的食物照片" fill unoptimized sizes="(max-width: 640px) 100vw, 42rem" className="object-cover" />
           {analyzing && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -158,12 +135,55 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
       )}
 
       {!preview && !analyzing && (
-        <div className="border-2 border-dashed border-neutral-200 p-8 text-center">
-          <Sparkles className="mx-auto mb-2 h-8 w-8 text-neutral-300" />
-          <p className="text-sm text-neutral-500">上传食物照片，AI 会识别每一项食物供你审核</p>
-          <p className="mt-1 text-xs text-neutral-400">支持 JPEG、PNG、WebP，最大 10MB</p>
+        <div className="relative min-h-[360px] overflow-hidden rounded-lg sm:min-h-[520px]">
+          <Image
+            src="/images/nutrition/meal-hero.webp"
+            alt="三文鱼、牛油果和蔬菜组成的健康餐"
+            fill
+            priority
+            sizes="(max-width: 1024px) 100vw, 58vw"
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+          <div className="absolute inset-x-4 bottom-4 rounded-md bg-[var(--brand-plum)]/94 p-4 text-white backdrop-blur sm:inset-x-5 sm:bottom-5">
+            <div className="flex items-start gap-3">
+              <span className="grid size-9 shrink-0 place-items-center rounded-md bg-[var(--brand-mint)] text-[var(--brand-plum)]">
+                <Sparkles className="size-4" />
+              </span>
+              <div>
+                <p className="text-sm font-semibold">让 AI 先看一眼，再由你确认。</p>
+                <p className="mt-1 text-xs leading-5 text-white/60">支持 JPEG、PNG、WebP，最大 10MB；原图只用于本次识别。</p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
+
+      <div className="grid grid-cols-2 gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          className="h-11 gap-2 bg-white"
+          disabled={disabled || analyzing}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="size-4" />
+          选择图片
+        </Button>
+        <Button
+          type="button"
+          className="h-11 gap-2 bg-[var(--brand-mint)] text-[var(--brand-plum)] hover:bg-[var(--brand-mint)]/90"
+          disabled={disabled || analyzing}
+          onClick={() => cameraInputRef.current?.click()}
+        >
+          <Camera className="size-4" />
+          立即拍照
+        </Button>
+      </div>
+      <div className="flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+        <span className="flex items-center gap-1.5"><ShieldCheck className="size-3.5 text-[var(--brand-mint-deep)]" />图片不会随记录保存</span>
+        <span className="flex items-center gap-1.5"><ImagePlus className="size-3.5" />最多审核 10 项</span>
+      </div>
     </div>
   )
 }
