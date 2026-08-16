@@ -1,10 +1,12 @@
 "use client"
 
+import Image from "next/image"
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
   Bot,
   Check,
   CheckCircle2,
+  History,
   LoaderCircle,
   MessageSquarePlus,
   Send,
@@ -13,7 +15,6 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { TakeoutToolsPanel } from "@/components/agent/takeout-tools-panel"
 
@@ -72,6 +73,8 @@ const categoryLabels: Record<string, string> = {
   context: "情境",
   insight: "洞察",
 }
+
+const starterPrompts = ["晚餐怎么安排更合适？", "帮我复盘今天的蛋白质", "给我一个附近外卖思路"]
 
 function formatThreadDate(value: string) {
   return new Intl.DateTimeFormat("zh-CN", { month: "short", day: "numeric" }).format(new Date(value))
@@ -199,100 +202,173 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-sm font-medium text-emerald-700">你好，{username}</p>
-          <h1 className="mt-1 text-2xl font-semibold text-neutral-900">营养 Agent</h1>
-          <p className="mt-1 text-sm text-neutral-500">把今天的饮食、目标和困扰放在同一个对话里。</p>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-neutral-500">
-          <Sparkles className="size-3.5 text-emerald-700" />
-          <span>本机档案与启用记忆已接入</span>
-        </div>
-      </div>
-
-      <div className="grid min-h-[calc(100vh-12rem)] gap-4 lg:grid-cols-[17rem_minmax(0,1fr)]">
-        <Card className="min-h-0">
-          <CardHeader className="flex flex-row items-center justify-between gap-2 border-b">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <Bot className="size-4 text-emerald-700" />
-              对话
-            </CardTitle>
-            <Button type="button" variant="outline" size="icon-sm" aria-label="新建对话" title="新建对话" onClick={startNewThread}>
-              <MessageSquarePlus />
-            </Button>
-          </CardHeader>
-          <CardContent className="p-2">
-            {threads.length === 0 ? (
-              <p className="px-2 py-6 text-center text-xs text-neutral-500">还没有历史对话</p>
-            ) : (
-              <div className="space-y-1">
-                {threads.map((thread) => {
-                  const active = thread.threadId === activeThreadId
-                  const busy = deletingThreadId === thread.threadId
-                  return (
-                    <div key={thread.threadId} className={cn("flex items-center gap-1 rounded-md", active && "bg-emerald-50")}>
-                      <button
-                        type="button"
-                        className={cn("min-w-0 flex-1 px-2.5 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500", active ? "text-emerald-900" : "text-neutral-700 hover:bg-neutral-50")}
-                        onClick={() => void openThread(thread.threadId)}
-                      >
-                        <span className="block truncate text-sm font-medium">{thread.title}</span>
-                        <span className="mt-0.5 block text-xs text-neutral-500">{formatThreadDate(thread.updatedAt)} · {thread.messageCount} 条消息</span>
-                      </button>
-                      <Button type="button" variant="ghost" size="icon-xs" aria-label={`删除 ${thread.title}`} title="删除对话" disabled={busy} onClick={() => void deleteThread(thread.threadId)}>
-                        {busy ? <LoaderCircle className="animate-spin" /> : <Trash2 />}
-                      </Button>
-                    </div>
-                  )
-                })}
+    <div className="space-y-5">
+      <section className="surface-card overflow-hidden border-0">
+        <div className="grid min-h-[680px] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
+          <aside className="flex min-h-0 flex-col bg-[var(--brand-plum)] text-white">
+            <div className="relative min-h-64 flex-1 lg:min-h-[430px]">
+              <Image
+                src="/images/nutrition/movement-hero.png"
+                alt="在明亮健身房中拉伸的训练者"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 34vw"
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(45,39,53,.96)_0%,rgba(45,39,53,.14)_58%,transparent_100%)]" />
+              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+                <p className="text-[11px] font-semibold uppercase text-[var(--brand-mint)]">Your AI coach</p>
+                <h1 className="mt-2 break-words text-2xl font-semibold leading-tight sm:text-3xl">你好，{username}。</h1>
+                <p className="mt-2 max-w-sm text-sm leading-6 text-white/72">
+                  我会结合你的饮食档案、真实记录和已确认记忆，陪你做出更轻松的下一步。
+                </p>
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
 
-        <Card className="min-h-0 overflow-hidden">
-          <CardHeader className="border-b">
-            <CardTitle className="flex items-center gap-2 text-sm">
-              <span className="size-2 rounded-full bg-emerald-500" />
-              {activeThread?.title ?? "新对话"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex min-h-[32rem] flex-col p-0">
-            <div ref={messageViewportRef} className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 sm:p-6">
+            <div className="border-t border-white/10 p-3 sm:p-4">
+              <div className="mb-2 flex items-center justify-between gap-3 px-1">
+                <span className="flex items-center gap-2 text-xs font-semibold text-white/65">
+                  <History className="size-3.5" />最近对话
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  className="text-white hover:bg-white/10 hover:text-white"
+                  aria-label="新建对话"
+                  title="新建对话"
+                  onClick={startNewThread}
+                >
+                  <MessageSquarePlus />
+                </Button>
+              </div>
+              {threads.length === 0 ? (
+                <p className="px-1 py-3 text-xs text-white/45">还没有历史对话，从右侧开始第一次交流。</p>
+              ) : (
+                <div className="flex gap-2 overflow-x-auto pb-1 lg:block lg:max-h-44 lg:space-y-1 lg:overflow-y-auto">
+                  {threads.map((thread) => {
+                    const active = thread.threadId === activeThreadId
+                    const busy = deletingThreadId === thread.threadId
+                    return (
+                      <div
+                        key={thread.threadId}
+                        className={cn(
+                          "flex min-w-56 items-center gap-1 rounded-md border border-white/8 lg:min-w-0",
+                          active ? "bg-white text-[var(--brand-plum)]" : "bg-white/5 text-white hover:bg-white/9"
+                        )}
+                      >
+                        <button
+                          type="button"
+                          className="min-w-0 flex-1 px-3 py-2.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint)]"
+                          onClick={() => void openThread(thread.threadId)}
+                        >
+                          <span className="block truncate text-sm font-medium">{thread.title}</span>
+                          <span className={cn("mt-0.5 block text-[11px]", active ? "text-muted-foreground" : "text-white/48")}>
+                            {formatThreadDate(thread.updatedAt)} · {thread.messageCount} 条
+                          </span>
+                        </button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          className={cn(active ? "text-muted-foreground" : "text-white/55 hover:bg-white/10 hover:text-white")}
+                          aria-label={`删除 ${thread.title}`}
+                          title="删除对话"
+                          disabled={busy}
+                          onClick={() => void deleteThread(thread.threadId)}
+                        >
+                          {busy ? <LoaderCircle className="animate-spin" /> : <Trash2 />}
+                        </Button>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </aside>
+
+          <div className="flex min-h-[620px] min-w-0 flex-col bg-[var(--brand-paper)]">
+            <header className="flex items-center justify-between gap-4 border-b border-border/70 px-5 py-4 sm:px-7">
+              <div className="min-w-0">
+                <p className="page-eyebrow">Tonight&apos;s plan</p>
+                <h2 className="mt-1 truncate text-xl font-semibold text-[var(--brand-plum)]">
+                  {activeThread?.title ?? "今晚怎么吃，我陪你定。"}
+                </h2>
+              </div>
+              <div className="hidden shrink-0 items-center gap-2 text-xs text-muted-foreground sm:flex">
+                <span className="size-2 rounded-full bg-[var(--brand-mint)]" />
+                档案与记忆已接入
+              </div>
+            </header>
+
+            <div ref={messageViewportRef} className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-5 sm:px-7 sm:py-7">
               {messages.length === 0 ? (
-                <div className="flex min-h-[24rem] flex-col items-center justify-center px-4 text-center">
-                  <div className="flex size-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
-                    <Bot className="size-6" />
+                <div className="flex min-h-[25rem] flex-col justify-center">
+                  <div className="grid size-11 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
+                    <Bot className="size-5" />
                   </div>
-                  <h2 className="mt-4 text-lg font-semibold text-neutral-900">今天想先聊哪一餐？</h2>
-                  <p className="mt-2 max-w-md text-sm leading-6 text-neutral-500">可以问我怎么调整今天的摄入、如何安排下一餐，或者直接告诉我你刚刚吃了什么。</p>
+                  <h3 className="mt-5 max-w-xl text-3xl font-semibold leading-tight text-[var(--brand-plum)]">
+                    先不用焦虑，今天还有调整空间。
+                  </h3>
+                  <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
+                    告诉我今天吃过什么、接下来有什么安排，或者直接从一个具体问题开始。
+                  </p>
+                  <div className="mt-6 flex flex-wrap gap-2">
+                    {starterPrompts.map((prompt) => (
+                      <button
+                        key={prompt}
+                        type="button"
+                        className="rounded-full border border-border bg-white px-3 py-2 text-xs font-medium text-[var(--brand-plum)] transition-colors hover:border-[var(--brand-mint)] hover:bg-[var(--brand-mint)]/10"
+                        onClick={() => setDraft(prompt)}
+                      >
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 messages.map((message) => (
                   <div key={message.messageId} className={cn("flex gap-3", message.role === "user" ? "justify-end" : "justify-start")}>
                     {message.role === "assistant" ? (
-                      <div className="mt-1 flex size-7 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"><Bot className="size-4" /></div>
+                      <div className="mt-1 grid size-8 shrink-0 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
+                        <Bot className="size-4" />
+                      </div>
                     ) : null}
-                    <div className={cn("max-w-[min(42rem,88%)]", message.role === "user" ? "items-end" : "items-start")}>
-                      <div className={cn("whitespace-pre-wrap break-words rounded-xl px-3.5 py-3 text-sm leading-6", message.role === "user" ? "bg-emerald-700 text-white" : "bg-neutral-100 text-neutral-800")}>
+                    <div className="max-w-[min(43rem,88%)]">
+                      <div
+                        className={cn(
+                          "whitespace-pre-wrap break-words rounded-lg px-4 py-3 text-sm leading-6 shadow-sm",
+                          message.role === "user"
+                            ? "bg-[var(--brand-lavender-soft)] text-[var(--brand-plum)]"
+                            : "border border-border/70 bg-white text-foreground"
+                        )}
+                      >
                         {message.content}
                       </div>
-                      <p className={cn("mt-1 text-[11px] text-neutral-400", message.role === "user" ? "text-right" : "text-left")}>{formatMessageTime(message.createdAt)}</p>
+                      <p className={cn("mt-1 text-[11px] text-muted-foreground", message.role === "user" ? "text-right" : "text-left")}>
+                        {formatMessageTime(message.createdAt)}
+                      </p>
                       {message.role === "assistant" && message.memoryCandidates.length > 0 ? (
-                        <div className="mt-3 space-y-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
-                          <div className="flex items-center gap-2 text-xs font-medium text-amber-900"><Sparkles className="size-3.5" />可能值得记住</div>
+                        <div className="mt-3 space-y-2 border-l-2 border-[var(--brand-coral)] bg-[#fff2ee] p-3">
+                          <div className="flex items-center gap-2 text-xs font-semibold text-[#713b32]">
+                            <Sparkles className="size-3.5" />可能值得记住
+                          </div>
                           {message.memoryCandidates.map((candidate, index) => {
                             const key = `${message.messageId}:${index}`
                             const confirmed = candidate.confirmedMemoryId !== null
                             return (
-                              <div key={key} className="flex items-start gap-2 rounded-md bg-white/70 p-2 text-xs text-amber-950">
-                                <div className="min-w-0 flex-1">
-                                  <span className="mr-1 rounded bg-amber-100 px-1.5 py-0.5 font-medium">{categoryLabels[candidate.category] ?? candidate.category}</span>
+                              <div key={key} className="flex items-start gap-2 bg-white/75 p-2 text-xs text-[#623b34]">
+                                <div className="min-w-0 flex-1 leading-5">
+                                  <span className="mr-1.5 font-semibold">{categoryLabels[candidate.category] ?? candidate.category}</span>
                                   <span className="break-words">{candidate.content}</span>
                                 </div>
-                                <Button type="button" variant={confirmed ? "ghost" : "outline"} size="xs" disabled={confirmed || confirmingCandidate === key} onClick={() => void confirmCandidate(message.messageId, index)}>
+                                <Button
+                                  type="button"
+                                  variant={confirmed ? "ghost" : "outline"}
+                                  size="xs"
+                                  disabled={confirmed || confirmingCandidate === key}
+                                  onClick={() => void confirmCandidate(message.messageId, index)}
+                                >
                                   {confirmingCandidate === key ? <LoaderCircle className="animate-spin" /> : confirmed ? <CheckCircle2 /> : <Check />}
                                   {confirmed ? "已记住" : "确认"}
                                 </Button>
@@ -306,11 +382,15 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                 ))
               )}
               {sending ? (
-                <div className="flex items-center gap-3 text-sm text-neutral-500"><div className="flex size-7 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"><Bot className="size-4" /></div><LoaderCircle className="size-4 animate-spin" />正在整理你的饮食上下文…</div>
+                <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                  <div className="grid size-8 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]"><Bot className="size-4" /></div>
+                  <LoaderCircle className="size-4 animate-spin" />正在整理你的饮食上下文…
+                </div>
               ) : null}
             </div>
-            <form className="border-t bg-neutral-50/60 p-3 sm:p-4" onSubmit={(event) => { event.preventDefault(); void sendMessage() }}>
-              <div className="flex items-end gap-2 rounded-lg border bg-white p-2 focus-within:border-emerald-500 focus-within:ring-2 focus-within:ring-emerald-500/20">
+
+            <form className="border-t border-border/70 bg-white p-3 sm:p-4" onSubmit={(event) => { event.preventDefault(); void sendMessage() }}>
+              <div className="flex items-end gap-2 rounded-md border bg-white p-2 focus-within:border-[var(--brand-mint)] focus-within:ring-2 focus-within:ring-[var(--brand-mint)]/20">
                 <textarea
                   value={draft}
                   onChange={(event) => setDraft(event.target.value)}
@@ -323,21 +403,22 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                   disabled={sending || loadingThread}
                   maxLength={4_000}
                   rows={2}
-                  placeholder="例如：我今天晚餐怎么吃更合适？"
-                  className="min-h-12 min-w-0 flex-1 resize-none border-0 bg-transparent px-1 py-1.5 text-sm leading-6 outline-none placeholder:text-neutral-400"
+                  placeholder="告诉我你现在最想解决什么"
+                  className="min-h-12 min-w-0 flex-1 resize-none border-0 bg-transparent px-1 py-1.5 text-sm leading-6 outline-none placeholder:text-muted-foreground"
                 />
                 <Button type="submit" size="icon" aria-label="发送消息" title="发送消息" disabled={sending || loadingThread || !draft.trim()}>
                   {sending ? <LoaderCircle className="animate-spin" /> : <Send />}
                 </Button>
               </div>
-              <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-neutral-400">
-                <span>消息保存在本机对话记录中</span>
+              <div className="mt-2 flex items-center justify-between gap-3 text-[11px] text-muted-foreground">
+                <span>消息仅保存在本机</span>
                 <span>{draft.length}/4,000</span>
               </div>
             </form>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </section>
+
       <TakeoutToolsPanel />
     </div>
   )

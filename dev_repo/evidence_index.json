@@ -594,5 +594,27 @@
       "path": "npm run lint; npm run typecheck; npm run build",
       "description": "ESLint、TypeScript 与 Next.js 16.3.1 production build 全部通过"
     }
+  ],
+  "C-04-S3": [
+    {
+      "type": "implementation",
+      "path": "src/app/agent/**, src/components/agent/**, src/app/exercise/**, src/components/exercise/**, src/app/reports/**, src/components/reports/**",
+      "description": "Keep 风格 AI 私人教练、真实运动计划和结论优先的 7/30 天营养报告"
+    },
+    {
+      "type": "asset",
+      "path": "public/images/nutrition/movement-hero.png",
+      "description": "从已批准原型资产迁入项目的真实训练场景响应式主图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S3/",
+      "description": "Agent、exercise、reports 的 1440px 与 375px 双端截图，以及月报告切换证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S3/verification.json",
+      "description": "无横向溢出、图片加载、30 天图表、控制台和生产构建的结构化验收记录"
+    }
   ]
 }

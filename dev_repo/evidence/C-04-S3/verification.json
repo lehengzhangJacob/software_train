@@ -1,0 +1,33 @@
+{
+  "slice_id": "C-04-S3",
+  "verified_at": "2026-08-16T13:38:03.1933289+08:00",
+  "commands": {
+    "npm_run_lint": "pass",
+    "npm_run_typecheck": "pass",
+    "npm_run_build": "pass: Next.js 16.3.1"
+  },
+  "desktop": {
+    "viewport": "1440x1000",
+    "agent": "pass: clientWidth=1425, scrollWidth=1425, movement image loaded",
+    "exercise": "pass: clientWidth=1425, scrollWidth=1425, five real candidates and actions visible",
+    "reports": "pass: clientWidth=1440, scrollWidth=1440, seven bars and period controls in bounds"
+  },
+  "mobile": {
+    "viewport": "375x812",
+    "agent": "pass: clientWidth=360, scrollWidth=360, independent stacked coach layout",
+    "exercise": "pass: clientWidth=360, scrollWidth=360, image-first plan layout",
+    "reports": "pass: clientWidth=360, scrollWidth=360, seven bars fit without horizontal scroll",
+    "monthly_switch": "pass: 30 bars rendered, clientWidth=scrollWidth=360, no console errors",
+    "bottom_navigation": "pass: fixed five-column navigation height 68px"
+  },
+  "behavior_preserved": [
+    "Agent threads, message persistence and explicit memory-candidate confirmation",
+    "MCP read-only search, draft generation and parameter-bound confirmation token",
+    "Exercise AbortController ownership, retry, adoption and cancellation flows",
+    "Report 7/30-day API switching, missing-day semantics and request cancellation"
+  ],
+  "architecture_delta": "none; existing frontend.pages and frontend.components composition only",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}

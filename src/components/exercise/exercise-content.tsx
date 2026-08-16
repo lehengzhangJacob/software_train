@@ -1,12 +1,11 @@
 "use client"
 
+import Image from "next/image"
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Activity, Check, Clock, Dumbbell, Flame, HeartPulse, Loader2, RotateCcw, Sparkles, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Clock, Dumbbell, Flame, Loader2, X } from "lucide-react"
-import { formatCalories } from "@/lib/utils"
+import { cn, formatCalories } from "@/lib/utils"
 
 interface Candidate {
   exerciseId: number
@@ -57,6 +56,27 @@ async function readApiEnvelope<T>(response: Response): Promise<ApiEnvelope<T>> {
   } catch {
     return { error: "请求失败，请稍后重试" }
   }
+}
+
+function MovementMedia() {
+  return (
+    <div className="relative min-h-[300px] lg:min-h-[680px]">
+      <Image
+        src="/images/nutrition/movement-hero.png"
+        alt="在健身房进行下肢拉伸的训练者"
+        fill
+        priority
+        sizes="(max-width: 1024px) 100vw, 46vw"
+        className="object-cover"
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(45,39,53,.82)_0%,transparent_52%)]" />
+      <div className="absolute inset-x-5 bottom-5 rounded-md bg-[var(--brand-plum)]/94 p-5 text-white sm:inset-x-7 sm:bottom-7">
+        <p className="text-[11px] font-semibold uppercase text-[var(--brand-mint)]">Today&apos;s movement</p>
+        <p className="mt-2 text-2xl font-semibold">动一动，身体会记得。</p>
+        <p className="mt-2 text-xs leading-5 text-white/65">不需要追求极限，完成今天适合你的那一小步。</p>
+      </div>
+    </div>
+  )
 }
 
 export function ExerciseContent({ today }: ExerciseContentProps) {
@@ -113,14 +133,11 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
           setErrorDate(today)
         }
       } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false)
-        }
+        if (!controller.signal.aborted) setLoading(false)
       }
     }
 
     void loadSuggestions()
-
     return () => controller.abort()
   }, [reloadKey, today])
 
@@ -144,9 +161,7 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
         }),
       })
       const result = await readApiEnvelope<AdoptedPlan>(response)
-      if (!response.ok || !result.data) {
-        throw new Error(result.error || "采用计划失败")
-      }
+      if (!response.ok || !result.data) throw new Error(result.error || "采用计划失败")
 
       reloadSuggestions()
       router.refresh()
@@ -180,9 +195,7 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
         body: JSON.stringify({ suggestionId: plan.suggestionId, isAdopted: false }),
       })
       const result = await readApiEnvelope<AdoptedPlan>(response)
-      if (!response.ok || !result.data) {
-        throw new Error(result.error || "取消采用失败")
-      }
+      if (!response.ok || !result.data) throw new Error(result.error || "取消采用失败")
 
       reloadSuggestions()
       router.refresh()
@@ -205,131 +218,151 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
 
   if (loading || (!hasCurrentData && !hasCurrentError)) {
     return (
-      <Card>
-        <CardContent className="py-12 text-center text-sm text-neutral-500">加载中...</CardContent>
-      </Card>
+      <section className="surface-card grid overflow-hidden border-0 lg:grid-cols-[.92fr_1.08fr]">
+        <MovementMedia />
+        <div className="flex min-h-[440px] items-center justify-center p-6">
+          <div className="text-center">
+            <Loader2 className="mx-auto size-7 animate-spin text-[var(--brand-mint-deep)]" />
+            <p className="mt-4 text-sm text-muted-foreground">正在结合今天的记录安排活动…</p>
+          </div>
+        </div>
+      </section>
     )
   }
 
   if (!hasCurrentData) {
     return (
-      <Card>
-        <CardContent className="space-y-3 py-12 text-center">
-          <p className="text-sm text-neutral-600" role="alert">{loadError || "暂时无法读取活动建议"}</p>
-          <Button type="button" variant="outline" onClick={reloadSuggestions}>
-            重试
-          </Button>
-        </CardContent>
-      </Card>
+      <section className="surface-card grid overflow-hidden border-0 lg:grid-cols-[.92fr_1.08fr]">
+        <MovementMedia />
+        <div className="flex min-h-[440px] items-center justify-center p-6">
+          <div className="max-w-sm text-center">
+            <HeartPulse className="mx-auto size-8 text-[var(--brand-coral)]" />
+            <h1 className="mt-4 text-2xl font-semibold text-[var(--brand-plum)]">今天的建议暂时没准备好</h1>
+            <p className="mt-2 text-sm leading-6 text-muted-foreground" role="alert">{loadError || "暂时无法读取活动建议"}</p>
+            <Button type="button" variant="outline" className="mt-5" onClick={reloadSuggestions}>
+              <RotateCcw />重试
+            </Button>
+          </div>
+        </div>
+      </section>
     )
   }
 
   const adoptedPlans = data.adopted.filter((plan) => plan.isAdopted === 1)
   const isAboveTarget = data.surplus > 0
+  const movementMessage = isAboveTarget
+    ? "今天吃得更充足，适合用轻松活动找回身体节奏。"
+    : "摄入仍在目标内，今天不必补偿，保持适度活动就很好。"
 
   return (
-    <div className="space-y-6">
-      <Card className={isAboveTarget ? "border-orange-200 bg-orange-50" : "border-emerald-200 bg-emerald-50"}>
-        <CardContent className="py-6">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <Flame className={`h-8 w-8 ${isAboveTarget ? "text-orange-500" : "text-emerald-500"}`} />
-              <div>
-                <p className="text-sm text-neutral-600">今日饮食记录</p>
-                <p className="text-xl font-bold text-neutral-900">
-                  {formatCalories(data.totalCalories)} / {formatCalories(data.dailyTarget)} 千卡
-                </p>
+    <div className="space-y-4">
+      <section className="surface-card grid overflow-hidden border-0 lg:grid-cols-[.92fr_1.08fr]">
+        <MovementMedia />
+
+        <div className="min-w-0 bg-[var(--brand-paper)] p-5 sm:p-7 lg:p-8">
+          <p className="page-eyebrow">为你安排</p>
+          <h1 className="mt-2 text-3xl font-semibold leading-tight text-[var(--brand-plum)] sm:text-4xl">今天适合轻一点。</h1>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">{movementMessage}</p>
+
+          <div className="mt-6 grid grid-cols-3 gap-2">
+            <div className="rounded-md bg-[var(--brand-lavender-soft)] p-3">
+              <span className="text-[10px] text-muted-foreground">今日摄入</span>
+              <strong className="mt-1 block text-lg text-[var(--brand-plum)]">{formatCalories(data.totalCalories)}</strong>
+            </div>
+            <div className="rounded-md bg-[var(--brand-lavender-soft)] p-3">
+              <span className="text-[10px] text-muted-foreground">目标</span>
+              <strong className="mt-1 block text-lg text-[var(--brand-plum)]">{formatCalories(data.dailyTarget)}</strong>
+            </div>
+            <div className="rounded-md bg-[var(--brand-lavender-soft)] p-3">
+              <span className="text-[10px] text-muted-foreground">摄入状态</span>
+              <strong className={cn("mt-1 block text-sm", isAboveTarget ? "text-[var(--brand-coral)]" : "text-[var(--brand-mint-deep)]")}>
+                {isAboveTarget ? `高 ${formatCalories(data.surplus)}` : `余 ${formatCalories(Math.abs(data.surplus))}`}
+              </strong>
+            </div>
+          </div>
+
+          {adoptedPlans.length > 0 ? (
+            <div className="mt-6 border-l-2 border-[var(--brand-mint)] bg-white p-4">
+              <div className="flex items-center gap-2 text-xs font-semibold text-[var(--brand-mint-deep)]">
+                <Check className="size-3.5" />今天已加入
+              </div>
+              <div className="mt-3 space-y-3">
+                {adoptedPlans.map((plan) => {
+                  const saving = savingPlans.has(plan.suggestionId)
+                  const errorKey = `plan-${plan.suggestionId}`
+                  return (
+                    <div key={plan.suggestionId} className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-[var(--brand-plum)]">{plan.exerciseType} · {plan.durationMinutes} 分钟</p>
+                        <p className="mt-1 text-xs text-muted-foreground">预计消耗 {formatCalories(plan.calorieBurnEstimate)} 千卡</p>
+                        {rowErrors[errorKey] ? <p className="mt-1 text-xs text-destructive" role="alert">{rowErrors[errorKey]}</p> : null}
+                      </div>
+                      <Button type="button" variant="ghost" size="icon-sm" aria-label={`取消 ${plan.exerciseType}`} title="取消采用" disabled={saving} onClick={() => void cancelPlan(plan)}>
+                        {saving ? <Loader2 className="animate-spin" /> : <X />}
+                      </Button>
+                    </div>
+                  )
+                })}
               </div>
             </div>
-            <Badge variant={isAboveTarget ? "destructive" : "secondary"} className="shrink-0 text-sm">
-              {isAboveTarget ? `较目标多 ${formatCalories(data.surplus)} 千卡` : `较目标少 ${formatCalories(Math.abs(data.surplus))} 千卡`}
-            </Badge>
+          ) : null}
+
+          <div className="mt-7">
+            <div className="mb-2 flex items-end justify-between gap-3">
+              <div>
+                <p className="page-eyebrow">Movement options</p>
+                <h2 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">选择今天做得到的</h2>
+              </div>
+              <Dumbbell className="size-5 text-[var(--brand-lavender)]" />
+            </div>
+
+            {data.candidates.length === 0 ? (
+              <div className="mt-4 border border-dashed border-border p-5 text-center text-sm text-muted-foreground">暂无可选活动建议</div>
+            ) : (
+              <div className="divide-y divide-border/80">
+                {data.candidates.map((candidate, index) => {
+                  const saving = savingCandidates.has(candidate.exerciseId)
+                  const errorKey = `candidate-${candidate.exerciseId}`
+                  const alreadyAdopted = adoptedPlans.some((plan) => plan.exerciseType === candidate.exerciseName)
+                  return (
+                    <article key={candidate.exerciseId} className="grid gap-3 py-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
+                      <div className={cn(
+                        "grid size-10 place-items-center rounded-full text-sm font-semibold",
+                        index === 0 ? "bg-[#dcfaee] text-[var(--brand-mint-deep)]" : index === 1 ? "bg-[var(--brand-lavender-soft)] text-[#6658c8]" : "bg-[#fff0ec] text-[#a94f3e]"
+                      )}>
+                        {index === 0 ? <Activity className="size-4" /> : index === 1 ? <Dumbbell className="size-4" /> : <Sparkles className="size-4" />}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="font-semibold text-[var(--brand-plum)]">{candidate.exerciseName} · {candidate.suggestedMinutes} 分钟</h3>
+                          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] text-muted-foreground">{categoryLabel(candidate.category)}</span>
+                        </div>
+                        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1"><Clock className="size-3" />{candidate.suggestedMinutes} 分钟</span>
+                          <span className="flex items-center gap-1"><Flame className="size-3" />约 {formatCalories(candidate.calorieBurnEstimate)} 千卡</span>
+                        </div>
+                        {candidate.description ? <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">{candidate.description}</p> : null}
+                        {rowErrors[errorKey] ? <p className="mt-1 text-xs text-destructive" role="alert">{rowErrors[errorKey]}</p> : null}
+                      </div>
+                      <Button
+                        type="button"
+                        variant={index === 0 ? "default" : "outline"}
+                        className="w-full sm:w-auto"
+                        disabled={saving || alreadyAdopted}
+                        onClick={() => void adoptCandidate(candidate)}
+                      >
+                        {alreadyAdopted ? <><Check />已采用</> : saving ? <><Loader2 className="animate-spin" />保存中</> : "加入今天"}
+                      </Button>
+                    </article>
+                  )
+                })}
+              </div>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Dumbbell className="h-4 w-4" />
-            已采用计划
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {adoptedPlans.length === 0 ? (
-            <p className="py-2 text-center text-sm text-neutral-500">尚未采用活动计划</p>
-          ) : (
-            adoptedPlans.map((plan) => {
-              const saving = savingPlans.has(plan.suggestionId)
-              const errorKey = `plan-${plan.suggestionId}`
-
-              return (
-                <div key={plan.suggestionId} className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-neutral-800">{plan.exerciseType}</p>
-                      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600">
-                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" />{plan.durationMinutes} 分钟</span>
-                        <span className="flex items-center gap-1"><Flame className="h-3 w-3" />约 {formatCalories(plan.calorieBurnEstimate)} 千卡</span>
-                      </div>
-                      {plan.suggestionDetail && <p className="mt-1 text-xs text-neutral-500">{plan.suggestionDetail}</p>}
-                      {rowErrors[errorKey] && <p className="mt-2 text-xs text-destructive" role="alert">{rowErrors[errorKey]}</p>}
-                    </div>
-                    <Button type="button" variant="outline" size="sm" disabled={saving} onClick={() => void cancelPlan(plan)}>
-                      {saving ? <><Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />保存中</> : <><X className="mr-1 h-3.5 w-3.5" />取消采用</>}
-                    </Button>
-                  </div>
-                </div>
-              )
-            })
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-base">
-            <Dumbbell className="h-4 w-4" />
-            可选活动建议
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          {data.candidates.length === 0 ? (
-            <p className="py-4 text-center text-sm text-neutral-500">暂无可选活动建议</p>
-          ) : (
-            data.candidates.map((candidate) => {
-              const saving = savingCandidates.has(candidate.exerciseId)
-              const errorKey = `candidate-${candidate.exerciseId}`
-              const alreadyAdopted = adoptedPlans.some((plan) => plan.exerciseType === candidate.exerciseName)
-
-              return (
-                <div key={candidate.exerciseId} className="rounded-lg border bg-white p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-sm font-medium text-neutral-800">{candidate.exerciseName}</p>
-                        <Badge variant="outline">{categoryLabel(candidate.category)}</Badge>
-                      </div>
-                      <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-600">
-                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" />建议 {candidate.suggestedMinutes} 分钟</span>
-                        <span className="flex items-center gap-1"><Flame className="h-3 w-3" />约 {formatCalories(candidate.calorieBurnEstimate)} 千卡</span>
-                        <span>{formatCalories(candidate.caloriesPer30min)} 千卡 / 30 分钟</span>
-                      </div>
-                      {candidate.description && <p className="mt-1 text-xs text-neutral-500">{candidate.description}</p>}
-                      {rowErrors[errorKey] && <p className="mt-2 text-xs text-destructive" role="alert">{rowErrors[errorKey]}</p>}
-                    </div>
-                    <Button type="button" size="sm" disabled={saving || alreadyAdopted} onClick={() => void adoptCandidate(candidate)}>
-                      {alreadyAdopted ? "已采用" : saving ? <><Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />保存中</> : "采用计划"}
-                    </Button>
-                  </div>
-                </div>
-              )
-            })
-          )}
-        </CardContent>
-      </Card>
-
-      <p className="px-1 text-xs leading-5 text-neutral-500">
+      <p className="px-1 text-xs leading-5 text-muted-foreground">
         活动建议用于支持日常体能与习惯，不需要也不建议用运动抵消饮食。以上内容不是医疗建议；如有不适或基础疾病，请咨询专业人士。
       </p>
     </div>
