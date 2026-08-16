@@ -633,5 +633,22 @@
       "path": "dev_repo/evidence/C-04-S4/verification.json",
       "description": "无横向溢出、真实 MCP 工具、保存交互、记忆新增与确认删除、控制台和生产构建记录"
     }
+  ],
+  "C-04-S5": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S5/*-desktop.png, dev_repo/evidence/C-04-S5/*-mobile.png",
+      "description": "九个真实路由的 1440x1000 与 375x812 双端最终视觉回归，共 18 张截图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S5/verification.json",
+      "description": "全路由无横向溢出、零破损图片、移动五栏导航、页面标题、控制台与视觉复核记录"
+    },
+    {
+      "type": "verification",
+      "path": "npm run verify",
+      "description": "AI/Memory/Agent/MCP 合同测试 16/16、ESLint、TypeScript 与 Next.js 生产构建全部通过"
+    }
   ]
 }

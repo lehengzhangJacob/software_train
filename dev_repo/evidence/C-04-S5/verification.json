@@ -1,0 +1,55 @@
+{
+  "slice": "C-04-S5",
+  "routes": [
+    "/dashboard",
+    "/meals",
+    "/calendar",
+    "/agent",
+    "/exercise",
+    "/reports",
+    "/profile",
+    "/settings",
+    "/settings/memory"
+  ],
+  "desktop": {
+    "viewport_override": "1440x1000",
+    "screenshots": 9,
+    "horizontal_overflow_routes": [],
+    "broken_images": 0
+  },
+  "mobile": {
+    "viewport_override": "375x812",
+    "css_viewport_note": "Windows browser scrollbar leaves a 360px document client width",
+    "screenshots": 9,
+    "horizontal_overflow_routes": [],
+    "broken_images": 0,
+    "bottom_navigation_items_per_route": 5,
+    "page_titles": {
+      "/dashboard": "今天",
+      "/meals": "拍照记录",
+      "/calendar": "饮食日历",
+      "/agent": "AI 私人教练",
+      "/exercise": "运动建议",
+      "/reports": "营养报告",
+      "/profile": "个人档案",
+      "/settings": "AI 与工具",
+      "/settings/memory": "长期记忆"
+    }
+  },
+  "visual_review": {
+    "desktop": "pass",
+    "mobile": "pass",
+    "app_console_errors": [],
+    "lcp_followup": "calendar meal hero explicitly uses eager loading"
+  },
+  "verification": {
+    "ai_contract_tests": "4/4 pass",
+    "memory_contract_tests": "4/4 pass",
+    "agent_contract_tests": "4/4 pass",
+    "mcp_contract_tests": "4/4 pass",
+    "lint": "pass",
+    "typecheck": "pass",
+    "production_build": "pass",
+    "command": "npm run verify"
+  }
+}

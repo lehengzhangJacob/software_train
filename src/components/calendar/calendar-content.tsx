@@ -395,6 +395,7 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
               src="/images/nutrition/meal-hero.webp"
               alt="健康餐食"
               fill
+              loading="eager"
               sizes="(max-width: 1024px) 100vw, 36vw"
               className="object-cover"
             />
