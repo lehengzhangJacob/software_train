@@ -1,10 +1,10 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "amendment": {
-    "contract_id": "C-03-A0",
-    "decision": "local_first_nutrition_agent",
+    "contract_id": "C-06-A1",
+    "decision": "android_health_shell_ratified",
     "status": "accepted",
-    "return_to": "C-03-M1"
+    "return_to": "C-06-L3"
   },
   "nodes": [
     {
@@ -15,7 +15,8 @@
         "browser interaction"
       ],
       "depends_on": [
-        "frontend"
+        "frontend",
+        "android.shell"
       ],
       "depended_on_by": [],
       "invariants": [
@@ -172,6 +173,7 @@
         "src/app/api/meals/**",
         "src/app/api/reports/**",
         "src/app/api/exercise/**",
+        "src/app/api/health/**",
         "src/lib/api*.ts",
         "src/lib/validation*.ts"
       ],
@@ -180,14 +182,17 @@
         "/api/meals GET/PUT/DELETE",
         "/api/meals POST items[] (approved target)",
         "/api/reports GET continuous-day series (approved target)",
-        "/api/exercise/suggest GET/POST/PATCH (approved target)"
+        "/api/exercise/suggest GET/POST/PATCH (approved target)",
+        "/api/health/sync POST daily-aggregate upsert (approved target)",
+        "/api/health/recent GET local-date window (approved target)"
       ],
       "depends_on": [
         "database.prisma"
       ],
       "depended_on_by": [
         "frontend.components",
-        "frontend.pages"
+        "frontend.pages",
+        "android.shell"
       ],
       "invariants": [
         "不信任客户端 userId",
@@ -405,6 +410,7 @@
         "package-lock.json",
         "README.md",
         "scripts/release-smoke.mjs",
+        "scripts/*.test.ts",
         ".github/**",
         "playwright.config.*",
         "tests/**"
@@ -566,7 +572,7 @@
     },
     {
       "id": "agent.runtime",
-      "purpose": "编排档案、餐食、记忆、模型与工具的营养对话运行时",
+      "purpose": "编排档案、餐食、记忆、近 7 天活动量、模型与工具的营养对话运行时",
       "owned_files": [
         "src/app/agent/**",
         "src/app/api/agent/**",
@@ -717,6 +723,82 @@
       ],
       "confidence": "confirmed",
       "implementation_status": "approved_target"
+    },
+    {
+      "id": "android.shell",
+      "purpose": "Android 原生薄壳：WebView 渲染 live web 服务，原生读取 Health Connect 聚合并 POST 同步",
+      "owned_files": [
+        "android/**",
+        "capacitor.config.ts",
+        "capacitor-web/**"
+      ],
+      "public_interfaces": [
+        "Capacitor WebView shell",
+        "Health Connect aggregated sync (via capgo-capacitor-health)"
+      ],
+      "depends_on": [
+        "backend.api",
+        "external.health_connect"
+      ],
+      "depended_on_by": [
+        "local_user"
+      ],
+      "invariants": [
+        "壳不持有业务数据唯一真相",
+        "仅经用户授权读取 Health Connect 自然日聚合",
+        "开发回路走 adb reverse loopback"
+      ],
+      "allowed_change_types": [
+        "shell config",
+        "plugin upgrade",
+        "splash/branding"
+      ],
+      "requires_amendment_when": [
+        "壳内实现独立业务逻辑或本地数据库",
+        "读取非聚合健康数据",
+        "壳成为独立发布真相来源"
+      ],
+      "verification": [
+        "device build",
+        "test:health contract tests",
+        "adb reverse manual smoke"
+      ],
+      "known_debt": [
+        "形态 B 部署 URL 未定",
+        "真机回归未入 CI"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "external.health_connect",
+      "purpose": "设备端健康数据聚合服务，提供步数、活动消耗与运动分钟数",
+      "owned_files": [],
+      "public_interfaces": [
+        "Health Connect aggregated read APIs"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "android.shell"
+      ],
+      "invariants": [
+        "读取需设备级用户授权",
+        "原始明细不进入本产品持久层"
+      ],
+      "allowed_change_types": [
+        "Health Connect 权限范围"
+      ],
+      "requires_amendment_when": [
+        "写入 Health Connect",
+        "读取非聚合或敏感健康明细"
+      ],
+      "verification": [
+        "shell sync probe",
+        "manual device smoke"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
     }
   ],
   "edges": [
@@ -824,6 +906,21 @@
       "source": "mcp.gateway",
       "target": "external.mcp_services",
       "label": "authorized MCP transport"
+    },
+    {
+      "source": "local_user",
+      "target": "android.shell",
+      "label": "native shell"
+    },
+    {
+      "source": "android.shell",
+      "target": "external.health_connect",
+      "label": "authorized aggregated reads"
+    },
+    {
+      "source": "android.shell",
+      "target": "backend.api",
+      "label": "same-origin POST /api/health"
     }
   ]
 }

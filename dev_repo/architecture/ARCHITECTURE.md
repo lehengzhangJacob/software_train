@@ -8,6 +8,9 @@ Nutrition Agent 是本地优先的私有单用户个人营养工具。成熟基�
 flowchart LR
   U[本机单个用户] --> B[浏览器]
   B --> N[Next.js 16 / Node.js]
+  U --> SH[Android 薄壳]
+  SH --> N
+  SH --> HC[Health Connect]
   N --> P[Prisma]
   P --> S[(SQLite 文件)]
   N --> A[AI Provider Gateway]
@@ -21,6 +24,7 @@ flowchart LR
 | 容器 | 职责 | 权威文件 | 状态 |
 |---|---|---|---|
 | Browser UI | 页面、表单、图表、审核与交互状态 | src/app/**, src/components/** | confirmed |
+| Android Shell | Capacitor 薄壳：WebView 渲染 live 服务，Health Connect 聚合同步（ADR-0005） | android/**, capacitor.config.ts, capacitor-web/** | confirmed；C-06-A1 已追认 |
 | Next API | 校验输入、绑定 primary profile、编排 DB、AI 与工具 | src/app/api/**, src/lib/** | confirmed；C-03 已完成 |
 | Prisma | 类型化持久化和正式 migration | prisma/schema.prisma, prisma/migrations/** | confirmed；C-03-M1 迁移现有数据库 |
 | SQLite | 单实例本地数据 | DATABASE_URL 指向的文件 | confirmed |
@@ -49,13 +53,17 @@ flowchart LR
 
 /api/exercise/suggest 的 GET 返回候选和已采用计划，POST 采用计划，PATCH 取消采用；所有热量值由服务端依据 reference 和体重重新计算。报告返回包含今天的连续自然日序列，并显式标记未记录日期。
 
+### 健康活动同步
+
+Android 薄壳经用户授权读取 Health Connect 自然日聚合（步数、活动消耗、运动分钟数），按天 POST /api/health/sync 部分字段 upsert；GET /api/health/recent 按本地自然日窗口读取。服务端只持久化聚合值（daily_activity，(user_id, activity_date) 唯一），Health Connect 原始明细留在设备端；Web 端提供手动回填表单。壳不持有业务数据唯一真相，开发回路走 adb reverse loopback（ADR-0005）。
+
 ### 个性化页面
 
 档案、餐食、看板、日历、运动和报告包含个人数据，必须按请求动态渲染，禁止在构建产物中静态固化。
 
 ### Agent 与受控工具
 
-Agent 对话只持久化 user/assistant 消息，不保存 system prompt。每次请求注入当前档案、近 14 天餐食和 active/unexpired 记忆。模型可在回复末尾返回最多 3 条结构化长期记忆候选；服务端在保存 assistant 消息的同一事务中自动物化合法候选，不要求用户逐条确认。
+Agent 对话只持久化 user/assistant 消息，不保存 system prompt。每次请求注入当前档案、近 14 天餐食、近 7 天活动量（来源标注 health_connect / manual）和 active/unexpired 记忆。模型可在回复末尾返回最多 3 条结构化长期记忆候选；服务端在保存 assistant 消息的同一事务中自动物化合法候选，不要求用户逐条确认。
 
 自动生成的 MemoryItem 必须保留 `agent_inference` 来源、置信度和来源消息。`is_user_confirmed` 仅表示用户是否审阅或修正过，不再是检索资格门；用户可以查看、编辑、停用和硬删除所有记忆。Agent 不得覆盖用户修正内容，也不得重新创建或恢复已被用户停用的同类精确记忆。
 

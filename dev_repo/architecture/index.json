@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "architecture_entry": "dev_repo/architecture/README.md",
   "files": [
     {
@@ -91,6 +91,11 @@
       "path": "dev_repo/architecture/decisions/ADR-0004-autonomous-unpaid-mcdonald-order.md",
       "node": "action.policy",
       "description": "明确点餐意图授权 Agent 创建一笔未支付麦当劳订单"
+    },
+    {
+      "path": "dev_repo/architecture/decisions/ADR-0005-android-health-shell.md",
+      "node": "android.shell",
+      "description": "Android 薄壳渲染 live 服务并聚合同步 Health Connect"
     }
   ],
   "ownership": [
@@ -101,6 +106,22 @@
     {
       "glob": "src/app/api/{users,meals,reports,exercise}/**",
       "node": "backend.api"
+    },
+    {
+      "glob": "src/app/api/health/**",
+      "node": "backend.api"
+    },
+    {
+      "glob": "android/**",
+      "node": "android.shell"
+    },
+    {
+      "glob": "capacitor.config.ts",
+      "node": "android.shell"
+    },
+    {
+      "glob": "capacitor-web/**",
+      "node": "android.shell"
     },
     {
       "glob": "src/app/{dashboard,profile,meals,calendar,exercise,reports}/**",

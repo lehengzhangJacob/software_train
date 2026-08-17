@@ -1,6 +1,9 @@
 flowchart LR
   user[本机单个用户] --> browser[Personal Tool UI]
   browser --> next[Next.js 16 Server]
+  user --> shell[Android 薄壳]
+  shell --> next
+  shell --> hc[Health Connect]
   next --> prisma[Prisma]
   prisma --> sqlite[(SQLite)]
   next --> ai[AI Provider Gateway]
