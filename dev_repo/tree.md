@@ -1,8 +1,8 @@
 # Campaign: nutrition-agent
 
 - 当前合同：`C-06 - 麦当劳本地点餐闭环 [in_progress]`
-- 当前切片：`C-06-L3 - Agent 自主选餐与未支付订单`
-- 下一步：接入 Agent 编排：意图判定 → 地址/门店/菜单查询 → 计价 → 创建未支付订单，支付主权归用户
+- 当前切片：`C-06-L4 - 本地发布回归`
+- 下一步：全量发布检查（migrations、verify 全链、production smoke）+ 点餐闭环真机/真实 Token 人肉 smoke + 双端回归，关闭 C-06
 - 已收口子合同：`C-06-A1 - Android 健康壳与 DailyActivity 追认修宪 [completed 2026-08-17]`（4 个游离 commit 已入账：视觉/聊天配置分离、Markdown 渲染、Android 壳、健康活动同步）
 
 ```text
@@ -25,6 +25,6 @@ C-01 - 全栈功能初版 [completed]
                     ├── L1 自主创建未支付订单架构修宪 [completed]
                     ├── L2 麦当劳官方 MCP 与本地 Token [completed]
                     ├── A1 Android 健康壳与 DailyActivity 追认修宪 [completed]
-                    ├── L3 Agent 自主选餐与未支付订单 [pending]
+                    ├── L3 Agent 自主选餐与未支付订单 [completed：S1 意图门 7e46433 / S2 编排管线 13bb757 / S3 建单与支付入口 9a58964]
                     └── L4 本地发布回归 [pending]
 ```

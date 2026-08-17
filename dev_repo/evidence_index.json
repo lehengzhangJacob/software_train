@@ -1,4 +1,36 @@
 {
+  "C-06-L3": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-L3/verification.json",
+      "description": "L3 三片实证：意图门/编排管线/建单与支付入口，ADR-0004 四边界落实与已知债务"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/ordering-intent.ts",
+      "description": "保守点餐意图门（麦当劳信号+当下指令共现、硬阻断优先）"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/ordering.ts",
+      "description": "分阶段确定性编排：地址→门店→菜单→模型选餐→计价→单次建单；支付链接只进临时响应"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/agent/chat/route.ts",
+      "description": "意图分支接线；点餐轮确定性回复，模型不接触订单与支付面"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-workspace.tsx",
+      "description": "临时支付面板（组件态、不持久化）"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/ordering-contract.test.ts",
+      "description": "编排合同测试 11/11；agent 合同测试 7/7；verify 全链含 build"
+    }
+  ],
   "C-06-A1": [
     {
       "type": "verification",
