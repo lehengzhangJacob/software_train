@@ -1,4 +1,26 @@
 {
+  "C-07": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-07/verification.json",
+      "description": "C-07 三片实证：令牌断言、清扫残留 grep、HTTP 渲染证明；双模式截图为环境受阻债务（转 L4）"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/theme-provider.tsx",
+      "description": "next-themes 接线：class 策略、defaultTheme=system、enableSystem"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/globals.css",
+      "description": ".dark 令牌补全 + 10 个双值语义令牌（brand-heading 等）"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/theme-settings-card.tsx",
+      "description": "外观三选卡（浅色/深色/跟随系统），偏好存 localStorage"
+    }
+  ],
   "C-06-L3": [
     {
       "type": "verification",

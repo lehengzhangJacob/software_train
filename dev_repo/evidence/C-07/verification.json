@@ -1,0 +1,46 @@
+{
+  "contract": "C-07",
+  "type": "implementation",
+  "date": "2026-08-17",
+  "goal": "深色模式 + 系统主题跟随，浅色零回归",
+  "slices": {
+    "C-07-S1": {
+      "commit": "dfb52df",
+      "files": ["src/components/theme-provider.tsx (new)", "src/app/layout.tsx", "src/app/globals.css"],
+      "verification": {
+        "token_assertions": "pass 12/12（.dark 覆盖 app-canvas/brand-paper/lavender-soft/mint-deep/sidebar/chart-4；--brand-heading 双值；:root 原值不变）",
+        "gates": "lint 0 errors / typecheck clean / build pass"
+      }
+    },
+    "C-07-S2": {
+      "commit": "f5b9815",
+      "files": ["22 个 tsx + globals.css（9 个新语义令牌）"],
+      "verification": {
+        "sweep": "裸 bg-white 39 处→bg-card（残留 0）；前景 text-plum→brand-heading（残留 0，mint 底 12 处有意保留）；bg-white/N 17 处深面板保留",
+        "hex_mapping": "高频对入令牌（lavender-deep/mint-soft/mint-ink/coral-soft/coral-ink/amber-soft/amber-ink），单发加 dark: 变体，图表 SVG 描边改 var(--chart-track)/var(--trend-stroke)",
+        "gates": "lint 0 errors / typecheck / build"
+      }
+    },
+    "C-07-S3": {
+      "commit": "self-referential（本切片提交）",
+      "files": ["src/components/theme-settings-card.tsx (new)", "src/app/settings/page.tsx"],
+      "verification": {
+        "gates": "lint 0 errors / typecheck / build",
+        "http_render_proof": "pass：/settings 服务端渲染含『配色方案』radiogroup；next-themes 防闪脚本（foodtracker-theme storageKey）已注入；/dashboard 200",
+        "lint_compliance": "useSyncExternalStore 挂载守卫替代 effect 内 setState（react-hooks/set-state-in-effect）"
+      }
+    }
+  },
+  "light_zero_regression_guarantees": [
+    ":root 全部令牌值未改动，深色一律 .dark 覆盖",
+    "--brand-heading 浅色值 = 原 page-title/前景 plum 值（#2d2735）",
+    "新令牌浅色值 = 被替换的原 hex 逐字相同",
+    "保留集：bg-white/N 深面板 17 处、mint 底 plum 字 12 处、深色品牌面板 text-white"
+  ],
+  "known_debt": {
+    "item": "双模式 18 张路由截图证据未产出",
+    "blocker_class": "environment",
+    "stop_reason": "IAB 浏览器 webview 本会话持续挂载失败（browser guest not attached），无可用视觉自动化通道",
+    "next_exact_action": "并入 C-06-L4 发布回归：IAB 可用或真机环境下补齐 9 路由 × 浅/深截图，并人工核对对比度"
+  }
+}

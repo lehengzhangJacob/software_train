@@ -158,6 +158,21 @@
         "C-06-A1-S3"
       ],
       "return_to": "C-06-L3"
+    },
+    "C-07": {
+      "contract_id": "C-07",
+      "parent_contract_id": "C-06",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "深色模式与系统主题跟随",
+      "goal": "补全深色令牌体系、接入系统主题跟随并清扫全仓硬编码颜色，浅色零回归",
+      "current_slice": null,
+      "completed_slices": [
+        "C-07-S1",
+        "C-07-S2",
+        "C-07-S3"
+      ],
+      "return_to": "C-06-L4"
     }
   }
 }
