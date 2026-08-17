@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { CredentialGuide } from "@/components/credential-guide"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import type { PublicMcDonaldSettings } from "@/lib/mcp/settings"
@@ -123,7 +124,7 @@ export function McDonaldSettingsForm({ initialSettings }: { initialSettings: Pub
           </p>
           <a
             className="mt-6 inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
-            href="https://mcp.mcd.cn/mcp/portal/register"
+            href="https://open.mcd.cn/mcp"
             target="_blank"
             rel="noreferrer"
           >
@@ -143,6 +144,19 @@ export function McDonaldSettingsForm({ initialSettings }: { initialSettings: Pub
           <div className="mt-5 rounded-md bg-[var(--brand-mint-soft)] px-3 py-2 text-xs leading-5 text-[var(--brand-mint-ink)]">
             Token 只保存在本机服务端，不会发送给 AI、写入对话或显示完整值。官方端点：{settings.endpoint}
           </div>
+
+          <CredentialGuide
+            title="如何获取麦当劳 MCP Token"
+            description="Token 是你的麦当劳会员凭证；申请和复制只在麦当劳官方 MCP 平台完成。"
+            href="https://open.mcd.cn/mcp"
+            steps={[
+              "打开麦当劳 MCP 开放平台，点击登录或立即体验。",
+              "使用麦当劳会员手机号和短信验证码登录，并同意相关协议。",
+              "登录后进入右上角控制台，找到 MCP 服务并点击激活。",
+              "同意服务协议并复制生成的 Token，回到本页粘贴后保存并测试。",
+            ]}
+            note="申请入口是 open.mcd.cn/mcp；MCP 服务连接端点仍是 https://mcp.mcd.cn。不要把 Token 发到聊天或提交到代码仓库。"
+          />
 
           <div className="mt-5 space-y-2">
             <div className="flex items-center justify-between gap-3">

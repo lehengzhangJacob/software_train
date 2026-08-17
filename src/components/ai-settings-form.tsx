@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { CredentialGuide } from "@/components/credential-guide"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -249,6 +250,15 @@ export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
             </div>
             {provider.visionCapability === "unsupported" ? <p className="text-xs text-[var(--brand-coral-ink)]">该预设为文本模型，不能用于食物图片识别。</p> : null}
           </div>
+
+          <CredentialGuide
+            title={`${provider.label} API Key 获取指引`}
+            description={provider.credentialGuide.description}
+            steps={provider.credentialGuide.steps}
+            href={provider.credentialGuide.url}
+            linkLabel={provider.credentialGuide.linkLabel}
+            note={provider.credentialGuide.note}
+          />
 
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-end">
             <Button type="button" variant="outline" disabled={saving || testing} onClick={testConnection}>
