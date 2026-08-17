@@ -63,7 +63,9 @@ Android 薄壳经用户授权读取 Health Connect 自然日聚合（步数、�
 
 ### Agent 与受控工具
 
-Agent 对话只持久化 user/assistant 消息，不保存 system prompt。每次请求注入当前档案、近 14 天餐食、近 7 天活动量（来源标注 health_connect / manual）和 active/unexpired 记忆。模型可在回复末尾返回最多 3 条结构化长期记忆候选；服务端在保存 assistant 消息的同一事务中自动物化合法候选，不要求用户逐条确认。
+Agent 对话只持久化 user/assistant 消息，不保存 system prompt。每次请求注入当前档案、近 14 天餐食、近 7 天活动量（来源标注 health_connect / manual）、active/unexpired 记忆，以及「更早会话摘要 + 水位线后尾部 ≤24 条」的对话历史——长对话的旧消息由后台整理压缩为滚动摘要（每线程一行，按 ≥6h 空闲间隔切分会话段），历史只压缩不丢弃。模型可在回复末尾返回最多 3 条结构化长期记忆候选；服务端在保存 assistant 消息的同一事务中自动物化合法候选，不要求用户逐条确认。
+
+会话整理在响应成功返回后的后置任务中执行：未折叠消息达到阈值时，AI 将水位线前消息整理进滚动摘要并蒸馏 ≤5 条记忆候选，候选复用既有物化规则（精确去重、active 复用、disabled 抑制），来源标记 session_digest；整理失败静默，下次触发重试，不影响对话主流程。
 
 自动生成的 MemoryItem 必须保留 `agent_inference` 来源、置信度和来源消息。`is_user_confirmed` 仅表示用户是否审阅或修正过，不再是检索资格门；用户可以查看、编辑、停用和硬删除所有记忆。Agent 不得覆盖用户修正内容，也不得重新创建或恢复已被用户停用的同类精确记忆。
 

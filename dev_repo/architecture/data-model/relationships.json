@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "relationships": [
     {
       "name": "UserProfile_has_MealRecords",
@@ -86,6 +86,19 @@
       "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260817062220_add_daily_activity"],
       "invariant": "活动量行只属于 primary profile；同一自然日唯一，写入走部分字段 upsert 而非重复建行",
       "confidence": "confirmed"
+    },
+    {
+      "name": "AgentThread_has_SessionDigest",
+      "source": "AgentThread",
+      "target": "AgentSessionDigest",
+      "cardinality": "1:1",
+      "target_optionality": "摘要行可不存在（未整理的短对话）",
+      "via": "AgentSessionDigest.thread_id",
+      "owner": "AgentThread",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "src/lib/agent/consolidation.ts"],
+      "invariant": "每线程至多一行滚动摘要；covered_message_id 单调递增；删除对话必须连带删除摘要",
+      "confidence": "approved_target"
     }
   ],
   "non_relationships": [

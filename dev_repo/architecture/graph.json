@@ -1,10 +1,10 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "amendment": {
-    "contract_id": "C-06-A1",
-    "decision": "android_health_shell_ratified",
+    "contract_id": "C-10",
+    "decision": "session_digest_and_background_consolidation",
     "status": "accepted",
-    "return_to": "C-06-L3"
+    "return_to": "C-06-L4"
   },
   "nodes": [
     {
@@ -531,14 +531,15 @@
     },
     {
       "id": "memory.store",
-      "purpose": "跨会话保存可审计、可遗忘的用户记忆与对话",
+      "purpose": "跨会话保存可审计、可遗忘的用户记忆与对话；维护线程滚动摘要并承接后台整理蒸馏",
       "owned_files": [
         "prisma/schema.prisma",
         "prisma/migrations/**",
         "src/lib/memory/**"
       ],
       "public_interfaces": [
-        "memory repository"
+        "memory repository",
+        "session digest repository"
       ],
       "depends_on": [
         "database.prisma"
@@ -551,7 +552,8 @@
         "用户可修正与删除",
         "不保存凭据",
         "自动推断可用但必须可见可停用",
-        "用户停用的精确记忆不得被自动恢复"
+        "用户停用的精确记忆不得被自动恢复",
+        "session_digest 来源与其他来源同治理权，物化复用既有规则"
       ],
       "allowed_change_types": [
         "memory policy",
@@ -572,7 +574,7 @@
     },
     {
       "id": "agent.runtime",
-      "purpose": "编排档案、餐食、记忆、近 7 天活动量、模型与工具的营养对话运行时",
+      "purpose": "编排档案、餐食、记忆、近 7 天活动量、模型与工具的营养对话运行时；长对话以滚动摘要 + 水位尾部组装上下文",
       "owned_files": [
         "src/app/agent/**",
         "src/app/api/agent/**",
@@ -595,7 +597,9 @@
         "推断不冒充事实",
         "建议不是医疗诊断",
         "工具调用经过策略层",
-        "只有当前消息的明确点餐意图可授权创建一笔未支付订单"
+        "只有当前消息的明确点餐意图可授权创建一笔未支付订单",
+        "上下文 = 滚动摘要 + 水位后尾部，历史只压缩不丢弃",
+        "后台整理非阻塞且失败静默，不影响对话主流程"
       ],
       "allowed_change_types": [
         "prompt orchestration",

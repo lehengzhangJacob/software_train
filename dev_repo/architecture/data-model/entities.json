@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "source_of_truth": ["prisma/migrations/**", "prisma/schema.prisma", "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md"],
   "entities": [
     {
@@ -179,7 +179,7 @@
         {"name": "source_message_id", "type": "INTEGER", "fk": "AgentMessage.message_id", "nullable": true, "on_delete": "SET NULL"},
         {"name": "category", "type": "TEXT", "nullable": false, "allowed": ["preference", "constraint", "goal", "habit", "context", "insight"]},
         {"name": "content", "type": "TEXT", "nullable": false, "max_length": 1000},
-        {"name": "source_kind", "type": "TEXT", "nullable": false, "allowed": ["user", "profile", "meal_history", "agent_inference"]},
+        {"name": "source_kind", "type": "TEXT", "nullable": false, "allowed": ["user", "profile", "meal_history", "agent_inference", "session_digest"], "note": "session_digest 为 C-10 扩展：来源于后台会话整理的蒸馏候选，治理能力与其他来源同权"},
         {"name": "source_ref", "type": "TEXT", "nullable": true, "max_length": 240, "must_not_contain": ["secret", "payment credential"]},
         {"name": "confidence", "type": "REAL", "nullable": false, "default": 1, "min": 0, "max": 1},
         {"name": "importance", "type": "REAL", "nullable": false, "default": 0.5, "min": 0, "max": 1},
@@ -191,7 +191,7 @@
         {"name": "created_at", "type": "DATETIME", "nullable": false},
         {"name": "updated_at", "type": "DATETIME", "nullable": false}
       ],
-      "migration_notes": "C-03-M4 新增表；C-05-A1 仅修订运行语义，无 schema migration 或 backfill；Agent 推断在 assistant 消息事务中自动物化",
+      "migration_notes": "C-03-M4 新增表；C-05-A1 仅修订运行语义，无 schema migration 或 backfill；Agent 推断在 assistant 消息事务中自动物化；C-10 扩展 source_kind=session_digest（应用层枚举，列结构不变）",
       "requires_amendment_when": ["改变删除语义", "引入向量或云端存储", "允许跨 profile 共享", "改变确认与来源含义"],
       "confidence": "confirmed"
     },
@@ -220,6 +220,29 @@
       "migration_notes": "20260817062220_add_daily_activity 已随游离 commit 068a4c2 落地，C-06-A1 仅追认入宪；新表零行起步，无 backfill；(user_id, activity_date) 唯一，sync API 部分字段 upsert",
       "requires_amendment_when": ["存储 Health Connect 原始明细", "改变日聚合粒度", "改变唯一键或所有权", "引入第二写入主体"],
       "confidence": "confirmed"
+    },
+    {
+      "name": "AgentSessionDigest",
+      "table": "agent_session_digests",
+      "purpose": "线程滚动会话摘要：水位线之前的旧消息压缩为分段摘要并注入 Agent 上下文，历史不丢失",
+      "owning_architecture_node": "memory.store",
+      "source_or_derived": "derived",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/**", "src/lib/agent/consolidation.ts"],
+      "identity": {"field": "digest_id", "strategy": "autoincrement", "uniqueness": "每线程至多一行（thread_id 唯一）"},
+      "ownership": {"field": "thread_id", "entity": "AgentThread"},
+      "state_fields": ["summary", "covered_message_id"],
+      "derived_from": {"summary": "AI 对水位线前消息的压缩整理，按相邻消息 ≥6h 空闲间隔切分会话段"},
+      "fields": [
+        {"name": "digest_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "thread_id", "type": "INTEGER", "fk": "AgentThread.thread_id", "nullable": false, "unique": true},
+        {"name": "covered_message_id", "type": "INTEGER", "nullable": false, "semantics": "已折叠的最后一条 message_id（水位线，单调递增）"},
+        {"name": "summary", "type": "TEXT", "nullable": false, "max_length": 4000, "must_not_contain": ["secret", "payment credential", "image data URL"]},
+        {"name": "created_at", "type": "DATETIME", "nullable": false},
+        {"name": "updated_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "C-10-S2 新增表与 thread_id 唯一索引；零回填；上下文组装 = 摘要 + 水位后尾部 ≤24 条",
+      "requires_amendment_when": ["改变每线程唯一性（多版本摘要）", "摘要改由非 AI 来源生成", "跨线程共享摘要", "水位线允许回退"],
+      "confidence": "approved_target"
     }
   ]
 }

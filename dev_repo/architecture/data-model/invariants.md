@@ -26,3 +26,6 @@
 24. DailyActivity 必须属于 primary profile；(user_id, activity_date) 唯一，同步写入走部分字段 upsert，不得为同一自然日建重复行。
 25. DailyActivity 只存自然日聚合值；Health Connect 原始明细不得进入 SQLite。steps 为 0–200000、exercise_minutes 为 0–1440、active_calories 非负。
 26. source_kind 仅为 manual、health_connect；健康数据不得进入 MemoryItem 或 AgentMessage 的持久内容。
+27. AgentSessionDigest 每线程至多一行；covered_message_id 单调递减禁止；删除对话必须级联删除摘要。
+28. 摘要为 AI 派生的压缩整理，不是对话副本；摘要与 session_digest 来源记忆不得包含密钥、令牌、支付链接或图片原文。
+29. source_kind=session_digest 的记忆与 agent_inference 记忆在用户治理（查看/编辑/停用/删除）上完全同权，物化必须复用既有去重/复用/抑制规则。

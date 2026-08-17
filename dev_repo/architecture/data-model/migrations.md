@@ -79,9 +79,15 @@
 4. disabled 精确匹配是用户抑制信号；应用升级后不得自动新增同内容行或将其恢复为 active。
 5. 因 schema 不变，migration_required=false，backfill_required=false；兼容性由 Agent/Memory 合同测试和临时数据库 production API 验证负责。
 
-## C-06-A1 DailyActivity 追认说明
+## C-10 会话摘要迁移计划
 
-1. `20260817062220_add_daily_activity` 已随游离 commit `068a4c2`（2026-08-17）先行落地：新建 `daily_activity` 表、`(user_id, activity_date)` 唯一索引与查询索引、指向 `user_profile` 的 `ON DELETE CASCADE ON UPDATE CASCADE` 外键。C-06-A1 只做 ER 真相追认，不改一行已落地 SQL。
+1. 新增 `agent_session_digests` 表：digest_id 自增主键、thread_id 指向 agent_threads（唯一索引，ON DELETE CASCADE ON UPDATE CASCADE）、covered_message_id 水位线、summary TEXT ≤4000、created_at/updated_at。
+2. 不修改或重建既有八张业务表；memory_items 的 source_kind 为应用层枚举扩展（session_digest），无列结构变化。
+3. 新表零回填：未整理的既有对话保持无摘要行为，上下文退化为现状（尾部 ≤24 条）。
+4. 副本迁移验证：八表行数/主键/integrity/foreign_key 迁移前后不变；全新空库可从零应用全部 migration。
+5. 水位线语义：covered_message_id 单调递增，幂等保护并发整理。
+
+## C-06-A1 DailyActivity 追认说明1. `20260817062220_add_daily_activity` 已随游离 commit `068a4c2`（2026-08-17）先行落地：新建 `daily_activity` 表、`(user_id, activity_date)` 唯一索引与查询索引、指向 `user_profile` 的 `ON DELETE CASCADE ON UPDATE CASCADE` 外键。C-06-A1 只做 ER 真相追认，不改一行已落地 SQL。
 2. 新表零行起步：不回填历史步数或活动消耗，Agent 上下文在无数据时明确不使用活动量。
 3. 兼容性：既有七张业务表与既有 migration 不受影响；全新库可从零应用全部 6 条 migration。
 4. 写入语义：`POST /api/health/sync` 按 `(user_id, activity_date)` 部分字段 upsert；值域上限 steps ≤ 200000、exercise_minutes ≤ 1440、active_calories 非负保留一位小数；source_kind 仅 manual / health_connect。
