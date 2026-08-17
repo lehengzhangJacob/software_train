@@ -187,19 +187,21 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   return (
     <div className="space-y-5">
       <section className="surface-card overflow-hidden border-0">
-        <div className="grid min-h-[680px] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
-          <aside className="flex min-h-0 flex-col bg-[var(--brand-plum)] text-white">
-            <div className="relative min-h-64 flex-1 lg:min-h-[430px]">
-              <Image
-                src="/images/nutrition/movement-hero.png"
-                alt="在明亮健身房中拉伸的训练者"
-                fill
-                priority
-                sizes="(max-width: 1024px) 100vw, 34vw"
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(45,39,53,.96)_0%,rgba(45,39,53,.14)_58%,transparent_100%)]" />
-              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-7">
+        <div className="grid lg:min-h-[680px] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
+          <aside className="order-2 flex min-h-0 flex-col bg-[var(--brand-plum)] text-white lg:order-1">
+            <div className="relative flex-1 lg:min-h-[430px]">
+              <div className="absolute inset-0 hidden lg:block">
+                <Image
+                  src="/images/nutrition/movement-hero.png"
+                  alt="在明亮健身房中拉伸的训练者"
+                  fill
+                  priority
+                  sizes="34vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(45,39,53,.96)_0%,rgba(45,39,53,.14)_58%,transparent_100%)]" />
+              </div>
+              <div className="relative p-5 sm:p-7 lg:absolute lg:inset-x-0 lg:bottom-0">
                 <p className="text-[11px] font-semibold uppercase text-[var(--brand-mint)]">Your AI coach</p>
                 <h1 className="mt-2 break-words text-2xl font-semibold leading-tight sm:text-3xl">你好，{username}。</h1>
                 <p className="mt-2 max-w-sm text-sm leading-6 text-white/72">
@@ -270,7 +272,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
             </div>
           </aside>
 
-          <div className="flex min-h-[620px] min-w-0 flex-col bg-[var(--brand-paper)]">
+          <div className="order-1 flex min-h-0 min-w-0 flex-col bg-[var(--brand-paper)] lg:order-2 lg:min-h-[620px]">
             <header className="flex items-center justify-between gap-4 border-b border-border/70 px-5 py-4 sm:px-7">
               <div className="min-w-0">
                 <p className="page-eyebrow">Tonight&apos;s plan</p>
@@ -284,7 +286,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
               </div>
             </header>
 
-            <div ref={messageViewportRef} className="min-h-0 flex-1 space-y-5 overflow-y-auto px-4 py-5 sm:px-7 sm:py-7">
+            <div ref={messageViewportRef} className="min-h-0 space-y-5 px-4 py-5 sm:px-7 sm:py-7 lg:flex-1 lg:overflow-y-auto">
               {messages.length === 0 ? (
                 <div className="flex min-h-[25rem] flex-col justify-center">
                   <div className="grid size-11 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
