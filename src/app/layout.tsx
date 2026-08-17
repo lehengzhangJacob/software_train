@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
 import { Sidebar } from "@/components/sidebar"
+import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
@@ -17,25 +18,27 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <a
-          href="#main-content"
-          className="sr-only fixed left-3 top-3 z-[60] rounded-md bg-[var(--brand-mint)] px-3 py-2 text-sm font-semibold text-[var(--brand-plum)] focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[var(--brand-plum)]"
-        >
-          跳至主要内容
-        </a>
-        <div className="min-h-screen bg-[var(--app-canvas)]">
-          <Sidebar />
-          <main
-            id="main-content"
-            tabIndex={-1}
-            className="min-h-screen px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-[4.5rem] sm:px-5 lg:px-8 lg:pb-10 lg:pt-[6.25rem]"
+        <ThemeProvider>
+          <a
+            href="#main-content"
+            className="sr-only fixed left-3 top-3 z-[60] rounded-md bg-[var(--brand-mint)] px-3 py-2 text-sm font-semibold text-[var(--brand-plum)] focus:not-sr-only focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[var(--brand-plum)]"
           >
-            <div className="app-page">{children}</div>
-          </main>
-        </div>
-        <Toaster richColors position="top-center" />
+            跳至主要内容
+          </a>
+          <div className="min-h-screen bg-[var(--app-canvas)]">
+            <Sidebar />
+            <main
+              id="main-content"
+              tabIndex={-1}
+              className="min-h-screen px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-[4.5rem] sm:px-5 lg:px-8 lg:pb-10 lg:pt-[6.25rem]"
+            >
+              <div className="app-page">{children}</div>
+            </main>
+          </div>
+          <Toaster richColors position="top-center" />
+        </ThemeProvider>
       </body>
     </html>
   )

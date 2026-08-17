@@ -88,6 +88,7 @@
   --brand-lavender-soft: #eeeaff;
   --brand-coral: #ff8a70;
   --brand-paper: #f8f7f4;
+  --brand-heading: #2d2735;
   --app-canvas: #f1eff4;
 }
 
@@ -110,6 +111,15 @@
   --border: #453d4e;
   --input: #51495a;
   --ring: #28d69b;
+  --chart-4: #c4bdc9;
+  --sidebar: #1c1822;
+  --sidebar-accent: #3a3342;
+  --sidebar-border: #453d4e;
+  --brand-heading: #f8f7f4;
+  --brand-mint-deep: #5fe3b8;
+  --brand-lavender-soft: #3a3350;
+  --brand-paper: #262130;
+  --app-canvas: #17141d;
 }
 
 @layer base {
@@ -151,7 +161,7 @@
   }
 
   .page-title {
-    @apply text-[clamp(1.65rem,2.3vw,2.75rem)] font-semibold leading-[1.06] text-[var(--brand-plum)];
+    @apply text-[clamp(1.65rem,2.3vw,2.75rem)] font-semibold leading-[1.06] text-[var(--brand-heading)];
   }
 
   .page-copy {
@@ -160,6 +170,10 @@
 
   .surface-card {
     @apply rounded-lg border border-border/80 bg-card shadow-[0_18px_55px_rgba(45,39,53,0.06)];
+  }
+
+  .dark .surface-card {
+    @apply shadow-[0_18px_55px_rgba(0,0,0,0.35)];
   }
 
   .brand-panel {
