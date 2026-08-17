@@ -79,6 +79,14 @@
 4. disabled 精确匹配是用户抑制信号；应用升级后不得自动新增同内容行或将其恢复为 active。
 5. 因 schema 不变，migration_required=false，backfill_required=false；兼容性由 Agent/Memory 合同测试和临时数据库 production API 验证负责。
 
+## C-06-A1 DailyActivity 追认说明
+
+1. `20260817062220_add_daily_activity` 已随游离 commit `068a4c2`（2026-08-17）先行落地：新建 `daily_activity` 表、`(user_id, activity_date)` 唯一索引与查询索引、指向 `user_profile` 的 `ON DELETE CASCADE ON UPDATE CASCADE` 外键。C-06-A1 只做 ER 真相追认，不改一行已落地 SQL。
+2. 新表零行起步：不回填历史步数或活动消耗，Agent 上下文在无数据时明确不使用活动量。
+3. 兼容性：既有七张业务表与既有 migration 不受影响；全新库可从零应用全部 6 条 migration。
+4. 写入语义：`POST /api/health/sync` 按 `(user_id, activity_date)` 部分字段 upsert；值域上限 steps ≤ 200000、exercise_minutes ≤ 1440、active_calories 非负保留一位小数；source_kind 仅 manual / health_connect。
+5. 数据来源边界：服务端只存自然日聚合值；Health Connect 原始明细留在设备端，不进入 SQLite。
+
 ## 验证
 
 - prisma validate

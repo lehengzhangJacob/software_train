@@ -23,3 +23,6 @@
 21. 个性化检索只使用 active 且未过期的 MemoryItem，包括尚未由用户审阅的 Agent 推断；disabled 或 expires_at 已过期项不得进入模型上下文。
 22. 用户可查看、修正、停用和硬删除 MemoryItem；删除不得留下不可见的第二份持久记忆。
 23. 自动记忆不得覆盖用户修正内容；精确 active 重复必须复用，精确 disabled 重复必须视为用户抑制并保持停用。
+24. DailyActivity 必须属于 primary profile；(user_id, activity_date) 唯一，同步写入走部分字段 upsert，不得为同一自然日建重复行。
+25. DailyActivity 只存自然日聚合值；Health Connect 原始明细不得进入 SQLite。steps 为 0–200000、exercise_minutes 为 0–1440、active_calories 非负。
+26. source_kind 仅为 manual、health_connect；健康数据不得进入 MemoryItem 或 AgentMessage 的持久内容。

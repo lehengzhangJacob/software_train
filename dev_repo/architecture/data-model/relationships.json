@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "relationships": [
     {
       "name": "UserProfile_has_MealRecords",
@@ -72,6 +72,19 @@
       "on_delete": "SET NULL",
       "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
       "invariant": "assistant 消息可在同一事务中生成长期记忆；删除来源消息不得连带删除长期记忆",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserProfile_has_DailyActivities",
+      "source": "UserProfile",
+      "target": "DailyActivity",
+      "cardinality": "1:N",
+      "target_uniqueness": "每 (user_id, activity_date) 至多一行",
+      "via": "DailyActivity.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260817062220_add_daily_activity"],
+      "invariant": "活动量行只属于 primary profile；同一自然日唯一，写入走部分字段 upsert 而非重复建行",
       "confidence": "confirmed"
     }
   ],

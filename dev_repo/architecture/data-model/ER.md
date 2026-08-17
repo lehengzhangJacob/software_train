@@ -11,6 +11,7 @@
 | AgentThread | agent_threads | 用户创建或 Agent 工作台创建 | thread_id | UserProfile |
 | AgentMessage | agent_messages | 用户、助手或工具的本地对话消息 | message_id | AgentThread |
 | MemoryItem | memory_items | 用户输入、档案、餐食模式或 Agent 推断 | memory_id | UserProfile |
+| DailyActivity | daily_activity | 设备 Health Connect 同步或用户手填的每日活动聚合 | activity_id | UserProfile |
 
 ## 关系
 
@@ -20,6 +21,7 @@
 - AgentThread 1:N AgentMessage，通过 thread_id，删除对话时级联删除消息。
 - UserProfile 1:N MemoryItem，通过 user_id，删除档案时级联删除。
 - AgentMessage 1:N MemoryItem 为可选来源关系；删除来源消息时 source_message_id 置空，长期记忆不被连带删除。
+- UserProfile 1:N DailyActivity，通过 user_id，删除档案时级联删除；(user_id, activity_date) 唯一，同步按自然日部分字段 upsert。
 - ExerciseCalorieReference 不与建议建立持久外键；建议保存生成时的名称和估算，避免 reference 更新改变历史。
 
 ## Primary profile
@@ -43,3 +45,4 @@
 - confidence 表示来源可信度，importance 表示未来建议相关度，二者均为 0–1。
 - 删除 MemoryItem 为硬删除；status=disabled 用于可逆停用。
 - active 且未过期的推断记忆可以参与后续建议；精确重复候选复用现有 active 行，精确匹配 disabled 行时不得新增或恢复。
+- DailyActivity 只存步数、活动消耗与运动分钟数的自然日聚合；Health Connect 原始明细留在设备端，不落库。source_kind 区分 health_connect 自动同步与 manual 手填。

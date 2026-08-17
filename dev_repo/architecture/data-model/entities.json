@@ -1,5 +1,5 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "source_of_truth": ["prisma/migrations/**", "prisma/schema.prisma", "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md"],
   "entities": [
     {
@@ -193,6 +193,32 @@
       ],
       "migration_notes": "C-03-M4 新增表；C-05-A1 仅修订运行语义，无 schema migration 或 backfill；Agent 推断在 assistant 消息事务中自动物化",
       "requires_amendment_when": ["改变删除语义", "引入向量或云端存储", "允许跨 profile 共享", "改变确认与来源含义"],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "DailyActivity",
+      "table": "daily_activity",
+      "purpose": "每日健康活动聚合（步数、活动消耗、运动分钟数），供热量缺口核算与 Agent 上下文",
+      "owning_architecture_node": "database.prisma",
+      "source_or_derived": "source",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260817062220_add_daily_activity", "src/app/api/health/**"],
+      "identity": {"field": "activity_id", "strategy": "autoincrement", "natural_key": ["user_id", "activity_date"]},
+      "ownership": {"field": "user_id", "entity": "UserProfile"},
+      "state_fields": ["activity_date", "steps", "active_calories", "exercise_minutes", "source_kind"],
+      "derived_from": {"steps/active_calories/exercise_minutes": "设备 Health Connect 聚合或用户手填，服务端只存日聚合值"},
+      "fields": [
+        {"name": "activity_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "user_id", "type": "INTEGER", "fk": "UserProfile.user_id", "nullable": false},
+        {"name": "activity_date", "type": "TEXT_DATE", "nullable": false, "format": "YYYY-MM-DD"},
+        {"name": "steps", "type": "INTEGER", "nullable": false, "default": 0, "min": 0, "max": 200000},
+        {"name": "active_calories", "type": "REAL", "nullable": false, "default": 0, "min": 0, "scale": 1},
+        {"name": "exercise_minutes", "type": "INTEGER", "nullable": false, "default": 0, "min": 0, "max": 1440},
+        {"name": "source_kind", "type": "TEXT", "nullable": false, "default": "manual", "allowed": ["manual", "health_connect"]},
+        {"name": "synced_at", "type": "DATETIME", "nullable": false},
+        {"name": "updated_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "20260817062220_add_daily_activity 已随游离 commit 068a4c2 落地，C-06-A1 仅追认入宪；新表零行起步，无 backfill；(user_id, activity_date) 唯一，sync API 部分字段 upsert",
+      "requires_amendment_when": ["存储 Health Connect 原始明细", "改变日聚合粒度", "改变唯一键或所有权", "引入第二写入主体"],
       "confidence": "confirmed"
     }
   ]

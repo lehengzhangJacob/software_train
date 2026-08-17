@@ -1,12 +1,15 @@
 erDiagram
   %% C-05-A1: active/unexpired Agent inferences are eligible before user review;
   %% is_user_confirmed records review provenance, while disabled exact matches suppress regeneration.
+  %% C-06-A1: DailyActivity stores per-day aggregates only (steps, active calories,
+  %% exercise minutes); raw Health Connect samples stay on-device and never persist here.
   UserProfile ||--o{ MealRecord : owns
   UserProfile ||--o{ ExerciseSuggestion : owns
   UserProfile ||--o{ AgentThread : owns
   AgentThread ||--o{ AgentMessage : contains
   UserProfile ||--o{ MemoryItem : owns
   AgentMessage o|--o{ MemoryItem : sources
+  UserProfile ||--o{ DailyActivity : owns
   ExerciseCalorieReference {
     int exercise_id PK
     string exercise_name UK
@@ -73,5 +76,16 @@ erDiagram
     string status
     boolean is_user_confirmed
     datetime expires_at
+    datetime updated_at
+  }
+  DailyActivity {
+    int activity_id PK
+    int user_id FK
+    string activity_date UK
+    int steps
+    float active_calories
+    int exercise_minutes
+    string source_kind
+    datetime synced_at
     datetime updated_at
   }
