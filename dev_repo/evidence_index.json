@@ -735,5 +735,42 @@
       "path": "dev_repo/evidence/C-06-L1/verification.json",
       "description": "架构 JSON、数据模型 JSON、diff check 与政策文本验证"
     }
+  ],
+  "C-06-L2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/mcp/mcdonalds-client.ts",
+      "description": "官方 Streamable HTTP 客户端（Bearer、8s 超时、16KB/64KB 边界）"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/mcp/contracts.ts",
+      "description": "官方 9 工具白名单与 read/draft/external_write 分级"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/mcp/settings.ts, src/lib/mcp/settings-contract.ts",
+      "description": "本机 Token 0600 原子写、掩码回读、env 回退"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/settings/mcdonalds/route.ts, src/app/api/settings/mcdonalds/test/route.ts",
+      "description": "Token 保存与连接探测 API"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/mcdonald-settings-form.tsx",
+      "description": "麦当劳设置表单（掩码、测试连接、清除）"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/mcp-contract.test.ts",
+      "description": "MCP 合同测试 7/7，含 4 个新增麦当劳用例"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-L2/verification.json",
+      "description": "L2 断言、验证门与架构/数据模型变更汇总"
+    }
   ]
 }

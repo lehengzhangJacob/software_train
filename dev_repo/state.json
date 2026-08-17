@@ -83,8 +83,8 @@
       "status": "in_progress",
       "summary": "接入麦当劳官方 MCP 并完成本地自主选餐闭环",
       "goal": "让 Agent 在用户明确点餐后自主选餐、计价并创建一笔未支付订单，支付仍由用户完成",
-      "current_slice": "C-06-L2",
-      "completed_slices": ["C-06-L1"],
+      "current_slice": "C-06-L3",
+      "completed_slices": ["C-06-L1", "C-06-L2"],
       "deferred_slices": ["C-06-S0", "C-06-S4", "C-06-S5"],
       "return_to": "web_completion_audit"
     }

@@ -1,8 +1,8 @@
 # Campaign: nutrition-agent
 
 - 当前合同：`C-06 - 麦当劳本地点餐闭环 [in_progress]`
-- 当前切片：`C-06-L2 - 麦当劳官方 MCP 与本地 Token`
-- 下一步：接入官方 Streamable HTTP 端点并完成适配器验证
+- 当前切片：`C-06-L3 - Agent 自主选餐与未支付订单`
+- 下一步：接入 Agent 编排：意图判定 → 地址/门店/菜单查询 → 计价 → 创建未支付订单，支付主权归用户
 
 ```text
 C-01 - 全栈功能初版 [completed]
@@ -22,7 +22,7 @@ C-01 - 全栈功能初版 [completed]
                 ├── S3 全量回归与发布验证 [completed]
                 └── C-06 - 麦当劳本地点餐闭环 [in_progress]
                     ├── L1 自主创建未支付订单架构修宪 [completed]
-                    ├── L2 麦当劳官方 MCP 与本地 Token [in_progress]
+                    ├── L2 麦当劳官方 MCP 与本地 Token [completed]
                     ├── L3 Agent 自主选餐与未支付订单 [pending]
                     └── L4 本地发布回归 [pending]
 ```
