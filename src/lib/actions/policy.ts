@@ -46,9 +46,27 @@ function purgeExpired(now = Date.now()) {
 }
 
 export function classifyAction(toolName: string): ActionClass {
-  if (toolName === "takeout_order_submit") return "external_write"
-  if (toolName === "takeout_order_draft") return "draft"
+  if (toolName === "takeout_order_submit" || toolName === "create-order") return "external_write"
+  if (toolName === "takeout_order_draft" || toolName === "calculate-price") return "draft"
   return "read"
+}
+
+export interface OrderingGrant {
+  claimCreateOrder(): void
+}
+
+// ADR-0004: explicit ordering intent in the current message authorizes at
+// most one unpaid order per request. The intent verdict itself stays in
+// agent/ordering-intent.ts so the gate has a single source of truth.
+export function issueOrderingGrant(intentRecognized: boolean): OrderingGrant {
+  if (!intentRecognized) throw new ActionPolicyError("缺少明确点餐意图，拒绝自动点餐授权")
+  let createOrderClaimed = false
+  return {
+    claimCreateOrder() {
+      if (createOrderClaimed) throw new ActionPolicyError("同一请求最多创建一笔未支付订单")
+      createOrderClaimed = true
+    },
+  }
 }
 
 export function issueActionConfirmation(toolName: string, params: unknown, now = Date.now()) {
