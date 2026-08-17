@@ -186,6 +186,19 @@
         "C-08-S1"
       ],
       "return_to": "C-06-L4"
+    },
+    "C-09": {
+      "contract_id": "C-09",
+      "parent_contract_id": "C-08",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "移除教练页遗留外卖演示台",
+      "goal": null,
+      "current_slice": null,
+      "completed_slices": [
+        "C-09-S1"
+      ],
+      "return_to": "C-06-L4"
     }
   }
 }

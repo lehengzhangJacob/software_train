@@ -880,5 +880,12 @@
       "path": "src/components/agent/agent-workspace.tsx",
       "description": "order 类重排 + hidden lg:block 首图 + lg 限定内滚"
     }
+  ],
+  "C-09": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-09/verification.json",
+      "description": "教练页模块收敛实证：工具台移除、实机 DOM 验证、网关层未动"
+    }
   ]
 }
