@@ -199,6 +199,20 @@
         "C-09-S1"
       ],
       "return_to": "C-06-L4"
+    },
+    "C-06-L4-A1": {
+      "contract_id": "C-06-L4-A1",
+      "parent_contract_id": "C-06",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "参考 DeepTutor 与 DeerFlow，为 Agent 增加可折叠、可流式观察的多步调用时间线",
+      "goal": "把 Agent 当前回合的上下文、模型、工具和策略步骤投影为安全摘要，并在工作台实时展示",
+      "current_slice": null,
+      "completed_slices": [
+        "C-06-L4-A1-S1",
+        "C-06-L4-A1-S2"
+      ],
+      "return_to": "C-06-L4"
     }
   }
 }

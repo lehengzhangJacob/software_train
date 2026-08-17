@@ -2,8 +2,8 @@
 
 - 当前合同：`C-06 - 麦当劳本地点餐闭环 [in_progress]`
 - 当前切片：`C-06-L4 - 本地发布回归`
-- 下一步：全量发布检查 + 点餐闭环真实 Token smoke + 双端回归（含 C-07 转入的双模式截图补证），关闭 C-06
-- 已收口子合同：`C-06-A1 - Android 健康壳与 DailyActivity 追认修宪`；`C-07 - 深色模式与系统主题跟随`；`C-08 - 教练页窄幅排版修复`；`C-09 - 移除教练页遗留外卖演示台` [均 completed 2026-08-17]
+- 下一步：收口 C-10-S1 会话摘要迁移验收（当前脚本仍报告 `agent_threads was backfilled`），随后关闭 C-06-L4 / C-06
+- 已收口子合同：`C-06-A1 - Android 健康壳与 DailyActivity 追认修宪`；`C-07 - 深色模式与系统主题跟随`；`C-08 - 教练页窄幅排版修复`；`C-09 - 移除教练页遗留外卖演示台`；`C-06-L4-A1 - Agent 多步调用活动时间线` [均 completed]
 
 ```text
 C-01 - 全栈功能初版 [completed]
@@ -26,6 +26,7 @@ C-01 - 全栈功能初版 [completed]
                     ├── L2 麦当劳官方 MCP 与本地 Token [completed]
                     ├── A1 Android 健康壳与 DailyActivity 追认修宪 [completed]
                     ├── L3 Agent 自主选餐与未支付订单 [completed：S1 意图门 7e46433 / S2 编排管线 13bb757 / S3 建单与支付入口 9a58964]
-                    ├── L4 本地发布回归 [pending：含 C-07 双模式截图补证]
+                    ├── L4 本地发布回归 [in_progress：真实 Token smoke、双主题/窄屏回归与生产 smoke 已通过；待 C-10 迁移门禁]
+                    │   └── A1 Agent 多步调用活动时间线 [completed]
                     └── C-07 - 深色模式与系统主题跟随 [completed]
 ```
