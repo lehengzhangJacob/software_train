@@ -17,6 +17,8 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { AssistantText } from "@/components/agent/assistant-text"
+import { AgentActivityPanel } from "@/components/agent/agent-activity-panel"
+import type { AgentActivity } from "@/lib/agent/contracts"
 
 interface ThreadSummary {
   threadId: number
@@ -70,6 +72,7 @@ interface ChatResult {
   userMessage: AgentMessage
   assistantMessage: AgentMessage
   orderResult?: OrderResult | null
+  activity: AgentActivity[]
 }
 
 const starterPrompts = ["晚餐怎么安排更合适？", "帮我复盘今天的蛋白质", "给我一个附近外卖思路"]
@@ -87,6 +90,72 @@ async function requestJson<T>(url: string, init?: RequestInit) {
   const payload = (await response.json()) as ApiEnvelope<T>
   if (!response.ok || payload.data === null) throw new Error(payload.error || "请求失败")
   return payload.data
+}
+
+function mergeActivity(current: AgentActivity[], next: AgentActivity) {
+  const index = current.findIndex((activity) => activity.activityId === next.activityId)
+  if (index === -1) return [...current, next]
+  const updated = current.slice()
+  updated[index] = { ...updated[index], ...next }
+  return updated
+}
+
+function parseActivityEvent(block: string) {
+  const event = block.match(/^event:\s*(.+)$/m)?.[1]
+  const data = block.match(/^data:\s*(.+)$/m)?.[1]
+  if (!event || !data) return null
+  return { event, payload: JSON.parse(data) as { activity?: AgentActivity; data?: ChatResult; error?: string } }
+}
+
+async function streamAgentChat(
+  threadId: number | null,
+  message: string,
+  onActivity: (activity: AgentActivity) => void,
+) {
+  const response = await fetch("/api/agent/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+    body: JSON.stringify({ threadId, message }),
+  })
+  if (!response.ok) {
+    const payload = (await response.json()) as ApiEnvelope<never>
+    throw new Error(payload.error || "Agent 对话失败")
+  }
+
+  const reader = response.body?.getReader()
+  if (!reader) throw new Error("Agent 没有返回可读取的活动流")
+
+  const decoder = new TextDecoder()
+  let buffer = ""
+  let result: ChatResult | null = null
+
+  const consume = (block: string) => {
+    const parsed = parseActivityEvent(block)
+    if (!parsed) return
+    if (parsed.event === "activity" && parsed.payload.activity) {
+      onActivity(parsed.payload.activity)
+      return
+    }
+    if (parsed.event === "error") throw new Error(parsed.payload.error || "Agent 对话失败")
+    if (parsed.event === "done" && parsed.payload.data) result = parsed.payload.data
+  }
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      buffer += decoder.decode(value, { stream: !done })
+      const blocks = buffer.split(/\r?\n\r?\n/)
+      buffer = blocks.pop() ?? ""
+      blocks.filter(Boolean).forEach(consume)
+      if (done) break
+    }
+    if (buffer.trim()) consume(buffer)
+  } finally {
+    reader.releaseLock()
+  }
+
+  if (!result) throw new Error("Agent 活动流未返回最终结果")
+  return result as ChatResult
 }
 
 function mergeThread(current: ThreadSummary[], next: ThreadSummary) {
@@ -110,6 +179,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   // Ephemeral by design (ADR-0004): the payment link lives only in this
   // component state for the current reply and disappears on reload.
   const [lastOrder, setLastOrder] = useState<OrderResult | null>(null)
+  const [turnActivity, setTurnActivity] = useState<AgentActivity[]>([])
   const messageViewportRef = useRef<HTMLDivElement>(null)
 
   const activeThread = useMemo(
@@ -120,16 +190,17 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   useEffect(() => {
     const viewport = messageViewportRef.current
     if (viewport) viewport.scrollTop = viewport.scrollHeight
-  }, [messages, sending])
+  }, [messages, sending, turnActivity])
 
   const openThread = async (threadId: number) => {
-    if (threadId === activeThreadId || loadingThread) return
+    if (threadId === activeThreadId || loadingThread || sending) return
     setLoadingThread(true)
     try {
       const thread = await requestJson<AgentThread>(`/api/agent/threads?id=${threadId}`)
       setActiveThreadId(thread.threadId)
       setMessages(thread.messages)
       setLastOrder(null)
+      setTurnActivity([])
       setThreads((current) => mergeThread(current, thread))
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "读取对话失败")
@@ -139,13 +210,16 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   }
 
   const startNewThread = () => {
+    if (sending) return
     setActiveThreadId(null)
     setMessages([])
     setDraft("")
     setLastOrder(null)
+    setTurnActivity([])
   }
 
   const deleteThread = async (threadId: number) => {
+    if (sending) return
     setDeletingThreadId(threadId)
     try {
       await requestJson<{ deleted: true }>(`/api/agent/threads?id=${threadId}`, { method: "DELETE" })
@@ -165,16 +239,16 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
 
     setSending(true)
     setLastOrder(null)
+    setTurnActivity([])
     try {
-      const result = await requestJson<ChatResult>("/api/agent/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ threadId: activeThreadId, message }),
+      const result = await streamAgentChat(activeThreadId, message, (activity) => {
+        setTurnActivity((current) => mergeActivity(current, activity))
       })
       setActiveThreadId(result.thread.threadId)
       setMessages(result.thread.messages)
       setThreads((current) => mergeThread(current, result.thread))
       setLastOrder(result.orderResult ?? null)
+      setTurnActivity(result.activity)
       setDraft("")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Agent 对话失败")
@@ -347,6 +421,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                   </div>
                 ))
               )}
+              <AgentActivityPanel activities={turnActivity} active={sending} />
               {lastOrder ? (
                 <div className="rounded-lg border border-[var(--brand-mint)]/50 bg-card p-4 shadow-sm">
                   <p className="text-sm font-semibold text-[var(--brand-heading)]">
