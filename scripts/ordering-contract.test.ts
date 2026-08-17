@@ -5,6 +5,7 @@ import type { McDonaldMcpSession } from "../src/lib/mcp/mcdonalds-client"
 import { McpUnavailableError } from "../src/lib/mcp/contracts"
 import { issueOrderingGrant } from "../src/lib/actions/policy"
 import { parseAgentMessageMetadata } from "../src/lib/agent/contracts"
+import { createAgentActivityRecorder } from "../src/lib/agent/activity"
 import {
   composeOrderedReply,
   composeOrderingReply,
@@ -86,6 +87,22 @@ test("ordering pipeline plans a meal from address to pricing", async () => {
     deps.calls.map((call) => call.name),
     ["delivery-query-addresses", "delivery-query-stores", "query-meals", "calculate-price"],
   )
+})
+
+test("ordering pipeline emits a safe multi-step activity trace", async () => {
+  const recorder = createAgentActivityRecorder()
+  const deps = depsWith()
+  deps.reportActivity = recorder.emit
+
+  const outcome = await planMcDonaldOrder(deps, "order mcdonald", 600)
+
+  assert.equal(outcome.status, "planned")
+  assert.deepEqual(
+    recorder.snapshot().map((step) => step.activityId),
+    ["mcdonald-addresses", "mcdonald-stores", "mcdonald-menu", "mcdonald-selection", "mcdonald-price"],
+  )
+  assert.ok(recorder.snapshot().every((step) => step.status === "completed"))
+  assert.ok(recorder.snapshot().every((step) => !step.detail?.includes("Bearer")))
 })
 
 test("missing mcdonald token surfaces as an explicit blocked reason", async () => {

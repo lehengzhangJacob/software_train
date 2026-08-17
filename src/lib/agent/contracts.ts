@@ -11,6 +11,26 @@ export interface AgentChatInput {
   message: string
 }
 
+export const AGENT_ACTIVITY_KINDS = ["context", "model", "tool", "policy"] as const
+export type AgentActivityKind = (typeof AGENT_ACTIVITY_KINDS)[number]
+
+export const AGENT_ACTIVITY_STATUSES = ["running", "completed", "failed", "blocked"] as const
+export type AgentActivityStatus = (typeof AGENT_ACTIVITY_STATUSES)[number]
+
+export interface AgentActivity {
+  activityId: string
+  kind: AgentActivityKind
+  label: string
+  status: AgentActivityStatus
+  toolName?: string
+  startedAt: string
+  finishedAt?: string
+  durationMs?: number
+  detail?: string
+}
+
+export type AgentActivityReporter = (activity: AgentActivity) => void | Promise<void>
+
 export interface AgentThreadCreateInput {
   title: string
 }

@@ -8,6 +8,7 @@ import {
 } from "../src/lib/agent/contracts"
 import { hasExplicitOrderingIntent } from "../src/lib/agent/ordering-intent"
 import { classifyAction, issueOrderingGrant } from "../src/lib/actions/policy"
+import { createAgentActivityRecorder } from "../src/lib/agent/activity"
 
 test("agent chat input rejects credentials and normalizes a message", () => {
   assert.deepEqual(parseAgentChatInput({ message: "  今天晚餐怎么吃？  " }), {
@@ -89,4 +90,41 @@ test("mcdonald order-chain tools map to the right action classes", () => {
   assert.equal(classifyAction("calculate-price"), "draft")
   assert.equal(classifyAction("query-meals"), "read")
   assert.equal(classifyAction("query-order"), "read")
+})
+
+test("agent activity recorder merges updates and redacts credentials", async () => {
+  const recorder = createAgentActivityRecorder()
+  await recorder.emit({
+    activityId: "tool-1",
+    kind: "tool",
+    label: "Read menu",
+    toolName: "query-meals",
+    status: "running",
+    startedAt: "2026-08-18T00:00:00.000Z",
+  })
+  await recorder.emit({
+    activityId: "tool-1",
+    kind: "tool",
+    label: "Read menu",
+    toolName: "query-meals",
+    status: "completed",
+    startedAt: "2026-08-18T00:00:00.000Z",
+    finishedAt: "2026-08-18T00:00:00.120Z",
+    durationMs: 120,
+    detail: "Bearer test-secret-value",
+  })
+
+  assert.deepEqual(recorder.snapshot(), [
+    {
+      activityId: "tool-1",
+      kind: "tool",
+      label: "Read menu",
+      toolName: "query-meals",
+      status: "completed",
+      startedAt: "2026-08-18T00:00:00.000Z",
+      finishedAt: "2026-08-18T00:00:00.120Z",
+      durationMs: 120,
+      detail: "[credential redacted]",
+    },
+  ])
 })

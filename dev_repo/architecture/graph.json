@@ -163,7 +163,12 @@
       ],
       "known_debt": [],
       "confidence": "confirmed",
-      "implementation_status": "partial"
+      "implementation_status": "partial",
+      "activity_projection": {
+        "owner": "current Agent turn presentation",
+        "source": "server activity events only",
+        "keyboard_accessible": true
+      }
     },
     {
       "id": "backend.api",
@@ -582,7 +587,8 @@
       ],
       "public_interfaces": [
         "/agent",
-        "/api/agent"
+        "/api/agent",
+        "/api/agent Accept: text/event-stream (activity projection)"
       ],
       "depends_on": [
         "backend.api",
@@ -616,7 +622,12 @@
       ],
       "known_debt": [],
       "confidence": "confirmed",
-      "implementation_status": "confirmed"
+      "implementation_status": "confirmed",
+      "activity_projection": {
+        "transport": "optional SSE via Accept: text/event-stream",
+        "persistence": "ephemeral turn presentation only",
+        "secret_policy": "labels and timings only; no raw tool payloads or credentials"
+      }
     },
     {
       "id": "mcp.gateway",

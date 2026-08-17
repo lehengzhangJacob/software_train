@@ -32,3 +32,5 @@ sequenceDiagram
   API->>DB: 绑定 primary profile 后写入
   DB-->>API: 已保存记录
   API-->>UI: data/error
+  API-->>UI: optional SSE activity events (label/status/duration only)
+  UI-->>User: collapsible current-turn activity timeline

@@ -5,6 +5,8 @@ import {
   extractAssistantResponse,
   parseAgentChatInput,
   sanitizeAssistantText,
+  type AgentActivity,
+  type AgentActivityReporter,
 } from "@/lib/agent/contracts"
 import {
   appendAgentMessage,
@@ -31,6 +33,7 @@ import { getPublicAiError } from "@/lib/ai/errors"
 import { getActiveAiProviderConfig, type ResolvedAiProviderConfig } from "@/lib/ai/settings"
 import { markMemoriesUsed } from "@/lib/memory/repository"
 import { withMcDonaldMcp } from "@/lib/mcp/mcdonalds-client"
+import { createAgentActivityRecorder, runAgentActivity } from "@/lib/agent/activity"
 import { getTodayStr } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
@@ -73,6 +76,7 @@ async function runOrderingPlan(
   config: ResolvedAiProviderConfig,
   message: string,
   context: Awaited<ReturnType<typeof getAgentContext>>,
+  reportActivity?: AgentActivityReporter,
 ): Promise<OrderingOutcome> {
   const today = getTodayStr()
   const todayIntake = context.meals
@@ -85,117 +89,224 @@ async function runOrderingPlan(
     {
       openSession: (run) => withMcDonaldMcp(run),
       selectItems: selectItemsWithModel(config),
+      reportActivity,
     },
     message,
     remainingCalories,
   )
 }
 
-function requestFailure(error: unknown, fallback: string) {
-  if (error instanceof AgentValidationError) return apiError(error.message, 422)
-  if (error instanceof AgentNotFoundError) return apiError(error.message, 404)
-  if (error instanceof SyntaxError) return apiError("请求 JSON 格式无效", 400)
-  return apiError(fallback, 500)
+class AgentResponseError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message)
+    this.name = "AgentResponseError"
+  }
 }
 
-export async function POST(request: Request) {
-  try {
-    const contentLength = Number(request.headers.get("content-length") ?? 0)
-    if (contentLength > 64 * 1024) return apiError("消息请求过大", 413)
+function failureDetails(error: unknown, fallback: string) {
+  const aiFailure = getPublicAiError(error)
+  if (aiFailure.status !== 500 || error?.constructor?.name === "MissingAiCredentialError" || error?.constructor?.name === "AiProviderError") {
+    return aiFailure
+  }
+  if (error instanceof AgentValidationError) return { message: error.message, status: 422 }
+  if (error instanceof AgentNotFoundError) return { message: error.message, status: 404 }
+  if (error instanceof SyntaxError) return { message: "请求 JSON 格式无效", status: 400 }
+  if (error instanceof AgentResponseError) return { message: error.message, status: error.status }
+  return { message: fallback, status: 500 }
+}
 
-    const user = await getCurrentUser()
-    if (!user) return apiError("请先创建个人档案", 404)
-    const input = parseAgentChatInput(await request.json())
-    // Resolve credentials before creating a thread so an unconfigured local
-    // provider cannot leave behind a ghost conversation.
-    const config = await getActiveAiProviderConfig()
-    const threadId = await ensureAgentThread(user.userId, input.threadId, titleFromMessage(input.message))
-    const userMessage = await appendAgentMessage(user.userId, threadId, "user", input.message)
-    const [context, history] = await Promise.all([
-      getAgentContext(user.userId),
-      getAgentMessageHistory(user.userId, threadId),
-    ])
+type AgentChatResult = {
+  thread: Awaited<ReturnType<typeof getAgentThread>>
+  userMessage: Awaited<ReturnType<typeof appendAgentMessage>>
+  assistantMessage: Awaited<ReturnType<typeof appendAgentMessage>>
+  orderResult?: {
+    orderId: string | null
+    paymentLink: string | null
+    itemsTotalCents: number | null
+  } | null
+  activity: AgentActivity[]
+}
 
-    if (hasExplicitOrderingIntent(input.message)) {
-      // ADR-0004: the ordering turn gets a deterministic reply. The model only
-      // sees menu data during item selection; the order result and payment
-      // link never enter model context or persisted message content.
-      const grant = issueOrderingGrant(true)
-      const outcome = await runOrderingPlan(config, input.message, context)
-      if (outcome.status === "planned") {
-        const execution = await executeMcDonaldOrder((run) => withMcDonaldMcp(run), grant, outcome.plan)
-        const assistantMessage = await appendAgentMessage(
-          user.userId,
-          threadId,
-          "assistant",
-          composeOrderedReply(outcome.plan, execution),
-          execution.status === "created"
-            ? {
-                order: {
-                  orderId: execution.order.orderId,
-                  itemsTotalCents: outcome.plan.itemsTotalCents,
-                  itemCount: outcome.plan.items.length,
-                  storeName: outcome.plan.storeName,
-                },
-              }
-            : {},
-        )
-        return apiSuccess({
-          thread: await getAgentThread(user.userId, threadId),
-          userMessage,
-          assistantMessage,
-          orderResult:
-            execution.status === "created"
-              ? {
-                  orderId: execution.order.orderId,
-                  paymentLink: execution.order.paymentLink,
-                  itemsTotalCents: outcome.plan.itemsTotalCents,
-                }
-              : null,
-        })
-      }
+async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter): Promise<AgentChatResult> {
+  const input = parseAgentChatInput(value)
+  const recorder = createAgentActivityRecorder(onActivity)
+  const user = await getCurrentUser()
+  if (!user) throw new AgentNotFoundError("请先创建个人档案")
+
+  // Resolve credentials before creating a thread so an unconfigured local
+  // provider cannot leave behind a ghost conversation.
+  const config = await getActiveAiProviderConfig()
+  const threadId = await ensureAgentThread(user.userId, input.threadId, titleFromMessage(input.message))
+  const userMessage = await appendAgentMessage(user.userId, threadId, "user", input.message)
+  const [context, history] = await runAgentActivity(
+    recorder.emit,
+    {
+      activityId: "agent-context",
+      kind: "context",
+      label: "整理饮食档案与对话上下文",
+    },
+    () => Promise.all([getAgentContext(user.userId), getAgentMessageHistory(user.userId, threadId)]),
+  )
+
+  if (hasExplicitOrderingIntent(input.message)) {
+    // ADR-0004: the ordering turn gets a deterministic reply. The model only
+    // sees menu data during item selection; the order result and payment
+    // link never enter model context or persisted message content.
+    const grant = await runAgentActivity(
+      recorder.emit,
+      {
+        activityId: "ordering-policy",
+        kind: "policy",
+        label: "校验点餐意图与一次性建单权限",
+      },
+      async () => issueOrderingGrant(true),
+    )
+    const outcome = await runOrderingPlan(config, input.message, context, recorder.emit)
+    if (outcome.status === "planned") {
+      const execution = await executeMcDonaldOrder((run) => withMcDonaldMcp(run), grant, outcome.plan, recorder.emit)
       const assistantMessage = await appendAgentMessage(
         user.userId,
         threadId,
         "assistant",
-        composeOrderingReply(outcome),
+        composeOrderedReply(outcome.plan, execution),
+        execution.status === "created"
+          ? {
+              order: {
+                orderId: execution.order.orderId,
+                itemsTotalCents: outcome.plan.itemsTotalCents,
+                itemCount: outcome.plan.items.length,
+                storeName: outcome.plan.storeName,
+              },
+            }
+          : {},
       )
-      return apiSuccess({
+      return {
         thread: await getAgentThread(user.userId, threadId),
         userMessage,
         assistantMessage,
-        orderResult: null,
-      })
+        orderResult:
+          execution.status === "created"
+            ? {
+                orderId: execution.order.orderId,
+                paymentLink: execution.order.paymentLink,
+                itemsTotalCents: outcome.plan.itemsTotalCents,
+              }
+            : null,
+        activity: recorder.snapshot(),
+      }
     }
-
-    const result = await requestAiChatCompletion(config, {
-      messages: [
-        { role: "system", content: buildAgentSystemPrompt(context) },
-        ...history.map((message) => ({ role: message.role, content: message.content })),
-      ],
-      temperature: 0.4,
-      max_tokens: 1_500,
-    })
-    const rawText = getAssistantText(result)
-    if (!rawText) return apiError("AI 没有返回可读内容", 502)
-
-    const parsed = extractAssistantResponse(sanitizeAssistantText(rawText))
-    const assistantMessage = await appendAgentMessage(user.userId, threadId, "assistant", parsed.visibleText, {
-      memoryCandidates: parsed.candidates,
-      usedMemoryIds: context.memories.map((memory) => memory.memoryId),
-    })
-    await markMemoriesUsed(user.userId, context.memories.map((memory) => memory.memoryId))
-
-    return apiSuccess({
+    const assistantMessage = await appendAgentMessage(
+      user.userId,
+      threadId,
+      "assistant",
+      composeOrderingReply(outcome),
+    )
+    return {
       thread: await getAgentThread(user.userId, threadId),
       userMessage,
       assistantMessage,
-    })
-  } catch (error) {
-    const aiFailure = getPublicAiError(error)
-    if (aiFailure.status !== 500 || error?.constructor?.name === "MissingAiCredentialError" || error?.constructor?.name === "AiProviderError") {
-      return apiError(aiFailure.message, aiFailure.status)
+      orderResult: null,
+      activity: recorder.snapshot(),
     }
-    return requestFailure(error, "Agent 对话失败")
+  }
+
+  const result = await runAgentActivity(
+    recorder.emit,
+    {
+      activityId: "health-agent-response",
+      kind: "model",
+      label: "健康 Agent 生成建议",
+    },
+    () =>
+      requestAiChatCompletion(config, {
+        messages: [
+          { role: "system", content: buildAgentSystemPrompt(context) },
+          ...history.map((message) => ({ role: message.role, content: message.content })),
+        ],
+        temperature: 0.4,
+        max_tokens: 1_500,
+      }),
+  )
+  const rawText = getAssistantText(result)
+  if (!rawText) throw new AgentResponseError("AI 没有返回可读内容", 502)
+
+  const parsed = extractAssistantResponse(sanitizeAssistantText(rawText))
+  const assistantMessage = await appendAgentMessage(user.userId, threadId, "assistant", parsed.visibleText, {
+    memoryCandidates: parsed.candidates,
+    usedMemoryIds: context.memories.map((memory) => memory.memoryId),
+  })
+  await markMemoriesUsed(user.userId, context.memories.map((memory) => memory.memoryId))
+
+  return {
+    thread: await getAgentThread(user.userId, threadId),
+    userMessage,
+    assistantMessage,
+    activity: recorder.snapshot(),
+  }
+}
+
+function activityStreamResponse(value: unknown) {
+  const encoder = new TextEncoder()
+  let closed = false
+
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const send = (event: string, payload: unknown) => {
+        if (closed) return
+        try {
+          controller.enqueue(encoder.encode(`event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`))
+        } catch {
+          closed = true
+        }
+      }
+
+      try {
+        const data = await runAgentChat(value, (activity) => send("activity", { activity }))
+        send("done", { data })
+      } catch (error) {
+        const failure = failureDetails(error, "Agent 对话失败")
+        send("error", { error: failure.message })
+      } finally {
+        if (!closed) {
+          closed = true
+          controller.close()
+        }
+      }
+    },
+    cancel() {
+      closed = true
+    },
+  })
+
+  return new Response(stream, {
+    headers: {
+      "Cache-Control": "no-cache, no-transform",
+      Connection: "keep-alive",
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "X-Accel-Buffering": "no",
+    },
+  })
+}
+
+export async function POST(request: Request) {
+  const contentLength = Number(request.headers.get("content-length") ?? 0)
+  if (contentLength > 64 * 1024) return apiError("消息请求过大", 413)
+
+  let value: unknown
+  try {
+    value = await request.json()
+  } catch {
+    return apiError("请求 JSON 格式无效", 400)
+  }
+
+  if (request.headers.get("accept")?.includes("text/event-stream")) {
+    return activityStreamResponse(value)
+  }
+
+  try {
+    return apiSuccess(await runAgentChat(value))
+  } catch (error) {
+    const failure = failureDetails(error, "Agent 对话失败")
+    return apiError(failure.message, failure.status)
   }
 }

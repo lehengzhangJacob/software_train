@@ -95,3 +95,10 @@ Prisma migration 是生产 schema 唯一真相；database/schema.sql 降级为�
 | 本地日期窗口、连续报告与请求竞态 | C-02-S5 已完成 |
 | 响应式、a11y 与视觉系统 | C-02-S6 已完成 |
 | build/production smoke/CI/发布证据 | C-02-S7 已完成 |
+### Agent activity observability
+
+`/api/agent` keeps its existing JSON completion contract and additionally
+accepts `Accept: text/event-stream` for an ephemeral current-turn activity
+projection. The stream contains only safe labels, tool names, statuses, and
+durations. The Browser UI renders it as a collapsible timeline; durable
+`AgentMessage` history remains the canonical message projection.

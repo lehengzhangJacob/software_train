@@ -96,6 +96,11 @@
       "path": "dev_repo/architecture/decisions/ADR-0005-android-health-shell.md",
       "node": "android.shell",
       "description": "Android 薄壳渲染 live 服务并聚合同步 Health Connect"
+    },
+    {
+      "path": "dev_repo/architecture/decisions/ADR-0006-agent-activity-observability.md",
+      "node": "agent.runtime",
+      "description": "Agent 当前回合 activity SSE 投影与安全可观测性"
     }
   ],
   "ownership": [

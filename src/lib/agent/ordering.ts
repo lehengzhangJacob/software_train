@@ -1,6 +1,8 @@
 import type { McDonaldMcpSession } from "@/lib/mcp/mcdonalds-client"
 import { McpToolError, McpUnavailableError } from "@/lib/mcp/contracts"
 import type { OrderingGrant } from "@/lib/actions/policy"
+import { runAgentActivity } from "@/lib/agent/activity"
+import type { AgentActivityReporter } from "@/lib/agent/contracts"
 
 // ADR-0004 orchestration: explicit intent (checked in ordering-intent.ts plus
 // an action.policy grant) drives a deterministic server-side pipeline. The
@@ -51,6 +53,7 @@ export interface OrderingDeps {
   openSession<T>(run: (session: McDonaldMcpSession) => Promise<T>): Promise<T>
   selectItems(input: { message: string; menu: MenuOption[]; remainingCalories: number | null }): Promise<OrderSelection>
   verifyPrice?(itemsTotalCents: number | null, priceSummary: Record<string, unknown>): boolean
+  reportActivity?: AgentActivityReporter
 }
 
 const MAX_MENU_OPTIONS = 60
@@ -200,32 +203,71 @@ export async function planMcDonaldOrder(
   remainingCalories: number | null,
 ): Promise<OrderingOutcome> {
   try {
-    const address = await deps.openSession(async (session) =>
-      parseAddressResult(await session.callTool("delivery-query-addresses")),
+    const address = await runAgentActivity(
+      deps.reportActivity,
+      {
+        activityId: "mcdonald-addresses",
+        kind: "tool",
+        label: "查询配送地址",
+        toolName: "delivery-query-addresses",
+      },
+      () => deps.openSession(async (session) => parseAddressResult(await session.callTool("delivery-query-addresses"))),
     )
     if (!address) return { status: "blocked", reason: "麦当劳账号中没有可用的配送地址" }
 
-    const store = await deps.openSession(async (session) =>
-      parseStoreResult(await session.callTool("delivery-query-stores", { addressId: address.id })),
+    const store = await runAgentActivity(
+      deps.reportActivity,
+      {
+        activityId: "mcdonald-stores",
+        kind: "tool",
+        label: "查询可配送门店",
+        toolName: "delivery-query-stores",
+      },
+      () => deps.openSession(async (session) => parseStoreResult(await session.callTool("delivery-query-stores", { addressId: address.id }))),
     )
     if (!store) return { status: "blocked", reason: "当前地址没有可配送的麦当劳门店" }
 
-    const menu = await deps.openSession(async (session) =>
-      parseMenuResult(await session.callTool("query-meals", { storeId: store.id })),
+    const menu = await runAgentActivity(
+      deps.reportActivity,
+      {
+        activityId: "mcdonald-menu",
+        kind: "tool",
+        label: "读取门店菜单",
+        toolName: "query-meals",
+      },
+      () => deps.openSession(async (session) => parseMenuResult(await session.callTool("query-meals", { storeId: store.id }))),
     )
     if (!menu.length) return { status: "blocked", reason: "门店菜单暂时不可用" }
 
-    const selection = await deps.selectItems({ message, menu, remainingCalories })
+    const selection = await runAgentActivity(
+      deps.reportActivity,
+      {
+        activityId: "mcdonald-selection",
+        kind: "model",
+        label: "按营养目标选择餐品",
+      },
+      () => deps.selectItems({ message, menu, remainingCalories }),
+    )
     const items = validateSelection(selection, menu)
 
-    const priceSummary = await deps.openSession(async (session) =>
-      normalizePriceResult(
-        await session.callTool("calculate-price", {
-          addressId: address.id,
-          storeId: store.id,
-          items: items.map((item) => ({ code: item.code, quantity: item.quantity })),
-        }),
-      ),
+    const priceSummary = await runAgentActivity(
+      deps.reportActivity,
+      {
+        activityId: "mcdonald-price",
+        kind: "tool",
+        label: "计算订单价格",
+        toolName: "calculate-price",
+      },
+      () =>
+        deps.openSession(async (session) =>
+          normalizePriceResult(
+            await session.callTool("calculate-price", {
+              addressId: address.id,
+              storeId: store.id,
+              items: items.map((item) => ({ code: item.code, quantity: item.quantity })),
+            }),
+          ),
+        ),
     )
     if (!priceSummary) return { status: "blocked", reason: "订单计价失败，暂不能继续下单" }
 
@@ -297,17 +339,29 @@ export async function executeMcDonaldOrder(
   openSession: OrderingDeps["openSession"],
   grant: OrderingGrant,
   plan: OrderingPlan,
+  reportActivity?: AgentActivityReporter,
 ): Promise<OrderExecution> {
   try {
-    grant.claimCreateOrder()
-    const order = await openSession(async (session) =>
-      parseCreatedOrder(
-        await session.callTool("create-order", {
-          addressId: plan.addressId,
-          storeId: plan.storeId,
-          items: plan.items.map((item) => ({ code: item.code, quantity: item.quantity })),
-        }),
-      ),
+    const order = await runAgentActivity(
+      reportActivity,
+      {
+        activityId: "mcdonald-create-order",
+        kind: "tool",
+        label: "创建未支付订单",
+        toolName: "create-order",
+      },
+      () => {
+        grant.claimCreateOrder()
+        return openSession(async (session) =>
+          parseCreatedOrder(
+            await session.callTool("create-order", {
+              addressId: plan.addressId,
+              storeId: plan.storeId,
+              items: plan.items.map((item) => ({ code: item.code, quantity: item.quantity })),
+            }),
+          ),
+        )
+      },
     )
     if (!order) return { status: "blocked", reason: "麦当劳没有确认订单创建，本次未下单" }
     return { status: "created", order }

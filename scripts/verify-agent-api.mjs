@@ -69,6 +69,20 @@ async function jsonRequest(url, init) {
   return { response, body: await response.json() }
 }
 
+async function streamRequest(url, init) {
+  const response = await fetch(url, init)
+  const text = await response.text()
+  const events = text
+    .split("\n\n")
+    .filter(Boolean)
+    .map((block) => {
+      const event = block.match(/^event: (.+)$/m)?.[1] ?? ""
+      const data = block.match(/^data: (.+)$/m)?.[1] ?? "{}"
+      return { event, data: JSON.parse(data) }
+    })
+  return { response, events }
+}
+
 assert(await import("node:fs").then(({ existsSync }) => existsSync(buildId)), "Missing production build")
 
 const temporaryRoot = await mkdtemp(path.join(root, "data", "agent-api-"))
@@ -196,6 +210,18 @@ try {
     assert(memories.length === 1 && memories[0].status === "disabled", "Disabled duplicate was recreated or reactivated")
     assert(suppressed.body.data?.assistantMessage?.memoryCandidates?.[0]?.memoryId === null, "Suppressed inference was linked to a durable memory")
 
+    const streamed = await streamRequest(`${baseUrl}/api/agent/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      body: JSON.stringify({ threadId, message: "stream health advice" }),
+    })
+    assert(streamed.response.status === 200, "Agent activity stream did not return HTTP 200")
+    assert(streamed.response.headers.get("content-type")?.includes("text/event-stream"), "Agent activity stream content type was incorrect")
+    assert(streamed.events.some((event) => event.event === "activity"), "Agent activity stream did not emit activity")
+    const done = streamed.events.find((event) => event.event === "done")
+    assert(done?.data?.data?.activity?.some((step) => step.status === "completed"), "Agent activity stream did not return completed steps")
+    assert(done?.data?.data?.thread?.messages?.length === 8, "Agent activity stream did not persist both messages")
+
     const deleted = await jsonRequest(`${baseUrl}/api/agent/threads?id=${threadId}`, { method: "DELETE" })
     assert(deleted.response.status === 200, "Thread delete failed")
     memories = exactMemories()
@@ -213,6 +239,7 @@ try {
     disabledDuplicateSuppression: "pass",
     legacyConfirmationCompatibility: "pass",
     memorySurvivesThreadDelete: "pass",
+    activityStream: "pass",
   }))
 } finally {
   if (app) await stopProcess(app)

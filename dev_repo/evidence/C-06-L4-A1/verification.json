@@ -1,0 +1,33 @@
+{
+  "contract": "C-06-L4-A1",
+  "slice": "C-06-L4-A1-S1",
+  "type": "architecture-amendment-and-implementation",
+  "date": "2026-08-18",
+  "summary": "新增可选 Agent SSE activity 投影与后端多步编排埋点；不改变 JSON API、订单授权或持久化消息事实。",
+  "assertions": {
+    "activity_recorder": "pass:8/8 test:agent，状态合并与凭据脱敏",
+    "ordering_trace": "pass:12/12 test:ordering，地址→门店→菜单→选餐→计价顺序",
+    "agent_api": "pass:JSON 兼容、线程持久化、memory 回归与 activity SSE",
+    "architecture_json": "pass:graph.json/index.json 可解析",
+    "lint": "pass:0 errors，16 warnings 均来自既有 Android 生成文件",
+    "typecheck": "pass",
+    "build": "pass:Next.js 16.3.1 production build"
+  },
+  "red_line_audit": {
+    "secret_boundary": "pass:activity 仅含标签、工具名、状态、耗时；未返回 Token、原始参数或支付链接",
+    "external_write_boundary": "pass:验证未调用真实 create-order，仅 fake session 与普通聊天 SSE",
+    "message_authority_boundary": "pass:AgentMessage 仍是唯一持久化消息事实"
+  },
+  "architecture_delta": "agent.runtime 增加可选 text/event-stream activity 投影；frontend.components 后续切片消费该投影；无新子系统或依赖方向",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "evidence_commands": [
+    "npm run test:agent",
+    "npm run test:ordering",
+    "npm run lint",
+    "npm run typecheck",
+    "npm run build",
+    "npm run verify:agent-api"
+  ]
+}
