@@ -27,7 +27,7 @@ const markdownComponents: Components = {
   strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
   em: ({ children }) => <em className="italic">{children}</em>,
   a: ({ children, href }) => (
-    <a className="font-medium text-[var(--brand-plum)] underline underline-offset-2 hover:text-[var(--brand-coral)]" href={href} target="_blank" rel="noreferrer">
+    <a className="font-medium text-[var(--brand-heading)] underline underline-offset-2 hover:text-[var(--brand-coral)]" href={href} target="_blank" rel="noreferrer">
       {children}
     </a>
   ),

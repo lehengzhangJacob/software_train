@@ -126,7 +126,7 @@ export function DashboardContent({
             sizes="(max-width: 1024px) 100vw, 48vw"
             className="object-cover"
           />
-          <div className="absolute inset-x-4 bottom-4 rounded-md bg-white/94 p-3 text-[var(--brand-plum)] shadow-lg backdrop-blur sm:inset-x-auto sm:right-5 sm:w-64">
+          <div className="absolute inset-x-4 bottom-4 rounded-md bg-white/94 p-3 text-[var(--brand-heading)] shadow-lg backdrop-blur sm:inset-x-auto sm:right-5 sm:w-64">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[10px] font-semibold uppercase text-[var(--brand-mint-deep)]">下一步</p>
@@ -146,7 +146,7 @@ export function DashboardContent({
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <p className="page-eyebrow">Today&apos;s meals</p>
-              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">今天吃了什么</h2>
+              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-heading)]">今天吃了什么</h2>
             </div>
             <Link href="/meals" className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--brand-mint-deep)]">
               添加记录
@@ -158,12 +158,12 @@ export function DashboardContent({
 
         <aside className="surface-card p-5 sm:p-6">
           <p className="page-eyebrow">Daily targets</p>
-          <h2 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">今天的身体账本</h2>
+          <h2 className="mt-1 text-xl font-semibold text-[var(--brand-heading)]">今天的身体账本</h2>
           <div className="mt-6 space-y-5">
             {nutrients.map((item) => (
               <div key={item.label}>
                 <div className="flex items-baseline justify-between gap-4 text-sm">
-                  <span className="font-medium text-[var(--brand-plum)]">{item.label}</span>
+                  <span className="font-medium text-[var(--brand-heading)]">{item.label}</span>
                   <span className="text-xs text-muted-foreground">
                     <b className="mr-1 text-foreground">{item.value}</b>/ {item.target}
                   </span>
@@ -182,7 +182,7 @@ export function DashboardContent({
       <section className="surface-card grid overflow-hidden lg:grid-cols-[.72fr_1.28fr]">
         <div className="border-b border-border/80 p-5 sm:p-6 lg:border-b-0 lg:border-r">
           <p className="page-eyebrow">Macro balance</p>
-          <h2 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">宏量营养分布</h2>
+          <h2 className="mt-1 text-xl font-semibold text-[var(--brand-heading)]">宏量营养分布</h2>
           <div className="mt-4">
             <MacroDonut protein={totalProtein} fat={totalFat} carbs={totalCarbs} />
           </div>
@@ -191,7 +191,7 @@ export function DashboardContent({
           <div className="mb-2 flex items-end justify-between gap-4">
             <div>
               <p className="page-eyebrow">Seven days</p>
-              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">最近的节奏</h2>
+              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-heading)]">最近的节奏</h2>
             </div>
             <span className="text-xs text-muted-foreground">目标 {formatCalories(user.dailyCalorieTarget)} 千卡</span>
           </div>

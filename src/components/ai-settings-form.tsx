@@ -175,7 +175,7 @@ export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
                 <b className="block truncate">
                   {item.id === "custom" ? "OpenAI 兼容接口" : item.label}
                 </b>
-                <span className={cn("mt-1 block text-[10px]", item.id === draft.providerId ? "text-[var(--brand-plum)]/65" : "text-white/45")}>
+                <span className={cn("mt-1 block text-[10px]", item.id === draft.providerId ? "text-[var(--brand-heading)]/65" : "text-white/45")}>
                   {item.ready ? "已配置" : item.visionCapability === "unsupported" ? "文本模型" : "待配置"}
                 </span>
               </button>
@@ -185,9 +185,9 @@ export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
 
         <div className="bg-[var(--brand-paper)] p-5 sm:p-7 lg:p-8">
           <p className="page-eyebrow">AI & tools</p>
-          <h2 className="mt-2 text-3xl font-semibold leading-tight text-[var(--brand-plum)]">连接你的智能服务。</h2>
+          <h2 className="mt-2 text-3xl font-semibold leading-tight text-[var(--brand-heading)]">连接你的智能服务。</h2>
 
-          <div className="mt-7 flex items-center gap-2 rounded-md bg-[#dcfaee] px-3 py-2 text-xs text-[#285f4e]">
+          <div className="mt-7 flex items-center gap-2 rounded-md bg-[var(--brand-mint-soft)] px-3 py-2 text-xs text-[var(--brand-mint-ink)]">
             <ShieldCheck className="size-3.5 shrink-0 text-[var(--brand-mint-deep)]" />
             保存后完整密钥只由本机服务端持有，浏览器只能读取掩码状态。
           </div>
@@ -196,7 +196,7 @@ export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
             <div className="space-y-2">
               <Label htmlFor="ai-provider">提供商</Label>
               <Select value={draft.providerId} onValueChange={selectProvider}>
-                <SelectTrigger id="ai-provider" type="button" className="w-full bg-white"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="ai-provider" type="button" className="w-full bg-card"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {settings.providers.map((item) => <SelectItem key={item.id} value={item.id}>{item.label}</SelectItem>)}
                 </SelectContent>
@@ -204,19 +204,19 @@ export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
             </div>
             <div className="space-y-2">
               <Label htmlFor="ai-model">聊天模型</Label>
-              <Input id="ai-model" className="bg-white" value={draft.model} onChange={(event) => setDraft((current) => ({ ...current, model: event.target.value }))} />
+              <Input id="ai-model" className="bg-card" value={draft.model} onChange={(event) => setDraft((current) => ({ ...current, model: event.target.value }))} />
               <p className="text-xs text-muted-foreground">Agent 对话与连接测试使用的模型</p>
             </div>
             {provider.visionCapability !== "unsupported" ? (
               <div className="space-y-2">
                 <Label htmlFor="ai-vision-model">识图模型</Label>
-                <Input id="ai-vision-model" className="bg-white" value={draft.visionModel} onChange={(event) => setDraft((current) => ({ ...current, visionModel: event.target.value }))} />
+                <Input id="ai-vision-model" className="bg-card" value={draft.visionModel} onChange={(event) => setDraft((current) => ({ ...current, visionModel: event.target.value }))} />
                 <p className="text-xs text-muted-foreground">食物图片识别使用的模型；留空则跟随聊天模型</p>
               </div>
             ) : null}
             <div className="space-y-2 sm:col-span-2 lg:col-span-1">
               <Label htmlFor="ai-base-url">API Base URL</Label>
-              <Input id="ai-base-url" className="bg-white" value={draft.baseUrl} onChange={(event) => setDraft((current) => ({ ...current, baseUrl: event.target.value }))} spellCheck={false} />
+              <Input id="ai-base-url" className="bg-card" value={draft.baseUrl} onChange={(event) => setDraft((current) => ({ ...current, baseUrl: event.target.value }))} spellCheck={false} />
             </div>
           </div>
           <p className="mt-2 text-xs text-muted-foreground">{provider.description}</p>
@@ -238,7 +238,7 @@ export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
                 autoComplete="off"
                 spellCheck={false}
                 placeholder={provider.keyConfigured ? "留空可保留当前密钥" : "输入 API Key"}
-                className="min-w-0 bg-white"
+                className="min-w-0 bg-card"
               />
               <Button type="button" variant="outline" size="icon" aria-label={showKey ? "隐藏 API Key" : "显示 API Key"} title={showKey ? "隐藏 API Key" : "显示 API Key"} onClick={() => setShowKey((value) => !value)}>
                 {showKey ? <EyeOff /> : <Eye />}
@@ -247,7 +247,7 @@ export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
                 <Trash2 />
               </Button>
             </div>
-            {provider.visionCapability === "unsupported" ? <p className="text-xs text-[#a34e3e]">该预设为文本模型，不能用于食物图片识别。</p> : null}
+            {provider.visionCapability === "unsupported" ? <p className="text-xs text-[var(--brand-coral-ink)]">该预设为文本模型，不能用于食物图片识别。</p> : null}
           </div>
 
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:justify-end">

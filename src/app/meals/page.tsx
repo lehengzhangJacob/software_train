@@ -24,7 +24,7 @@ export default async function MealsPage() {
           <h1 className="page-title mt-2">拍下这一餐，再认真确认。</h1>
           <p className="page-copy mt-2">AI 会拆分多项食物；保存前由你决定名称、餐别、份量和营养数值。</p>
         </div>
-        <div className="rounded-md bg-[var(--brand-lavender-soft)] px-3 py-2 text-xs font-medium text-[#5f51cc]">
+        <div className="rounded-md bg-[var(--brand-lavender-soft)] px-3 py-2 text-xs font-medium text-[#5f51cc] dark:text-[var(--brand-lavender-deep)]">
           {today} · 图片不会写入数据库
         </div>
       </div>

@@ -236,7 +236,7 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-4">
             <div>
               <p className="page-eyebrow">Memory library</p>
-              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">你的长期记忆</h2>
+              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-heading)]">你的长期记忆</h2>
             </div>
             <div className="inline-flex rounded-md border bg-[var(--brand-paper)] p-0.5">
               {([ ["all", "全部"], ["active", "启用"], ["disabled", "停用"] ] as const).map(([value, label]) => (
@@ -245,7 +245,7 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className={cn("h-7 px-2", filter === value && "bg-white text-[var(--brand-mint-deep)] shadow-sm hover:bg-white")}
+                  className={cn("h-7 px-2", filter === value && "bg-card text-[var(--brand-mint-deep)] shadow-sm hover:bg-card")}
                   aria-pressed={filter === value}
                   onClick={() => setFilter(value)}
                 >
@@ -277,20 +277,20 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
                           <div className="space-y-2">
                             <Label htmlFor={`edit-category-${memory.memoryId}`}>分类</Label>
                             <Select value={editCategory} onValueChange={(value) => value && setEditCategory(value as MemoryCategory)}>
-                              <SelectTrigger id={`edit-category-${memory.memoryId}`} type="button" className="w-full bg-white"><SelectValue>{categoryLabel(editCategory)}</SelectValue></SelectTrigger>
+                              <SelectTrigger id={`edit-category-${memory.memoryId}`} type="button" className="w-full bg-card"><SelectValue>{categoryLabel(editCategory)}</SelectValue></SelectTrigger>
                               <SelectContent>{categories.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}</SelectContent>
                             </Select>
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor={`edit-importance-${memory.memoryId}`}>重要度</Label>
                             <Select value={editImportance} onValueChange={(value) => value && setEditImportance(value)}>
-                              <SelectTrigger id={`edit-importance-${memory.memoryId}`} type="button" className="w-full bg-white"><SelectValue>{importanceOptions.find((item) => item.value === editImportance)?.label}</SelectValue></SelectTrigger>
+                              <SelectTrigger id={`edit-importance-${memory.memoryId}`} type="button" className="w-full bg-card"><SelectValue>{importanceOptions.find((item) => item.value === editImportance)?.label}</SelectValue></SelectTrigger>
                               <SelectContent>{importanceOptions.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}</SelectContent>
                             </Select>
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor={`edit-expiry-${memory.memoryId}`}>有效期</Label>
-                            <Input id={`edit-expiry-${memory.memoryId}`} className="bg-white" type="date" min={todayLocal()} value={editExpiresAt} onChange={(event) => setEditExpiresAt(event.target.value)} />
+                            <Input id={`edit-expiry-${memory.memoryId}`} className="bg-card" type="date" min={todayLocal()} value={editExpiresAt} onChange={(event) => setEditExpiresAt(event.target.value)} />
                           </div>
                         </div>
                         <div className="flex justify-end gap-2">
@@ -305,16 +305,16 @@ export function MemorySettings({ initialMemories, referenceNow }: MemorySettings
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="rounded-full bg-[var(--brand-lavender-soft)] px-2 py-0.5 text-[10px] font-semibold text-[#6658c8]">{categoryLabel(memory.category)}</span>
+                              <span className="rounded-full bg-[var(--brand-lavender-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--brand-lavender-deep)]">{categoryLabel(memory.category)}</span>
                               <span className="text-[10px] font-semibold text-[var(--brand-mint-deep)]">
                                 {memory.sourceKind === "agent_inference"
                                   ? memory.isUserConfirmed ? "已由你修正" : "Agent 整理"
                                   : sourceLabels[memory.sourceKind] ?? memory.sourceKind}
                               </span>
                               {memory.status === "disabled" ? <span className="text-[10px] text-muted-foreground">已停用</span> : null}
-                              {expired ? <span className="text-[10px] text-[#a34e3e]">已过期</span> : null}
+                              {expired ? <span className="text-[10px] text-[var(--brand-coral-ink)]">已过期</span> : null}
                             </div>
-                            <p className="mt-2 break-words text-sm font-medium leading-6 text-[var(--brand-plum)]">{memory.content}</p>
+                            <p className="mt-2 break-words text-sm font-medium leading-6 text-[var(--brand-heading)]">{memory.content}</p>
                             <p className="mt-2 text-[11px] text-muted-foreground">
                               {sourceLabels[memory.sourceKind] ?? memory.sourceKind} · 重要度 {importanceLabel(memory.importance)}
                               {memory.expiresAt ? ` · 有效至 ${formatDate(memory.expiresAt)}` : " · 长期有效"}

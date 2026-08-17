@@ -45,7 +45,7 @@ export function MacroDonut({ protein, fat, carbs }: MacroDonutProps) {
         role="img"
         aria-label={`宏量营养素总计 ${formatCalories(total)} 千卡`}
       >
-        <circle cx="50" cy="50" r={radius} fill="none" stroke="#f5f5f5" strokeWidth="16" />
+        <circle cx="50" cy="50" r={radius} fill="none" stroke="var(--chart-track)" strokeWidth="16" />
         {segments.map((segment) => (
           <circle
             key={segment.name}

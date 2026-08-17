@@ -237,7 +237,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                         key={thread.threadId}
                         className={cn(
                           "flex min-w-56 items-center gap-1 rounded-md border border-white/8 lg:min-w-0",
-                          active ? "bg-white text-[var(--brand-plum)]" : "bg-white/5 text-white hover:bg-white/9"
+                          active ? "bg-card text-[var(--brand-heading)]" : "bg-white/5 text-white hover:bg-white/9"
                         )}
                       >
                         <button
@@ -274,7 +274,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
             <header className="flex items-center justify-between gap-4 border-b border-border/70 px-5 py-4 sm:px-7">
               <div className="min-w-0">
                 <p className="page-eyebrow">Tonight&apos;s plan</p>
-                <h2 className="mt-1 truncate text-xl font-semibold text-[var(--brand-plum)]">
+                <h2 className="mt-1 truncate text-xl font-semibold text-[var(--brand-heading)]">
                   {activeThread?.title ?? "今晚怎么吃，我陪你定。"}
                 </h2>
               </div>
@@ -290,7 +290,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                   <div className="grid size-11 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
                     <Bot className="size-5" />
                   </div>
-                  <h3 className="mt-5 max-w-xl text-3xl font-semibold leading-tight text-[var(--brand-plum)]">
+                  <h3 className="mt-5 max-w-xl text-3xl font-semibold leading-tight text-[var(--brand-heading)]">
                     先不用焦虑，今天还有调整空间。
                   </h3>
                   <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
@@ -301,7 +301,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                       <button
                         key={prompt}
                         type="button"
-                        className="rounded-full border border-border bg-white px-3 py-2 text-xs font-medium text-[var(--brand-plum)] transition-colors hover:border-[var(--brand-mint)] hover:bg-[var(--brand-mint)]/10"
+                        className="rounded-full border border-border bg-card px-3 py-2 text-xs font-medium text-[var(--brand-plum)] transition-colors hover:border-[var(--brand-mint)] hover:bg-[var(--brand-mint)]/10"
                         onClick={() => setDraft(prompt)}
                       >
                         {prompt}
@@ -322,8 +322,8 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                         className={cn(
                           "break-words rounded-lg px-4 py-3 text-sm leading-6 shadow-sm",
                           message.role === "user"
-                            ? "whitespace-pre-wrap bg-[var(--brand-lavender-soft)] text-[var(--brand-plum)]"
-                            : "border border-border/70 bg-white text-foreground"
+                            ? "whitespace-pre-wrap bg-[var(--brand-lavender-soft)] text-[var(--brand-heading)]"
+                            : "border border-border/70 bg-card text-foreground"
                         )}
                       >
                         {message.role === "assistant" ? (
@@ -336,7 +336,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                         {formatMessageTime(message.createdAt)}
                       </p>
                       {message.role === "assistant" && automaticMemoryCount(message.memoryCandidates) > 0 ? (
-                        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-l-2 border-[var(--brand-coral)] bg-[#fff2ee] px-3 py-2 text-xs text-[#713b32]">
+                        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-l-2 border-[var(--brand-coral)] bg-[var(--brand-coral-soft)] px-3 py-2 text-xs text-[#713b32] dark:text-[#ffb0a0]">
                           <Sparkles className="size-3.5" />
                           <span>已自动整理 {automaticMemoryCount(message.memoryCandidates)} 条长期记忆</span>
                           <Link className="font-semibold underline-offset-2 hover:underline" href="/settings/memory">查看与管理</Link>
@@ -347,8 +347,8 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                 ))
               )}
               {lastOrder ? (
-                <div className="rounded-lg border border-[var(--brand-mint)]/50 bg-white p-4 shadow-sm">
-                  <p className="text-sm font-semibold text-[var(--brand-plum)]">
+                <div className="rounded-lg border border-[var(--brand-mint)]/50 bg-card p-4 shadow-sm">
+                  <p className="text-sm font-semibold text-[var(--brand-heading)]">
                     {lastOrder.orderId ? `未支付订单 ${lastOrder.orderId} 已创建` : "未支付订单已创建"}
                   </p>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">
@@ -377,8 +377,8 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
               ) : null}
             </div>
 
-            <form className="border-t border-border/70 bg-white p-3 sm:p-4" onSubmit={(event) => { event.preventDefault(); void sendMessage() }}>
-              <div className="flex items-end gap-2 rounded-md border bg-white p-2 focus-within:border-[var(--brand-mint)] focus-within:ring-2 focus-within:ring-[var(--brand-mint)]/20">
+            <form className="border-t border-border/70 bg-card p-3 sm:p-4" onSubmit={(event) => { event.preventDefault(); void sendMessage() }}>
+              <div className="flex items-end gap-2 rounded-md border bg-card p-2 focus-within:border-[var(--brand-mint)] focus-within:ring-2 focus-within:ring-[var(--brand-mint)]/20">
                 <textarea
                   value={draft}
                   onChange={(event) => setDraft(event.target.value)}

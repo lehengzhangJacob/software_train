@@ -164,11 +164,11 @@ export function TakeoutToolsPanel() {
         <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] sm:items-end">
           <div className="space-y-2">
             <Label htmlFor="takeout-location">位置</Label>
-            <div className="relative"><MapPin className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[var(--brand-mint-deep)]" /><Input id="takeout-location" className="bg-white pl-8" value={location} onChange={(event) => setLocation(event.target.value)} placeholder="如：徐汇区" /></div>
+            <div className="relative"><MapPin className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[var(--brand-mint-deep)]" /><Input id="takeout-location" className="bg-card pl-8" value={location} onChange={(event) => setLocation(event.target.value)} placeholder="如：徐汇区" /></div>
           </div>
           <div className="space-y-2">
             <Label htmlFor="takeout-query">想吃什么（可选）</Label>
-            <Input id="takeout-query" className="bg-white" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="如：低脂、沙拉、面" />
+            <Input id="takeout-query" className="bg-card" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="如：低脂、沙拉、面" />
           </div>
           <Button type="button" disabled={searching} onClick={() => void search()}>
             {searching ? <LoaderCircle className="animate-spin" /> : <Search />}
@@ -179,7 +179,7 @@ export function TakeoutToolsPanel() {
         {results.length > 0 ? (
           <div className="grid gap-2 md:grid-cols-2">
             {results.map((result) => (
-              <button key={result.id} type="button" className={`rounded-md border p-3 text-left transition-colors hover:border-[var(--brand-mint)] ${restaurant?.id === result.id ? "border-[var(--brand-mint)] bg-[#dcfaee]" : "bg-white"}`} onClick={() => chooseRestaurant(result)}>
+              <button key={result.id} type="button" className={`rounded-md border p-3 text-left transition-colors hover:border-[var(--brand-mint)] ${restaurant?.id === result.id ? "border-[var(--brand-mint)] bg-[var(--brand-mint-soft)]" : "bg-card"}`} onClick={() => chooseRestaurant(result)}>
                 <div className="flex items-start justify-between gap-3"><span className="min-w-0 truncate text-sm font-medium text-neutral-900">{result.name}</span><span className="shrink-0 text-xs text-neutral-500">{result.distanceKm === null ? "距离未知" : `${result.distanceKm.toFixed(1)} km`}</span></div>
                 <p className="mt-1 text-xs text-neutral-500">{[result.cuisine, result.priceRange, result.estimatedMinutes === null ? null : `${Math.round(result.estimatedMinutes)} 分钟`].filter(Boolean).join(" · ") || "连接器未提供详情"}</p>
                 {result.description ? <p className="mt-2 line-clamp-2 text-xs leading-5 text-neutral-600">{result.description}</p> : null}
@@ -189,8 +189,8 @@ export function TakeoutToolsPanel() {
         ) : null}
 
         {restaurant ? (
-          <div className="space-y-3 rounded-md border bg-white p-4">
-            <div className="flex items-center gap-2 text-sm font-medium text-[var(--brand-plum)]"><ClipboardList className="size-4 text-[var(--brand-lavender)]" />为「{restaurant.name}」生成草案</div>
+          <div className="space-y-3 rounded-md border bg-card p-4">
+            <div className="flex items-center gap-2 text-sm font-medium text-[var(--brand-heading)]"><ClipboardList className="size-4 text-[var(--brand-lavender)]" />为「{restaurant.name}」生成草案</div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2"><Label htmlFor="takeout-item">商品</Label><Input id="takeout-item" value={itemName} onChange={(event) => setItemName(event.target.value)} placeholder="如：鸡胸沙拉" /></div>
               <div className="space-y-2"><Label htmlFor="takeout-price">价格（元）</Label><Input id="takeout-price" inputMode="decimal" type="number" min="0" step="0.01" value={unitPrice} onChange={(event) => setUnitPrice(event.target.value)} placeholder="0.00" /></div>
@@ -202,10 +202,10 @@ export function TakeoutToolsPanel() {
         ) : null}
 
         {draft ? (
-          <div className="border-l-2 border-[var(--brand-coral)] bg-[#fff0ec] px-4 py-3 text-sm text-[#653b34]">
+          <div className="border-l-2 border-[var(--brand-coral)] bg-[var(--brand-coral-soft)] px-4 py-3 text-sm text-[#653b34] dark:text-[#ffb0a0]">
             <div className="flex flex-wrap items-center justify-between gap-2"><strong>草案：{draft.restaurantName}</strong><span>{draft.currency} {(draft.totalCents / 100).toFixed(2)}</span></div>
             <p className="mt-1 text-xs">{draft.items.map((item) => `${item.name} × ${item.quantity}`).join("、")} · {draft.deliveryAddress}</p>
-            <div className="mt-3 flex flex-wrap items-center gap-2"><Button type="button" size="sm" disabled={confirming} onClick={() => void confirmOrder()}>{confirming ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />}确认并提交</Button><span className="text-xs text-[#8b594f]">确认令牌 10 分钟内有效</span></div>
+            <div className="mt-3 flex flex-wrap items-center gap-2"><Button type="button" size="sm" disabled={confirming} onClick={() => void confirmOrder()}>{confirming ? <LoaderCircle className="animate-spin" /> : <CheckCircle2 />}确认并提交</Button><span className="text-xs text-[#8b594f] dark:text-[#e5b7ad]">确认令牌 10 分钟内有效</span></div>
           </div>
         ) : null}
 

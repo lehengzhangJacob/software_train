@@ -153,13 +153,13 @@ export function Sidebar() {
         </div>
       </header>
 
-      <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-border/80 bg-white/96 px-4 backdrop-blur lg:hidden">
+      <header className="fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-border/80 bg-white/96 dark:bg-card/96 px-4 backdrop-blur lg:hidden">
         <Link
           href="/dashboard"
           className="flex min-w-0 items-center gap-2.5 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint)]"
         >
           <BrandMark compact />
-          <span className="truncate text-sm font-semibold text-[var(--brand-plum)]">
+          <span className="truncate text-sm font-semibold text-[var(--brand-heading)]">
             {getPageTitle(pathname)}
           </span>
         </Link>
@@ -177,7 +177,7 @@ export function Sidebar() {
 
       <nav
         aria-label="移动端主导航"
-        className="fixed inset-x-0 bottom-0 z-40 grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-5 border-t border-border/80 bg-white/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-5 border-t border-border/80 bg-white/98 dark:bg-card/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur lg:hidden"
       >
         {mobileNav.map((item) => {
           const active = isRouteActive(pathname, item.matches)
@@ -194,7 +194,7 @@ export function Sidebar() {
               {item.action ? (
                 <span
                   className={cn(
-                    "-mt-4 grid size-11 place-items-center rounded-full border-4 border-white bg-[var(--brand-mint)] text-[var(--brand-plum)] shadow-[0_8px_20px_rgba(39,211,157,.28)]",
+                    "-mt-4 grid size-11 place-items-center rounded-full border-4 border-white bg-[var(--brand-mint)] dark:border-card text-[var(--brand-plum)] shadow-[0_8px_20px_rgba(39,211,157,.28)]",
                     active && "bg-[var(--brand-plum)] text-[var(--brand-mint)]"
                   )}
                 >

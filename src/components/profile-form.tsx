@@ -192,19 +192,19 @@ export function ProfileForm({ user }: ProfileFormProps) {
 
         <section className="bg-[var(--brand-paper)] p-5 sm:p-7 lg:p-8">
           <p className="page-eyebrow">Personal settings</p>
-          <h2 className="mt-2 text-3xl font-semibold leading-tight text-[var(--brand-plum)]">让建议真正适合你。</h2>
+          <h2 className="mt-2 text-3xl font-semibold leading-tight text-[var(--brand-heading)]">让建议真正适合你。</h2>
 
           <div className="mt-7">
-            <h3 className="text-base font-semibold text-[var(--brand-plum)]">身体参数</h3>
+            <h3 className="text-base font-semibold text-[var(--brand-heading)]">身体参数</h3>
             <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="username">昵称</Label>
-                <Input id="username" className="bg-white" value={form.username} onChange={(event) => update("username", event.target.value)} placeholder="你的名字" />
+                <Input id="username" className="bg-card" value={form.username} onChange={(event) => update("username", event.target.value)} placeholder="你的名字" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="gender">性别</Label>
                 <Select value={form.gender} onValueChange={(value) => update("gender", value)}>
-                  <SelectTrigger id="gender" type="button" className="w-full bg-white"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="gender" type="button" className="w-full bg-card"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="male">男性</SelectItem>
                     <SelectItem value="female">女性</SelectItem>
@@ -214,20 +214,20 @@ export function ProfileForm({ user }: ProfileFormProps) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="age">年龄</Label>
-                <Input id="age" className="bg-white" type="number" value={form.age} onChange={(event) => update("age", Number(event.target.value))} min={1} max={149} />
+                <Input id="age" className="bg-card" type="number" value={form.age} onChange={(event) => update("age", Number(event.target.value))} min={1} max={149} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="height">身高（cm）</Label>
-                <Input id="height" className="bg-white" type="number" step="0.1" value={form.heightCm} onChange={(event) => update("heightCm", Number(event.target.value))} />
+                <Input id="height" className="bg-card" type="number" step="0.1" value={form.heightCm} onChange={(event) => update("heightCm", Number(event.target.value))} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="weight">体重（kg）</Label>
-                <Input id="weight" className="bg-white" type="number" step="0.1" value={form.weightKg} onChange={(event) => update("weightKg", Number(event.target.value))} />
+                <Input id="weight" className="bg-card" type="number" step="0.1" value={form.weightKg} onChange={(event) => update("weightKg", Number(event.target.value))} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="activity">活动水平</Label>
                 <Select value={form.activityLevel} onValueChange={(value) => update("activityLevel", value)}>
-                  <SelectTrigger id="activity" type="button" className="w-full bg-white"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="activity" type="button" className="w-full bg-card"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {ACTIVITY_LEVELS.map((level) => <SelectItem key={level.value} value={level.value}>{level.label}</SelectItem>)}
                   </SelectContent>
@@ -241,7 +241,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
           <div>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="text-base font-semibold text-[var(--brand-plum)]">每日营养目标</h3>
+                <h3 className="text-base font-semibold text-[var(--brand-heading)]">每日营养目标</h3>
                 <p className="mt-1 text-xs text-muted-foreground">这些目标会直接参与首页、报告和 Agent 建议。</p>
               </div>
               <Button type="button" variant="outline" size="sm" onClick={() => update("dailyCalorieTarget", tdee)}>
@@ -252,19 +252,19 @@ export function ProfileForm({ user }: ProfileFormProps) {
             <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
               <div className="space-y-2 rounded-md bg-[var(--brand-lavender-soft)] p-3">
                 <Label htmlFor="calorie">热量（千卡）</Label>
-                <Input id="calorie" className="border-0 bg-white" type="number" value={form.dailyCalorieTarget} onChange={(event) => update("dailyCalorieTarget", Number(event.target.value))} />
+                <Input id="calorie" className="border-0 bg-card" type="number" value={form.dailyCalorieTarget} onChange={(event) => update("dailyCalorieTarget", Number(event.target.value))} />
               </div>
               <div className="space-y-2 rounded-md bg-[var(--brand-lavender-soft)] p-3">
                 <Label htmlFor="protein">蛋白质（克）</Label>
-                <Input id="protein" className="border-0 bg-white" type="number" step="0.1" value={form.dailyProteinTarget} onChange={(event) => update("dailyProteinTarget", Number(event.target.value))} />
+                <Input id="protein" className="border-0 bg-card" type="number" step="0.1" value={form.dailyProteinTarget} onChange={(event) => update("dailyProteinTarget", Number(event.target.value))} />
               </div>
               <div className="space-y-2 rounded-md bg-[var(--brand-lavender-soft)] p-3">
                 <Label htmlFor="fat">脂肪（克）</Label>
-                <Input id="fat" className="border-0 bg-white" type="number" step="0.1" value={form.dailyFatTarget} onChange={(event) => update("dailyFatTarget", Number(event.target.value))} />
+                <Input id="fat" className="border-0 bg-card" type="number" step="0.1" value={form.dailyFatTarget} onChange={(event) => update("dailyFatTarget", Number(event.target.value))} />
               </div>
               <div className="space-y-2 rounded-md bg-[var(--brand-lavender-soft)] p-3">
                 <Label htmlFor="carbs">碳水（克）</Label>
-                <Input id="carbs" className="border-0 bg-white" type="number" step="0.1" value={form.dailyCarbsTarget} onChange={(event) => update("dailyCarbsTarget", Number(event.target.value))} />
+                <Input id="carbs" className="border-0 bg-card" type="number" step="0.1" value={form.dailyCarbsTarget} onChange={(event) => update("dailyCarbsTarget", Number(event.target.value))} />
               </div>
             </div>
           </div>

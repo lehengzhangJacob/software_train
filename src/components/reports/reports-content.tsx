@@ -76,10 +76,10 @@ function GoalProgress({ label, value, detail, color }: { label: string; value: n
   return (
     <div className="border-b border-border/80 pb-4 last:border-0 last:pb-0">
       <div className="flex items-center justify-between gap-4 text-sm">
-        <span className="font-medium text-[var(--brand-plum)]">{label}</span>
-        <span className="text-xs font-semibold text-[var(--brand-plum)]">{detail}</span>
+        <span className="font-medium text-[var(--brand-heading)]">{label}</span>
+        <span className="text-xs font-semibold text-[var(--brand-heading)]">{detail}</span>
       </div>
-      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#e8e4eb]">
+      <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[#e8e4eb] dark:bg-white/10">
         <div className={cn("h-full rounded-full", color)} style={{ width: `${clampPercent(value)}%` }} />
       </div>
     </div>
@@ -166,7 +166,7 @@ export function ReportsContent() {
       <div className="surface-card grid min-h-[420px] place-items-center border-0 p-6">
         <div className="max-w-sm text-center">
           <CalendarDays className="mx-auto size-8 text-[var(--brand-coral)]" />
-          <h1 className="mt-4 text-2xl font-semibold text-[var(--brand-plum)]">报告暂时没有生成</h1>
+          <h1 className="mt-4 text-2xl font-semibold text-[var(--brand-heading)]">报告暂时没有生成</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground" role="alert">{loadError || "暂时无法读取营养报告，请稍后重试"}</p>
           <Button type="button" variant="outline" className="mt-5" onClick={retryLoad}><RotateCcw />重试</Button>
         </div>
@@ -208,7 +208,7 @@ export function ReportsContent() {
             <p className="page-eyebrow">Nutrition review</p>
             <h1 className="page-title mt-1">营养报告</h1>
           </div>
-          <TabsList className="grid w-56 grid-cols-2 bg-white">
+          <TabsList className="grid w-56 grid-cols-2 bg-card">
             <TabsTrigger value="weekly">近 7 天</TabsTrigger>
             <TabsTrigger value="monthly">近 30 天</TabsTrigger>
           </TabsList>
@@ -233,7 +233,7 @@ export function ReportsContent() {
                 {metrics.map((metric) => (
                   <div key={metric.label} className="surface-card p-4">
                     <p className="text-[11px] text-muted-foreground">{metric.label}</p>
-                    <p className="mt-2 text-2xl font-semibold text-[var(--brand-plum)]">
+                    <p className="mt-2 text-2xl font-semibold text-[var(--brand-heading)]">
                       {metric.value}<span className="ml-1 text-xs font-normal text-muted-foreground">{metric.suffix}</span>
                     </p>
                     <p className="mt-2 text-[10px] text-muted-foreground">{metric.detail}</p>
@@ -242,9 +242,9 @@ export function ReportsContent() {
               </div>
 
               <div className="rounded-lg bg-[var(--brand-lavender-soft)] p-5 sm:p-6">
-                <div className="flex items-center gap-2 text-xs font-semibold text-[#6658c8]"><Sparkles className="size-3.5" />AI 周期回顾</div>
-                <h2 className="mt-3 text-2xl font-semibold text-[var(--brand-plum)]">{headline}</h2>
-                <p className="mt-3 text-sm leading-6 text-[#5d5665]">{review}</p>
+                <div className="flex items-center gap-2 text-xs font-semibold text-[var(--brand-lavender-deep)]"><Sparkles className="size-3.5" />AI 周期回顾</div>
+                <h2 className="mt-3 text-2xl font-semibold text-[var(--brand-heading)]">{headline}</h2>
+                <p className="mt-3 text-sm leading-6 text-[#5d5665] dark:text-[#c4bdc9]">{review}</p>
                 <Link href="/agent" className="mt-5 inline-flex h-10 items-center gap-2 rounded-md bg-[var(--brand-plum)] px-4 text-sm font-semibold text-white">
                   和教练继续讨论<ArrowRight className="size-4" />
                 </Link>
@@ -253,7 +253,7 @@ export function ReportsContent() {
 
             <aside className="surface-card p-5 sm:p-6">
               <p className="page-eyebrow">Target progress</p>
-              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">目标完成情况</h2>
+              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-heading)]">目标完成情况</h2>
               <div className="mt-6 space-y-4">
                 <GoalProgress label="热量目标贴合度" value={calorieFit} detail={`${clampPercent(calorieFit)}%`} color="bg-[var(--brand-mint)]" />
                 <GoalProgress label="蛋白质目标" value={proteinRate} detail={`${clampPercent(proteinRate)}%`} color="bg-[var(--brand-lavender)]" />
@@ -263,7 +263,7 @@ export function ReportsContent() {
               <div className="mt-7 grid gap-3 border-t border-border/80 pt-5 text-sm">
                 <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-muted-foreground"><Beef className="size-4 text-[var(--brand-coral)]" />日均蛋白质</span><b>{formatGrams(data.avgProtein)} 克</b></div>
                 <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-muted-foreground"><Droplet className="size-4 text-[var(--brand-lavender)]" />日均脂肪</span><b>{formatGrams(data.avgFat)} 克</b></div>
-                <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-muted-foreground"><Wheat className="size-4 text-[#d99c31]" />日均碳水</span><b>{formatGrams(data.avgCarbs)} 克</b></div>
+                <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-muted-foreground"><Wheat className="size-4 text-[#d99c31] dark:text-[#e8b95e]" />日均碳水</span><b>{formatGrams(data.avgCarbs)} 克</b></div>
                 <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-muted-foreground"><Target className="size-4 text-[var(--brand-mint-deep)]" />达标天数</span><b>{data.onTargetDays} 天</b></div>
               </div>
             </aside>

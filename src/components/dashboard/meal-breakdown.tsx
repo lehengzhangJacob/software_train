@@ -21,7 +21,7 @@ export function MealBreakdown({ summary }: MealBreakdownProps) {
     return (
       <div className="grid min-h-44 place-items-center rounded-md bg-[var(--brand-paper)] px-5 text-center">
         <div>
-          <p className="text-sm font-medium text-[var(--brand-plum)]">今天还没有饮食记录</p>
+          <p className="text-sm font-medium text-[var(--brand-heading)]">今天还没有饮食记录</p>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">拍下第一餐，今天的营养节奏就会从这里开始。</p>
         </div>
       </div>
@@ -33,11 +33,11 @@ export function MealBreakdown({ summary }: MealBreakdownProps) {
       {sorted.map((item) => (
         <div key={item.mealType} className="group flex items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brand-lavender-soft)] text-sm font-semibold text-[#5f51cc]">
+            <div className="grid size-10 shrink-0 place-items-center rounded-full bg-[var(--brand-lavender-soft)] text-sm font-semibold text-[#5f51cc] dark:text-[var(--brand-lavender-deep)]">
               {item.mealType === "breakfast" ? "早" : item.mealType === "lunch" ? "午" : item.mealType === "dinner" ? "晚" : "加"}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[var(--brand-plum)]">{MEAL_LABELS[item.mealType] ?? item.mealType}</p>
+              <p className="text-sm font-semibold text-[var(--brand-heading)]">{MEAL_LABELS[item.mealType] ?? item.mealType}</p>
               <p className="mt-0.5 text-xs text-muted-foreground">{item.count} 项食物 · {formatCalories(item.calories)} 千卡</p>
             </div>
           </div>

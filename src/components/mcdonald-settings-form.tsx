@@ -37,9 +37,9 @@ interface McpTool {
 }
 
 function toolMeta(actionClass: McpTool["actionClass"]) {
-  if (actionClass === "read") return { label: "只读", color: "bg-[#dcfaee] text-[var(--brand-mint-deep)]", icon: Search }
-  if (actionClass === "draft") return { label: "只计价", color: "bg-[var(--brand-lavender-soft)] text-[#6658c8]", icon: ClipboardList }
-  return { label: "未支付订单", color: "bg-[#fff0ec] text-[#a34e3e]", icon: ShoppingBag }
+  if (actionClass === "read") return { label: "只读", color: "bg-[var(--brand-mint-soft)] text-[var(--brand-mint-deep)]", icon: Search }
+  if (actionClass === "draft") return { label: "只计价", color: "bg-[var(--brand-lavender-soft)] text-[var(--brand-lavender-deep)]", icon: ClipboardList }
+  return { label: "未支付订单", color: "bg-[var(--brand-coral-soft)] text-[var(--brand-coral-ink)]", icon: ShoppingBag }
 }
 
 export function McDonaldSettingsForm({ initialSettings }: { initialSettings: PublicMcDonaldSettings }) {
@@ -118,7 +118,7 @@ export function McDonaldSettingsForm({ initialSettings }: { initialSettings: Pub
           <div className="grid size-16 place-items-center rounded-md bg-[var(--brand-plum)] text-xl font-black text-[var(--brand-mint)]">M</div>
           <p className="mt-6 text-[11px] font-semibold uppercase text-[var(--brand-mint-deep)]">Official McDonald MCP</p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight">从营养建议走到真实订单。</h2>
-          <p className="mt-3 text-sm leading-6 text-[var(--brand-plum)]/68">
+          <p className="mt-3 text-sm leading-6 text-[var(--brand-heading)]/68">
             Agent 可以读取地址、门店、菜单和价格，并在明确点餐后创建一笔未支付订单。付款永远由你完成。
           </p>
           <a
@@ -135,12 +135,12 @@ export function McDonaldSettingsForm({ initialSettings }: { initialSettings: Pub
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="page-eyebrow">Local MCP credential</p>
-              <h2 className="mt-2 text-3xl font-semibold text-[var(--brand-plum)]">连接麦当劳账号。</h2>
+              <h2 className="mt-2 text-3xl font-semibold text-[var(--brand-heading)]">连接麦当劳账号。</h2>
             </div>
             <Link href="/agent" className="text-xs font-semibold text-[var(--brand-mint-deep)]">打开教练</Link>
           </div>
 
-          <div className="mt-5 rounded-md bg-[#dcfaee] px-3 py-2 text-xs leading-5 text-[#285f4e]">
+          <div className="mt-5 rounded-md bg-[var(--brand-mint-soft)] px-3 py-2 text-xs leading-5 text-[var(--brand-mint-ink)]">
             Token 只保存在本机服务端，不会发送给 AI、写入对话或显示完整值。官方端点：{settings.endpoint}
           </div>
 
@@ -161,7 +161,7 @@ export function McDonaldSettingsForm({ initialSettings }: { initialSettings: Pub
                 autoComplete="off"
                 spellCheck={false}
                 placeholder={settings.tokenConfigured ? "留空可保留当前 Token" : "输入麦当劳 MCP Token"}
-                className="min-w-0 bg-white"
+                className="min-w-0 bg-card"
               />
               <Button type="button" variant="outline" size="icon" title={showToken ? "隐藏 Token" : "显示 Token"} aria-label={showToken ? "隐藏 Token" : "显示 Token"} onClick={() => setShowToken((value) => !value)}>
                 {showToken ? <EyeOff /> : <Eye />}
@@ -186,12 +186,12 @@ export function McDonaldSettingsForm({ initialSettings }: { initialSettings: Pub
               const meta = toolMeta(tool.actionClass)
               const Icon = meta.icon
               return (
-                <div key={tool.name} className="rounded-md border bg-white p-4">
+                <div key={tool.name} className="rounded-md border bg-card p-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="grid size-9 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]"><Icon className="size-4" /></div>
                     <span className={cn("rounded-full px-2 py-1 text-[10px] font-semibold", tool.configured ? meta.color : "bg-muted text-muted-foreground")}>{tool.configured ? meta.label : "待连接"}</span>
                   </div>
-                  <h3 className="mt-4 text-sm font-semibold text-[var(--brand-plum)]">{tool.label}</h3>
+                  <h3 className="mt-4 text-sm font-semibold text-[var(--brand-heading)]">{tool.label}</h3>
                   <p className="mt-1 text-xs leading-5 text-muted-foreground">{tool.description}</p>
                 </div>
               )

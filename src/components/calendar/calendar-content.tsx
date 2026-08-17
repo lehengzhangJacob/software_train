@@ -322,7 +322,7 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="page-eyebrow">Monthly view</p>
-              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">{formatMonthTitle(currentDate)}</h2>
+              <h2 className="mt-1 text-xl font-semibold text-[var(--brand-heading)]">{formatMonthTitle(currentDate)}</h2>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -370,7 +370,7 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
                   className={cn(
                     "relative aspect-square min-h-9 rounded-md text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint)]",
                     !inCurrentMonth && "text-muted-foreground/35",
-                    inCurrentMonth && !isSelected && "text-[var(--brand-plum)] hover:bg-[var(--brand-paper)]",
+                    inCurrentMonth && !isSelected && "text-[var(--brand-heading)] hover:bg-[var(--brand-paper)]",
                     hasData && !isSelected && "bg-[#def8ee] text-[var(--brand-mint-deep)]",
                     isSelected && "bg-[var(--brand-lavender-soft)] text-[#51469d] ring-1 ring-[var(--brand-lavender)]",
                     isFuture && "cursor-not-allowed opacity-25"
@@ -437,7 +437,7 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="page-eyebrow">Daily detail</p>
-                <h3 className="mt-1 text-lg font-semibold text-[var(--brand-plum)]">当天吃了什么</h3>
+                <h3 className="mt-1 text-lg font-semibold text-[var(--brand-heading)]">当天吃了什么</h3>
               </div>
               <span className="text-xs font-medium text-muted-foreground">{formatCalories(totalCals)} 千卡</span>
             </div>
@@ -450,7 +450,7 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
             )}
 
             {loadError && (
-              <div className="mt-4 rounded-md bg-[#fff3ef] p-3">
+              <div className="mt-4 rounded-md bg-[var(--brand-coral-soft)] p-3">
                 <p className="text-sm text-destructive" role="alert">{loadError}</p>
                 <Button type="button" variant="outline" size="sm" className="mt-3" disabled={isLoading} onClick={retryLoad}>
                   重试
@@ -468,10 +468,10 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
                     <div key={item.recordId} className="flex items-center justify-between gap-3 py-3 first:pt-0">
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                          <span className="rounded-md bg-[var(--brand-lavender-soft)] px-2 py-1 text-[10px] font-semibold text-[#5f51cc]">
+                          <span className="rounded-md bg-[var(--brand-lavender-soft)] px-2 py-1 text-[10px] font-semibold text-[#5f51cc] dark:text-[var(--brand-lavender-deep)]">
                             {MEAL_LABELS[type]}
                           </span>
-                          <p className="truncate text-sm font-semibold text-[var(--brand-plum)]">{item.foodName}</p>
+                          <p className="truncate text-sm font-semibold text-[var(--brand-heading)]">{item.foodName}</p>
                         </div>
                         <div className="mt-1.5 flex flex-wrap gap-x-2 text-[11px] text-muted-foreground">
                           <span>{formatCalories(item.calories)} 千卡</span>
@@ -511,7 +511,7 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
                 {currentMeals.length === 0 && (
                   <div className="grid min-h-32 place-items-center text-center">
                     <div>
-                      <p className="text-sm font-medium text-[var(--brand-plum)]">当天还没有记录</p>
+                      <p className="text-sm font-medium text-[var(--brand-heading)]">当天还没有记录</p>
                       <p className="mt-1 text-xs text-muted-foreground">可以补记这一餐，连续记录会更完整。</p>
                     </div>
                   </div>

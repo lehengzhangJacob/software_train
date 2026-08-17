@@ -268,7 +268,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-md border-l-2 border-[var(--brand-coral)] bg-[#fff3ef] px-3 py-2 text-sm text-[#874333]">
+            <div className="rounded-md border-l-2 border-[var(--brand-coral)] bg-[var(--brand-coral-soft)] px-3 py-2 text-sm text-[#874333] dark:text-[#ffb0a0]">
               AI 估算，请核对。确认前可修改食物、餐别、份量和营养数值；图片不会随饮食记录保存。
             </div>
             <div className="space-y-4">
@@ -470,16 +470,16 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="page-eyebrow">Today&apos;s log</p>
-              <CardTitle className="mt-1 text-xl text-[var(--brand-plum)]">今日记录</CardTitle>
+              <CardTitle className="mt-1 text-xl text-[var(--brand-heading)]">今日记录</CardTitle>
             </div>
-            <span className="rounded-md bg-[var(--brand-lavender-soft)] px-2.5 py-1 text-xs font-medium text-[#5f51cc]">{meals.length} 项</span>
+            <span className="rounded-md bg-[var(--brand-lavender-soft)] px-2.5 py-1 text-xs font-medium text-[#5f51cc] dark:text-[var(--brand-lavender-deep)]">{meals.length} 项</span>
           </div>
         </CardHeader>
         <CardContent>
           {meals.length === 0 ? (
             <div className="grid min-h-[380px] place-items-center rounded-md bg-[var(--brand-paper)] px-6 text-center">
               <div>
-                <p className="text-sm font-semibold text-[var(--brand-plum)]">还没有保存今天的第一餐</p>
+                <p className="text-sm font-semibold text-[var(--brand-heading)]">还没有保存今天的第一餐</p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">拍照识别或手动录入后，食物会按餐别整理在这里。</p>
               </div>
             </div>

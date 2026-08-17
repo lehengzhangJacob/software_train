@@ -163,7 +163,7 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
         <Button
           type="button"
           variant="outline"
-          className="h-11 gap-2 bg-white"
+          className="h-11 gap-2 bg-card"
           disabled={disabled || analyzing}
           onClick={() => fileInputRef.current?.click()}
         >

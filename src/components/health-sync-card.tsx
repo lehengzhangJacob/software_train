@@ -214,17 +214,17 @@ export function HealthSyncCard() {
   return (
     <section className="surface-card mt-6 overflow-hidden border-0">
       <div className="grid lg:grid-cols-[24rem_minmax(0,1fr)]">
-        <aside className="bg-[var(--brand-lavender)] p-6 text-[var(--brand-plum)] sm:p-8">
+        <aside className="bg-[var(--brand-lavender)] p-6 text-[var(--brand-heading)] sm:p-8">
           <div className="grid size-16 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
             <HeartPulse className="size-8" />
           </div>
-          <p className="mt-6 text-[11px] font-semibold uppercase text-[#6658c8]">Activity data</p>
+          <p className="mt-6 text-[11px] font-semibold uppercase text-[var(--brand-lavender-deep)]">Activity data</p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight">让建议看得见你的运动。</h2>
-          <p className="mt-3 text-sm leading-6 text-[var(--brand-plum)]/68">
+          <p className="mt-3 text-sm leading-6 text-[var(--brand-heading)]/68">
             步数与活动消耗进入本地数据库，Agent 在给出饮食建议时会一并参考你的当天运动量。
           </p>
           {platform === "native" && (
-            <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-[#6658c8]">
+            <div className="mt-6 flex items-center gap-2 text-xs font-semibold text-[var(--brand-lavender-deep)]">
               <Smartphone className="size-4" /> 正在 App 壳内运行
             </div>
           )}
@@ -234,7 +234,7 @@ export function HealthSyncCard() {
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="page-eyebrow">Health Connect + manual</p>
-              <h2 className="mt-2 text-3xl font-semibold text-[var(--brand-plum)]">同步活动量。</h2>
+              <h2 className="mt-2 text-3xl font-semibold text-[var(--brand-heading)]">同步活动量。</h2>
             </div>
             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
               {authState === "granted" ? <CheckCircle2 className="size-3.5 text-[var(--brand-mint-deep)]" /> : <Activity className="size-3.5 text-[var(--brand-coral)]" />}
@@ -243,19 +243,19 @@ export function HealthSyncCard() {
           </div>
 
           {platform === "web" ? (
-            <div className="mt-5 rounded-md bg-[#fff7ec] px-3 py-2 text-xs leading-5 text-[#8a5a20]">
+            <div className="mt-5 rounded-md bg-[var(--brand-amber-soft)] px-3 py-2 text-xs leading-5 text-[var(--brand-amber-ink)]">
               当前浏览器环境无法读取系统健康数据。在 App 壳内运行时可通过 Health Connect 自动同步；在网页中可先用下方手动输入记录今日活动量。
             </div>
           ) : (
-            <div className="mt-5 rounded-md bg-[#dcfaee] px-3 py-2 text-xs leading-5 text-[#285f4e]">
+            <div className="mt-5 rounded-md bg-[var(--brand-mint-soft)] px-3 py-2 text-xs leading-5 text-[var(--brand-mint-ink)]">
               读取步数、活动卡路里与运动分钟（最近 7 天），数据只保存在本机。授权弹窗仅在首次出现，之后可在系统设置中随时撤回。
             </div>
           )}
 
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm text-muted-foreground">
-              今日：<span className="font-semibold text-[var(--brand-plum)]">{todaySteps.toLocaleString()}</span> 步 ·{" "}
-              <span className="font-semibold text-[var(--brand-plum)]">{Math.round(todayCalories)}</span> kcal 活动消耗
+              今日：<span className="font-semibold text-[var(--brand-heading)]">{todaySteps.toLocaleString()}</span> 步 ·{" "}
+              <span className="font-semibold text-[var(--brand-heading)]">{Math.round(todayCalories)}</span> kcal 活动消耗
             </div>
             {platform === "native" && (
               <Button
@@ -270,8 +270,8 @@ export function HealthSyncCard() {
             )}
           </div>
 
-          <div className="mt-6 rounded-md border bg-white p-4">
-            <Label className="text-sm font-semibold text-[var(--brand-plum)]">手动记录今日活动量（网页/壳内皆可）</Label>
+          <div className="mt-6 rounded-md border bg-card p-4">
+            <Label className="text-sm font-semibold text-[var(--brand-heading)]">手动记录今日活动量（网页/壳内皆可）</Label>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="manual-steps" className="text-xs text-muted-foreground">今日步数</Label>
@@ -283,7 +283,7 @@ export function HealthSyncCard() {
                   value={manualSteps}
                   onChange={(event) => setManualSteps(event.target.value)}
                   placeholder="如 8000"
-                  className="min-w-0 bg-white"
+                  className="min-w-0 bg-card"
                 />
               </div>
               <div className="space-y-1.5">
@@ -296,7 +296,7 @@ export function HealthSyncCard() {
                   value={manualCalories}
                   onChange={(event) => setManualCalories(event.target.value)}
                   placeholder="如 320"
-                  className="min-w-0 bg-white"
+                  className="min-w-0 bg-card"
                 />
               </div>
             </div>
@@ -308,7 +308,7 @@ export function HealthSyncCard() {
           </div>
 
           <div className="mt-6">
-            <h3 className="text-sm font-semibold text-[var(--brand-plum)]">最近 7 天</h3>
+            <h3 className="text-sm font-semibold text-[var(--brand-heading)]">最近 7 天</h3>
             <div className="mt-3 overflow-x-auto">
               <table className="w-full min-w-[28rem] text-left text-sm">
                 <thead>
@@ -327,10 +327,10 @@ export function HealthSyncCard() {
                     return (
                       <tr key={date} className="border-b border-dashed last:border-0">
                         <td className="py-2.5 pr-4 text-muted-foreground">{date}</td>
-                        <td className="py-2.5 pr-4 font-medium text-[var(--brand-plum)]">
+                        <td className="py-2.5 pr-4 font-medium text-[var(--brand-heading)]">
                           {row ? row.steps.toLocaleString() : <span className="text-muted-foreground">—</span>}
                         </td>
-                        <td className="py-2.5 pr-4 font-medium text-[var(--brand-plum)]">
+                        <td className="py-2.5 pr-4 font-medium text-[var(--brand-heading)]">
                           {row ? `${Math.round(row.activeCalories)} kcal` : <span className="text-muted-foreground">—</span>}
                         </td>
                         <td className="py-2.5 pr-4">
@@ -339,11 +339,11 @@ export function HealthSyncCard() {
                         <td className="py-2.5">
                           {row ? (
                             row.sourceKind === "health_connect" ? (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-[#dcfaee] px-2 py-0.5 text-[10px] font-semibold text-[var(--brand-mint-deep)]">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-mint-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--brand-mint-deep)]">
                                 <Smartphone className="size-3" /> Health
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-[#fff0ec] px-2 py-0.5 text-[10px] font-semibold text-[#a34e3e]">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--brand-coral-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--brand-coral-ink)]">
                                 手动
                               </span>
                             )
@@ -360,7 +360,7 @@ export function HealthSyncCard() {
           </div>
 
           {platform === "native" && authState === "unavailable" && (
-            <div className="mt-5 flex items-center gap-2 rounded-md bg-[#fff0ec] px-3 py-2 text-xs leading-5 text-[#8a3a2e]">
+            <div className="mt-5 flex items-center gap-2 rounded-md bg-[var(--brand-coral-soft)] px-3 py-2 text-xs leading-5 text-[#8a3a2e] dark:text-[#ffb0a0]">
               <XCircle className="size-4 shrink-0" />
               Health Connect 未安装：请从手机 Play 商店安装「Health Connect by Android」（Android 14+ 已自带）后重试。
             </div>

@@ -60,11 +60,11 @@ export function CalorieTrendChart({ data, target }: CalorieTrendChartProps) {
               <div key={top} className="absolute inset-x-0 border-t border-dashed border-neutral-200" style={{ top: `${top}%` }} />
             ))}
             <div className="absolute inset-x-0 border-t border-dashed border-orange-400" style={{ top: `${targetY}%` }}>
-              <span className="absolute right-1 -top-5 rounded bg-white px-1 text-[10px] font-medium text-orange-600">目标</span>
+              <span className="absolute right-1 -top-5 rounded bg-card px-1 text-[10px] font-medium text-orange-600">目标</span>
             </div>
 
             <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
-              <path d={path} fill="none" stroke="#059669" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+              <path d={path} fill="none" stroke="var(--trend-stroke)" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
             </svg>
 
             {points.map((point) => point.y !== null && (

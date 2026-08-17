@@ -237,7 +237,7 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
         <div className="flex min-h-[440px] items-center justify-center p-6">
           <div className="max-w-sm text-center">
             <HeartPulse className="mx-auto size-8 text-[var(--brand-coral)]" />
-            <h1 className="mt-4 text-2xl font-semibold text-[var(--brand-plum)]">今天的建议暂时没准备好</h1>
+            <h1 className="mt-4 text-2xl font-semibold text-[var(--brand-heading)]">今天的建议暂时没准备好</h1>
             <p className="mt-2 text-sm leading-6 text-muted-foreground" role="alert">{loadError || "暂时无法读取活动建议"}</p>
             <Button type="button" variant="outline" className="mt-5" onClick={reloadSuggestions}>
               <RotateCcw />重试
@@ -261,17 +261,17 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
 
         <div className="min-w-0 bg-[var(--brand-paper)] p-5 sm:p-7 lg:p-8">
           <p className="page-eyebrow">为你安排</p>
-          <h1 className="mt-2 text-3xl font-semibold leading-tight text-[var(--brand-plum)] sm:text-4xl">今天适合轻一点。</h1>
+          <h1 className="mt-2 text-3xl font-semibold leading-tight text-[var(--brand-heading)] sm:text-4xl">今天适合轻一点。</h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{movementMessage}</p>
 
           <div className="mt-6 grid grid-cols-3 gap-2">
             <div className="rounded-md bg-[var(--brand-lavender-soft)] p-3">
               <span className="text-[10px] text-muted-foreground">今日摄入</span>
-              <strong className="mt-1 block text-lg text-[var(--brand-plum)]">{formatCalories(data.totalCalories)}</strong>
+              <strong className="mt-1 block text-lg text-[var(--brand-heading)]">{formatCalories(data.totalCalories)}</strong>
             </div>
             <div className="rounded-md bg-[var(--brand-lavender-soft)] p-3">
               <span className="text-[10px] text-muted-foreground">目标</span>
-              <strong className="mt-1 block text-lg text-[var(--brand-plum)]">{formatCalories(data.dailyTarget)}</strong>
+              <strong className="mt-1 block text-lg text-[var(--brand-heading)]">{formatCalories(data.dailyTarget)}</strong>
             </div>
             <div className="rounded-md bg-[var(--brand-lavender-soft)] p-3">
               <span className="text-[10px] text-muted-foreground">摄入状态</span>
@@ -282,7 +282,7 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
           </div>
 
           {adoptedPlans.length > 0 ? (
-            <div className="mt-6 border-l-2 border-[var(--brand-mint)] bg-white p-4">
+            <div className="mt-6 border-l-2 border-[var(--brand-mint)] bg-card p-4">
               <div className="flex items-center gap-2 text-xs font-semibold text-[var(--brand-mint-deep)]">
                 <Check className="size-3.5" />今天已加入
               </div>
@@ -293,7 +293,7 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
                   return (
                     <div key={plan.suggestionId} className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="font-semibold text-[var(--brand-plum)]">{plan.exerciseType} · {plan.durationMinutes} 分钟</p>
+                        <p className="font-semibold text-[var(--brand-heading)]">{plan.exerciseType} · {plan.durationMinutes} 分钟</p>
                         <p className="mt-1 text-xs text-muted-foreground">预计消耗 {formatCalories(plan.calorieBurnEstimate)} 千卡</p>
                         {rowErrors[errorKey] ? <p className="mt-1 text-xs text-destructive" role="alert">{rowErrors[errorKey]}</p> : null}
                       </div>
@@ -311,7 +311,7 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
             <div className="mb-2 flex items-end justify-between gap-3">
               <div>
                 <p className="page-eyebrow">Movement options</p>
-                <h2 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">选择今天做得到的</h2>
+                <h2 className="mt-1 text-xl font-semibold text-[var(--brand-heading)]">选择今天做得到的</h2>
               </div>
               <Dumbbell className="size-5 text-[var(--brand-lavender)]" />
             </div>
@@ -328,14 +328,14 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
                     <article key={candidate.exerciseId} className="grid gap-3 py-4 sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center">
                       <div className={cn(
                         "grid size-10 place-items-center rounded-full text-sm font-semibold",
-                        index === 0 ? "bg-[#dcfaee] text-[var(--brand-mint-deep)]" : index === 1 ? "bg-[var(--brand-lavender-soft)] text-[#6658c8]" : "bg-[#fff0ec] text-[#a94f3e]"
+                        index === 0 ? "bg-[var(--brand-mint-soft)] text-[var(--brand-mint-deep)]" : index === 1 ? "bg-[var(--brand-lavender-soft)] text-[var(--brand-lavender-deep)]" : "bg-[var(--brand-coral-soft)] text-[#a94f3e] dark:text-[#ffab9a]"
                       )}>
                         {index === 0 ? <Activity className="size-4" /> : index === 1 ? <Dumbbell className="size-4" /> : <Sparkles className="size-4" />}
                       </div>
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-semibold text-[var(--brand-plum)]">{candidate.exerciseName} · {candidate.suggestedMinutes} 分钟</h3>
-                          <span className="rounded-full bg-white px-2 py-0.5 text-[10px] text-muted-foreground">{categoryLabel(candidate.category)}</span>
+                          <h3 className="font-semibold text-[var(--brand-heading)]">{candidate.exerciseName} · {candidate.suggestedMinutes} 分钟</h3>
+                          <span className="rounded-full bg-card px-2 py-0.5 text-[10px] text-muted-foreground">{categoryLabel(candidate.category)}</span>
                         </div>
                         <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1"><Clock className="size-3" />{candidate.suggestedMinutes} 分钟</span>

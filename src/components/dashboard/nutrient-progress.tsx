@@ -15,7 +15,7 @@ export function NutrientProgress({ value, className, indicatorClassName }: Nutri
 
   return (
     <Progress value={clamped} className={cn("mt-2", className)}>
-      <ProgressTrack className="h-1.5 bg-[#eeeaf0]">
+      <ProgressTrack className="h-1.5 bg-[#eeeaf0] dark:bg-white/10">
         <ProgressIndicator
           className={cn(
             "transition-all",
