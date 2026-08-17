@@ -1,4 +1,46 @@
 {
+  "C-06-A1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-A1/verification.json",
+      "description": "追认修宪实证：4 个游离 commit 入账、S1/S2 结构绿测、S3 补账复测与已知债务"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/entities.json",
+      "description": "DailyActivity 实体入宪（schema_version 5，字段与 schema.prisma 一致）"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/relationships.json",
+      "description": "UserProfile 1:N DailyActivity CASCADE 关系入宪"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "20260817062220_add_daily_activity 追认说明：零回填、聚合-only、值域上限"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "android.shell 与 external.health_connect 节点及 3 条新边（schema_version 3，20 节点/24 边）"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0005-android-health-shell.md",
+      "description": "Android 薄壳 + Health Connect 聚合同步决策（追认）"
+    },
+    {
+      "type": "implementation",
+      "path": "capacitor.config.ts",
+      "description": "开发回路改 adb reverse loopback（127.0.0.1:3000），归 android.shell 节点"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/health-contract.test.ts",
+      "description": "健康合同测试 13/13（补账复测通过；原始落地于游离 commit 068a4c2）"
+    }
+  ],
   "C-01-S0": [
     {
       "type": "architecture",

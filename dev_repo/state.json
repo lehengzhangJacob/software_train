@@ -87,6 +87,17 @@
       "completed_slices": ["C-06-L1", "C-06-L2"],
       "deferred_slices": ["C-06-S0", "C-06-S4", "C-06-S5"],
       "return_to": "web_completion_audit"
+    },
+    "C-06-A1": {
+      "contract_id": "C-06-A1",
+      "parent_contract_id": "C-06",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "追认 Android 健康壳与 DailyActivity 的架构与 ER 修宪并补齐运行时账本",
+      "goal": "为 C-06-L2 之后 4 个游离 commit 补 journal 账，将 DailyActivity 实体与 android.shell/external.health_connect 边界入宪追认，处置 capacitor adb reverse 遗留改动",
+      "current_slice": null,
+      "completed_slices": ["C-06-A1-S1", "C-06-A1-S2", "C-06-A1-S3"],
+      "return_to": "C-06-L3"
     }
   }
 }
