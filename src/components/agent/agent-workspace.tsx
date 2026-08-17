@@ -17,7 +17,6 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { AssistantText } from "@/components/agent/assistant-text"
-import { TakeoutToolsPanel } from "@/components/agent/takeout-tools-panel"
 
 interface ThreadSummary {
   threadId: number
@@ -408,8 +407,6 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
           </div>
         </div>
       </section>
-
-      <TakeoutToolsPanel />
     </div>
   )
 }
