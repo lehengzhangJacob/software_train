@@ -1,5 +1,6 @@
 import type { McDonaldMcpSession } from "@/lib/mcp/mcdonalds-client"
 import { McpToolError, McpUnavailableError } from "@/lib/mcp/contracts"
+import type { OrderingGrant } from "@/lib/actions/policy"
 
 // ADR-0004 orchestration: explicit intent (checked in ordering-intent.ts plus
 // an action.policy grant) drives a deterministic server-side pipeline. The
@@ -25,6 +26,8 @@ export interface OrderSelection {
 }
 
 export interface OrderingPlan {
+  addressId: string
+  storeId: string
   addressLabel: string
   storeName: string
   items: SelectedItem[]
@@ -234,6 +237,8 @@ export async function planMcDonaldOrder(
     return {
       status: "planned",
       plan: {
+        addressId: address.id,
+        storeId: store.id,
         addressLabel: address.label,
         storeName: store.name,
         items,
@@ -254,4 +259,69 @@ export function composeOrderingReply(outcome: OrderingOutcome): string {
   const lines = outcome.plan.items.map((item) => `- ${item.name} × ${item.quantity}`)
   const note = outcome.plan.note ? `\n${outcome.plan.note}` : ""
   return `已为你选好这一单（还未下单）：\n${lines.join("\n")}\n配送至 ${outcome.plan.addressLabel}，门店 ${outcome.plan.storeName}。${note}`
+}
+
+export interface CreatedOrder {
+  orderId: string | null
+  paymentLink: string | null
+}
+
+export type OrderExecution =
+  | { status: "blocked"; reason: string }
+  | { status: "created"; order: CreatedOrder }
+
+// ADR-0004: the payment link is extracted here and exists only in the return
+// value handed to the HTTP response. It must never be written into message
+// content, metadata, logs, or memory.
+function parseCreatedOrder(value: unknown): CreatedOrder | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null
+  const source = value as Record<string, unknown>
+
+  let paymentLink: string | null = null
+  for (const key of Object.keys(source)) {
+    if (!/pay|link|url/i.test(key)) continue
+    const candidate = source[key]
+    if (typeof candidate === "string" && /^https?:\/\//i.test(candidate.trim())) {
+      paymentLink = candidate.trim().slice(0, 2_048)
+      break
+    }
+  }
+
+  let orderId = firstId(source, ["orderId", "order_id", "orderNo", "order_no", "id"])
+  if (orderId && /^https?:\/\//i.test(orderId)) orderId = null
+  if (!orderId && !paymentLink) return null
+  return { orderId, paymentLink }
+}
+
+export async function executeMcDonaldOrder(
+  openSession: OrderingDeps["openSession"],
+  grant: OrderingGrant,
+  plan: OrderingPlan,
+): Promise<OrderExecution> {
+  try {
+    grant.claimCreateOrder()
+    const order = await openSession(async (session) =>
+      parseCreatedOrder(
+        await session.callTool("create-order", {
+          addressId: plan.addressId,
+          storeId: plan.storeId,
+          items: plan.items.map((item) => ({ code: item.code, quantity: item.quantity })),
+        }),
+      ),
+    )
+    if (!order) return { status: "blocked", reason: "麦当劳没有确认订单创建，本次未下单" }
+    return { status: "created", order }
+  } catch (error) {
+    return { status: "blocked", reason: blockedReason(error) }
+  }
+}
+
+export function composeOrderedReply(plan: OrderingPlan, execution: OrderExecution): string {
+  const lines = plan.items.map((item) => `- ${item.name} × ${item.quantity}`).join("\n")
+  const note = plan.note ? `\n${plan.note}` : ""
+  if (execution.status === "blocked") {
+    return `选餐已完成，但这次没能创建订单：${execution.reason}。\n${lines}\n配送至 ${plan.addressLabel}，门店 ${plan.storeName}。你可以稍后再让我试一次，或在麦当劳 App 手动下单。${note}`
+  }
+  const orderLine = execution.order.orderId ? `订单号 ${execution.order.orderId}。` : ""
+  return `已按你的要求创建一笔未支付订单。${orderLine}\n${lines}\n配送至 ${plan.addressLabel}，门店 ${plan.storeName}。请通过本次回复中的支付入口完成支付，我只会帮你点单，不会代你支付。${note}`
 }

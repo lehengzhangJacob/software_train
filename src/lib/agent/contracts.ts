@@ -22,10 +22,18 @@ export interface MemoryCandidate {
   confidence: number
 }
 
+export interface OrderDigest {
+  orderId: string | null
+  itemsTotalCents: number | null
+  itemCount: number
+  storeName: string
+}
+
 export interface AgentMessageMetadata {
   memoryCandidates?: MemoryCandidate[]
   memoryIds?: Record<string, number>
   usedMemoryIds?: number[]
+  order?: OrderDigest
 }
 
 export interface AgentMemoryConfirmationInput {
@@ -180,6 +188,26 @@ export function sanitizeAssistantText(value: string) {
     .replace(/\bbearer\s+[a-z0-9._-]{10,}/gi, "[凭据已省略]")
 }
 
+function parseOrderDigest(value: unknown): OrderDigest | undefined {
+  if (!value || typeof value !== "object") return undefined
+  const record = value as Record<string, unknown>
+  const orderId =
+    typeof record.orderId === "string" && record.orderId.trim() && !/^https?:\/\//i.test(record.orderId)
+      ? record.orderId.trim().slice(0, 120)
+      : null
+  const itemsTotalCents =
+    typeof record.itemsTotalCents === "number" && Number.isFinite(record.itemsTotalCents) && record.itemsTotalCents >= 0
+      ? record.itemsTotalCents
+      : null
+  const itemCount =
+    typeof record.itemCount === "number" && Number.isInteger(record.itemCount) && record.itemCount >= 0 && record.itemCount <= 99
+      ? record.itemCount
+      : 0
+  const storeName = typeof record.storeName === "string" ? record.storeName.trim().slice(0, 120) : ""
+  const digest: OrderDigest = { orderId, itemsTotalCents, itemCount, storeName }
+  return orderId || itemCount || storeName ? digest : undefined
+}
+
 export function parseAgentMessageMetadata(value: string | null): AgentMessageMetadata {
   if (!value) return {}
   try {
@@ -192,12 +220,14 @@ export function parseAgentMessageMetadata(value: string | null): AgentMessageMet
         if (typeof id === "number" && Number.isInteger(id) && id > 0) memoryIds[key] = id
       }
     }
+    const order = parseOrderDigest(parsed.order)
     return {
       memoryCandidates: parseMemoryCandidates(parsed.memoryCandidates),
       memoryIds,
       usedMemoryIds: Array.isArray(parsed.usedMemoryIds)
         ? parsed.usedMemoryIds.filter((id): id is number => typeof id === "number" && Number.isInteger(id) && id > 0).slice(0, 50)
         : [],
+      ...(order ? { order } : {}),
     }
   } catch {
     return {}

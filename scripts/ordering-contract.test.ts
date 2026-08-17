@@ -3,8 +3,12 @@ import test from "node:test"
 
 import type { McDonaldMcpSession } from "../src/lib/mcp/mcdonalds-client"
 import { McpUnavailableError } from "../src/lib/mcp/contracts"
+import { issueOrderingGrant } from "../src/lib/actions/policy"
+import { parseAgentMessageMetadata } from "../src/lib/agent/contracts"
 import {
+  composeOrderedReply,
   composeOrderingReply,
+  executeMcDonaldOrder,
   extractOrderSelection,
   itemsTotalCentsOf,
   planMcDonaldOrder,
@@ -181,4 +185,77 @@ test("composed ordering replies stay free of links and credentials", async () =>
     assert.match(text, /麦当劳|下单/)
     assert.doesNotMatch(text, /https?:\/\/|bearer|token|api[_ -]?key/i)
   }
+})
+
+test("create-order runs once per grant and the payment link never reaches persisted text", async () => {
+  const deps = depsWith({
+    "create-order": { orderId: "order-88", payUrl: "https://pay.example/o88", payableTotal: 46.5 },
+  })
+  const planned = await planMcDonaldOrder(deps, "帮我点份麦当劳", 600)
+  assert.equal(planned.status, "planned")
+  if (planned.status !== "planned") return
+
+  const grant = issueOrderingGrant(true)
+  const execution = await executeMcDonaldOrder(deps.openSession, grant, planned.plan)
+  assert.equal(execution.status, "created")
+  if (execution.status !== "created") return
+  assert.equal(execution.order.orderId, "order-88")
+  assert.equal(execution.order.paymentLink, "https://pay.example/o88")
+  assert.deepEqual(deps.calls.at(-1)?.input, {
+    addressId: "addr-1",
+    storeId: "store-7",
+    items: [
+      { code: "big-mac", quantity: 1 },
+      { code: "mc-chicken", quantity: 2 },
+    ],
+  })
+  assert.throws(() => grant.claimCreateOrder(), /最多创建一笔/)
+
+  const reply = composeOrderedReply(planned.plan, execution)
+  assert.match(reply, /order-88/)
+  assert.match(reply, /不会代你支付/)
+  assert.doesNotMatch(reply, /pay\.example|https?:\/\//i)
+})
+
+test("create-order without a usable id or link blocks honestly", async () => {
+  const planned = await planMcDonaldOrder(depsWith(), "帮我点份麦当劳", 600)
+  if (planned.status !== "planned") throw new Error("plan failed")
+
+  const noOrder = await executeMcDonaldOrder(
+    depsWith({ "create-order": { payableTotal: 46.5 } }).openSession,
+    issueOrderingGrant(true),
+    planned.plan,
+  )
+  assert.deepEqual(noOrder, { status: "blocked", reason: "麦当劳没有确认订单创建，本次未下单" })
+
+  const linkShapedId = await executeMcDonaldOrder(
+    depsWith({ "create-order": { orderId: "https://evil.example/order" } }).openSession,
+    issueOrderingGrant(true),
+    planned.plan,
+  )
+  assert.deepEqual(linkShapedId, { status: "blocked", reason: "麦当劳没有确认订单创建，本次未下单" })
+
+  const blockedReply = composeOrderedReply(planned.plan, noOrder)
+  assert.match(blockedReply, /没能创建订单/)
+  assert.doesNotMatch(blockedReply, /https?:\/\//i)
+})
+
+test("order digest metadata survives a whitelisted round-trip without links", () => {
+  const parsed = parseAgentMessageMetadata(
+    JSON.stringify({
+      order: { orderId: "order-88", itemsTotalCents: 5150, itemCount: 2, storeName: "望京店" },
+      paymentLink: "https://pay.example/o88",
+      apiKey: "must-not-survive",
+    }),
+  )
+  assert.deepEqual(parsed.order, { orderId: "order-88", itemsTotalCents: 5150, itemCount: 2, storeName: "望京店" })
+  assert.equal("paymentLink" in parsed, false)
+  assert.equal("apiKey" in parsed, false)
+
+  const urlShaped = parseAgentMessageMetadata(
+    JSON.stringify({ order: { orderId: "https://evil.example", itemCount: 1, storeName: "望京店" } }),
+  )
+  assert.equal(urlShaped.order?.orderId, null)
+
+  assert.deepEqual(parseAgentMessageMetadata(JSON.stringify({ order: "junk" })).order, undefined)
 })

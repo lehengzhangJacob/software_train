@@ -14,7 +14,9 @@ import {
 } from "@/lib/agent/repository"
 import { getAgentContext, buildAgentSystemPrompt } from "@/lib/agent/context"
 import {
+  composeOrderedReply,
   composeOrderingReply,
+  executeMcDonaldOrder,
   extractOrderSelection,
   OrderPlanError,
   planMcDonaldOrder,
@@ -116,21 +118,53 @@ export async function POST(request: Request) {
 
     if (hasExplicitOrderingIntent(input.message)) {
       // ADR-0004: the ordering turn gets a deterministic reply. The model only
-      // sees menu data during item selection, so order results and any future
-      // payment surface can never reach persisted message content.
-      issueOrderingGrant(true)
-      const orderingOutcome = await runOrderingPlan(config, input.message, context)
+      // sees menu data during item selection; the order result and payment
+      // link never enter model context or persisted message content.
+      const grant = issueOrderingGrant(true)
+      const outcome = await runOrderingPlan(config, input.message, context)
+      if (outcome.status === "planned") {
+        const execution = await executeMcDonaldOrder((run) => withMcDonaldMcp(run), grant, outcome.plan)
+        const assistantMessage = await appendAgentMessage(
+          user.userId,
+          threadId,
+          "assistant",
+          composeOrderedReply(outcome.plan, execution),
+          execution.status === "created"
+            ? {
+                order: {
+                  orderId: execution.order.orderId,
+                  itemsTotalCents: outcome.plan.itemsTotalCents,
+                  itemCount: outcome.plan.items.length,
+                  storeName: outcome.plan.storeName,
+                },
+              }
+            : {},
+        )
+        return apiSuccess({
+          thread: await getAgentThread(user.userId, threadId),
+          userMessage,
+          assistantMessage,
+          orderResult:
+            execution.status === "created"
+              ? {
+                  orderId: execution.order.orderId,
+                  paymentLink: execution.order.paymentLink,
+                  itemsTotalCents: outcome.plan.itemsTotalCents,
+                }
+              : null,
+        })
+      }
       const assistantMessage = await appendAgentMessage(
         user.userId,
         threadId,
         "assistant",
-        composeOrderingReply(orderingOutcome),
+        composeOrderingReply(outcome),
       )
       return apiSuccess({
         thread: await getAgentThread(user.userId, threadId),
         userMessage,
         assistantMessage,
-        orderPlan: orderingOutcome.status === "planned" ? orderingOutcome.plan : null,
+        orderResult: null,
       })
     }
 

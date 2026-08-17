@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
   Bot,
+  ExternalLink,
   History,
   LoaderCircle,
   MessageSquarePlus,
@@ -59,10 +60,17 @@ interface ApiEnvelope<T> {
   error: string | null
 }
 
+interface OrderResult {
+  orderId: string | null
+  paymentLink: string | null
+  itemsTotalCents: number | null
+}
+
 interface ChatResult {
   thread: AgentThread
   userMessage: AgentMessage
   assistantMessage: AgentMessage
+  orderResult?: OrderResult | null
 }
 
 const starterPrompts = ["晚餐怎么安排更合适？", "帮我复盘今天的蛋白质", "给我一个附近外卖思路"]
@@ -100,6 +108,9 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   const [loadingThread, setLoadingThread] = useState(false)
   const [sending, setSending] = useState(false)
   const [deletingThreadId, setDeletingThreadId] = useState<number | null>(null)
+  // Ephemeral by design (ADR-0004): the payment link lives only in this
+  // component state for the current reply and disappears on reload.
+  const [lastOrder, setLastOrder] = useState<OrderResult | null>(null)
   const messageViewportRef = useRef<HTMLDivElement>(null)
 
   const activeThread = useMemo(
@@ -119,6 +130,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
       const thread = await requestJson<AgentThread>(`/api/agent/threads?id=${threadId}`)
       setActiveThreadId(thread.threadId)
       setMessages(thread.messages)
+      setLastOrder(null)
       setThreads((current) => mergeThread(current, thread))
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "读取对话失败")
@@ -131,6 +143,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
     setActiveThreadId(null)
     setMessages([])
     setDraft("")
+    setLastOrder(null)
   }
 
   const deleteThread = async (threadId: number) => {
@@ -152,6 +165,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
     if (!message || sending) return
 
     setSending(true)
+    setLastOrder(null)
     try {
       const result = await requestJson<ChatResult>("/api/agent/chat", {
         method: "POST",
@@ -161,6 +175,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
       setActiveThreadId(result.thread.threadId)
       setMessages(result.thread.messages)
       setThreads((current) => mergeThread(current, result.thread))
+      setLastOrder(result.orderResult ?? null)
       setDraft("")
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Agent 对话失败")
@@ -331,6 +346,29 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                   </div>
                 ))
               )}
+              {lastOrder ? (
+                <div className="rounded-lg border border-[var(--brand-mint)]/50 bg-white p-4 shadow-sm">
+                  <p className="text-sm font-semibold text-[var(--brand-plum)]">
+                    {lastOrder.orderId ? `未支付订单 ${lastOrder.orderId} 已创建` : "未支付订单已创建"}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                    支付由你本人完成；支付链接只在本次回复中出现，不会保存到对话记录。
+                  </p>
+                  {lastOrder.paymentLink ? (
+                    <a
+                      href={lastOrder.paymentLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 inline-flex items-center gap-2 rounded-md bg-[var(--brand-plum)] px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                    >
+                      <ExternalLink className="size-4" />
+                      打开支付入口
+                    </a>
+                  ) : (
+                    <p className="mt-3 text-xs text-muted-foreground">本次回复没有携带支付链接，请在麦当劳 App 内完成支付。</p>
+                  )}
+                </div>
+              ) : null}
               {sending ? (
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <div className="grid size-8 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]"><Bot className="size-4" /></div>
