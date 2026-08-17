@@ -1,18 +1,14 @@
 "use client"
 
-import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   CheckCircle2,
-  ClipboardList,
   Eye,
   EyeOff,
   KeyRound,
   LoaderCircle,
   Save,
-  Search,
   ShieldCheck,
-  ShoppingBag,
   Trash2,
   Wifi,
 } from "lucide-react"
@@ -40,14 +36,6 @@ interface ApiEnvelope<T> {
   error: string | null
 }
 
-interface McpTool {
-  name: string
-  label: string
-  description: string
-  actionClass: "read" | "draft" | "external_write"
-  configured: boolean
-}
-
 function draftFromProvider(provider: PublicAiProviderSettings): AiSettingsDraft {
   return {
     providerId: provider.id,
@@ -60,85 +48,6 @@ function getProvider(settings: PublicAiSettings, providerId: AiProviderId): Publ
   const provider = settings.providers.find((item) => item.id === providerId)
   if (!provider) throw new Error("未找到 AI 提供商")
   return provider
-}
-
-function toolMeta(actionClass: McpTool["actionClass"]) {
-  if (actionClass === "read") return { label: "只读", color: "bg-[#dcfaee] text-[var(--brand-mint-deep)]", icon: Search }
-  if (actionClass === "draft") return { label: "生成草案", color: "bg-[var(--brand-lavender-soft)] text-[#6658c8]", icon: ClipboardList }
-  return { label: "最终确认", color: "bg-[#fff0ec] text-[#a34e3e]", icon: ShoppingBag }
-}
-
-function McpToolsOverview() {
-  const [tools, setTools] = useState<McpTool[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    void fetch("/api/mcp/tools", { cache: "no-store", signal: controller.signal })
-      .then(async (response) => {
-        const payload = (await response.json()) as ApiEnvelope<{ tools: McpTool[] }>
-        if (!response.ok || !payload.data) throw new Error(payload.error || "读取 MCP 工具状态失败")
-        setTools(payload.data.tools)
-      })
-      .catch((reason) => {
-        if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : "读取 MCP 工具状态失败")
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false)
-      })
-
-    return () => controller.abort()
-  }, [])
-
-  return (
-    <section className="border-t border-border/80 pt-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="page-eyebrow">External tools & MCP</p>
-          <h3 className="mt-1 text-xl font-semibold text-[var(--brand-plum)]">外部工具与动作边界</h3>
-        </div>
-        <Link href="/agent" className="text-xs font-semibold text-[var(--brand-mint-deep)]">打开教练工具台</Link>
-      </div>
-
-      {loading ? (
-        <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground"><LoaderCircle className="size-4 animate-spin" />正在读取本机工具状态…</div>
-      ) : error ? (
-        <p className="mt-4 text-sm text-destructive" role="alert">{error}</p>
-      ) : (
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          {tools.map((tool) => {
-            const meta = toolMeta(tool.actionClass)
-            const Icon = meta.icon
-            return (
-              <div key={tool.name} className="rounded-md border bg-white p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="grid size-9 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]"><Icon className="size-4" /></div>
-                  <span className={cn("rounded-full px-2 py-1 text-[10px] font-semibold", tool.configured ? meta.color : "bg-muted text-muted-foreground")}>
-                    {tool.configured ? meta.label : "待连接"}
-                  </span>
-                </div>
-                <h4 className="mt-4 text-sm font-semibold text-[var(--brand-plum)]">{tool.label}</h4>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">{tool.description}</p>
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        <div className="rounded-md bg-[#dcfaee] p-3 text-xs leading-5 text-[#285f4e]">
-          <b className="block text-[var(--brand-mint-deep)]">可以自动执行</b>
-          只读搜索和订单草案不会产生外部订单。
-        </div>
-        <div className="rounded-md bg-[#fff0ec] p-3 text-xs leading-5 text-[#77483f]">
-          <b className="block text-[#a34e3e]">必须最终确认</b>
-          提交订单会校验绑定最终参数的一次性确认令牌。
-        </div>
-      </div>
-    </section>
-  )
 }
 
 export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
@@ -340,7 +249,6 @@ export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
             </Button>
           </div>
 
-          <div className="mt-7"><McpToolsOverview /></div>
         </div>
       </div>
     </section>

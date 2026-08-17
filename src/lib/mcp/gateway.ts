@@ -1,10 +1,10 @@
 import "server-only"
 
 import {
+  MCDONALD_TOOL_DEFINITIONS,
   MCP_MAX_INPUT_BYTES,
   MCP_MAX_OUTPUT_BYTES,
   MCP_TIMEOUT_MS,
-  MCP_TOOL_DEFINITIONS,
   McpToolError,
   McpUnavailableError,
   type NearbyTakeoutSearchInput,
@@ -12,6 +12,7 @@ import {
   type TakeoutSearchResult,
   configuredMcpEndpoint,
 } from "@/lib/mcp/contracts"
+import { getPublicMcDonaldSettings } from "@/lib/mcp/settings"
 
 function safeText(value: unknown, maxLength: number) {
   return typeof value === "string" ? value.replace(/[\r\n]+/g, " ").trim().slice(0, maxLength) : ""
@@ -81,11 +82,11 @@ async function callConfiguredMcp(tool: string, input: unknown) {
   }
 }
 
-export function listMcpTools() {
-  const configured = Boolean(configuredMcpEndpoint())
-  return MCP_TOOL_DEFINITIONS.map((tool) => ({
+export async function listMcpTools() {
+  const configured = (await getPublicMcDonaldSettings()).tokenConfigured
+  return MCDONALD_TOOL_DEFINITIONS.map((tool) => ({
     ...tool,
-    configured: tool.requiresConfiguredConnector ? configured : true,
+    configured,
   }))
 }
 

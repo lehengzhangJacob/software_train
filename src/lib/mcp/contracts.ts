@@ -4,6 +4,34 @@ export const MCP_MAX_INPUT_BYTES = 16 * 1024
 export const MCP_MAX_OUTPUT_BYTES = 64 * 1024
 export const MCP_TIMEOUT_MS = 8_000
 
+export type McDonaldToolName =
+  | "list-nutrition-foods"
+  | "delivery-query-addresses"
+  | "delivery-query-stores"
+  | "query-store-coupons"
+  | "query-meals"
+  | "query-meal-detail"
+  | "calculate-price"
+  | "create-order"
+  | "query-order"
+
+export const MCDONALD_TOOL_DEFINITIONS: Array<{
+  name: McDonaldToolName
+  label: string
+  description: string
+  actionClass: "read" | "draft" | "external_write"
+}> = [
+  { name: "list-nutrition-foods", label: "麦当劳营养表", description: "读取常见麦当劳餐品的能量和宏量营养数据", actionClass: "read" },
+  { name: "delivery-query-addresses", label: "配送地址", description: "读取麦当劳账号中已有的配送地址", actionClass: "read" },
+  { name: "delivery-query-stores", label: "可配送门店", description: "按选定地址查询可配送的麦当劳门店", actionClass: "read" },
+  { name: "query-store-coupons", label: "可用优惠券", description: "读取当前门店和配送方式可用的优惠券", actionClass: "read" },
+  { name: "query-meals", label: "门店菜单", description: "读取门店当前可售餐品、套餐编码和价格", actionClass: "read" },
+  { name: "query-meal-detail", label: "餐品详情", description: "读取套餐组成和默认选择", actionClass: "read" },
+  { name: "calculate-price", label: "订单计价", description: "计算商品、配送费、优惠和应付总额，不创建订单", actionClass: "draft" },
+  { name: "create-order", label: "创建未支付订单", description: "在明确点餐意图内创建一笔未支付订单并返回支付入口", actionClass: "external_write" },
+  { name: "query-order", label: "订单状态", description: "读取已有订单的状态、商品和配送信息", actionClass: "read" },
+]
+
 export type McpToolName = "nearby_takeout_search" | "takeout_order_draft" | "takeout_order_submit"
 
 export interface McpToolDefinition {

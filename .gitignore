@@ -30,6 +30,8 @@ data/backups/
 data/*.log
 data/credentials.json
 data/credentials.json.*.tmp
+data/mcdonalds.json
+data/mcdonalds.json.*.tmp
 
 # generated files
 *.tsbuildinfo
