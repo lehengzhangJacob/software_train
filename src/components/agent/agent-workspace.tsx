@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { AssistantText } from "@/components/agent/assistant-text"
 import { TakeoutToolsPanel } from "@/components/agent/takeout-tools-panel"
 
 interface ThreadSummary {
@@ -304,13 +305,17 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                     <div className="max-w-[min(43rem,88%)]">
                       <div
                         className={cn(
-                          "whitespace-pre-wrap break-words rounded-lg px-4 py-3 text-sm leading-6 shadow-sm",
+                          "break-words rounded-lg px-4 py-3 text-sm leading-6 shadow-sm",
                           message.role === "user"
-                            ? "bg-[var(--brand-lavender-soft)] text-[var(--brand-plum)]"
+                            ? "whitespace-pre-wrap bg-[var(--brand-lavender-soft)] text-[var(--brand-plum)]"
                             : "border border-border/70 bg-white text-foreground"
                         )}
                       >
-                        {message.content}
+                        {message.role === "assistant" ? (
+                          <AssistantText content={message.content} />
+                        ) : (
+                          message.content
+                        )}
                       </div>
                       <p className={cn("mt-1 text-[11px] text-muted-foreground", message.role === "user" ? "text-right" : "text-left")}>
                         {formatMessageTime(message.createdAt)}
