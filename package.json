@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "verify": "npm run test:ai && npm run test:memory && npm run test:agent && npm run test:mcp && npm run test:health && npm run lint && npm run typecheck && npm run build",
+    "verify": "npm run test:ai && npm run test:memory && npm run test:agent && npm run test:mcp && npm run test:ordering && npm run test:health && npm run lint && npm run typecheck && npm run build",
     "smoke": "node scripts/release-smoke.mjs",
     "test:ai": "tsx --test scripts/ai-settings.test.ts",
     "test:memory": "tsx --test scripts/memory-contract.test.ts",
@@ -28,7 +28,8 @@
     "db:prepare": "node scripts/ensure-sqlite-database.mjs",
     "db:init": "npm run db:prepare && npm run db:migrate:deploy && npm run db:seed",
     "db:generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test:ordering": "tsx --test scripts/ordering-contract.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

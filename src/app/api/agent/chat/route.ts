@@ -13,11 +13,23 @@ import {
   getAgentThread,
 } from "@/lib/agent/repository"
 import { getAgentContext, buildAgentSystemPrompt } from "@/lib/agent/context"
+import {
+  composeOrderingReply,
+  extractOrderSelection,
+  OrderPlanError,
+  planMcDonaldOrder,
+  type MenuOption,
+  type OrderingOutcome,
+} from "@/lib/agent/ordering"
+import { hasExplicitOrderingIntent } from "@/lib/agent/ordering-intent"
+import { issueOrderingGrant } from "@/lib/actions/policy"
 import { getCurrentUser } from "@/lib/current-user"
 import { getAssistantText, requestAiChatCompletion } from "@/lib/ai/client"
 import { getPublicAiError } from "@/lib/ai/errors"
-import { getActiveAiProviderConfig } from "@/lib/ai/settings"
+import { getActiveAiProviderConfig, type ResolvedAiProviderConfig } from "@/lib/ai/settings"
 import { markMemoriesUsed } from "@/lib/memory/repository"
+import { withMcDonaldMcp } from "@/lib/mcp/mcdonalds-client"
+import { getTodayStr } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -25,6 +37,56 @@ export const runtime = "nodejs"
 function titleFromMessage(message: string) {
   const compact = message.replace(/\s+/g, " ").trim()
   return compact.length > 28 ? `${compact.slice(0, 28)}…` : compact
+}
+
+function selectItemsWithModel(config: ResolvedAiProviderConfig) {
+  return async (input: { message: string; menu: MenuOption[]; remainingCalories: number | null }) => {
+    const budget =
+      input.remainingCalories !== null
+        ? `今天剩余热量预算约 ${input.remainingCalories} 千卡，优先蛋白质充足的一餐。`
+        : "今天热量数据缺失，按常规正餐挑选。"
+    const result = await requestAiChatCompletion(config, {
+      messages: [
+        {
+          role: "system",
+          content: [
+            "你是营养点餐助手，从给定菜单中为用户挑选 1 到 5 项商品。",
+            budget,
+            '只输出一个 <order-selection>{"items":[{"code":"菜单编码","quantity":1}],"note":"一句话理由"}</order-selection> 标签；code 必须来自菜单，不得编造。',
+            `菜单：${JSON.stringify(input.menu.map((option) => ({ code: option.code, name: option.name })))}`,
+          ].join("\n"),
+        },
+        { role: "user", content: input.message },
+      ],
+      temperature: 0.2,
+      max_tokens: 600,
+    })
+    const raw = getAssistantText(result)
+    if (!raw) throw new OrderPlanError("模型没有返回选餐结果")
+    return extractOrderSelection(raw)
+  }
+}
+
+async function runOrderingPlan(
+  config: ResolvedAiProviderConfig,
+  message: string,
+  context: Awaited<ReturnType<typeof getAgentContext>>,
+): Promise<OrderingOutcome> {
+  const today = getTodayStr()
+  const todayIntake = context.meals
+    .filter((meal) => meal.recordDate === today)
+    .reduce((sum, meal) => sum + meal.calories, 0)
+  const remainingCalories = context.profile
+    ? Math.max(0, Math.round(context.profile.dailyCalorieTarget - todayIntake))
+    : null
+  return planMcDonaldOrder(
+    {
+      openSession: (run) => withMcDonaldMcp(run),
+      selectItems: selectItemsWithModel(config),
+    },
+    message,
+    remainingCalories,
+  )
 }
 
 function requestFailure(error: unknown, fallback: string) {
@@ -51,6 +113,26 @@ export async function POST(request: Request) {
       getAgentContext(user.userId),
       getAgentMessageHistory(user.userId, threadId),
     ])
+
+    if (hasExplicitOrderingIntent(input.message)) {
+      // ADR-0004: the ordering turn gets a deterministic reply. The model only
+      // sees menu data during item selection, so order results and any future
+      // payment surface can never reach persisted message content.
+      issueOrderingGrant(true)
+      const orderingOutcome = await runOrderingPlan(config, input.message, context)
+      const assistantMessage = await appendAgentMessage(
+        user.userId,
+        threadId,
+        "assistant",
+        composeOrderingReply(orderingOutcome),
+      )
+      return apiSuccess({
+        thread: await getAgentThread(user.userId, threadId),
+        userMessage,
+        assistantMessage,
+        orderPlan: orderingOutcome.status === "planned" ? orderingOutcome.plan : null,
+      })
+    }
 
     const result = await requestAiChatCompletion(config, {
       messages: [
