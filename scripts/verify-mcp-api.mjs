@@ -113,7 +113,7 @@ try {
     await waitForResponse(`${baseUrl}/api/mcp/tools`)
     const tools = await jsonRequest(`${baseUrl}/api/mcp/tools`)
     assert(tools.response.status === 200, "MCP tool discovery failed")
-    assert(tools.body.data.tools.some((tool) => tool.name === "nearby_takeout_search" && tool.configured), "Configured search tool was not reported")
+    assert(tools.body.data.tools.some((tool) => tool.name === "delivery-query-addresses" && tool.configured), "Configured official McDonald tool was not reported")
     assert(!JSON.stringify(tools.body).includes("mcp-test-key"), "MCP credential was exposed")
 
     const search = await jsonRequest(`${baseUrl}/api/mcp/takeout/search`, {
