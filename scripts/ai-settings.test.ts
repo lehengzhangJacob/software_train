@@ -75,3 +75,40 @@ test("credential display and provider failures remain sanitized", () => {
   assert.equal(providerFailureForStatus(401).message.includes("secret"), false)
   assert.equal(providerFailureForStatus(429).message, "AI 提供商请求过于频繁或余额不足")
 })
+
+test("vision model round-trips and empty clears it", () => {
+  const withVision = applyAiSettingsUpdate(
+    createDefaultAiSettings(),
+    parseAiSettingsUpdate({
+      providerId: "qwen",
+      baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      model: "qwen3.6-plus",
+      visionModel: "qwen3.8-max",
+    })
+  )
+  assert.equal(withVision.providers.qwen?.model, "qwen3.6-plus")
+  assert.equal(withVision.providers.qwen?.visionModel, "qwen3.8-max")
+
+  const cleared = applyAiSettingsUpdate(
+    withVision,
+    parseAiSettingsUpdate({
+      providerId: "qwen",
+      baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      model: "qwen3.6-plus",
+      visionModel: "",
+    })
+  )
+  assert.equal(cleared.providers.qwen?.visionModel, undefined)
+})
+
+test("invalid vision model names are rejected", () => {
+  assert.throws(
+    () => parseAiSettingsUpdate({
+      providerId: "qwen",
+      baseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      model: "qwen3.6-plus",
+      visionModel: "bad model",
+    }),
+    /识图模型/
+  )
+})

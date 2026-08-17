@@ -120,7 +120,7 @@ export async function POST(request: Request) {
         },
       ],
       max_tokens: 4096,
-    })
+    }, 90_000, config.visionModel)
     const content = getAssistantText(result)
 
     if (!content) {

@@ -29,6 +29,7 @@ interface AiSettingsDraft {
   providerId: AiProviderId
   baseUrl: string
   model: string
+  visionModel: string
 }
 
 interface ApiEnvelope<T> {
@@ -41,6 +42,7 @@ function draftFromProvider(provider: PublicAiProviderSettings): AiSettingsDraft 
     providerId: provider.id,
     baseUrl: provider.baseUrl,
     model: provider.model,
+    visionModel: provider.visionModel,
   }
 }
 
@@ -201,9 +203,17 @@ export function AiSettingsForm({ initialSettings }: AiSettingsFormProps) {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="ai-model">默认模型</Label>
+              <Label htmlFor="ai-model">聊天模型</Label>
               <Input id="ai-model" className="bg-white" value={draft.model} onChange={(event) => setDraft((current) => ({ ...current, model: event.target.value }))} />
+              <p className="text-xs text-muted-foreground">Agent 对话与连接测试使用的模型</p>
             </div>
+            {provider.visionCapability !== "unsupported" ? (
+              <div className="space-y-2">
+                <Label htmlFor="ai-vision-model">识图模型</Label>
+                <Input id="ai-vision-model" className="bg-white" value={draft.visionModel} onChange={(event) => setDraft((current) => ({ ...current, visionModel: event.target.value }))} />
+                <p className="text-xs text-muted-foreground">食物图片识别使用的模型；留空则跟随聊天模型</p>
+              </div>
+            ) : null}
             <div className="space-y-2 sm:col-span-2 lg:col-span-1">
               <Label htmlFor="ai-base-url">API Base URL</Label>
               <Input id="ai-base-url" className="bg-white" value={draft.baseUrl} onChange={(event) => setDraft((current) => ({ ...current, baseUrl: event.target.value }))} spellCheck={false} />

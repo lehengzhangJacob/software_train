@@ -5,6 +5,7 @@ export const AI_SETTINGS_VERSION = 1 as const
 export interface StoredAiProviderSettings {
   baseUrl: string
   model: string
+  visionModel?: string
   apiKey?: string | null
   updatedAt: string
 }
@@ -19,6 +20,7 @@ export interface AiSettingsUpdate {
   providerId: AiProviderId
   baseUrl: string
   model: string
+  visionModel?: string
   apiKey?: string
   clearApiKey: boolean
 }
@@ -66,10 +68,10 @@ export function normalizeBaseUrl(value: string): string {
   return url.toString().replace(/\/$/, "")
 }
 
-export function normalizeModel(value: string): string {
+export function normalizeModel(value: string, label = "模型名称"): string {
   const model = value.trim()
   if (!model || model.length > 200 || !/^[A-Za-z0-9._:/~+-]+$/.test(model)) {
-    throw new AiSettingsValidationError("模型名称无效")
+    throw new AiSettingsValidationError(`${label}无效`)
   }
   return model
 }
@@ -106,6 +108,7 @@ export function parseAiSettingsUpdate(value: unknown): AiSettingsUpdate {
     providerId: value.providerId,
     baseUrl: normalizeBaseUrl(assertString(value.baseUrl, "Base URL")),
     model: normalizeModel(assertString(value.model, "模型名称")),
+    visionModel: value.visionModel === undefined || value.visionModel === "" ? undefined : normalizeModel(assertString(value.visionModel, "识图模型名称"), "识图模型名称"),
     apiKey: apiKey || undefined,
     clearApiKey,
   }
@@ -124,6 +127,7 @@ function parseStoredProvider(value: unknown): StoredAiProviderSettings {
   return {
     baseUrl: normalizeBaseUrl(assertString(value.baseUrl, "Base URL")),
     model: normalizeModel(assertString(value.model, "模型名称")),
+    ...(value.visionModel === undefined ? {} : { visionModel: normalizeModel(assertString(value.visionModel, "识图模型名称"), "识图模型名称") }),
     apiKey: typeof apiKeyValue === "string" ? normalizeApiKey(apiKeyValue) : apiKeyValue,
     updatedAt,
   }
@@ -164,6 +168,7 @@ export function applyAiSettingsUpdate(
       [preset.id]: {
         baseUrl: update.baseUrl,
         model: update.model,
+        ...(update.visionModel ? { visionModel: update.visionModel } : {}),
         ...(nextKey === undefined ? {} : { apiKey: nextKey }),
         updatedAt: now,
       },

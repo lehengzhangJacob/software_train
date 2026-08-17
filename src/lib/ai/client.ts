@@ -6,7 +6,10 @@ import type { ResolvedAiProviderConfig } from "@/lib/ai/settings"
 export async function requestAiChatCompletion(
   config: ResolvedAiProviderConfig,
   body: Record<string, unknown>,
-  timeoutMs = 30_000
+  // DashScope-compatible endpoints can take ~30s even for short chats; 60s
+  // keeps the gate practical without letting a hung provider stall the UI.
+  timeoutMs = 60_000,
+  model = config.model
 ): Promise<unknown> {
   let response: Response
   try {
@@ -17,7 +20,7 @@ export async function requestAiChatCompletion(
         ...(config.apiKey ? { Authorization: `Bearer ${config.apiKey}` } : {}),
       },
       signal: AbortSignal.timeout(timeoutMs),
-      body: JSON.stringify({ model: config.model, ...body }),
+      body: JSON.stringify({ model, ...body }),
     })
   } catch (error) {
     if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) {

@@ -39,6 +39,7 @@ const environmentKeys: Partial<Record<AiProviderId, { key?: string; baseUrl?: st
 export interface PublicAiProviderSettings extends AiProviderPreset {
   baseUrl: string
   model: string
+  visionModel: string
   keyConfigured: boolean
   keyHint: string | null
   credentialSource: "local-file" | "environment" | null
@@ -55,6 +56,7 @@ export interface ResolvedAiProviderConfig {
   providerId: AiProviderId
   baseUrl: string
   model: string
+  visionModel: string
   apiKey?: string
   visionCapability: AiProviderPreset["visionCapability"]
 }
@@ -74,15 +76,17 @@ function environmentValue(name?: string): string | undefined {
 function resolveEndpointValue(
   record: StoredAiProviderSettings | undefined,
   provider: AiProviderPreset
-): { baseUrl: string; model: string } {
+): { baseUrl: string; model: string; visionModel: string } {
   const env = environmentKeys[provider.id]
   const baseCandidate = record?.baseUrl ?? environmentValue(env?.baseUrl) ?? provider.defaultBaseUrl
   const modelCandidate = record?.model ?? environmentValue(env?.model) ?? provider.defaultModel
+  const visionModelCandidate = record?.visionModel ?? modelCandidate
 
   try {
     return {
       baseUrl: normalizeBaseUrl(baseCandidate),
       model: normalizeModel(modelCandidate),
+      visionModel: normalizeModel(visionModelCandidate),
     }
   } catch (error) {
     if (error instanceof AiSettingsValidationError) throw new AiSettingsStoreError()
