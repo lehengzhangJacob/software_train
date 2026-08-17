@@ -38,6 +38,12 @@ data/mcdonalds.json.*.tmp
 next-env.d.ts
 /src/generated/prisma
 
+# independent repositories checked out inside the project tree
+/dsh-routing-suite/
+
+# j-space session ledger
+/.jspace/
+
 # legacy runtimes
 .venv/
 __pycache__/

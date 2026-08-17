@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Independent repository checked out inside the project tree.
+    "dsh-routing-suite/**",
   ]),
 ]);
 
