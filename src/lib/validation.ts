@@ -281,6 +281,36 @@ export function parseMealUpdateInput(value: unknown) {
   return data
 }
 
+export interface ActivitySyncInput {
+  activityDate: string
+  steps?: number
+  activeCalories?: number
+  exerciseMinutes?: number
+  sourceKind?: string
+}
+
+const ACTIVITY_SOURCE_KINDS = new Set(["manual", "health_connect"])
+
+export function parseActivitySyncInput(value: unknown, defaults: { activityDate: string }): ActivitySyncInput {
+  const body = asObject(value)
+  const input: ActivitySyncInput = {
+    activityDate:
+      body.activityDate === undefined || body.activityDate === null
+        ? defaults.activityDate
+        : parseDate(body.activityDate, "活动日期"),
+  }
+  if (Object.hasOwn(body, "steps")) input.steps = integerInRange(body.steps, "步数", 0, 200_000)
+  if (Object.hasOwn(body, "activeCalories")) {
+    input.activeCalories = Math.round(nonNegativeNumber(body.activeCalories, "活动消耗") * 10) / 10
+  }
+  if (Object.hasOwn(body, "exerciseMinutes")) {
+    input.exerciseMinutes = integerInRange(body.exerciseMinutes, "运动分钟数", 0, 24 * 60)
+  }
+  if (Object.hasOwn(body, "sourceKind")) input.sourceKind = enumValue(body.sourceKind, "数据来源", ACTIVITY_SOURCE_KINDS)
+  if (Object.keys(input).length === 1) throw new ValidationError("没有可同步的活动量字段")
+  return input
+}
+
 /**
  * Exercise calories and ownership are always derived on the server. This DTO
  * deliberately reads only the reference id, requested duration, and date.

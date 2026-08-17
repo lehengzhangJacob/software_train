@@ -27,6 +27,7 @@ model UserProfile {
   exerciseSuggestions ExerciseSuggestion[]
   agentThreads        AgentThread[]
   memoryItems         MemoryItem[]
+  dailyActivities     DailyActivity[]
 
   @@map("user_profile")
 }
@@ -142,4 +143,22 @@ model MemoryItem {
   @@index([userId, updatedAt], name: "idx_memory_user_updated")
   @@index([sourceMessageId], name: "idx_memory_source_message")
   @@map("memory_items")
+}
+
+model DailyActivity {
+  activityId      Int      @id @default(autoincrement()) @map("activity_id")
+  userId          Int      @map("user_id")
+  activityDate    String   @map("activity_date")
+  steps           Int      @default(0)
+  activeCalories  Float    @default(0) @map("active_calories")
+  exerciseMinutes Int      @default(0) @map("exercise_minutes")
+  sourceKind      String   @default("manual") @map("source_kind")
+  syncedAt        DateTime @default(now()) @map("synced_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([userId, activityDate], name: "uq_activity_user_date")
+  @@index([userId, activityDate], name: "idx_activity_user_date")
+  @@map("daily_activity")
 }
