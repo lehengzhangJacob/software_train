@@ -173,6 +173,19 @@
         "C-07-S3"
       ],
       "return_to": "C-06-L4"
+    },
+    "C-08": {
+      "contract_id": "C-08",
+      "parent_contract_id": "C-07",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "教练页窄幅排版修复（对话优先+单层滚动）",
+      "goal": null,
+      "current_slice": null,
+      "completed_slices": [
+        "C-08-S1"
+      ],
+      "return_to": "C-06-L4"
     }
   }
 }

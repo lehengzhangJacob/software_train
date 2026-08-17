@@ -868,5 +868,17 @@
       "path": "dev_repo/evidence/C-06-L2/verification.json",
       "description": "L2 断言、验证门与架构/数据模型变更汇总"
     }
+  ],
+  "C-08": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-08/verification.json",
+      "description": "教练页窄幅重排实证：首图隐藏、聊天优先（inViewport 几何）、滚动模型"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-workspace.tsx",
+      "description": "order 类重排 + hidden lg:block 首图 + lg 限定内滚"
+    }
   ]
 }
