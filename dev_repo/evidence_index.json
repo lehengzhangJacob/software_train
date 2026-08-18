@@ -959,5 +959,19 @@
       "path": "dev_repo/evidence/C-12/screenshot-index.json, docs/demo/",
       "description": "真实云端桌面/移动截图、干净裁切图与 Agent/拍照/设置 UI 参考素材索引"
     }
+  ],
+  "C-14-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-14/S1/verification.json",
+      "description": "访问门产品视觉重做、未认证导航隐藏与安全边界回归"
+    }
+  ],
+  "C-14-S2": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-14/S2/verification.json",
+      "description": "云端静态资源修复、Web/Android 回归、API 401 与模拟器截图"
+    }
   ]
 }

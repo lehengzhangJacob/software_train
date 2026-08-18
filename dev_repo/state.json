@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-14",
+  "active_contract_id": "C-13",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -295,12 +295,13 @@
       "contract_id": "C-14",
       "parent_contract_id": "C-13",
       "root_campaign": "nutrition-agent",
-      "status": "in_progress",
+      "status": "completed",
       "summary": "让访问门回到产品主视觉",
       "goal": "让未认证入口与营养 Agent 的梅紫、薄荷绿和编辑式布局一致，同时保留访问码安全边界",
-      "current_slice": "C-14-S2",
+      "current_slice": null,
       "completed_slices": [
-        "C-14-S1"
+        "C-14-S1",
+        "C-14-S2"
       ],
       "deferred_slices": [],
       "return_to": "C-13-S3"

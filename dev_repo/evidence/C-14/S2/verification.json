@@ -1,0 +1,30 @@
+{
+  "contract_id": "C-14",
+  "slice_id": "C-14-S2",
+  "summary": "云端访问门静态资源修复、Web/Android 回归与发布检查",
+  "status": "pass",
+  "verification": {
+    "local_lint": "pass: npm run lint",
+    "local_typecheck": "pass: npm run typecheck",
+    "local_access_tests": "pass: npm run test:access, 9/9",
+    "local_production_build": "pass: npm run build",
+    "cloud_release": "pass: standalone bundle uploaded; 7 Prisma migrations found, no pending migrations; service active after restart",
+    "cloud_access_page": "pass: /access contains the new product copy and no legacy ACCESS label",
+    "cloud_brand_asset": "pass: /brand/nutrition-agent-icon.png -> 200 image/png, 723281 bytes",
+    "cloud_api_boundary": "pass: unauthenticated /api/users -> 401",
+    "android_emulator": "pass: emulator-5554, cloud APK, cleared app data, refreshed unauthenticated access gate",
+    "visual_assertions": "pass: product icon renders in both header and plum panel; unauthenticated Sidebar and mobile navigation are hidden"
+  },
+  "evidence": {
+    "screenshot": "dev_repo/evidence/C-14/S2/emulator-access-final.png",
+    "cloud_url": "http://8.148.206.131:8000/access",
+    "device": "emulator-5554"
+  },
+  "root_cause_fixed": "The access middleware matcher redirected /brand/* image requests to /access; brand is now excluded from the gate redirect branch.",
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "red_line_crossed": false,
+  "return_to": "C-13-S3"
+}

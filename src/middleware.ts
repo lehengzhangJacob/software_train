@@ -31,5 +31,8 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon).*)"],
+  // The access page itself is public, as are the small brand assets it uses.
+  // Keep those assets outside the redirect branch so the gate never turns an
+  // image request into an HTML response.
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|icon|brand).*)"],
 }
