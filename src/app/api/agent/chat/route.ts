@@ -12,8 +12,10 @@ import {
   appendAgentMessage,
   ensureAgentThread,
   getAgentMessageHistory,
+  getSessionDigest,
   getAgentThread,
 } from "@/lib/agent/repository"
+import { consolidateAgentSession } from "@/lib/agent/consolidation"
 import { getAgentContext, buildAgentSystemPrompt } from "@/lib/agent/context"
 import {
   composeOrderedReply,
@@ -35,6 +37,7 @@ import { markMemoriesUsed } from "@/lib/memory/repository"
 import { withMcDonaldMcp } from "@/lib/mcp/mcdonalds-client"
 import { createAgentActivityRecorder, runAgentActivity } from "@/lib/agent/activity"
 import { getTodayStr } from "@/lib/utils"
+import { after } from "next/server"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -103,6 +106,22 @@ class AgentResponseError extends Error {
   }
 }
 
+function scheduleSessionConsolidation(userId: number, threadId: number) {
+  const task = async () => {
+    await consolidateAgentSession(userId, threadId)
+  }
+
+  try {
+    after(task)
+  } catch {
+    // SSE stream callbacks may not retain Next's request lifecycle context.
+    // Keep the task best-effort in that environment too.
+    setTimeout(() => {
+      void task()
+    }, 0)
+  }
+}
+
 function failureDetails(error: unknown, fallback: string) {
   const aiFailure = getPublicAiError(error)
   if (aiFailure.status !== 500 || error?.constructor?.name === "MissingAiCredentialError" || error?.constructor?.name === "AiProviderError") {
@@ -138,14 +157,21 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
   const config = await getActiveAiProviderConfig()
   const threadId = await ensureAgentThread(user.userId, input.threadId, titleFromMessage(input.message))
   const userMessage = await appendAgentMessage(user.userId, threadId, "user", input.message)
-  const [context, history] = await runAgentActivity(
+  const [context, sessionDigest, history] = await runAgentActivity(
     recorder.emit,
     {
       activityId: "agent-context",
       kind: "context",
       label: "整理饮食档案与对话上下文",
     },
-    () => Promise.all([getAgentContext(user.userId), getAgentMessageHistory(user.userId, threadId)]),
+    async () => {
+      const [context, sessionDigest] = await Promise.all([
+        getAgentContext(user.userId),
+        getSessionDigest(user.userId, threadId),
+      ])
+      const history = await getAgentMessageHistory(user.userId, threadId, 24, sessionDigest?.coveredMessageId)
+      return [context, sessionDigest, history] as const
+    },
   )
 
   if (hasExplicitOrderingIntent(input.message)) {
@@ -180,6 +206,7 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
             }
           : {},
       )
+      scheduleSessionConsolidation(user.userId, threadId)
       return {
         thread: await getAgentThread(user.userId, threadId),
         userMessage,
@@ -201,6 +228,7 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
       "assistant",
       composeOrderingReply(outcome),
     )
+    scheduleSessionConsolidation(user.userId, threadId)
     return {
       thread: await getAgentThread(user.userId, threadId),
       userMessage,
@@ -220,7 +248,7 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
     () =>
       requestAiChatCompletion(config, {
         messages: [
-          { role: "system", content: buildAgentSystemPrompt(context) },
+          { role: "system", content: buildAgentSystemPrompt(context, sessionDigest?.summary) },
           ...history.map((message) => ({ role: message.role, content: message.content })),
         ],
         temperature: 0.4,
@@ -236,6 +264,7 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
     usedMemoryIds: context.memories.map((memory) => memory.memoryId),
   })
   await markMemoriesUsed(user.userId, context.memories.map((memory) => memory.memoryId))
+  scheduleSessionConsolidation(user.userId, threadId)
 
   return {
     thread: await getAgentThread(user.userId, threadId),

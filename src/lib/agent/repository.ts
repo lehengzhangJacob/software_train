@@ -151,45 +151,11 @@ export async function appendAgentMessage(
 
     let persistedMetadata = metadata
     if (role === "assistant" && metadata.memoryCandidates?.length) {
-      const memoryIds: Record<string, number> = {}
-
-      for (const [index, candidate] of metadata.memoryCandidates.entries()) {
-        const matches = await tx.memoryItem.findMany({
-          where: {
-            userId,
-            category: candidate.category,
-            content: candidate.content,
-          },
-          select: { memoryId: true, status: true },
-          orderBy: { memoryId: "asc" },
-        })
-
-        if (matches.some((memory) => memory.status === "disabled")) continue
-
-        const active = matches.find((memory) => memory.status === "active")
-        if (active) {
-          memoryIds[String(index)] = active.memoryId
-          continue
-        }
-
-        const memory = await tx.memoryItem.create({
-          data: {
-            userId,
-            sourceMessageId: created.messageId,
-            category: candidate.category,
-            content: candidate.content,
-            sourceKind: "agent_inference",
-            sourceRef: `thread:${threadId}/message:${created.messageId}`,
-            confidence: candidate.confidence,
-            importance: candidate.importance,
-            status: "active",
-            isUserConfirmed: false,
-          },
-          select: { memoryId: true },
-        })
-        memoryIds[String(index)] = memory.memoryId
-      }
-
+      const memoryIds = await materializeMemoryCandidates(tx, userId, metadata.memoryCandidates, {
+        sourceKind: "agent_inference",
+        sourceMessageId: created.messageId,
+        sourceRef: `thread:${threadId}/message:${created.messageId}`,
+      })
       persistedMetadata = { ...metadata, memoryIds }
       await tx.agentMessage.update({
         where: { messageId: created.messageId },
@@ -206,16 +172,151 @@ export async function appendAgentMessage(
   return toMessageView(message)
 }
 
-export async function getAgentMessageHistory(userId: number, threadId: number, limit = 24) {
+type DigestMemorySource = {
+  sourceKind: "agent_inference" | "session_digest"
+  sourceMessageId?: number | null
+  sourceRef: string
+}
+
+async function materializeMemoryCandidates(
+  tx: Prisma.TransactionClient,
+  userId: number,
+  candidates: MemoryCandidate[],
+  source: DigestMemorySource,
+) {
+  const memoryIds: Record<string, number> = {}
+
+  for (const [index, candidate] of candidates.entries()) {
+    const matches = await tx.memoryItem.findMany({
+      where: {
+        userId,
+        category: candidate.category,
+        content: candidate.content,
+      },
+      select: { memoryId: true, status: true },
+      orderBy: { memoryId: "asc" },
+    })
+
+    // A disabled exact match is a user veto. It must win over an active
+    // duplicate so background consolidation cannot resurrect it.
+    if (matches.some((memory) => memory.status === "disabled")) continue
+
+    const active = matches.find((memory) => memory.status === "active")
+    if (active) {
+      memoryIds[String(index)] = active.memoryId
+      continue
+    }
+
+    const memory = await tx.memoryItem.create({
+      data: {
+        userId,
+        sourceMessageId: source.sourceMessageId ?? null,
+        category: candidate.category,
+        content: candidate.content,
+        sourceKind: source.sourceKind,
+        sourceRef: source.sourceRef,
+        confidence: candidate.confidence,
+        importance: candidate.importance,
+        status: "active",
+        isUserConfirmed: false,
+      },
+      select: { memoryId: true },
+    })
+    memoryIds[String(index)] = memory.memoryId
+  }
+
+  return memoryIds
+}
+
+export async function getAgentMessageHistory(userId: number, threadId: number, limit = 24, afterMessageId?: number) {
   const owned = await prisma.agentThread.findFirst({ where: { userId, threadId }, select: { threadId: true } })
   if (!owned) throw new AgentNotFoundError()
   const messages = await prisma.agentMessage.findMany({
-    where: { threadId },
+    where: { threadId, ...(afterMessageId !== undefined ? { messageId: { gt: afterMessageId } } : {}) },
     select: { role: true, content: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ createdAt: "desc" }, { messageId: "desc" }],
     take: Math.max(1, Math.min(limit, 40)),
   })
   return messages.reverse().map((message) => ({ role: message.role as AgentMessageRole, content: message.content }))
+}
+
+export interface AgentConsolidationMessage {
+  messageId: number
+  role: AgentMessageRole
+  content: string
+  createdAt: string
+}
+
+export async function getAgentMessagesForConsolidation(
+  userId: number,
+  threadId: number,
+  afterMessageId?: number,
+  limit = 48,
+): Promise<AgentConsolidationMessage[]> {
+  const owned = await prisma.agentThread.findFirst({ where: { userId, threadId }, select: { threadId: true } })
+  if (!owned) throw new AgentNotFoundError()
+  const messages = await prisma.agentMessage.findMany({
+    where: { threadId, ...(afterMessageId !== undefined ? { messageId: { gt: afterMessageId } } : {}) },
+    select: { messageId: true, role: true, content: true, createdAt: true },
+    orderBy: { messageId: "asc" },
+    take: Math.max(1, Math.min(limit, 48)),
+  })
+  return messages.map((message) => ({
+    messageId: message.messageId,
+    role: message.role as AgentMessageRole,
+    content: message.content,
+    createdAt: message.createdAt.toISOString(),
+  }))
+}
+
+export interface SessionDigestRecord {
+  summary: string
+  coveredMessageId: number
+}
+
+export async function getSessionDigest(userId: number, threadId: number): Promise<SessionDigestRecord | null> {
+  const owned = await prisma.agentThread.findFirst({ where: { userId, threadId }, select: { threadId: true } })
+  if (!owned) throw new AgentNotFoundError()
+  const digest = await prisma.agentSessionDigest.findUnique({
+    where: { threadId },
+    select: { summary: true, coveredMessageId: true },
+  })
+  return digest ?? null
+}
+
+export async function upsertSessionDigest(
+  userId: number,
+  threadId: number,
+  coveredMessageId: number,
+  summary: string,
+  memoryCandidates: MemoryCandidate[] = [],
+) {
+  const owned = await prisma.agentThread.findFirst({ where: { userId, threadId }, select: { threadId: true } })
+  if (!owned) throw new AgentNotFoundError()
+  const trimmed = summary.trim().slice(0, 4_000)
+  if (!trimmed) throw new Error("会话摘要不能为空")
+  if (!Number.isInteger(coveredMessageId) || coveredMessageId <= 0) throw new Error("会话摘要水位线无效")
+
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.agentSessionDigest.findUnique({
+      where: { threadId },
+      select: { digestId: true, coveredMessageId: true },
+    })
+    // 水位线单调递增：并发或乱序整理不得回退覆盖范围
+    if (existing && coveredMessageId <= existing.coveredMessageId) return false
+    if (existing) {
+      await tx.agentSessionDigest.update({ where: { digestId: existing.digestId }, data: { coveredMessageId, summary: trimmed } })
+    } else {
+      await tx.agentSessionDigest.create({ data: { threadId, coveredMessageId, summary: trimmed } })
+    }
+    if (memoryCandidates.length > 0) {
+      await materializeMemoryCandidates(tx, userId, memoryCandidates, {
+        sourceKind: "session_digest",
+        sourceRef: `thread:${threadId}/digest:${coveredMessageId}`,
+      })
+    }
+    return true
+  })
 }
 
 export async function deleteAgentThread(userId: number, threadId: number) {

@@ -60,7 +60,7 @@ function safeText(value: string | null | undefined, maxLength: number) {
   return (value ?? "").replace(/[\r\n]+/g, " ").trim().slice(0, maxLength)
 }
 
-export function buildAgentSystemPrompt(context: Awaited<ReturnType<typeof getAgentContext>>) {
+export function buildAgentSystemPrompt(context: Awaited<ReturnType<typeof getAgentContext>>, sessionDigest?: string | null) {
   const profile = context.profile
   const profileText = profile
     ? JSON.stringify({
@@ -105,6 +105,7 @@ export function buildAgentSystemPrompt(context: Awaited<ReturnType<typeof getAge
     exerciseMinutes: activity.exerciseMinutes,
     source: activity.sourceKind,
   })))
+  const digestText = sessionDigest?.trim() ? JSON.stringify(safeText(sessionDigest, 4_000)) : ""
 
   return `你是本地个人营养 Agent。你服务的是一个单用户饮食记录工具，不要把自己描述成云端客服。
 
@@ -122,6 +123,7 @@ export function buildAgentSystemPrompt(context: Awaited<ReturnType<typeof getAge
 近 14 天饮食记录（最多 40 条）：${mealsText}
 近 7 天活动量（来源 health_connect 为手机 Health Connect 自动同步，manual 为手动填写）：${activitiesText}
 已启用长期记忆：${memoriesText}
+${digestText ? `更早会话摘要（只作为参考，不替代当前数据）：${digestText}` : ""}
 
 候选格式示例：
 <memory-candidates>[{"category":"preference","content":"工作日晚餐希望清淡一些","importance":0.7,"confidence":0.75}]</memory-candidates>`

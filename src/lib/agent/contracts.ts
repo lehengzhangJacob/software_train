@@ -175,9 +175,12 @@ function parseCandidate(value: unknown): MemoryCandidate | null {
   }
 }
 
-export function parseMemoryCandidates(value: unknown): MemoryCandidate[] {
+export function parseMemoryCandidates(value: unknown, maxCandidates = 3): MemoryCandidate[] {
   if (!Array.isArray(value)) return []
-  return value.map(parseCandidate).filter((candidate): candidate is MemoryCandidate => candidate !== null).slice(0, 3)
+  return value
+    .map(parseCandidate)
+    .filter((candidate): candidate is MemoryCandidate => candidate !== null)
+    .slice(0, Math.max(0, Math.min(maxCandidates, 5)))
 }
 
 export function extractAssistantResponse(content: string) {

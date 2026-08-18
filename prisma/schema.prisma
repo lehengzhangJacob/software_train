@@ -96,11 +96,26 @@ model AgentThread {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  user     UserProfile    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  messages AgentMessage[]
+  user           UserProfile         @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  messages       AgentMessage[]
+  sessionDigest  AgentSessionDigest?
 
   @@index([userId, updatedAt], name: "idx_agent_thread_user_updated")
   @@map("agent_threads")
+}
+
+model AgentSessionDigest {
+  digestId         Int      @id @default(autoincrement()) @map("digest_id")
+  threadId         Int      @unique @map("thread_id")
+  coveredMessageId Int      @map("covered_message_id")
+  summary          String
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+
+  agentThread AgentThread @relation(fields: [threadId], references: [threadId], onDelete: Cascade)
+
+  @@index([threadId, coveredMessageId], name: "idx_digest_thread_covered")
+  @@map("agent_session_digests")
 }
 
 model AgentMessage {
