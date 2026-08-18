@@ -319,6 +319,20 @@
       ],
       "deferred_slices": [],
       "return_to": "C-13-S3"
+    },
+    "C-16": {
+      "contract_id": "C-16",
+      "parent_contract_id": "C-13",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "访问门背景材质补强",
+      "goal": "为访问门引导区接入本地餐食摄影背景，补足产品空间感，同时保持文字可读性与访问码安全边界",
+      "current_slice": null,
+      "completed_slices": [
+        "C-16-S1"
+      ],
+      "deferred_slices": [],
+      "return_to": "C-13-S3"
     }
   }
 }

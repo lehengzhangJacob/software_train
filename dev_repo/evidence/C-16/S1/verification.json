@@ -1,0 +1,38 @@
+{
+  "contract_id": "C-16",
+  "slice_id": "C-16-S1",
+  "timestamp": "2026-08-18T17:48:06+08:00",
+  "summary": "访问门接入餐食摄影背景与安全静态资源白名单，完成云端和 Android 模拟器回归",
+  "assertions": {
+    "hero_visual": "pass: Android 模拟器真实截图可见餐食背景；梅紫渐变遮罩下标题清晰；白色表单未被图片干扰",
+    "local_access_tests": "pass: npm run test:access，9/9",
+    "lint": "pass: npm run lint",
+    "typecheck": "pass: npm run typecheck",
+    "production_build": "pass: npm run build；仅保留既有 middleware 弃用提示",
+    "asset_boundary_delta": "pass: 仅放行 /images/nutrition/meal-hero.webp；未放行整个 images 目录",
+    "cloud_asset_smoke": "pass: GET /images/nutrition/meal-hero.webp -> 200 image/webp，114180 bytes，无重定向",
+    "cloud_page": "pass: GET /access -> 200；HTML 引用餐食背景图",
+    "cloud_boundary": "pass: 未认证 /api/users -> 401；访问码验证 -> 200；认证后 /api/users -> 200；Cookie 仅含摘要",
+    "android_sync": "pass: npm run android:cloud，云端 URL 烘焙成功",
+    "android_build": "pass: android/app/build/outputs/apk/debug/app-debug.apk，Gradle assembleDebug 成功",
+    "emulator_visual": "pass: emulator-5554 真实安装并加载云端背景图，最终截图已采集"
+  },
+  "target_artifacts": {
+    "screenshot": "dev_repo/evidence/C-16/S1/emulator-access-photo.png",
+    "screenshot_sha256": "a8b0a7ccdb7d1b4dd7a97fdb98747501d622c2bd17b6643441c599496d6bff59",
+    "screenshot_bytes": 644218,
+    "asset": "public/images/nutrition/meal-hero.webp",
+    "asset_sha256": "0c7d190941c64e9ba2d21834ae558219e7e8a6a90ce14f88a8e108a3f9f24ca0",
+    "asset_bytes": 114180,
+    "apk": "android/app/build/outputs/apk/debug/app-debug.apk",
+    "apk_sha256": "47a8d0ea7fac92cc4a264a43ba84f1fcd4efe4954cf933dd00c72c2b046fa39a",
+    "apk_bytes": 6659497
+  },
+  "red_line_crossed": false,
+  "blocker_resolved": "scope_delta: 精确放行唯一访问门背景静态资源；业务 API 和认证边界未改变",
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "return_to": "C-13-S3"
+}

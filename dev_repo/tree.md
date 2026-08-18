@@ -30,6 +30,8 @@ C-01 - 全栈功能初版 [completed]
                                                         └── S2 Web/Android 尺寸回归与截图 [completed：云端静态资源、API 401、模拟器访问门截图与生产构建均通过]
                                                 └── C-15 - 访问门高级入口视觉收口 [completed]
                                                         └── S1 紧凑入口表面、云端发布与模拟器回归 [completed]
+                                                └── C-16 - 访问门背景材质补强 [completed]
+                                                        └── S1 接入餐食摄影背景与模拟器回归 [completed]
 ```
 
 

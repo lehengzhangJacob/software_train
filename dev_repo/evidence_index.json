@@ -985,5 +985,17 @@
       "path": "dev_repo/evidence/C-15/S1/emulator-access-premium.png",
       "description": "云端 Android 壳的访问门最终移动端视觉证据"
     }
+  ],
+  "C-16-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-16/S1/verification.json",
+      "description": "餐食摄影背景、精确静态资源白名单、云端认证边界与 Android 模拟器回归"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-16/S1/emulator-access-photo.png",
+      "description": "云端 Android 壳中可见餐食背景的访问门最终截图"
+    }
   ]
 }

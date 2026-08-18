@@ -63,8 +63,20 @@ export default function AccessPage() {
         className="surface-card mt-7 grid overflow-hidden lg:mt-9 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]"
         aria-label="进入私人营养空间"
       >
-        <div className="relative overflow-hidden bg-[var(--brand-plum)] px-6 py-6 text-white sm:px-10 sm:py-9 lg:flex lg:min-h-[310px] lg:flex-col lg:justify-between lg:px-12 lg:py-10">
-          <div className="relative">
+        <div className="relative isolate overflow-hidden bg-[var(--brand-plum)] px-6 py-6 text-white sm:px-10 sm:py-9 lg:flex lg:min-h-[310px] lg:flex-col lg:justify-between lg:px-12 lg:py-10">
+          <Image
+            src="/images/nutrition/meal-hero.webp"
+            alt=""
+            fill
+            priority
+            sizes="(min-width: 1024px) 45vw, 100vw"
+            className="object-cover object-center opacity-60 saturate-[0.82]"
+          />
+          <div
+            className="absolute inset-0 bg-[linear-gradient(105deg,rgba(45,39,53,0.95)_0%,rgba(45,39,53,0.84)_52%,rgba(45,39,53,0.62)_100%)]"
+            aria-hidden="true"
+          />
+          <div className="relative z-10">
             <div className="flex items-center gap-2 text-xs font-medium text-white/55">
               <span className="size-2 rounded-full bg-[var(--brand-mint)]" aria-hidden="true" />
               <span>私人营养空间</span>
@@ -76,7 +88,7 @@ export default function AccessPage() {
               饮食、运动和对话，都从这里继续。
             </p>
           </div>
-          <div className="relative mt-6 flex items-center gap-3 text-xs text-white/45 sm:mt-8 lg:mt-10">
+          <div className="relative z-10 mt-6 flex items-center gap-3 text-xs text-white/45 sm:mt-8 lg:mt-10">
             <span className="h-px w-8 bg-[var(--brand-mint)]" aria-hidden="true" />
             <span>记录 · 复盘 · 调整</span>
           </div>
