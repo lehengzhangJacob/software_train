@@ -10,11 +10,12 @@ browser / Android WebView
         -> /auth login or invite registration
         -> AuthSession cookie + database session
         -> middleware/API session validation
-        -> UserAccount -> UserProfile
+        -> UserAccount -> AccountSettings + UserProfile
         -> existing meal / agent / memory / health ownership queries
 ```
 
-`UserAccount` is the identity and credential owner. `UserProfile` remains the
+`UserAccount` is the identity and credential owner. `AccountSettings` owns
+per-account AI/MCP configuration. `UserProfile` remains the
 nutrition-domain owner so existing `user_id` foreign keys and historical data
 do not need a destructive rewrite. The first successful registration may claim
 an unbound imported profile; later registrations receive a new profile.
@@ -55,24 +56,24 @@ flowchart LR
 | Prisma | 类型化持久化和正式 migration | prisma/schema.prisma, prisma/migrations/** | confirmed；C-03-M1 迁移现有数据库 |
 | SQLite | 运行服务一侧的单写持久化：本地开发库与云端生产库各自单实例，云端库为生产真相源 | DATABASE_URL 指向的文件 | confirmed |
 | AI Gateway | StepFun、OpenAI、DeepSeek、Qwen、Kimi、GLM、SiliconFlow、OpenRouter、Ollama 与自定义兼容服务 | src/lib/ai/**, src/app/api/ai/**, src/app/api/settings/ai/** | confirmed；C-03-M3 已实现 |
-| Secret Store | GUI 配置的服务侧凭据（本地开发机或云端服务器 data/ 目录）、环境变量兼容回退与脱敏读取 | src/lib/ai/settings.ts, data/credentials.json | confirmed；C-03-M3 已实现 |
+| Secret Store | GUI 配置的账户级 AI/MCP 凭据（SQLite `account_settings`）、首账户旧文件导入、仅本地兼容回退与脱敏读取 | src/lib/account/settings.ts, src/lib/ai/settings.ts, src/lib/mcp/settings.ts, data/credentials.json | C-17-S2 已实现 |
 | Agent Runtime | 营养上下文、长期记忆与工具编排 | src/app/agent/**, src/lib/agent/** | confirmed；C-03-S2 已实现 |
 | Memory Store | 对话、记忆来源、置信度、过期与用户治理 | Prisma + src/lib/memory/** + src/app/api/memories/** | confirmed；C-03-M4/S2 已实现 |
 | MCP Gateway | 工具发现、白名单、超时与输出隔离 | src/app/api/mcp/**, src/lib/mcp/** | confirmed；C-03-S3 已实现，真实平台取决于用户授权连接器 |
 | Action Policy | 搜索、草案、明确点餐授权和外部写操作边界 | src/lib/actions/** | approved target；C-06-L1 允许在明确点餐意图内创建一笔未支付订单 |
 | Delivery | lint、typecheck、build、production smoke 与 CI | package scripts、release smoke、CI | confirmed；C-02-S7 已完成 |
-| Cloud Delivery | 公网交付实例：standalone 构建产物 + systemd 常驻 + 共享访问码门 + 云端凭据/SQLite（ADR-0007） | scripts/deploy.mjs, scripts/verify-cloud-gate.mjs, src/middleware.ts, src/lib/access/** | C-11 修宪 accepted，实现进行中 |
+| Cloud Delivery | 公网交付实例：standalone 构建产物 + systemd 常驻 + 数据库账户门 + 账户级凭据/SQLite（ADR-0007） | scripts/deploy.mjs, scripts/verify-cloud-gate.mjs, src/middleware.ts, src/lib/auth/**, src/lib/account/** | C-17-S2 已实现，云端迁移在 S4 |
 | dev_repo | 合同、架构、ER 与证据真相 | dev_repo/** | confirmed；C-03 已收口 |
 
 ## 关键运行流
 
 ### 建档与所有权
 
-应用只呈现一个 primary profile。服务端选择或创建该档案，业务 API 不接受客户端提供的 userId 作为所有权依据。此边界适合本地个人工具，不构成公网身份认证。
+每个已认证账户绑定一个 `UserProfile`；服务端从 `AuthSession` 选择档案，业务 API 不接受客户端提供的 userId 作为所有权依据。旧的 primary profile 选择仅保留给本地兼容模式和首个账户认领导入数据。
 
 ### 餐食与 AI
 
-图片经浏览器传给同源 AI Gateway，代理校验类型和体积，从本机 Secret Store 读取当前提供商凭据并发起调用。识别结果必须先由用户审核餐别、份量和营养值，再显式保存；图片本体不写入 SQLite。
+图片经浏览器传给同源 AI Gateway，代理校验类型和体积，从当前账户的 Secret Store 读取提供商凭据并发起调用。识别结果必须先由用户审核餐别、份量和营养值，再显式保存；图片本体不写入 SQLite。
 
 审核后的多项食物通过 /api/meals 的 items[] 合同一次事务保存，全成或全败。
 

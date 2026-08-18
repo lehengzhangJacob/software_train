@@ -1,5 +1,13 @@
 # Data Model Constitution
 
+## C-17-S2 account-scoped settings amendment
+
+`AccountSettings` is a one-to-one child of `UserAccount`. It stores the
+account's AI provider settings JSON and McDonald's MCP token/endpoint. The
+first account may import the legacy runtime files as a compatibility backfill;
+later accounts are created with empty settings. Account-scoped reads never
+fall back to another account's file or environment credential.
+
 本目录描述 Nutrition Agent 的持久事实、所有权、派生字段与迁移责任。
 
 ## 权威顺序

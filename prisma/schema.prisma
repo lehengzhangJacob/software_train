@@ -47,6 +47,7 @@ model UserAccount {
 
   profile  UserProfile  @relation(fields: [profileId], references: [userId], onDelete: Cascade)
   sessions AuthSession[]
+  settings AccountSettings?
 
   @@index([status], name: "idx_user_account_status")
   @@map("user_accounts")
@@ -79,6 +80,20 @@ model InviteCode {
 
   @@index([active, expiresAt], name: "idx_invite_code_active_expiry")
   @@map("invite_codes")
+}
+
+model AccountSettings {
+  settingsId        Int       @id @default(autoincrement()) @map("settings_id")
+  accountId         Int       @unique @map("account_id")
+  aiSettingsJson    String?   @map("ai_settings_json")
+  mcdonaldsEndpoint String    @default("https://mcp.mcd.cn") @map("mcdonalds_endpoint")
+  mcdonaldsToken    String?   @map("mcdonalds_token")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  account UserAccount @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@map("account_settings")
 }
 
 model MealRecord {

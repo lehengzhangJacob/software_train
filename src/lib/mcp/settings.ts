@@ -2,6 +2,11 @@ import "server-only"
 
 import { chmod, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises"
 import path from "node:path"
+import {
+  ensureAccountSettings,
+  parseAccountMcDonaldSettings,
+  saveAccountMcDonaldSettings,
+} from "@/lib/account/settings"
 import { McpUnavailableError } from "@/lib/mcp/contracts"
 import {
   MCDONALDS_MCP_ENDPOINT,
@@ -21,7 +26,7 @@ export interface PublicMcDonaldSettings {
   endpoint: string
   tokenConfigured: boolean
   tokenHint: string | null
-  credentialSource: "local-file" | "environment" | null
+  credentialSource: "account" | "local-file" | "environment" | null
   updatedAt: string | null
 }
 
@@ -32,7 +37,7 @@ export interface McDonaldMcpConfig {
 
 interface McDonaldCredentialResolution {
   token: string | undefined
-  source: "local-file" | "environment" | null
+  source: "account" | "local-file" | "environment" | null
 }
 
 let writeQueue: Promise<void> = Promise.resolve()
@@ -41,11 +46,11 @@ function environmentValue(name: string) {
   return process.env[name]?.trim() || undefined
 }
 
-function resolveEndpoint() {
-  return normalizeMcDonaldEndpoint(environmentValue("MCDONALDS_MCP_URL") ?? MCDONALDS_MCP_ENDPOINT)
+function resolveEndpoint(storedEndpoint?: string) {
+  return normalizeMcDonaldEndpoint(storedEndpoint?.trim() || environmentValue("MCDONALDS_MCP_URL") || MCDONALDS_MCP_ENDPOINT)
 }
 
-async function readSettings(): Promise<StoredMcDonaldSettings> {
+async function readLegacySettings(): Promise<StoredMcDonaldSettings> {
   let raw: string
   try {
     raw = await readFile(MCDONALDS_SETTINGS_PATH, "utf8")
@@ -63,7 +68,7 @@ async function readSettings(): Promise<StoredMcDonaldSettings> {
   }
 }
 
-async function writeSettings(settings: StoredMcDonaldSettings) {
+async function writeLegacySettings(settings: StoredMcDonaldSettings) {
   const directory = path.dirname(MCDONALDS_SETTINGS_PATH)
   const temporaryPath = `${MCDONALDS_SETTINGS_PATH}.${process.pid}.${Date.now()}.tmp`
   await mkdir(directory, { recursive: true })
@@ -77,17 +82,34 @@ async function writeSettings(settings: StoredMcDonaldSettings) {
   }
 }
 
-function resolveToken(settings: StoredMcDonaldSettings): McDonaldCredentialResolution {
+async function readSettings(accountId?: number) {
+  if (accountId === undefined) {
+    return { settings: await readLegacySettings(), endpoint: undefined as string | undefined, accountScoped: false }
+  }
+  const row = await ensureAccountSettings(accountId)
+  return { settings: parseAccountMcDonaldSettings(row), endpoint: row.mcdonaldsEndpoint, accountScoped: true }
+}
+
+async function writeSettings(settings: StoredMcDonaldSettings, accountId?: number) {
+  if (accountId !== undefined) {
+    await saveAccountMcDonaldSettings(accountId, settings)
+    return
+  }
+  await writeLegacySettings(settings)
+}
+
+function resolveToken(settings: StoredMcDonaldSettings, accountScoped = false): McDonaldCredentialResolution {
   if (settings.token === null) return { token: undefined, source: null }
-  if (settings.token) return { token: settings.token, source: "local-file" }
+  if (settings.token) return { token: settings.token, source: accountScoped ? "account" : "local-file" }
+  if (accountScoped) return { token: undefined, source: null }
   const token = environmentValue("MCDONALDS_MCP_TOKEN")
   return token ? { token, source: "environment" } : { token: undefined, source: null }
 }
 
-function toPublicSettings(settings: StoredMcDonaldSettings): PublicMcDonaldSettings {
-  const credential = resolveToken(settings)
+function toPublicSettings(settings: StoredMcDonaldSettings, storedEndpoint?: string, accountScoped = false): PublicMcDonaldSettings {
+  const credential = resolveToken(settings, accountScoped)
   return {
-    endpoint: resolveEndpoint(),
+    endpoint: resolveEndpoint(storedEndpoint),
     tokenConfigured: Boolean(credential.token),
     tokenHint: credential.source === "local-file" && credential.token
       ? maskMcDonaldToken(credential.token)
@@ -99,27 +121,29 @@ function toPublicSettings(settings: StoredMcDonaldSettings): PublicMcDonaldSetti
   }
 }
 
-export async function getPublicMcDonaldSettings() {
-  return toPublicSettings(await readSettings())
+export async function getPublicMcDonaldSettings(accountId?: number) {
+  const resolved = await readSettings(accountId)
+  return toPublicSettings(resolved.settings, resolved.endpoint, resolved.accountScoped)
 }
 
-export async function saveMcDonaldSettings(rawUpdate: unknown) {
+export async function saveMcDonaldSettings(rawUpdate: unknown, accountId?: number) {
   const update = parseMcDonaldSettingsUpdate(rawUpdate)
   const task = async () => {
-    const next = applyMcDonaldSettingsUpdate(await readSettings(), update)
-    await writeSettings(next)
-    return toPublicSettings(next)
+    const current = await readSettings(accountId)
+    const next = applyMcDonaldSettingsUpdate(current.settings, update)
+    await writeSettings(next, accountId)
+    return toPublicSettings(next, current.endpoint, current.accountScoped)
   }
   const result = writeQueue.then(task)
   writeQueue = result.then(() => undefined, () => undefined)
   return result
 }
 
-export async function getMcDonaldMcpConfig(): Promise<McDonaldMcpConfig> {
-  const settings = await readSettings()
-  const credential = resolveToken(settings)
+export async function getMcDonaldMcpConfig(accountId?: number): Promise<McDonaldMcpConfig> {
+  const resolved = await readSettings(accountId)
+  const credential = resolveToken(resolved.settings)
   if (!credential.token) throw new McpUnavailableError("请先在 AI 服务页面配置麦当劳 MCP Token")
-  return { endpoint: resolveEndpoint(), token: credential.token }
+  return { endpoint: resolveEndpoint(resolved.endpoint), token: credential.token }
 }
 
 export function isMcDonaldSettingsValidationError(error: unknown): error is McDonaldSettingsValidationError {

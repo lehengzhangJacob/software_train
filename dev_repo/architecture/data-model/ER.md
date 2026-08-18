@@ -7,8 +7,10 @@
 | UserAccount | user_accounts | account_id / login | 账户凭据与状态；一对一绑定 UserProfile |
 | AuthSession | auth_sessions | session_id / token_digest | 可撤销的登录会话；多条会话属于一个 UserAccount |
 | InviteCode | invite_codes | invite_id / code_digest | 注册邀请码；记录启用状态、使用次数和过期时间 |
+| AccountSettings | account_settings | settings_id / account_id | 账户级 AI/MCP 配置与凭据；一对一属于 UserAccount |
 
-新增关系：`UserAccount 1:1 UserProfile`、`UserAccount 1:N AuthSession`。
+新增关系：`UserAccount 1:1 UserProfile`、`UserAccount 1:N AuthSession`、
+`UserAccount 1:1 AccountSettings`。
 `InviteCode` 由注册事务消费，但不拥有业务数据。所有已有
 `MealRecord`、`AgentThread`、`MemoryItem` 和 `DailyActivity` 仍通过
 `UserProfile.user_id` 归属；服务端从当前 `AuthSession` 解析该 profile。
@@ -21,6 +23,7 @@
 | 实体 | 表 | 来源 | 身份 | 所有者 |
 |---|---|---|---|---|
 | UserProfile | user_profile | 用户输入 + 派生 BMR | user_id | 课程应用 |
+| AccountSettings | account_settings | 账户设置 UI + 首账户兼容导入 | settings_id | UserAccount |
 | MealRecord | meal_records | 用户输入或审核后的 AI 结果 | record_id | UserProfile |
 | ExerciseSuggestion | exercise_suggestions | 规则/AI 建议与采纳状态 | suggestion_id | UserProfile |
 | ExerciseCalorieReference | exercise_calorie_reference | 版本化 reference seed | exercise_id | 应用参考目录 |

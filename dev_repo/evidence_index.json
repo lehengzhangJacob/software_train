@@ -1016,5 +1016,17 @@
       "path": "dev_repo/evidence/C-17/S1/verification.json",
       "description": "认证契约测试、Prisma 迁移、生产构建与临时数据库真实 HTTP 注册/登录/退出回归"
     }
+  ],
+  "C-17-S2": [
+    {
+      "type": "data_model_amendment",
+      "path": "prisma/schema.prisma, prisma/migrations/20260818193000_add_account_settings, dev_repo/architecture/decisions/ADR-0009-account-scoped-runtime-settings.md",
+      "description": "AccountSettings 一对一账户设置与凭据隔离；首账户兼容导入，后续账户空配置"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/S2/verification.json",
+      "description": "业务数据账户 owner 审计、双账户真实 HTTP 隔离回归、未登录 401 与完整质量门"
+    }
   ]
 }

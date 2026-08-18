@@ -27,8 +27,21 @@ export interface PublicAuthProfile {
   login: string
 }
 
+export interface AuthenticatedIdentity extends PublicAuthProfile {
+  accountId: number
+}
+
 function toPublicProfile(profile: { userId: number; username: string }, login: string): PublicAuthProfile {
   return { userId: profile.userId, username: profile.username, login }
+}
+
+function toAuthenticatedIdentity(
+  session: { account: { accountId: number; login: string; profile: { userId: number; username: string } } },
+): AuthenticatedIdentity {
+  return {
+    accountId: session.account.accountId,
+    ...toPublicProfile(session.account.profile, session.account.login),
+  }
 }
 
 export function getBootstrapInviteCode(): string {
@@ -93,9 +106,18 @@ export async function getSessionToken(): Promise<string | null> {
 }
 
 export async function getAuthenticatedProfile(): Promise<PublicAuthProfile | null> {
+  const identity = await getAuthenticatedIdentity()
+  if (!identity) return null
+  return {
+    userId: identity.userId,
+    username: identity.username,
+    login: identity.login,
+  }
+}
+
+export async function getAuthenticatedIdentity(): Promise<AuthenticatedIdentity | null> {
   const session = await findSession(await getSessionToken())
-  if (!session) return null
-  return toPublicProfile(session.account.profile, session.account.login)
+  return session ? toAuthenticatedIdentity(session) : null
 }
 
 export async function setSessionCookie(token: string) {

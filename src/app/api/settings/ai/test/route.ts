@@ -2,6 +2,7 @@ import { apiError, apiSuccess } from "@/lib/api-response"
 import { getAssistantText, requestAiChatCompletion } from "@/lib/ai/client"
 import { getPublicAiError } from "@/lib/ai/errors"
 import { getActiveAiProviderConfig } from "@/lib/ai/settings"
+import { getAccountScope } from "@/lib/auth/scope"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -10,7 +11,9 @@ export async function POST() {
   const startedAt = performance.now()
 
   try {
-    const config = await getActiveAiProviderConfig()
+    const scope = await getAccountScope()
+    if (scope.unauthorized) return apiError("unauthorized", 401)
+    const config = await getActiveAiProviderConfig(scope.accountId)
     const result = await requestAiChatCompletion(config, {
       messages: [{ role: "user", content: "只回复 OK" }],
       max_tokens: 32,

@@ -1,4 +1,5 @@
 import { apiError, apiSuccess } from "@/lib/api-response"
+import { authRequired } from "@/lib/access/gate"
 import { getCurrentUser } from "@/lib/current-user"
 import { prisma } from "@/lib/prisma"
 import { parseUserProfileInput, ValidationError } from "@/lib/validation"
@@ -16,12 +17,11 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     const input = parseUserProfileInput(await request.json())
-    const user = await prisma.$transaction(async (tx) => {
-      const current = await tx.userProfile.findFirst({ orderBy: { userId: "asc" } })
-      return current
-        ? tx.userProfile.update({ where: { userId: current.userId }, data: input })
-        : tx.userProfile.create({ data: input })
-    })
+    const current = await getCurrentUser()
+    if (!current && authRequired()) return apiError("unauthorized", 401)
+    const user = current
+      ? await prisma.userProfile.update({ where: { userId: current.userId }, data: input })
+      : await prisma.userProfile.create({ data: input })
 
     return apiSuccess(user)
   } catch (error) {

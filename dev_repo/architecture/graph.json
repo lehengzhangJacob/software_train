@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "amendment": {
     "contract_id": "C-11",
     "decision": "cloud_delivery_shared_gate_and_cloud_credentials",
@@ -8,7 +8,7 @@
   },
   "active_amendment": {
     "contract_id": "C-17",
-    "decision": "invited_account_authentication_and_profile_scoping",
+    "decision": "invited_account_authentication_profile_and_settings_scoping",
     "status": "in_progress",
     "return_to": "C-13-S3"
   },
@@ -272,7 +272,7 @@
         "/api/settings/ai/test"
       ],
       "depends_on": [
-        "local.secret_store",
+        "account.secret_store",
         "external.ai_providers"
       ],
       "depended_on_by": [
@@ -539,16 +539,21 @@
       "implementation_status": "active"
     },
     {
-      "id": "local.secret_store",
+      "id": "account.secret_store",
       "purpose": "保存 GUI 提交的 AI 与 MCP 凭据：文件位于运行服务一侧（本地开发机或云端服务器 data/ 目录），env 作回退；云端实例即凭据上云的落点",
+      "scope_note": "AccountSettings is the cloud source of truth; legacy files and environment variables are local no-account compatibility inputs only.",
       "owned_files": [
+        "src/lib/account/settings.ts",
         "src/lib/ai/settings.ts",
-        "data/credentials.json (runtime ignored)"
+        "src/lib/mcp/settings.ts",
+        "prisma/schema.prisma",
+        "data/credentials.json (legacy runtime ignored)",
+        "data/mcdonalds.json (legacy runtime ignored)"
       ],
       "public_interfaces": [
         "masked provider settings"
       ],
-      "depends_on": [],
+      "depends_on": ["auth.identity", "database.prisma"],
       "depended_on_by": [
         "ai.gateway",
         "mcp.gateway"
@@ -558,8 +563,8 @@
         "凭据不进入 Git、日志或 Agent 记忆"
       ],
       "allowed_change_types": [
-        "local credential format",
-        "OS credential adapter"
+        "account credential format",
+        "credential encryption or rotation"
       ],
       "requires_amendment_when": [
         "凭据交由第三方托管服务或 KMS"
@@ -679,7 +684,7 @@
         "guarded tool invocation"
       ],
       "depends_on": [
-        "local.secret_store",
+        "account.secret_store",
         "action.policy",
         "external.mcp_services"
       ],
@@ -989,8 +994,8 @@
     },
     {
       "source": "ai.gateway",
-      "target": "local.secret_store",
-      "label": "reads local credentials"
+      "target": "account.secret_store",
+      "label": "reads account-scoped credentials"
     },
     {
       "source": "agent.runtime",

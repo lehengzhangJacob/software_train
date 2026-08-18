@@ -1,5 +1,5 @@
 {
-  "schema_version": 7,
+  "schema_version": 8,
   "relationships": [
     {
       "name": "UserAccount_binds_UserProfile",
@@ -23,6 +23,18 @@
       "on_delete": "CASCADE",
       "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818190000_add_account_auth"],
       "invariant": "A session belongs to one account and can be revoked independently",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserAccount_has_AccountSettings",
+      "source": "UserAccount",
+      "target": "AccountSettings",
+      "cardinality": "1:1",
+      "via": "AccountSettings.account_id",
+      "owner": "UserAccount",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818193000_add_account_settings"],
+      "invariant": "AI and McDonald's credentials are readable only through the authenticated account",
       "confidence": "confirmed"
     },
     {

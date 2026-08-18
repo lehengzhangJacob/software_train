@@ -6,13 +6,11 @@ import {
   MCP_MAX_OUTPUT_BYTES,
   MCP_TIMEOUT_MS,
   McpToolError,
-  McpUnavailableError,
   type NearbyTakeoutSearchInput,
   type TakeoutOrderSubmission,
   type TakeoutSearchResult,
-  configuredMcpEndpoint,
 } from "@/lib/mcp/contracts"
-import { getPublicMcDonaldSettings } from "@/lib/mcp/settings"
+import { getMcDonaldMcpConfig, getPublicMcDonaldSettings } from "@/lib/mcp/settings"
 
 function safeText(value: unknown, maxLength: number) {
   return typeof value === "string" ? value.replace(/[\r\n]+/g, " ").trim().slice(0, maxLength) : ""
@@ -48,19 +46,18 @@ function parseSearchResults(value: unknown): TakeoutSearchResult[] {
   })
 }
 
-async function callConfiguredMcp(tool: string, input: unknown) {
-  const endpoint = configuredMcpEndpoint()
-  if (!endpoint) throw new McpUnavailableError()
+async function callConfiguredMcp(tool: string, input: unknown, accountId?: number) {
+  const config = await getMcDonaldMcpConfig(accountId)
   const body = JSON.stringify({ tool, input })
   if (Buffer.byteLength(body, "utf8") > MCP_MAX_INPUT_BYTES) throw new McpToolError("MCP 请求参数过大")
 
   let response: Response
   try {
-    response = await fetch(endpoint, {
+    response = await fetch(config.endpoint, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...(process.env.TAKEOUT_MCP_API_KEY ? { Authorization: `Bearer ${process.env.TAKEOUT_MCP_API_KEY}` } : {}),
+        Authorization: `Bearer ${config.token}`,
       },
       body,
       signal: AbortSignal.timeout(MCP_TIMEOUT_MS),
@@ -82,25 +79,25 @@ async function callConfiguredMcp(tool: string, input: unknown) {
   }
 }
 
-export async function listMcpTools() {
-  const configured = (await getPublicMcDonaldSettings()).tokenConfigured
+export async function listMcpTools(accountId?: number) {
+  const configured = (await getPublicMcDonaldSettings(accountId)).tokenConfigured
   return MCDONALD_TOOL_DEFINITIONS.map((tool) => ({
     ...tool,
     configured,
   }))
 }
 
-export async function searchNearbyTakeout(input: NearbyTakeoutSearchInput) {
-  const result = await callConfiguredMcp("nearby_takeout_search", input)
+export async function searchNearbyTakeout(input: NearbyTakeoutSearchInput, accountId?: number) {
+  const result = await callConfiguredMcp("nearby_takeout_search", input, accountId)
   return parseSearchResults(result)
 }
 
-export function assertConfiguredMcp() {
-  if (!configuredMcpEndpoint()) throw new McpUnavailableError()
+export async function assertConfiguredMcp(accountId?: number) {
+  await getMcDonaldMcpConfig(accountId)
 }
 
-export async function submitTakeoutOrder(draft: TakeoutOrderSubmission) {
-  const result = await callConfiguredMcp("takeout_order_submit", draft)
+export async function submitTakeoutOrder(draft: TakeoutOrderSubmission, accountId?: number) {
+  const result = await callConfiguredMcp("takeout_order_submit", draft, accountId)
   const status = result && typeof result === "object" ? safeText((result as Record<string, unknown>).status, 40) : ""
   if (!["submitted", "accepted", "pending", "confirmed", "success"].includes(status.toLowerCase())) {
     throw new McpToolError("MCP 未确认订单已被接收")

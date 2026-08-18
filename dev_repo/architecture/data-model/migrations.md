@@ -18,6 +18,22 @@
 5. The old `APP_ACCESS_TOKEN` may be copied into a hashed `InviteCode` bootstrap
    row on the server. It must not remain a middleware authorization shortcut.
 
+## C-17-S2 账户设置迁移
+
+1. `20260818193000_add_account_settings` creates only the one-to-one
+   `account_settings` table; existing nutrition, conversation, memory, and
+   activity rows are untouched.
+2. Registration provisions one settings row after the account transaction.
+   The first account may import the ignored legacy AI/MCP files; subsequent
+   accounts receive validated defaults and never inherit another account's
+   stored credential.
+3. Account-scoped API reads do not use the legacy files or deployment
+   environment variables as a fallback. Those sources remain available only
+   when the local compatibility mode has no authenticated account.
+4. Verification compares the existing business row counts and profile IDs,
+   checks Prisma migration status plus SQLite integrity/foreign keys, and runs
+   a two-account HTTP isolation smoke before cloud deployment.
+
 ## 当前实物
 
 - 当前数据库由 prisma db push 创建。

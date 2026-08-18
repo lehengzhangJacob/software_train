@@ -1,11 +1,16 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "architecture_entry": "dev_repo/architecture/README.md",
   "files": [
     {
       "path": "dev_repo/architecture/decisions/ADR-0008-account-authentication-and-invite-registration.md",
       "node": "auth.identity",
       "description": "Invited account authentication, sessions, and profile scoping"
+    },
+    {
+      "path": "dev_repo/architecture/decisions/ADR-0009-account-scoped-runtime-settings.md",
+      "node": "account.secret_store",
+      "description": "Account-owned AI and McDonald's runtime settings"
     },
     {
       "path": "dev_repo/architecture/README.md",
@@ -217,6 +222,10 @@
     {
       "glob": "src/lib/auth/**",
       "node": "auth.identity"
+    },
+    {
+      "glob": "src/lib/account/**",
+      "node": "account.secret_store"
     },
     {
       "glob": "src/app/auth/**",

@@ -62,9 +62,10 @@ async function connectMcDonaldMcp(config: McDonaldMcpConfig) {
 
 export async function withMcDonaldMcp<T>(
   run: (session: McDonaldMcpSession) => Promise<T>,
-  config?: McDonaldMcpConfig
+  config?: McDonaldMcpConfig,
+  accountId?: number,
 ) {
-  const connection = await connectMcDonaldMcp(config ?? await getMcDonaldMcpConfig())
+  const connection = await connectMcDonaldMcp(config ?? await getMcDonaldMcpConfig(accountId))
   const session: McDonaldMcpSession = {
     async listTools() {
       const result = await connection.client.listTools()
@@ -88,12 +89,12 @@ export async function withMcDonaldMcp<T>(
   }
 }
 
-export async function probeMcDonaldMcp(config?: McDonaldMcpConfig) {
+export async function probeMcDonaldMcp(config?: McDonaldMcpConfig, accountId?: number) {
   return withMcDonaldMcp(async (session) => {
     const tools = await session.listTools()
     const required = ["delivery-query-addresses", "delivery-query-stores", "query-meals", "calculate-price", "create-order", "query-order"]
     const missing = required.filter((tool) => !tools.includes(tool))
     if (missing.length) throw new McpToolError("麦当劳 MCP 缺少必要点餐工具")
     return { toolCount: tools.length, orderingTools: required }
-  }, config)
+  }, config, accountId)
 }

@@ -1,5 +1,6 @@
 erDiagram
   UserAccount ||--|| UserProfile : authenticates
+  UserAccount ||--o| AccountSettings : configures
   UserAccount ||--o{ AuthSession : opens
   InviteCode }o--o{ UserAccount : admits
   %% C-05-A1: active/unexpired Agent inferences are eligible before user review;
@@ -57,6 +58,15 @@ erDiagram
     int used_count
     datetime expires_at
     boolean active
+  }
+  AccountSettings {
+    int settings_id PK
+    int account_id FK UK
+    string ai_settings_json
+    string mcdonalds_endpoint
+    string mcdonalds_token
+    datetime created_at
+    datetime updated_at
   }
   MealRecord {
     int record_id PK

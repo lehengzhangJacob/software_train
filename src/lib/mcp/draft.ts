@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto"
 import { issueActionConfirmation } from "@/lib/actions/policy"
 import type { TakeoutOrderDraftInput, TakeoutOrderSubmission } from "@/lib/mcp/contracts"
 
-export function createTakeoutOrderDraft(input: TakeoutOrderDraftInput) {
+export function createTakeoutOrderDraft(input: TakeoutOrderDraftInput, accountId?: number) {
   const totalCents = input.items.reduce((sum, item) => sum + item.quantity * item.unitPriceCents, 0)
   const submission: TakeoutOrderSubmission = { ...input, totalCents }
   const draft = {
@@ -14,6 +14,6 @@ export function createTakeoutOrderDraft(input: TakeoutOrderDraftInput) {
   }
   return {
     ...draft,
-    confirmation: issueActionConfirmation(draft.toolName, submission),
+    confirmation: issueActionConfirmation(draft.toolName, submission, Date.now(), accountId),
   }
 }

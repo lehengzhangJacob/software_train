@@ -9,6 +9,12 @@ conversation, memory, MCP, and health records remain in the same single-instance
 SQLite database; their existing `user_id` columns continue to point to the
 profile selected from the authenticated session.
 
+AI provider settings and the McDonald's token are now stored in the one-to-one
+`AccountSettings` row. The first account may import the legacy runtime files;
+later accounts start with empty credential settings. Environment variables are
+available only to the legacy local fallback, never as another account's stored
+credential.
+
 The former primary-profile rule is retained only as a compatibility rule for
 the first registrations that claim existing demo profiles. It is no longer an
 authorization boundary.

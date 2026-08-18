@@ -2,6 +2,7 @@ import { apiError, apiSuccess } from "@/lib/api-response"
 import { getAssistantText, requestAiChatCompletion } from "@/lib/ai/client"
 import { getPublicAiError } from "@/lib/ai/errors"
 import { getActiveAiProviderConfig } from "@/lib/ai/settings"
+import { getAccountScope } from "@/lib/auth/scope"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -104,7 +105,9 @@ export async function POST(request: Request) {
       return apiError("仅支持 JPEG、PNG 或 WebP 图片", 415)
     }
 
-    const config = await getActiveAiProviderConfig()
+    const scope = await getAccountScope()
+    if (scope.unauthorized) return apiError("unauthorized", 401)
+    const config = await getActiveAiProviderConfig(scope.accountId)
     if (config.visionCapability === "unsupported") {
       return apiError("当前 AI 提供商预设为文本模型，请切换到支持图片的模型", 422)
     }

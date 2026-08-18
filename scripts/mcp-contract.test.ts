@@ -77,6 +77,26 @@ test("order draft never submits and binds confirmation to final parameters", () 
   assert.throws(() => assertActionConfirmation(draft.confirmation.token, "takeout_order_submit", {}), ActionPolicyError)
 })
 
+test("order confirmation tokens are bound to the issuing account", () => {
+  const draft = createTakeoutOrderDraft(parseTakeoutOrderDraftInput({
+    restaurantId: "r-scoped",
+    restaurantName: "Account scoped restaurant",
+    deliveryAddress: "Private address",
+    items: [{ name: "Meal", unitPriceCents: 1200 }],
+  }), 101)
+  const submission = {
+    restaurantId: draft.restaurantId,
+    restaurantName: draft.restaurantName,
+    deliveryAddress: draft.deliveryAddress,
+    items: draft.items,
+    note: draft.note,
+    currency: draft.currency,
+    totalCents: draft.totalCents,
+  }
+  assert.doesNotThrow(() => assertActionConfirmation(draft.confirmation.token, "takeout_order_submit", submission, Date.now(), 101))
+  assert.throws(() => assertActionConfirmation(draft.confirmation.token, "takeout_order_submit", submission, Date.now(), 202), ActionPolicyError)
+})
+
 test("tool registry exposes connector state without credentials", () => {
   const tools = MCP_TOOL_DEFINITIONS
   assert.equal(tools.some((tool) => tool.name === "nearby_takeout_search"), true)

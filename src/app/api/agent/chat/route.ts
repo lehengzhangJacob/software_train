@@ -29,12 +29,13 @@ import {
 } from "@/lib/agent/ordering"
 import { hasExplicitOrderingIntent } from "@/lib/agent/ordering-intent"
 import { issueOrderingGrant } from "@/lib/actions/policy"
-import { getCurrentUser } from "@/lib/current-user"
+import { getCurrentAccountId, getCurrentUser } from "@/lib/current-user"
 import { getAssistantText, requestAiChatCompletion } from "@/lib/ai/client"
 import { getPublicAiError } from "@/lib/ai/errors"
 import { getActiveAiProviderConfig, type ResolvedAiProviderConfig } from "@/lib/ai/settings"
 import { markMemoriesUsed } from "@/lib/memory/repository"
 import { withMcDonaldMcp } from "@/lib/mcp/mcdonalds-client"
+import { getMcDonaldMcpConfig, type McDonaldMcpConfig } from "@/lib/mcp/settings"
 import { createAgentActivityRecorder, runAgentActivity } from "@/lib/agent/activity"
 import { getTodayStr } from "@/lib/utils"
 import { after } from "next/server"
@@ -79,6 +80,7 @@ async function runOrderingPlan(
   config: ResolvedAiProviderConfig,
   message: string,
   context: Awaited<ReturnType<typeof getAgentContext>>,
+  mcpConfig: McDonaldMcpConfig,
   reportActivity?: AgentActivityReporter,
 ): Promise<OrderingOutcome> {
   const today = getTodayStr()
@@ -90,7 +92,7 @@ async function runOrderingPlan(
     : null
   return planMcDonaldOrder(
     {
-      openSession: (run) => withMcDonaldMcp(run),
+      openSession: (run) => withMcDonaldMcp(run, mcpConfig),
       selectItems: selectItemsWithModel(config),
       reportActivity,
     },
@@ -151,10 +153,11 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
   const recorder = createAgentActivityRecorder(onActivity)
   const user = await getCurrentUser()
   if (!user) throw new AgentNotFoundError("请先创建个人档案")
+  const accountId = await getCurrentAccountId()
 
   // Resolve credentials before creating a thread so an unconfigured local
   // provider cannot leave behind a ghost conversation.
-  const config = await getActiveAiProviderConfig()
+  const config = await getActiveAiProviderConfig(accountId ?? undefined)
   const threadId = await ensureAgentThread(user.userId, input.threadId, titleFromMessage(input.message))
   const userMessage = await appendAgentMessage(user.userId, threadId, "user", input.message)
   const [context, sessionDigest, history] = await runAgentActivity(
@@ -187,9 +190,10 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
       },
       async () => issueOrderingGrant(true),
     )
-    const outcome = await runOrderingPlan(config, input.message, context, recorder.emit)
+    const mcpConfig = await getMcDonaldMcpConfig(accountId ?? undefined)
+    const outcome = await runOrderingPlan(config, input.message, context, mcpConfig, recorder.emit)
     if (outcome.status === "planned") {
-      const execution = await executeMcDonaldOrder((run) => withMcDonaldMcp(run), grant, outcome.plan, recorder.emit)
+      const execution = await executeMcDonaldOrder((run) => withMcDonaldMcp(run, mcpConfig), grant, outcome.plan, recorder.emit)
       const assistantMessage = await appendAgentMessage(
         user.userId,
         threadId,

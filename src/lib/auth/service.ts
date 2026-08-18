@@ -2,6 +2,7 @@ import "server-only"
 
 import type { Prisma } from "@prisma/client"
 
+import { ensureAccountSettings } from "@/lib/account/settings"
 import { prisma } from "@/lib/prisma"
 import { digestToken, hashPassword, normalizeLogin, verifyPassword } from "@/lib/auth/crypto"
 import {
@@ -29,6 +30,7 @@ function inviteIsUsable(invite: { active: boolean; usedCount: number; maxUses: n
 }
 
 export interface AuthResult {
+  accountId: number
   token: string
   profile: ReturnType<typeof publicProfile>
 }
@@ -38,7 +40,7 @@ export async function registerAccount(input: RegisterInput): Promise<AuthResult>
   const login = normalizeLogin(input.login)
   const codeDigest = digestToken(input.inviteCode)
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const invite = await tx.inviteCode.findUnique({ where: { codeDigest } })
     if (!invite || !inviteIsUsable(invite)) {
       throw new AuthFailure("娉ㄥ唽閭€璇风爜鏃犳晥鎴栧凡鐢ㄥ敖", 422)
@@ -86,8 +88,10 @@ export async function registerAccount(input: RegisterInput): Promise<AuthResult>
       },
     })
     const session = await createSessionRecord(tx, account.accountId)
-    return { token: session.token, profile: publicProfile(profile, account.login) }
+    return { accountId: account.accountId, token: session.token, profile: publicProfile(profile, account.login) }
   })
+  await ensureAccountSettings(result.accountId)
+  return result
 }
 
 export async function loginAccount(input: LoginInput): Promise<AuthResult> {
@@ -102,7 +106,8 @@ export async function loginAccount(input: LoginInput): Promise<AuthResult> {
   }
 
   const session = await createSessionRecord(prisma, account.accountId)
-  return { token: session.token, profile: publicProfile(account.profile, account.login) }
+  await ensureAccountSettings(account.accountId)
+  return { accountId: account.accountId, token: session.token, profile: publicProfile(account.profile, account.login) }
 }
 
 export function toAuthResponse(result: AuthResult) {

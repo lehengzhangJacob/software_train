@@ -145,7 +145,9 @@ export async function consolidateAgentSession(userId: number, threadId: number):
       import("@/lib/ai/settings"),
       import("@/lib/ai/client"),
     ])
-    const config = await getActiveAiProviderConfig()
+    const { getAccountIdForProfile } = await import("@/lib/current-user")
+    const accountId = await getAccountIdForProfile(userId)
+    const config = await getActiveAiProviderConfig(accountId ?? undefined)
     const completion = await requestAiChatCompletion(
       config,
       {

@@ -1,6 +1,6 @@
 {
-  "schema_version": 7,
-  "source_of_truth": ["prisma/migrations/**", "prisma/schema.prisma", "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md"],
+  "schema_version": 8,
+  "source_of_truth": ["prisma/migrations/**", "prisma/schema.prisma", "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "dev_repo/architecture/decisions/ADR-0009-account-scoped-runtime-settings.md"],
   "entities": [
     {
       "name": "UserAccount",
@@ -73,6 +73,30 @@
       ],
       "migration_notes": "Bootstrap invite is seeded from server-only configuration; no raw code is committed",
       "requires_amendment_when": ["adding public invite management", "changing consumption or expiry semantics"],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "AccountSettings",
+      "table": "account_settings",
+      "purpose": "Per-account AI provider settings and McDonald's MCP credential",
+      "owning_architecture_node": "auth.identity",
+      "source_or_derived": "source",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818193000_add_account_settings", "src/lib/account/settings.ts"],
+      "identity": {"field": "settings_id", "business_key": "account_id"},
+      "ownership": {"field": "account_id", "entity": "UserAccount", "cardinality": "1:1"},
+      "state_fields": ["ai_settings_json", "mcdonalds_endpoint", "mcdonalds_token"],
+      "derived_from": {"ai_settings_json": "settings UI or first-account legacy import", "mcdonalds_token": "settings UI or first-account legacy import"},
+      "fields": [
+        {"name": "settings_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "account_id", "type": "INTEGER", "fk": "UserAccount.account_id", "unique": true, "nullable": false},
+        {"name": "ai_settings_json", "type": "TEXT_JSON", "nullable": true, "must_not_expose": true},
+        {"name": "mcdonalds_endpoint", "type": "TEXT", "nullable": false, "default": "https://mcp.mcd.cn"},
+        {"name": "mcdonalds_token", "type": "TEXT", "nullable": true, "must_not_expose": true},
+        {"name": "created_at", "type": "DATETIME", "nullable": false},
+        {"name": "updated_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "C-17-S2 creates an empty row per registered account; the first account may import legacy runtime files, later accounts receive defaults",
+      "requires_amendment_when": ["adding shared settings", "moving secrets outside account ownership", "changing credential encryption or rotation"],
       "confidence": "confirmed"
     },
     {

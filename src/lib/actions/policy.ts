@@ -15,6 +15,7 @@ interface PendingConfirmation {
   token: string
   toolName: string
   paramsFingerprint: string
+  accountId?: number
   createdAt: number
   expiresAt: number
 }
@@ -69,7 +70,7 @@ export function issueOrderingGrant(intentRecognized: boolean): OrderingGrant {
   }
 }
 
-export function issueActionConfirmation(toolName: string, params: unknown, now = Date.now()) {
+export function issueActionConfirmation(toolName: string, params: unknown, now = Date.now(), accountId?: number) {
   if (classifyAction(toolName) !== "external_write") {
     throw new ActionPolicyError("只有外部写操作需要确认")
   }
@@ -79,6 +80,7 @@ export function issueActionConfirmation(toolName: string, params: unknown, now =
     token,
     toolName,
     paramsFingerprint: fingerprint(params),
+    ...(accountId === undefined ? {} : { accountId }),
     createdAt: now,
     expiresAt: now + ACTION_CONFIRMATION_TTL_MS,
   }
@@ -90,17 +92,19 @@ export function issueActionConfirmation(toolName: string, params: unknown, now =
   }
 }
 
-export function assertActionConfirmation(token: unknown, toolName: string, params: unknown, now = Date.now()) {
+export function assertActionConfirmation(token: unknown, toolName: string, params: unknown, now = Date.now(), accountId?: number) {
   if (typeof token !== "string" || !token.trim()) throw new ActionPolicyError("缺少动作确认令牌")
   purgeExpired(now)
   const confirmation = pendingConfirmations.get(token)
-  if (!confirmation || confirmation.toolName !== toolName) throw new ActionPolicyError("动作确认令牌无效或已过期")
+  if (!confirmation || confirmation.toolName !== toolName || confirmation.accountId !== accountId) {
+    throw new ActionPolicyError("动作确认令牌无效或已过期")
+  }
   if (confirmation.paramsFingerprint !== fingerprint(params)) throw new ActionPolicyError("订单参数已变化，请重新确认")
   return confirmation
 }
 
-export function consumeActionConfirmation(token: unknown, toolName: string, params: unknown, now = Date.now()) {
-  const confirmation = assertActionConfirmation(token, toolName, params, now)
+export function consumeActionConfirmation(token: unknown, toolName: string, params: unknown, now = Date.now(), accountId?: number) {
+  const confirmation = assertActionConfirmation(token, toolName, params, now, accountId)
   pendingConfirmations.delete(confirmation.token)
   return confirmation
 }

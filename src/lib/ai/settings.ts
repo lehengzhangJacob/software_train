@@ -2,6 +2,7 @@ import "@/lib/ai/server-only"
 
 import { chmod, mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises"
 import path from "node:path"
+import { ensureAccountSettings, parseAccountAiSettings, saveAccountAiSettings } from "@/lib/account/settings"
 import { AiSettingsStoreError, MissingAiCredentialError } from "@/lib/ai/errors"
 import {
   AI_PROVIDER_PRESETS,
@@ -42,7 +43,7 @@ export interface PublicAiProviderSettings extends AiProviderPreset {
   visionModel: string
   keyConfigured: boolean
   keyHint: string | null
-  credentialSource: "local-file" | "environment" | null
+  credentialSource: "account" | "local-file" | "environment" | null
   ready: boolean
   updatedAt: string | null
 }
@@ -63,7 +64,7 @@ export interface ResolvedAiProviderConfig {
 
 interface CredentialResolution {
   apiKey: string | undefined
-  source: "local-file" | "environment" | null
+  source: "account" | "local-file" | "environment" | null
 }
 
 let writeQueue: Promise<void> = Promise.resolve()
@@ -94,9 +95,14 @@ function resolveEndpointValue(
   }
 }
 
-function resolveCredential(record: StoredAiProviderSettings | undefined, providerId: AiProviderId): CredentialResolution {
+function resolveCredential(
+  record: StoredAiProviderSettings | undefined,
+  providerId: AiProviderId,
+  accountScoped = false,
+): CredentialResolution {
   if (record?.apiKey === null) return { apiKey: undefined, source: null }
-  if (record?.apiKey) return { apiKey: record.apiKey, source: "local-file" }
+  if (record?.apiKey) return { apiKey: record.apiKey, source: accountScoped ? "account" : "local-file" }
+  if (accountScoped) return { apiKey: undefined, source: null }
 
   const apiKey = environmentValue(environmentKeys[providerId]?.key)
   return apiKey
@@ -104,7 +110,7 @@ function resolveCredential(record: StoredAiProviderSettings | undefined, provide
     : { apiKey: undefined, source: null }
 }
 
-async function readAiSettings(): Promise<StoredAiSettings> {
+async function readLegacyAiSettings(): Promise<StoredAiSettings> {
   let raw: string
   try {
     raw = await readFile(CREDENTIALS_PATH, "utf8")
@@ -122,7 +128,7 @@ async function readAiSettings(): Promise<StoredAiSettings> {
   }
 }
 
-async function writeAiSettings(settings: StoredAiSettings) {
+async function writeLegacyAiSettings(settings: StoredAiSettings) {
   const directory = path.dirname(CREDENTIALS_PATH)
   const temporaryPath = `${CREDENTIALS_PATH}.${process.pid}.${Date.now()}.tmp`
   await mkdir(directory, { recursive: true })
@@ -137,19 +143,36 @@ async function writeAiSettings(settings: StoredAiSettings) {
   }
 }
 
-function toPublicSettings(settings: StoredAiSettings): PublicAiSettings {
+async function readAiSettings(accountId?: number): Promise<StoredAiSettings> {
+  if (accountId === undefined) return readLegacyAiSettings()
+  return parseAccountAiSettings(await ensureAccountSettings(accountId))
+}
+
+async function writeAiSettings(settings: StoredAiSettings, accountId?: number) {
+  if (accountId !== undefined) {
+    await saveAccountAiSettings(accountId, settings)
+    return
+  }
+  await writeLegacyAiSettings(settings)
+}
+
+function toPublicSettings(settings: StoredAiSettings, accountId?: number): PublicAiSettings {
   return {
     activeProvider: settings.activeProvider,
     providers: AI_PROVIDER_PRESETS.map((provider) => {
       const record = settings.providers[provider.id]
       const endpoint = resolveEndpointValue(record, provider)
-      const credential = resolveCredential(record, provider.id)
+      const credential = resolveCredential(record, provider.id, accountId !== undefined)
 
       return {
         ...provider,
         ...endpoint,
         keyConfigured: Boolean(credential.apiKey),
-        keyHint: credential.source === "local-file" && credential.apiKey ? maskApiKey(credential.apiKey) : credential.source === "environment" ? "环境变量" : null,
+      keyHint: (credential.source === "account" || credential.source === "local-file") && credential.apiKey
+        ? maskApiKey(credential.apiKey)
+        : credential.source === "environment"
+          ? "环境变量"
+          : null,
         credentialSource: credential.source,
         ready: !provider.requiresApiKey || Boolean(credential.apiKey),
         updatedAt: record?.updatedAt ?? null,
@@ -158,17 +181,17 @@ function toPublicSettings(settings: StoredAiSettings): PublicAiSettings {
   }
 }
 
-export async function getPublicAiSettings(): Promise<PublicAiSettings> {
-  return toPublicSettings(await readAiSettings())
+export async function getPublicAiSettings(accountId?: number): Promise<PublicAiSettings> {
+  return toPublicSettings(await readAiSettings(accountId), accountId)
 }
 
-export async function saveAiSettings(rawUpdate: unknown): Promise<PublicAiSettings> {
+export async function saveAiSettings(rawUpdate: unknown, accountId?: number): Promise<PublicAiSettings> {
   const update = parseAiSettingsUpdate(rawUpdate)
   const task = async () => {
-    const current = await readAiSettings()
+    const current = await readAiSettings(accountId)
     const next = applyAiSettingsUpdate(current, update)
-    await writeAiSettings(next)
-    return toPublicSettings(next)
+    await writeAiSettings(next, accountId)
+    return toPublicSettings(next, accountId)
   }
 
   const result = writeQueue.then(task)
@@ -179,8 +202,8 @@ export async function saveAiSettings(rawUpdate: unknown): Promise<PublicAiSettin
   return result
 }
 
-export async function getActiveAiProviderConfig(): Promise<ResolvedAiProviderConfig> {
-  const settings = await readAiSettings()
+export async function getActiveAiProviderConfig(accountId?: number): Promise<ResolvedAiProviderConfig> {
+  const settings = await readAiSettings(accountId)
   const provider = getAiProviderPreset(settings.activeProvider)
   const record = settings.providers[provider.id]
   const endpoint = resolveEndpointValue(record, provider)

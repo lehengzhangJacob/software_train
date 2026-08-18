@@ -14,6 +14,12 @@ The earlier single-user statement is superseded by this amendment:
     accounts cannot claim or read another account's profile.
 27. The AI gateway, MCP action policy, memory provenance, Health Connect raw
     data boundary, and single-instance SQLite authority remain unchanged.
+28. `AccountSettings` is one-to-one with `UserAccount`; account-scoped AI and
+    McDonald's settings are read and written only through the authenticated
+    account. A later account never inherits another account's stored secret.
+29. Legacy credential files and deployment environment variables are compatibility
+    inputs only. Account-scoped reads do not fall back to another account's file
+    or environment credential.
 
 1. 产品边界是私有单用户个人营养 Agent；本地开发与云端交付实例共享同一代码与单用户模型，云端公网可达性仅由共享访问码门约束（ADR-0007）。引入个人账号体系、第二并发用户或离线双写同步引擎必须另开架构与 ER 修宪合同。
 2. 个性化页面必须动态渲染，构建产物不得包含用户档案或餐食 PII。
