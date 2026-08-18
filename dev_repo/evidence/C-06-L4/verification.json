@@ -1,0 +1,66 @@
+{
+  "contract": "C-06-L4",
+  "slice": "C-06-L4-release",
+  "date": "2026-08-18",
+  "summary": "C-06-L4 passed the real McDonald's Token smoke, desktop/mobile Agent regression, light/dark theme regression, and final release gate.",
+  "real_token_smoke": {
+    "endpoint": "POST /api/settings/mcdonalds/test",
+    "status": 200,
+    "tool_count": 29,
+    "ordering_tools": [
+      "delivery-query-addresses",
+      "delivery-query-stores",
+      "query-meals",
+      "calculate-price",
+      "create-order",
+      "query-order"
+    ],
+    "latency_ms": 1032,
+    "create_order_invoked": false,
+    "payment_invoked": false,
+    "token_output": false
+  },
+  "browser_regression": {
+    "desktop_light": {
+      "viewport": "1440x900",
+      "document_client_width": 1425,
+      "document_scroll_width": 1425,
+      "agent_heading_visible": true,
+      "input_bounds": "x=502 right=1329 width=827"
+    },
+    "desktop_dark": {
+      "viewport": "1440x900",
+      "document_client_width": 1425,
+      "document_scroll_width": 1425,
+      "agent_heading_visible": true,
+      "input_bounds": "x=502 right=1329 width=827"
+    },
+    "mobile_light": {
+      "viewport": "375x800",
+      "document_client_width": 360,
+      "document_scroll_width": 360,
+      "agent_heading_visible": true,
+      "input_bounds": "x=37 right=284 width=247"
+    },
+    "mobile_dark": {
+      "viewport": "375x800",
+      "document_client_width": 360,
+      "document_scroll_width": 360,
+      "agent_heading_visible": true,
+      "input_bounds": "x=37 right=284 width=247"
+    },
+    "no_horizontal_overflow": true,
+    "browser_state_restored": "follow-system theme and default viewport"
+  },
+  "release_gate": {
+    "command": "npm run release:check",
+    "status": "pass",
+    "details": "Migration status, zero-backfill migration replay, full verify, Memory/Agent/MCP API checks, and production smoke all passed; lint has 0 errors and 16 pre-existing generated Android warnings."
+  },
+  "safety": {
+    "external_order_write": "not invoked",
+    "payment_confirmation": "not invoked",
+    "credentials_persisted_in_repo": false
+  },
+  "return_to": "web_completion_audit"
+}
