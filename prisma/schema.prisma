@@ -31,8 +31,54 @@ model UserProfile {
   agentThreads        AgentThread[]
   memoryItems         MemoryItem[]
   dailyActivities     DailyActivity[]
+  account             UserAccount?
 
   @@map("user_profile")
+}
+
+model UserAccount {
+  accountId    Int      @id @default(autoincrement()) @map("account_id")
+  login        String   @unique
+  passwordHash String   @map("password_hash")
+  status       String   @default("active")
+  profileId    Int      @unique @map("profile_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  profile  UserProfile  @relation(fields: [profileId], references: [userId], onDelete: Cascade)
+  sessions AuthSession[]
+
+  @@index([status], name: "idx_user_account_status")
+  @@map("user_accounts")
+}
+
+model AuthSession {
+  sessionId  Int      @id @default(autoincrement()) @map("session_id")
+  accountId  Int      @map("account_id")
+  tokenDigest String   @unique @map("token_digest")
+  expiresAt  DateTime @map("expires_at")
+  lastSeenAt DateTime @default(now()) @map("last_seen_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  account UserAccount @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@index([accountId, expiresAt], name: "idx_auth_session_account_expiry")
+  @@map("auth_sessions")
+}
+
+model InviteCode {
+  inviteId  Int      @id @default(autoincrement()) @map("invite_id")
+  codeDigest String   @unique @map("code_digest")
+  label     String?
+  maxUses   Int      @default(1) @map("max_uses")
+  usedCount Int      @default(0) @map("used_count")
+  expiresAt DateTime? @map("expires_at")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([active, expiresAt], name: "idx_invite_code_active_expiry")
+  @@map("invite_codes")
 }
 
 model MealRecord {

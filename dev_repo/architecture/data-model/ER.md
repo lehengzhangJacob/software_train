@@ -1,5 +1,21 @@
 # 实体关系与所有权
 
+## C-17 账户实体与认证关系
+
+| 实体 | 表 | 身份 | 所有权/说明 |
+|---|---|---|---|
+| UserAccount | user_accounts | account_id / login | 账户凭据与状态；一对一绑定 UserProfile |
+| AuthSession | auth_sessions | session_id / token_digest | 可撤销的登录会话；多条会话属于一个 UserAccount |
+| InviteCode | invite_codes | invite_id / code_digest | 注册邀请码；记录启用状态、使用次数和过期时间 |
+
+新增关系：`UserAccount 1:1 UserProfile`、`UserAccount 1:N AuthSession`。
+`InviteCode` 由注册事务消费，但不拥有业务数据。所有已有
+`MealRecord`、`AgentThread`、`MemoryItem` 和 `DailyActivity` 仍通过
+`UserProfile.user_id` 归属；服务端从当前 `AuthSession` 解析该 profile。
+
+旧的 primary profile 规则仅用于兼容首次注册时认领导入档案，不再作为
+生产授权边界。
+
 ## 实体
 
 | 实体 | 表 | 来源 | 身份 | 所有者 |

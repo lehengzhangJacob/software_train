@@ -1,4 +1,7 @@
 erDiagram
+  UserAccount ||--|| UserProfile : authenticates
+  UserAccount ||--o{ AuthSession : opens
+  InviteCode }o--o{ UserAccount : admits
   %% C-05-A1: active/unexpired Agent inferences are eligible before user review;
   %% is_user_confirmed records review provenance, while disabled exact matches suppress regeneration.
   %% C-06-A1: DailyActivity stores per-day aggregates only (steps, active calories,
@@ -28,6 +31,32 @@ erDiagram
     int daily_calorie_target
     float bmr DERIVED
     string activity_level
+  }
+  UserAccount {
+    int account_id PK
+    string login UK
+    string password_hash
+    string status
+    int profile_id FK UK
+    datetime created_at
+    datetime updated_at
+  }
+  AuthSession {
+    int session_id PK
+    int account_id FK
+    string token_digest UK
+    datetime expires_at
+    datetime last_seen_at
+    datetime created_at
+  }
+  InviteCode {
+    int invite_id PK
+    string code_digest UK
+    string label
+    int max_uses
+    int used_count
+    datetime expires_at
+    boolean active
   }
   MealRecord {
     int record_id PK

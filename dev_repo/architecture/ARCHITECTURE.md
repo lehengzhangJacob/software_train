@@ -1,5 +1,28 @@
 # Nutrition Agent 架构
 
+## C-17 账户身份与授权边界
+
+The product now supports invited user accounts while keeping the existing
+single-instance SQLite delivery shape. Authentication is server-owned:
+
+```text
+browser / Android WebView
+        -> /auth login or invite registration
+        -> AuthSession cookie + database session
+        -> middleware/API session validation
+        -> UserAccount -> UserProfile
+        -> existing meal / agent / memory / health ownership queries
+```
+
+`UserAccount` is the identity and credential owner. `UserProfile` remains the
+nutrition-domain owner so existing `user_id` foreign keys and historical data
+do not need a destructive rewrite. The first successful registration may claim
+an unbound imported profile; later registrations receive a new profile.
+
+The shared `APP_ACCESS_TOKEN` gate is no longer the production authorization
+boundary. During rollout it may be converted into a bootstrap invite only; it
+must not be used to enter business pages or APIs after C-17.
+
 ## 系统上下文
 
 Nutrition Agent 是私有单用户个人营养工具，同一代码基座有两个交付形态：本地开发实例（loopback）与云端交付实例（ADR-0007）。成熟基线提供档案、餐食记录、营养看板、日历、运动建议和周期报告；C-03 在保留这些行为的前提下增加 GUI AI 配置、跨会话记忆、Agent 编排与受控 MCP 工具调用；C-11 将服务部署到公网服务器，浏览器与 Android 壳共用云端数据（含对话记录），API/MCP 凭据收敛到云端。浏览器不保存数据库，也不重新读取完整密钥；Next.js 服务端负责业务编排、数据库访问、外部 AI 与工具动作策略。

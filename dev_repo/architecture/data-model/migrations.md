@@ -1,5 +1,23 @@
 # 迁移、回填与兼容责任
 
+## C-17 账户认证迁移
+
+1. `20260818190000_add_account_auth` only creates `user_accounts`,
+   `auth_sessions`, and `invite_codes`; it does not rewrite existing business
+   tables or delete either imported `user_profile` row.
+2. `UserAccount.profile_id` is unique and references `user_profile.user_id`.
+   Existing profiles remain unbound until an invited registration claims one in
+   an application transaction.
+3. The claim operation is deterministic (lowest unbound `user_id` first),
+   protected by the unique profile relation, and is the only compatibility
+   backfill. Later registrations create a new profile with explicit defaults or
+   registration inputs.
+4. Migration verification must compare existing table row counts, primary-key
+   sets, `PRAGMA integrity_check`, `PRAGMA foreign_key_check`, and Prisma
+   migration status on a database copy before production deployment.
+5. The old `APP_ACCESS_TOKEN` may be copied into a hashed `InviteCode` bootstrap
+   row on the server. It must not remain a middleware authorization shortcut.
+
 ## 当前实物
 
 - 当前数据库由 prisma db push 创建。

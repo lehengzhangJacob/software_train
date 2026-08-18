@@ -1,6 +1,42 @@
 {
-  "schema_version": 6,
+  "schema_version": 7,
   "relationships": [
+    {
+      "name": "UserAccount_binds_UserProfile",
+      "source": "UserAccount",
+      "target": "UserProfile",
+      "cardinality": "1:1",
+      "via": "UserAccount.profile_id",
+      "owner": "UserAccount",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818190000_add_account_auth"],
+      "invariant": "Only the authenticated account session selects the profile owner",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserAccount_has_AuthSessions",
+      "source": "UserAccount",
+      "target": "AuthSession",
+      "cardinality": "1:N",
+      "via": "AuthSession.account_id",
+      "owner": "UserAccount",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818190000_add_account_auth"],
+      "invariant": "A session belongs to one account and can be revoked independently",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "InviteCode_admits_UserAccount",
+      "source": "InviteCode",
+      "target": "UserAccount",
+      "cardinality": "N:N",
+      "via": "registration transaction consumption",
+      "owner": "InviteCode",
+      "on_delete": "NO ACTION",
+      "source_artifacts": ["prisma/schema.prisma", "src/app/api/auth/register/route.ts"],
+      "invariant": "Invite codes admit registrations but never own nutrition records",
+      "confidence": "approved_target"
+    },
     {
       "name": "UserProfile_has_MealRecords",
       "source": "UserProfile",

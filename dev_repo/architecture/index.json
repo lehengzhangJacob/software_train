@@ -3,6 +3,11 @@
   "architecture_entry": "dev_repo/architecture/README.md",
   "files": [
     {
+      "path": "dev_repo/architecture/decisions/ADR-0008-account-authentication-and-invite-registration.md",
+      "node": "auth.identity",
+      "description": "Invited account authentication, sessions, and profile scoping"
+    },
+    {
       "path": "dev_repo/architecture/README.md",
       "node": "dev_repo",
       "description": "架构宪法入口"
@@ -207,7 +212,15 @@
     },
     {
       "glob": "src/app/api/auth/**",
-      "node": "cloud.delivery"
+      "node": "auth.identity"
+    },
+    {
+      "glob": "src/lib/auth/**",
+      "node": "auth.identity"
+    },
+    {
+      "glob": "src/app/auth/**",
+      "node": "auth.identity"
     }
   ]
 }

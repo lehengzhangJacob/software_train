@@ -1,5 +1,20 @@
 # 架构不变量
 
+## C-17 account amendment
+
+The earlier single-user statement is superseded by this amendment:
+
+24. Every production business request is bound to an active `AuthSession`, a
+    `UserAccount`, and exactly one `UserProfile`; client-supplied `userId` is
+    never an ownership authority.
+25. `UserAccount.login` is unique, passwords are stored only as salted hashes,
+    session and invite tokens are stored only as SHA-256 digests.
+26. Existing nutrition and conversation rows are preserved. The first invited
+    registration may claim an unbound imported profile exactly once; later
+    accounts cannot claim or read another account's profile.
+27. The AI gateway, MCP action policy, memory provenance, Health Connect raw
+    data boundary, and single-instance SQLite authority remain unchanged.
+
 1. 产品边界是私有单用户个人营养 Agent；本地开发与云端交付实例共享同一代码与单用户模型，云端公网可达性仅由共享访问码门约束（ADR-0007）。引入个人账号体系、第二并发用户或离线双写同步引擎必须另开架构与 ER 修宪合同。
 2. 个性化页面必须动态渲染，构建产物不得包含用户档案或餐食 PII。
 3. 服务端负责确定 primary profile；业务 API 不信任客户端传入的 userId。

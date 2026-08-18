@@ -997,5 +997,12 @@
       "path": "dev_repo/evidence/C-16/S1/emulator-access-photo.png",
       "description": "云端 Android 壳中可见餐食背景的访问门最终截图"
     }
+  ],
+  "C-17-A1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/A1/verification.json",
+      "description": "账户/会话/邀请码 migration 副本、现有数据行数、完整性与外键核验"
+    }
   ]
 }

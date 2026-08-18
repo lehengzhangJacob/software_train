@@ -1,7 +1,80 @@
 {
-  "schema_version": 6,
+  "schema_version": 7,
   "source_of_truth": ["prisma/migrations/**", "prisma/schema.prisma", "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md"],
   "entities": [
+    {
+      "name": "UserAccount",
+      "table": "user_accounts",
+      "purpose": "Server-owned login identity and salted password hash",
+      "owning_architecture_node": "cloud.delivery",
+      "source_or_derived": "source",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818190000_add_account_auth"],
+      "identity": {"field": "account_id", "business_key": "login"},
+      "ownership": {"field": "profile_id", "entity": "UserProfile", "cardinality": "1:1"},
+      "state_fields": ["login", "password_hash", "status", "profile_id"],
+      "derived_from": {},
+      "fields": [
+        {"name": "account_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "login", "type": "TEXT", "unique": true, "nullable": false},
+        {"name": "password_hash", "type": "TEXT", "nullable": false, "must_not_contain": ["raw password"]},
+        {"name": "status", "type": "TEXT", "nullable": false, "default": "active", "allowed": ["active", "disabled"]},
+        {"name": "profile_id", "type": "INTEGER", "fk": "UserProfile.user_id", "unique": true, "nullable": false},
+        {"name": "created_at", "type": "DATETIME", "nullable": false},
+        {"name": "updated_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "C-17-A1 creates the table without bulk backfill; registration claims an unbound imported profile transactionally",
+      "requires_amendment_when": ["changing account identity", "changing profile cardinality", "adding roles or tenants"],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "AuthSession",
+      "table": "auth_sessions",
+      "purpose": "Revocable browser and Android WebView login session",
+      "owning_architecture_node": "cloud.delivery",
+      "source_or_derived": "source",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818190000_add_account_auth"],
+      "identity": {"field": "session_id", "business_key": "token_digest"},
+      "ownership": {"field": "account_id", "entity": "UserAccount", "cardinality": "N:1"},
+      "state_fields": ["token_digest", "expires_at", "last_seen_at"],
+      "derived_from": {"token_digest": "SHA-256 of random session token"},
+      "fields": [
+        {"name": "session_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "account_id", "type": "INTEGER", "fk": "UserAccount.account_id", "nullable": false},
+        {"name": "token_digest", "type": "TEXT", "unique": true, "nullable": false, "must_not_contain": ["raw session token"]},
+        {"name": "expires_at", "type": "DATETIME", "nullable": false},
+        {"name": "last_seen_at", "type": "DATETIME", "nullable": false},
+        {"name": "created_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "No sessions are backfilled; all sessions are created by register or login",
+      "requires_amendment_when": ["changing revocation semantics", "sharing sessions between accounts"],
+      "confidence": "confirmed"
+    },
+    {
+      "name": "InviteCode",
+      "table": "invite_codes",
+      "purpose": "Hashed registration invitation with usage and expiry policy",
+      "owning_architecture_node": "cloud.delivery",
+      "source_or_derived": "source",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818190000_add_account_auth"],
+      "identity": {"field": "invite_id", "business_key": "code_digest"},
+      "ownership": "registration policy; does not own nutrition data",
+      "state_fields": ["code_digest", "max_uses", "used_count", "expires_at", "active"],
+      "derived_from": {"code_digest": "SHA-256 of supplied invite code"},
+      "fields": [
+        {"name": "invite_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "code_digest", "type": "TEXT", "unique": true, "nullable": false, "must_not_contain": ["raw invite code"]},
+        {"name": "label", "type": "TEXT", "nullable": true},
+        {"name": "max_uses", "type": "INTEGER", "nullable": false, "default": 1, "min": 1},
+        {"name": "used_count", "type": "INTEGER", "nullable": false, "default": 0, "min": 0},
+        {"name": "expires_at", "type": "DATETIME", "nullable": true},
+        {"name": "active", "type": "BOOLEAN", "nullable": false, "default": true},
+        {"name": "created_at", "type": "DATETIME", "nullable": false},
+        {"name": "updated_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "Bootstrap invite is seeded from server-only configuration; no raw code is committed",
+      "requires_amendment_when": ["adding public invite management", "changing consumption or expiry semantics"],
+      "confidence": "confirmed"
+    },
     {
       "name": "UserProfile",
       "table": "user_profile",

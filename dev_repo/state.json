@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-13",
+  "active_contract_id": "C-17",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -331,6 +331,18 @@
       "completed_slices": [
         "C-16-S1"
       ],
+      "deferred_slices": [],
+      "return_to": "C-13-S3"
+    },
+    "C-17": {
+      "contract_id": "C-17",
+      "parent_contract_id": "C-13",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "账户体系、邀请码注册与跨账户数据隔离",
+      "goal": "将共享访问码升级为数据库账户体系，支持邀请码注册、登录会话、退出和双端同一账户同步，同时保留现有测试数据",
+      "current_slice": "C-17-S1",
+      "completed_slices": ["C-17-A1"],
       "deferred_slices": [],
       "return_to": "C-13-S3"
     }

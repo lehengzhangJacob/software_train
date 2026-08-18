@@ -6,6 +6,12 @@
     "status": "accepted",
     "return_to": "web_completion_audit"
   },
+  "active_amendment": {
+    "contract_id": "C-17",
+    "decision": "invited_account_authentication_and_profile_scoping",
+    "status": "in_progress",
+    "return_to": "C-13-S3"
+  },
   "nodes": [
     {
       "id": "local_user",
@@ -36,7 +42,38 @@
       ],
       "known_debt": [],
       "confidence": "confirmed",
-      "implementation_status": "confirmed"
+      "implementation_status": "confirmed",
+      "superseded_by": "auth.identity"
+    },
+    {
+      "id": "auth.identity",
+      "purpose": "Database-backed invited account identity, sessions, and registration policy",
+      "owned_files": [
+        "src/lib/auth/**",
+        "src/app/api/auth/**",
+        "src/app/auth/**",
+        "prisma/schema.prisma",
+        "prisma/migrations/**"
+      ],
+      "public_interfaces": [
+        "/auth",
+        "/api/auth/register",
+        "/api/auth/login",
+        "/api/auth/logout"
+      ],
+      "depends_on": ["database.prisma", "cloud.delivery"],
+      "depended_on_by": ["backend.api", "frontend", "android.shell"],
+      "invariants": [
+        "Passwords are salted hashes only",
+        "Session and invite raw values are never persisted",
+        "One account binds to exactly one nutrition profile"
+      ],
+      "allowed_change_types": ["credential policy", "session lifecycle", "invite registration policy"],
+      "requires_amendment_when": ["adding roles or tenants", "changing profile cardinality", "adding external identity providers"],
+      "verification": ["auth contract tests", "cross-account E2E", "cloud and Android smoke"],
+      "known_debt": ["single-instance SQLite session store", "no password reset or email verification in v1"],
+      "confidence": "confirmed",
+      "implementation_status": "active"
     },
     {
       "id": "frontend",
@@ -870,6 +907,21 @@
     }
   ],
   "edges": [
+    {
+      "source": "local_user",
+      "target": "auth.identity",
+      "label": "login or invited registration"
+    },
+    {
+      "source": "auth.identity",
+      "target": "database.prisma",
+      "label": "accounts, sessions, and invite policy"
+    },
+    {
+      "source": "auth.identity",
+      "target": "backend.api",
+      "label": "authenticated profile owner"
+    },
     {
       "source": "local_user",
       "target": "frontend",

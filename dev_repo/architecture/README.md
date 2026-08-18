@@ -1,5 +1,18 @@
 # Architecture Constitution
 
+## C-17 current boundary: invited accounts
+
+The C-17 amendment replaces the shared cloud passcode with database-backed
+accounts. `UserAccount` owns one `UserProfile`, `AuthSession` owns a revocable
+browser/WebView session, and `InviteCode` controls registration. Nutrition,
+conversation, memory, MCP, and health records remain in the same single-instance
+SQLite database; their existing `user_id` columns continue to point to the
+profile selected from the authenticated session.
+
+The former primary-profile rule is retained only as a compatibility rule for
+the first registrations that claim existing demo profiles. It is no longer an
+authorization boundary.
+
 本目录是 Nutrition Agent 的架构真相，不以宣传文案或旧聊天记录代替。
 
 ## 当前交付边界

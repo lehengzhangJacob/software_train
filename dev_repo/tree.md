@@ -1,5 +1,12 @@
 # Campaign: nutrition-agent
 
+## Current execution override
+
+- Current contract: `C-17 - 账户体系、邀请码注册与跨账户数据隔离` [in_progress]
+- Current slice: `C-17-A1 - 账户/会话/邀请码数据模型与架构/ER 修宪`
+- Return path: `C-13-S3`
+- The older C-13 current-line text below is historical and is superseded by the runtime state above.
+
 - 当前合同：`C-13 - Android 拍照闭环与产品图标收口 [in_progress]`
 - 当前切片：`C-13-S3 - 模拟器拍照识别闭环与最终发布检查`
 - 下一步：继续 `C-13-S3` 模拟器拍照识别闭环与最终发布检查
