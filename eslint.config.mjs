@@ -14,6 +14,10 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Independent repository checked out inside the project tree.
     "dsh-routing-suite/**",
+    // Cloud deploy staging copy of the standalone bundle (scripts/deploy.mjs).
+    ".deploy-stage/**",
+    // Android build intermediates copied under android/app/build.
+    "android/app/build/**",
   ]),
 ]);
 

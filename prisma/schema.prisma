@@ -1,5 +1,8 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  // native = Windows dev machine; debian target ships inside the standalone
+  // bundle so the Linux cloud instance can load its query engine (ADR-0007).
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {

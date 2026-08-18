@@ -152,8 +152,11 @@
       "status": "in_progress",
       "summary": "云端交付与双端收口：公网部署、共享访问码门、凭据上云、Android 形态 B",
       "goal": "将 Next.js 服务以 standalone 产物部署到公网服务器（8000 端口，systemd 常驻），Web/Android 双端共用云端 SQLite 真相源（含对话记录），API/MCP 凭据收敛云端，未设门前不暴露公网",
-      "current_slice": "C-11-A1",
-      "completed_slices": [],
+      "current_slice": null,
+      "completed_slices": [
+        "C-11-A1",
+        "C-11-S1"
+      ],
       "deferred_slices": [],
       "return_to": "web_completion_audit"
     },

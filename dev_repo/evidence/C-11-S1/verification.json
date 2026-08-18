@@ -1,0 +1,26 @@
+{
+  "contract_id": "C-11",
+  "slice_id": "C-11-S1",
+  "timestamp": "2026-08-18T12:10:00+08:00",
+  "summary": "云端部署通道落地：standalone 构建 + symlink 解引用打包 + SSH 密钥通道 + systemd 常驻（127.0.0.1:8000）+ 云端 migrate deploy + 本机 DB/凭据种子；隧道 smoke 200",
+  "verification": {
+    "server_smoke": "pass:cloud /api/users -> 200（部署脚本内置回环检查）",
+    "tunnel_smoke": "pass:SSH -L 3100 → /api/users 200（userId=1 测试用户_张三）+ /api/agent/threads 200（种子会话 threadId=3 含 15 条消息，对话记录已上云）",
+    "migrate_status": "pass:7 migrations, no pending（云端 DB 与 schema 一致）",
+    "local_verify": "pass:test:ai/memory/agent/mcp/ordering/health 全过 + lint 0 错 0 警（.deploy-stage 与 android/app/build 入 ignore 后全清）+ typecheck + build(29 routes)",
+    "old_service": "pass:旧 uvicorn :8000 已停止且无自动复活（PPID=1 会话进程，经用户授权）",
+    "secrets": "pass:.env.production/credentials.json/mcdonalds.json 均为 0600，未进入 Git 与日志"
+  },
+  "provisioning_facts": {
+    "server": "8.148.206.131（Ubuntu 24.04, 2C/1.6G）",
+    "app_dir": "/home/soft/final/app（releases/<ts> + current 符号链接 + shared/{database,data,deploy-tools,.env.production}）",
+    "systemd": "foodtracker.service（User=soft, EnvironmentFile=shared/.env.production, PORT=8000, HOSTNAME=127.0.0.1, Restart=on-failure, enabled）",
+    "sudoers": "soft 对 foodtracker 的 systemctl restart/start/stop/status/daemon-reload NOPASSWD",
+    "ssh_key": "~/.ssh/foodtracker_deploy_ed25519（专用部署密钥，已装 authorized_keys）"
+  },
+  "red_lines": "未击穿：服务仅绑 127.0.0.1（公网绑定留待 S2 门就绪）；旧服务处置经用户明确授权；本地回路未受影响（verify 全绿）",
+  "architecture_delta": "cloud.delivery 节点实现状态 planned → partial（部署通道与常驻实例落地，访问门未上）",
+  "data_model_delta": "none（服务器侧 migrate deploy，无新增迁移文件）",
+  "migration_required": "server-side only",
+  "backfill_required": false
+}

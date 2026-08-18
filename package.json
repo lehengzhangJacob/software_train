@@ -21,6 +21,7 @@
     "verify:agent-api": "node scripts/verify-agent-api.mjs",
     "verify:mcp-api": "node scripts/verify-mcp-api.mjs",
     "release:check": "npm run db:migrate:status && npm run verify:memory-migration && npm run verify && npm run verify:memory-api && npm run verify:agent-api && npm run verify:mcp-api && npm run smoke",
+    "deploy": "node scripts/deploy.mjs",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:status": "prisma migrate status",
