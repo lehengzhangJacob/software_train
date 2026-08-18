@@ -1,37 +1,28 @@
-// Shared access gate decision logic (ADR-0007). Pure and edge-safe so the
-// middleware, the verify route and contract tests share one truth.
+// Shared authentication gate decision logic. Pure and edge-safe so middleware
+// and contract tests share one truth; database session validation stays in the
+// Node.js server layer.
 
-export const ACCESS_COOKIE = "ft_access"
-export const ACCESS_COOKIE_MAX_AGE = 60 * 60 * 24 * 30
+export const AUTH_COOKIE = "ft_session"
+export const AUTH_COOKIE_MAX_AGE = 60 * 60 * 24 * 30
 
-export function getAccessCode(): string {
-  return (process.env.APP_ACCESS_TOKEN ?? "").trim()
+// Compatibility aliases keep older delivery imports readable while the
+// production boundary moves from a shared passcode to account sessions.
+export const ACCESS_COOKIE = AUTH_COOKIE
+export const ACCESS_COOKIE_MAX_AGE = AUTH_COOKIE_MAX_AGE
+
+export function authRequired(): boolean {
+  return process.env.AUTH_REQUIRED === "true"
 }
 
 export function accessGateEnabled(): boolean {
-  return getAccessCode().length > 0
-}
-
-/** Cookie carries the SHA-256 hex digest, never the access code itself. */
-export async function digestAccessCode(code: string): Promise<string> {
-  const bytes = new TextEncoder().encode(code)
-  const digest = await crypto.subtle.digest("SHA-256", bytes)
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("")
-}
-
-/** Constant-time comparison for two SHA-256 hex digests. */
-export function constantTimeEqualHex(a: string, b: string): boolean {
-  if (a.length !== 64 || b.length !== 64) return false
-  let diff = 0
-  for (let i = 0; i < 64; i += 1) diff |= a.charCodeAt(i) ^ b.charCodeAt(i)
-  return diff === 0
+  return authRequired()
 }
 
 export type AccessDecision = "allow" | "gate-page" | "unauthorized-api"
 
-export function decideAccess(pathname: string, authed: boolean, enabled: boolean): AccessDecision {
-  if (!enabled || authed) return "allow"
-  if (pathname === "/access" || pathname.startsWith("/api/auth/")) return "allow"
+export function decideAccess(pathname: string, hasSession: boolean, enabled: boolean): AccessDecision {
+  if (!enabled || hasSession) return "allow"
+  if (pathname === "/auth" || pathname === "/access" || pathname.startsWith("/api/auth/")) return "allow"
   if (pathname.startsWith("/api/")) return "unauthorized-api"
   return "gate-page"
 }

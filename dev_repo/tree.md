@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-17 - 账户体系、邀请码注册与跨账户数据隔离` [in_progress]
-- Current slice: `C-17-A1 - 账户/会话/邀请码数据模型与架构/ER 修宪`
+- Current slice: `C-17-S2 - 业务数据按登录账户隔离`
 - Return path: `C-13-S3`
 - The older C-13 current-line text below is historical and is superseded by the runtime state above.
 

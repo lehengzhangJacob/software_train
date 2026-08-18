@@ -341,8 +341,8 @@
       "status": "in_progress",
       "summary": "账户体系、邀请码注册与跨账户数据隔离",
       "goal": "将共享访问码升级为数据库账户体系，支持邀请码注册、登录会话、退出和双端同一账户同步，同时保留现有测试数据",
-      "current_slice": "C-17-S1",
-      "completed_slices": ["C-17-A1"],
+      "current_slice": "C-17-S2",
+      "completed_slices": ["C-17-A1", "C-17-S1"],
       "deferred_slices": [],
       "return_to": "C-13-S3"
     }

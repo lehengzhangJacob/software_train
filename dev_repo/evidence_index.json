@@ -1004,5 +1004,17 @@
       "path": "dev_repo/evidence/C-17/A1/verification.json",
       "description": "账户/会话/邀请码 migration 副本、现有数据行数、完整性与外键核验"
     }
+  ],
+  "C-17-S1": [
+    {
+      "type": "implementation",
+      "path": "src/lib/auth/**, src/app/api/auth/**, src/lib/access/gate.ts, src/lib/current-user.ts, src/middleware.ts",
+      "description": "邀请码注册、scrypt 密码哈希、数据库会话 cookie、登录/退出/当前会话 API 与账户门"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/S1/verification.json",
+      "description": "认证契约测试、Prisma 迁移、生产构建与临时数据库真实 HTTP 注册/登录/退出回归"
+    }
   ]
 }

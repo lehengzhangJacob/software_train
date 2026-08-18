@@ -1,5 +1,7 @@
 import "server-only"
 
+import { authRequired } from "@/lib/access/gate"
+import { getAuthenticatedProfile } from "@/lib/auth/server"
 import { prisma } from "@/lib/prisma"
 
 /**
@@ -8,6 +10,12 @@ import { prisma } from "@/lib/prisma"
  * compatibility rule. Client supplied ids must never participate in this choice.
  */
 export async function getCurrentUser() {
+  const authenticated = await getAuthenticatedProfile()
+  if (authenticated) {
+    return prisma.userProfile.findUnique({ where: { userId: authenticated.userId } })
+  }
+  if (authRequired()) return null
+
   return prisma.userProfile.findFirst({
     orderBy: { userId: "asc" },
   })
