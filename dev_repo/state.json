@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": null,
+  "active_contract_id": "C-12",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -158,6 +158,20 @@
         "C-11-S1",
         "C-11-S2",
         "C-11-S3"
+      ],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit"
+    },
+    "C-12": {
+      "contract_id": "C-12",
+      "parent_contract_id": "C-11",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "用真实云端数据生成、核心功能回归和 README 截图素材",
+      "goal": "为测试用户补充可重复的真实 API 演示数据，完成照片识别、Agent、MCP 只读和双端回归，并产出文档截图素材",
+      "current_slice": "C-12-S2",
+      "completed_slices": [
+        "C-12-S1"
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit"

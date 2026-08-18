@@ -928,5 +928,17 @@
       "path": "C:/Users/zzy/.codex/visualizations/2026/08/18/agent-timeline-mobile.png",
       "description": "375x800 移动时间线截图"
     }
+  ],
+  "C-12-S1": [
+    {
+      "type": "implementation",
+      "path": "scripts/seed-cloud-demo.mjs, package.json",
+      "description": "通过真实云端 HTTP API 为测试用户生成可重复的餐食、活动、运动和长期记忆演示数据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-12/data-manifest.json",
+      "description": "新增记录 ID、日期范围、回读验证与不调用订单/支付/直接数据库写入的安全断言"
+    }
   ]
 }
