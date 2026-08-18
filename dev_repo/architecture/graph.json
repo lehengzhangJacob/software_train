@@ -836,7 +836,7 @@
         "访问码验证为进程内限速，重启即清零"
       ],
       "confidence": "confirmed",
-      "implementation_status": "planned"
+      "implementation_status": "confirmed"
     },
     {
       "id": "external.health_connect",
