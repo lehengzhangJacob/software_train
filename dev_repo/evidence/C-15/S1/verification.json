@@ -1,0 +1,33 @@
+{
+  "contract_id": "C-15",
+  "slice_id": "C-15-S1",
+  "timestamp": "2026-08-18T17:18:31+08:00",
+  "summary": "访问门改为与应用内页一致的紧凑、高级入口表面",
+  "assertions": {
+    "visual_scope": "pass: 顶部仅保留一个品牌图标；移动端深色引导区收短；表单与品牌引导属于同一 surface；无底部导航",
+    "access_contract": "pass: npm run test:access，9/9",
+    "lint": "pass: npm run lint",
+    "typecheck": "pass: npm run typecheck",
+    "production_build": "pass: npm run build；仅保留既有 middleware 弃用提示",
+    "cloud_deploy": "pass: standalone 包上传、Prisma 迁移无待办；交互式 sudo 重启后 systemd active",
+    "cloud_page": "pass: GET /access -> 200；新文案存在，旧 Hero 文案不存在",
+    "cloud_boundary": "pass: 未认证 /api/users -> 401；访问码验证 -> 200；Cookie 仅含摘要；认证后 /api/users -> 200",
+    "android_sync": "pass: npm run android:cloud，云端 URL 烘焙成功",
+    "android_build": "pass: android/app/build/outputs/apk/debug/app-debug.apk，Gradle assembleDebug 成功",
+    "emulator_visual": "pass: emulator-5554 真实安装并加载云端访问门；完整首屏截图已采集"
+  },
+  "target_artifacts": {
+    "screenshot": "dev_repo/evidence/C-15/S1/emulator-access-premium.png",
+    "screenshot_sha256": "8b0fe799d0ccced1a74f915bb1f925e43f4b0dedd6ea96a8ab45146b43dde0b5",
+    "screenshot_bytes": 173419,
+    "apk": "android/app/build/outputs/apk/debug/app-debug.apk",
+    "apk_sha256": "47a8d0ea7fac92cc4a264a43ba84f1fcd4efe4954cf933dd00c72c2b046fa39a",
+    "apk_bytes": 6659497
+  },
+  "red_line_crossed": false,
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "return_to": "C-13-S3"
+}

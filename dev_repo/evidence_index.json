@@ -973,5 +973,17 @@
       "path": "dev_repo/evidence/C-14/S2/verification.json",
       "description": "云端静态资源修复、Web/Android 回归、API 401 与模拟器截图"
     }
+  ],
+  "C-15-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-15/S1/verification.json",
+      "description": "访问门高级入口视觉收口、云端认证边界、Android 构建与真实模拟器截图"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-15/S1/emulator-access-premium.png",
+      "description": "云端 Android 壳的访问门最终移动端视觉证据"
+    }
   ]
 }

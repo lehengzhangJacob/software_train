@@ -28,6 +28,8 @@ C-01 - 全栈功能初版 [completed]
                                                 └── C-14 - 让访问门回到产品主视觉 [completed]
                                                         ├── S1 访问门重做与未认证隐藏导航 [completed：品牌入口 + 分栏表单 + API 安全边界不变]
                                                         └── S2 Web/Android 尺寸回归与截图 [completed：云端静态资源、API 401、模拟器访问门截图与生产构建均通过]
+                                                └── C-15 - 访问门高级入口视觉收口 [completed]
+                                                        └── S1 紧凑入口表面、云端发布与模拟器回归 [completed]
 ```
 
 

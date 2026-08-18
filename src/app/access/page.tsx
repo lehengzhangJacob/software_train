@@ -43,8 +43,8 @@ export default function AccessPage() {
 
   return (
     <div className="w-full">
-      <header className="flex items-center gap-3" aria-label="产品信息">
-        <span className="grid size-10 place-items-center rounded-md bg-[var(--brand-mint)] p-1">
+      <header className="flex items-center gap-3 border-b border-border/70 pb-5" aria-label="产品信息">
+        <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[var(--brand-mint)] p-1 shadow-[0_8px_20px_rgba(40,214,155,0.18)]">
           <Image
             src="/brand/nutrition-agent-icon.png"
             alt=""
@@ -60,50 +60,55 @@ export default function AccessPage() {
       </header>
 
       <section
-        className="mt-8 grid overflow-hidden border-y border-border bg-card lg:mt-12 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:rounded-lg lg:border"
+        className="surface-card mt-7 grid overflow-hidden lg:mt-9 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]"
         aria-label="进入私人营养空间"
       >
-        <div className="brand-panel p-6 sm:p-10 lg:p-12">
-          <div className="grid size-16 place-items-center rounded-lg bg-[var(--brand-mint)] p-1">
-            <Image
-              src="/brand/nutrition-agent-icon.png"
-              alt=""
-              width={56}
-              height={56}
-              className="size-full rounded-md object-cover"
-            />
+        <div className="relative overflow-hidden bg-[var(--brand-plum)] px-6 py-6 text-white sm:px-10 sm:py-9 lg:flex lg:min-h-[310px] lg:flex-col lg:justify-between lg:px-12 lg:py-10">
+          <div className="relative">
+            <div className="flex items-center gap-2 text-xs font-medium text-white/55">
+              <span className="size-2 rounded-full bg-[var(--brand-mint)]" aria-hidden="true" />
+              <span>私人营养空间</span>
+            </div>
+            <h1 className="mt-5 max-w-md text-2xl font-semibold leading-tight tracking-[-0.025em] sm:mt-8 sm:text-[clamp(2rem,4vw,3.2rem)] sm:leading-[1.08]">
+              回到你的营养节奏。
+            </h1>
+            <p className="mt-3 max-w-md text-sm leading-6 text-white/65 sm:mt-4 sm:leading-7 sm:text-base">
+              饮食、运动和对话，都从这里继续。
+            </p>
           </div>
-          <p className="page-eyebrow mt-10 text-[var(--brand-mint)]">私人营养空间</p>
-          <h1 className="mt-3 max-w-sm text-3xl font-semibold leading-tight text-white sm:text-4xl">
-            回来继续照顾自己。
-          </h1>
-          <p className="mt-4 max-w-sm text-sm leading-7 text-white/65">
-            饮食、运动和对话，从今天继续。每一次记录，都会让你的节奏更清晰。
-          </p>
-          <p className="mt-10 max-w-sm border-l-2 border-[var(--brand-mint)] pl-4 text-xs leading-6 text-white/55">
-            访问码只负责保护这套服务，不会改变你的记录，也不会把密钥交给浏览器。
-          </p>
+          <div className="relative mt-6 flex items-center gap-3 text-xs text-white/45 sm:mt-8 lg:mt-10">
+            <span className="h-px w-8 bg-[var(--brand-mint)]" aria-hidden="true" />
+            <span>记录 · 复盘 · 调整</span>
+          </div>
         </div>
 
-        <div className="p-6 sm:p-10 lg:p-12">
-          <p className="page-eyebrow">继续使用</p>
-          <h2 className="mt-2 text-2xl font-semibold text-[var(--brand-heading)]">输入访问码</h2>
+        <div className="bg-card p-6 sm:p-10 lg:flex lg:flex-col lg:justify-center lg:p-12">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="page-eyebrow">欢迎回来</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-[var(--brand-heading)] sm:text-3xl">
+                输入访问码
+              </h2>
+            </div>
+          </div>
           <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
             验证后，回到你的饮食与运动记录。
           </p>
-          <form className="mt-8 space-y-5" onSubmit={onSubmit}>
+          <form className="mt-7 space-y-5" onSubmit={onSubmit}>
             <div className="space-y-2">
-              <Label htmlFor="access-code">访问码</Label>
+              <Label htmlFor="access-code" className="text-[var(--brand-heading)]">
+                访问码
+              </Label>
               <Input
                 id="access-code"
                 type="password"
                 autoComplete="current-password"
-                autoFocus
                 required
                 value={code}
                 onChange={(event) => setCode(event.target.value)}
                 aria-invalid={error ? true : undefined}
-                className="h-12"
+                placeholder="输入授权访问码"
+                className="h-12 bg-[var(--brand-paper)] tracking-[0.22em] placeholder:tracking-normal"
               />
             </div>
             {error ? (
@@ -122,7 +127,9 @@ export default function AccessPage() {
         </div>
       </section>
 
-      <p className="mt-5 text-center text-xs text-muted-foreground">仅限授权用户使用 · 访问码不会保存到页面</p>
+      <p className="mt-4 text-center text-xs text-muted-foreground">
+        访问码仅用于进入此服务，不会保存到页面
+      </p>
     </div>
   )
 }

@@ -305,6 +305,20 @@
       ],
       "deferred_slices": [],
       "return_to": "C-13-S3"
+    },
+    "C-15": {
+      "contract_id": "C-15",
+      "parent_contract_id": "C-13",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "访问门高级入口视觉收口",
+      "goal": "让未认证入口与应用内页共享同一套克制、紧凑的产品视觉，同时保持访问码安全边界",
+      "current_slice": null,
+      "completed_slices": [
+        "C-15-S1"
+      ],
+      "deferred_slices": [],
+      "return_to": "C-13-S3"
     }
   }
 }
