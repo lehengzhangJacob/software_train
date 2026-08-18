@@ -260,7 +260,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   return (
     <div className="space-y-5">
       <section className="surface-card overflow-hidden border-0">
-        <div className="grid lg:min-h-[680px] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
+        <div className="grid grid-cols-[minmax(0,1fr)] lg:min-h-[680px] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
           <aside className="order-2 flex min-h-0 flex-col bg-[var(--brand-plum)] text-white lg:order-1">
             <div className="relative flex-1 lg:min-h-[430px]">
               <div className="absolute inset-0 hidden lg:block">

@@ -24,6 +24,11 @@
       "details": "At a 375x800 viewport the agent workspace and activity panel remained visible with no horizontal overflow (document scrollWidth matched clientWidth)."
     },
     {
+      "name": "mobile-activity-overflow-regression",
+      "status": "pass",
+      "details": "After a real streamed turn with the timeline expanded, the 375px layout kept the activity panel inside the main column and preserved the input area; the grid uses a zero-minimum single column at mobile widths."
+    },
+    {
       "name": "browser-console",
       "status": "pass",
       "details": "No browser console warnings or errors were observed during the smoke and regression checks."
