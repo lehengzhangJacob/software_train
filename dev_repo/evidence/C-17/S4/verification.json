@@ -1,0 +1,65 @@
+{
+  "contract_id": "C-17",
+  "slice_id": "C-17-S4",
+  "verified_at": "2026-08-18T20:35:00+08:00",
+  "red_line_crossed": false,
+  "scope": "云端迁移、账户同步、双端云壳构建与最终发布检查",
+  "cloud_deployment": {
+    "host": "8.148.206.131:8000",
+    "release": "20260818202713",
+    "service": "foodtracker active",
+    "migration": "20260818190000_add_account_auth and 20260818193000_add_account_settings applied; subsequent deploy reported no pending migrations",
+    "public_boundary": {
+      "root": "307 -> /access",
+      "access": 200,
+      "anonymous_api": 401,
+      "meal_hero": 200
+    },
+    "deploy_pipeline": "npm run deploy -- --skip-build completed; /access health check 200 and anonymous /api/users health check 401",
+    "sudo_boundary": "server has a 0600 environment file and a minimal NOPASSWD rule limited to foodtracker restart/status"
+  },
+  "account_sync": {
+    "registration": "201; demo_user account created with the migration invite and bound to the existing profile without copying business rows",
+    "login": 200,
+    "session": 200,
+    "logout": 200,
+    "profile_user_id": 1,
+    "meal_readback": "14 records visible for the seeded regression date",
+    "thread_readback": "existing account conversations visible after login",
+    "settings_readback": "AI and McDonald settings endpoints return 200 with masked/public state only",
+    "web_android_authority": "both clients point at the same cloud service and SQLite source; no offline sync writer introduced"
+  },
+  "core_smoke": {
+    "health_agent": "real cloud POST returned 200 with persisted assistant message and 2 activity steps",
+    "mcdonalds_mcp": "real cloud tool discovery returned 9 official tools; no order submit or payment invoked",
+    "cloud_account_gate_script": "scripts/verify-cloud-gate.mjs ALL PASS"
+  },
+  "android": {
+    "sync": "npm run android:cloud completed",
+    "baked_url": "http://8.148.206.131:8000",
+    "debug_apk": "android/app/build/outputs/apk/debug/app-debug.apk; Gradle assembleDebug successful",
+    "device_regression": "not run: adb devices returned no connected emulator or physical device"
+  },
+  "quality_gates": {
+    "npm_run_release:check": "pass",
+    "contract_tests": "AI 6/6; Memory 4/4; Agent 8/8; MCP 8/8; Ordering 12/12; Health 13/13; Auth 5/5",
+    "npm_run_lint": "pass",
+    "npm_run_typecheck": "pass",
+    "npm_run_build": "pass",
+    "verify_memory_api": "pass",
+    "verify_agent_api": "pass",
+    "verify_mcp_api": "pass",
+    "release_smoke": "pass"
+  },
+  "delivery_fixes": [
+    "deploy health check now accepts the authenticated cloud boundary: public /access 200 plus anonymous API 401",
+    "cloud seed and gate scripts now authenticate with DEMO_LOGIN/DEMO_PASSWORD and ft_session",
+    "MCP API verification temporarily moves the legacy local settings file and restores it in finally, so local user credentials cannot mask the test connector",
+    "README, ADR-0007, architecture graph, architecture narrative and invariants describe account sessions rather than shared access authorization"
+  ],
+  "architecture_delta": "C-17 account amendment delivered; S4 only marks cloud delivery confirmed and corrects delivery truth, no new boundary",
+  "data_model_delta": "none beyond C-17-A1/S2 migrations",
+  "migration_required": true,
+  "backfill_required": "first account registration claims the unbound imported profile; no bulk backfill",
+  "return_to": "C-13-S3"
+}

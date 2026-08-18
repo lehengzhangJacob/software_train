@@ -1,8 +1,12 @@
-# ADR-0007：云端交付实例、共享访问码门与凭据上云
+# ADR-0007：云端交付实例、历史访问门与凭据上云
 
 - 状态：accepted
 - 日期：2026-08-18
 - 合同：C-11（架构修宪 A1）
+
+> C-17 / ADR-0008 supersedes the shared access-code authorization described
+> below. This ADR remains authoritative for standalone deployment, the single
+> cloud SQLite source of truth, and Android form B.
 
 ## 背景
 
@@ -13,14 +17,14 @@
 ## 决策
 
 1. 新增 `cloud.delivery` 架构节点：公网服务器上的正式交付实例，standalone Next.js 由 systemd 常驻（unit `foodtracker.service`，端口 8000），部署以本仓构建产物为唯一来源，服务器上不执行构建。
-2. 共享访问码门：`APP_ACCESS_TOKEN` 环境变量配置共享访问码；middleware 对未认证页面请求重定向 `/access`、对业务 API（含 SSE）返回 401；认证后下发 httpOnly cookie（值为访问码摘要，非访问码本体）。**token 未设置时 middleware 全放行**，本地开发回路行为零变化。
-3. 凭据上云：AI 凭据与麦当劳 Token 仍由既有 `local.secret_store` 机制管理（服务侧 `data/credentials.json`、`data/mcdonalds.json` + env 回退）——云端实例的该目录即云端凭据库；设置页 GUI 直接读写云端配置，完整密钥永不回传浏览器。
+2. 历史访问门：`APP_ACCESS_TOKEN` 曾作为共享访问码环境变量，由 middleware 对未认证页面/API 做统一拦截；C-17 后它只可作为 `InviteCode` bootstrap 输入，不再生成业务授权 cookie。账户会话、登录与邀请码注册见 ADR-0008。
+3. 凭据上云：AI 凭据与麦当劳 Token 由 C-17 的 `AccountSettings` 管理；首账户可兼容导入服务侧旧文件，后续账户不得继承其他账户的文件或环境凭据。设置页 GUI 直接读写云端配置，完整密钥永不回传浏览器。
 4. 数据同源：云端 SQLite 为生产真相源，初始种子为本机数据库的一次性拷贝（含全部对话记录与记忆）；`prisma migrate deploy` 在云端执行，无新增迁移文件。本地开发库继续独立存在。
 5. Android 壳激活形态 B（ADR-0005 预留）：`FT_CLOUD_URL` 构建期注入 `server.url`，不注入时保持形态 A loopback。
 
 ## 不做
 
-- 不做个人账号体系、多用户或离线双写同步引擎（单用户 + 共享门边界内）。
++- 不做多租户、角色权限或离线双写同步引擎（单实例账户模型 + 中心化同步）。
 - 不启用 TLS/域名/反向代理（纯 IP HTTP；Capacitor 已允许 cleartext，列为已知债务）。
 - 不在服务器上构建，不引入容器与多实例。
 - 不把访问码写入仓库或前端可见面。

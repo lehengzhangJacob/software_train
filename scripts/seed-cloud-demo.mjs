@@ -9,6 +9,9 @@ const baseUrl = (process.env.DEMO_BASE_URL || "http://8.148.206.131:8000").repla
 const marker = process.env.DEMO_MARKER || "C-12-E2E-20260818"
 const anchorDate = process.env.DEMO_ANCHOR_DATE || "2026-08-18"
 const evidenceDirectory = path.join(root, "dev_repo", "evidence", "C-12")
+const demoLogin = process.env.DEMO_LOGIN?.trim()
+const demoPassword = process.env.DEMO_PASSWORD || ""
+const demoUsername = process.env.DEMO_USERNAME?.trim() || "云端演示用户"
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
@@ -69,20 +72,39 @@ async function readJson(response) {
   }
 }
 
-async function verifyAccessCode() {
-  const accessCode = process.env.APP_ACCESS_TOKEN?.trim()
-  assert(accessCode, "APP_ACCESS_TOKEN is required for --apply and is never written to evidence")
-  const response = await fetch(`${baseUrl}/api/auth/verify`, {
+function sessionCookie(response) {
+  const cookies = typeof response.headers.getSetCookie === "function"
+    ? response.headers.getSetCookie()
+    : [response.headers.get("set-cookie") || ""]
+  const cookie = cookies[0]?.split(";")[0] || ""
+  assert(cookie.startsWith("ft_session="), "Cloud account authentication did not return the session cookie")
+  return cookie
+}
+
+async function authenticateDemoUser() {
+  assert(demoLogin && demoPassword, "DEMO_LOGIN and DEMO_PASSWORD are required for --apply and are never written to evidence")
+  const loginResponse = await fetch(`${baseUrl}/api/auth/login`, {
     method: "POST",
     headers: jsonHeaders,
-    body: JSON.stringify({ code: accessCode }),
+    body: JSON.stringify({ login: demoLogin, password: demoPassword }),
   })
-  const body = await readJson(response)
-  assert(response.ok && body?.error === null, `Cloud access verification failed (${response.status})`)
-  const setCookie = response.headers.get("set-cookie") || ""
-  const cookie = setCookie.split(";")[0]
-  assert(cookie.startsWith("ft_access="), "Cloud access verification did not return the access cookie")
-  return cookie
+  if (loginResponse.ok) return sessionCookie(loginResponse)
+
+  const inviteCode = process.env.AUTH_BOOTSTRAP_INVITE_CODE?.trim() || process.env.APP_ACCESS_TOKEN?.trim()
+  assert(inviteCode, `Cloud account login failed (${loginResponse.status}); set AUTH_BOOTSTRAP_INVITE_CODE only when creating the demo account`)
+  const registerResponse = await fetch(`${baseUrl}/api/auth/register`, {
+    method: "POST",
+    headers: jsonHeaders,
+    body: JSON.stringify({
+      username: demoUsername,
+      login: demoLogin,
+      password: demoPassword,
+      inviteCode,
+    }),
+  })
+  const body = await readJson(registerResponse)
+  assert(registerResponse.ok && body?.error === null, `Cloud account registration failed (${registerResponse.status})`)
+  return sessionCookie(registerResponse)
 }
 
 async function requestJson(cookie, pathname, options = {}) {
@@ -244,12 +266,12 @@ async function main() {
         memories: 3,
         writePath: "cloud HTTP API only",
       },
-      next: "Set APP_ACCESS_TOKEN in the process environment and rerun with --apply.",
+      next: "Set DEMO_LOGIN and DEMO_PASSWORD; if the account does not exist, also set AUTH_BOOTSTRAP_INVITE_CODE and rerun with --apply.",
     }, null, 2))
     return
   }
 
-  const cookie = await verifyAccessCode()
+  const cookie = await authenticateDemoUser()
   const createdMeals = await seedMeals(cookie)
   const createdActivity = await seedActivity(cookie)
   const createdExercise = await seedExercise(cookie)
@@ -262,7 +284,7 @@ async function main() {
     baseUrl,
     marker,
     anchorDate,
-    userScope: "server-selected primary profile; user 2 untouched",
+    userScope: "authenticated account selected by DEMO_LOGIN; other accounts untouched",
     writePath: "real authenticated HTTP API",
     created: {
       meals: createdMeals,

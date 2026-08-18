@@ -1,12 +1,14 @@
-// Cloud gate verification (C-11-S2): proves the public instance rejects
-// unauthenticated traffic and admits the shared passcode holder.
-// Usage: APP_ACCESS_TOKEN=<code> node scripts/verify-cloud-gate.mjs [base-url]
+// Cloud account verification (C-17): proves the public instance rejects
+// anonymous traffic and admits a database-backed account session.
+// Usage:
+//   DEMO_LOGIN=... DEMO_PASSWORD=... node scripts/verify-cloud-gate.mjs [base-url]
 
-const BASE = process.argv[2] || `http://${process.env.DEPLOY_HOST || "8.148.206.131"}:${process.env.DEPLOY_PORT || "8000"}`
-const CODE = process.env.APP_ACCESS_TOKEN
+const BASE = (process.argv[2] || `http://${process.env.DEPLOY_HOST || "8.148.206.131"}:${process.env.DEPLOY_PORT || "8000"}`).replace(/\/+$/, "")
+const LOGIN = process.env.DEMO_LOGIN?.trim()
+const PASSWORD = process.env.DEMO_PASSWORD || ""
 
-if (!CODE) {
-  console.error("APP_ACCESS_TOKEN (the shared access code) is required")
+if (!LOGIN || !PASSWORD) {
+  console.error("DEMO_LOGIN and DEMO_PASSWORD are required; credentials are never written to evidence")
   process.exit(2)
 }
 
@@ -18,59 +20,61 @@ function check(name, ok, detail = "") {
   if (!ok) failures += 1
 }
 
-async function main() {
-  // 1. unauthenticated API is rejected with 401
-  const api = await fetch(`${BASE}/api/users`, { redirect: "manual" })
-  check("unauthenticated /api/users -> 401", api.status === 401, `got ${api.status}`)
+function sessionCookie(response) {
+  const cookies = typeof response.headers.getSetCookie === "function"
+    ? response.headers.getSetCookie()
+    : [response.headers.get("set-cookie") || ""]
+  return cookies[0]?.split(";")[0] || ""
+}
 
-  // 2. unauthenticated page redirects to /access
+async function main() {
+  const api = await fetch(`${BASE}/api/users`, { redirect: "manual" })
+  check("anonymous /api/users -> 401", api.status === 401, `got ${api.status}`)
+
   const page = await fetch(`${BASE}/dashboard`, { redirect: "manual" })
   check(
-    "unauthenticated /dashboard -> 307 to /access",
+    "anonymous /dashboard -> 307 to /access",
     page.status === 307 && (page.headers.get("location") || "").endsWith("/access"),
-    `got ${page.status} -> ${page.headers.get("location")}`
+    `got ${page.status} -> ${page.headers.get("location")}`,
   )
 
-  // 3. gate page renders
   const gatePage = await fetch(`${BASE}/access`)
   const gateHtml = await gatePage.text()
   check(
-    "/access renders passcode form",
-    gatePage.status === 200 && gateHtml.includes("访问验证"),
-    `got ${gatePage.status}`
+    "/access renders login and invite registration",
+    gatePage.status === 200 && gateHtml.includes("登录") && gateHtml.includes("邀请码注册"),
+    `got ${gatePage.status}`,
   )
 
-  // 4. wrong code rejected
-  const wrong = await fetch(`${BASE}/api/auth/verify`, {
+  const wrong = await fetch(`${BASE}/api/auth/login`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ code: "definitely-wrong-code" }),
+    body: JSON.stringify({ login: LOGIN, password: `${PASSWORD}-wrong` }),
   })
-  check("wrong code -> 401", wrong.status === 401, `got ${wrong.status}`)
+  check("wrong password -> 401", wrong.status === 401, `got ${wrong.status}`)
 
-  // 5. correct code sets the digest cookie
-  const verify = await fetch(`${BASE}/api/auth/verify`, {
+  const login = await fetch(`${BASE}/api/auth/login`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ code: CODE }),
+    body: JSON.stringify({ login: LOGIN, password: PASSWORD }),
   })
-  const setCookie = verify.headers.get("set-cookie") || ""
+  const cookie = sessionCookie(login)
   check(
-    "correct code -> 200 + ft_access cookie",
-    verify.status === 200 && setCookie.startsWith("ft_access=") && !setCookie.includes(CODE),
-    `got ${verify.status}`
+    "valid account -> 200 + ft_session cookie",
+    login.status === 200 && cookie.startsWith("ft_session=") && !cookie.includes(PASSWORD),
+    `got ${login.status}`,
   )
 
-  // 6. cookie holder reaches the business API
-  const cookie = setCookie.split(";")[0]
   const authed = await fetch(`${BASE}/api/users`, { headers: { cookie } })
-  check("authed /api/users -> 200", authed.status === 200, `got ${authed.status}`)
+  check("authenticated /api/users -> 200", authed.status === 200, `got ${authed.status}`)
 
-  // 7. authed page renders (conversation surface exists)
   const authedPage = await fetch(`${BASE}/agent`, { headers: { cookie }, redirect: "manual" })
-  check("authed /agent -> 200", authedPage.status === 200, `got ${authedPage.status}`)
+  check("authenticated /agent -> 200", authedPage.status === 200, `got ${authedPage.status}`)
 
-  console.log(failures === 0 ? "cloud gate verification: ALL PASS" : `cloud gate verification: ${failures} FAILURES`)
+  const session = await fetch(`${BASE}/api/auth/session`, { headers: { cookie } })
+  check("authenticated /api/auth/session -> 200", session.status === 200, `got ${session.status}`)
+
+  console.log(failures === 0 ? "cloud account verification: ALL PASS" : `cloud account verification: ${failures} FAILURES`)
   process.exit(failures === 0 ? 0 : 1)
 }
 

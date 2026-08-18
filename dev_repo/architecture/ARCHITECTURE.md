@@ -26,13 +26,13 @@ must not be used to enter business pages or APIs after C-17.
 
 ## 系统上下文
 
-Nutrition Agent 是私有单用户个人营养工具，同一代码基座有两个交付形态：本地开发实例（loopback）与云端交付实例（ADR-0007）。成熟基线提供档案、餐食记录、营养看板、日历、运动建议和周期报告；C-03 在保留这些行为的前提下增加 GUI AI 配置、跨会话记忆、Agent 编排与受控 MCP 工具调用；C-11 将服务部署到公网服务器，浏览器与 Android 壳共用云端数据（含对话记录），API/MCP 凭据收敛到云端。浏览器不保存数据库，也不重新读取完整密钥；Next.js 服务端负责业务编排、数据库访问、外部 AI 与工具动作策略。
+Nutrition Agent 是私密、账户化的个人营养工具，同一代码基座有两个交付形态：本地开发实例（loopback）与云端交付实例（ADR-0007、ADR-0008）。成熟基线提供档案、餐食记录、营养看板、日历、运动建议和周期报告；C-03 在保留这些行为的前提下增加 GUI AI 配置、跨会话记忆、Agent 编排与受控 MCP 工具调用；C-11 将服务部署到公网服务器，浏览器与 Android 壳共用云端数据（含对话记录），C-17 增加数据库账户、邀请码注册、账户级设置隔离。浏览器不保存数据库，也不重新读取完整密钥；Next.js 服务端负责认证、业务编排、数据库访问、外部 AI 与工具动作策略。
 
 ~~~mermaid
 flowchart LR
-  U[单个用户] --> B[浏览器]
-  U --> SH[Android 薄壳]
-  B --> CD{{云端交付实例 8000 端口 共享访问码门}}
+ U[单个用户] --> B[浏览器]
+ U --> SH[Android 薄壳]
+  B --> CD{{云端交付实例 8000 端口 账户会话门}}
   SH --> CD
   SH --> HC[Health Connect]
   CD --> N[Next.js 16 / Node.js]
@@ -52,7 +52,7 @@ flowchart LR
 |---|---|---|---|
 | Browser UI | 页面、表单、图表、审核与交互状态 | src/app/**, src/components/** | confirmed |
 | Android Shell | Capacitor 薄壳：WebView 渲染 live 服务，Health Connect 聚合同步（ADR-0005）；形态 B 直连云端（ADR-0007） | android/**, capacitor.config.ts, capacitor-web/** | confirmed；C-06-A1 已追认 |
-| Next API | 校验输入、绑定 primary profile、编排 DB、AI 与工具 | src/app/api/**, src/lib/** | confirmed；C-03 已完成 |
+| Next API | 校验输入、解析账户会话并绑定 profile、编排 DB、AI 与工具 | src/app/api/**, src/lib/** | confirmed；C-17-S4 已部署 |
 | Prisma | 类型化持久化和正式 migration | prisma/schema.prisma, prisma/migrations/** | confirmed；C-03-M1 迁移现有数据库 |
 | SQLite | 运行服务一侧的单写持久化：本地开发库与云端生产库各自单实例，云端库为生产真相源 | DATABASE_URL 指向的文件 | confirmed |
 | AI Gateway | StepFun、OpenAI、DeepSeek、Qwen、Kimi、GLM、SiliconFlow、OpenRouter、Ollama 与自定义兼容服务 | src/lib/ai/**, src/app/api/ai/**, src/app/api/settings/ai/** | confirmed；C-03-M3 已实现 |
@@ -62,7 +62,7 @@ flowchart LR
 | MCP Gateway | 工具发现、白名单、超时与输出隔离 | src/app/api/mcp/**, src/lib/mcp/** | confirmed；C-03-S3 已实现，真实平台取决于用户授权连接器 |
 | Action Policy | 搜索、草案、明确点餐授权和外部写操作边界 | src/lib/actions/** | approved target；C-06-L1 允许在明确点餐意图内创建一笔未支付订单 |
 | Delivery | lint、typecheck、build、production smoke 与 CI | package scripts、release smoke、CI | confirmed；C-02-S7 已完成 |
-| Cloud Delivery | 公网交付实例：standalone 构建产物 + systemd 常驻 + 数据库账户门 + 账户级凭据/SQLite（ADR-0007） | scripts/deploy.mjs, scripts/verify-cloud-gate.mjs, src/middleware.ts, src/lib/auth/**, src/lib/account/** | C-17-S2 已实现，云端迁移在 S4 |
+| Cloud Delivery | 公网交付实例：standalone 构建产物 + systemd 常驻 + 数据库账户门 + 账户级凭据/SQLite（ADR-0007/0008/0009） | scripts/deploy.mjs, scripts/verify-cloud-gate.mjs, src/middleware.ts, src/lib/auth/**, src/lib/account/** | C-17-S4 已部署并通过公网回归 |
 | dev_repo | 合同、架构、ER 与证据真相 | dev_repo/** | confirmed；C-03 已收口 |
 
 ## 关键运行流
@@ -101,9 +101,9 @@ MCP Gateway 只暴露白名单工具，并限制输入、超时和输出体积�
 
 创建未支付订单不等于支付授权。支付链接只在当前响应中交给用户，Agent 不得调用支付工具、代替用户打开确认后的支付动作、修改账户或连续创建订单；麦当劳 Token、支付链接和支付凭据不得进入 AgentMessage、MemoryItem 或日志。没有官方连接器、有效 Token、可用地址、可用门店或合法计价结果时，系统明确返回阻塞原因，不声称订单已经完成。
 
-### 云端交付与访问门（ADR-0007）
+### 云端交付与账户门（ADR-0007 / ADR-0008 / ADR-0009）
 
-云端实例以本仓 standalone 构建产物部署（服务器上不构建），systemd 常驻 8000 端口，SQLite 与凭据文件位于服务侧。共享访问码门由 middleware 执行：`APP_ACCESS_TOKEN` 未设置时全放行（本地开发零变化）；已设置时未认证页面请求重定向 `/access`、业务 API（含 SSE）返回 401，认证后持有 httpOnly cookie（访问码摘要）。云端 SQLite 是生产真相源，初始种子为本机库一次性拷贝；Web 与 Android 双端同源读取同一对话与记忆，不引入离线同步引擎。
+云端实例以本仓 standalone 构建产物部署（服务器上不构建），systemd 常驻 8000 端口，SQLite 与账户级设置位于服务侧。AUTH_REQUIRED=true 时，middleware 对未认证页面请求重定向 /access、业务 API（含 SSE）返回 401；登录和邀请码注册由 Node 运行时校验数据库会话，认证后持有 httpOnly ft_session cookie。旧 APP_ACCESS_TOKEN 只允许作为迁移期 bootstrap invite，不再授权业务页面或 API。云端 SQLite 是生产真相源，Web 与 Android 双端同源读取同一对话、记录、记忆和账户设置，不引入离线同步引擎。
 
 ### 数据与发布
 
@@ -111,7 +111,7 @@ Prisma migration 是生产 schema 唯一真相；database/schema.sql 降级为�
 
 ## 明确不做
 
-- 不实现注册、登录、多租户、角色权限或公网 SaaS（共享访问码门不是账号体系）。
++- 不实现多租户、角色权限或公网 SaaS；账户体系只服务于当前单实例个人营养产品。
 - 不支持多副本共享同一 SQLite 文件。
 - 不把营养估算或运动建议包装成医疗诊断。
 - 不做离线双写同步引擎（云端中心化即同步）。

@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process"
+import fs from "node:fs"
 import { createServer } from "node:http"
 import net from "node:net"
 import path from "node:path"
@@ -6,6 +7,8 @@ import path from "node:path"
 const root = process.cwd()
 const nextBin = path.join(root, "node_modules", "next", "dist", "bin", "next")
 const buildId = path.join(root, ".next", "BUILD_ID")
+const legacySettingsPath = path.join(root, "data", "mcdonalds.json")
+const legacySettingsBackupPath = `${legacySettingsPath}.${process.pid}.verify-backup`
 
 function assert(condition, message) {
   if (!condition) throw new Error(message)
@@ -63,7 +66,13 @@ assert(await import("node:fs").then(({ existsSync }) => existsSync(buildId)), "M
 let submitCalls = 0
 let connector
 let app
+let movedLegacySettings = false
 try {
+  if (fs.existsSync(legacySettingsPath)) {
+    assert(!fs.existsSync(legacySettingsBackupPath), "MCP test backup path already exists")
+    fs.renameSync(legacySettingsPath, legacySettingsBackupPath)
+    movedLegacySettings = true
+  }
   const connectorPort = await reserveLoopbackPort()
   connector = createServer(async (request, response) => {
     let body = ""
@@ -99,8 +108,8 @@ try {
     env: {
       ...process.env,
       NODE_ENV: "production",
-      TAKEOUT_MCP_URL: `http://127.0.0.1:${connectorPort}`,
-      TAKEOUT_MCP_API_KEY: "mcp-test-key",
+      MCDONALDS_MCP_URL: `http://127.0.0.1:${connectorPort}`,
+      MCDONALDS_MCP_TOKEN: "mcp-test-key",
     },
     stdio: ["ignore", "pipe", "pipe"],
   })
@@ -182,4 +191,5 @@ try {
 } finally {
   if (app) await stopProcess(app)
   if (connector) await new Promise((resolve) => connector.close(() => resolve()))
+  if (movedLegacySettings) fs.renameSync(legacySettingsBackupPath, legacySettingsPath)
 }

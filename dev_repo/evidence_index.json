@@ -1045,5 +1045,17 @@
       "path": "dev_repo/evidence/C-17/S3/access-login-desktop.png, dev_repo/evidence/C-17/S3/access-login-mobile.png, dev_repo/evidence/C-17/S3/access-register-mobile.png",
       "description": "认证入口桌面登录、移动登录与移动邀请码注册截图"
     }
+  ],
+  "C-17-S4": [
+    {
+      "type": "delivery",
+      "path": "scripts/deploy.mjs, scripts/verify-cloud-gate.mjs, scripts/seed-cloud-demo.mjs, scripts/verify-mcp-api.mjs",
+      "description": "账户认证语义的云端部署、验证、seed 与 MCP 发布门禁"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/S4/verification.json",
+      "description": "公网账户注册/登录/退出、业务数据回读、真实 Agent/MCP、Android 云壳构建与完整 release gate"
+    }
   ]
 }

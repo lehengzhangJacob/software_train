@@ -135,9 +135,15 @@ DATABASE_URL='${DB_URL}' ./node_modules/.bin/prisma migrate deploy
 cd ${APP_DIR}
 sudo -n systemctl restart foodtracker
 sleep 2
-CODE=$(curl -s -o /tmp/ft-smoke.json -w '%{http_code}' http://127.0.0.1:${PORT}/api/users || true)
-echo "smoke /api/users -> $CODE"
+CODE=$(curl -s -o /tmp/ft-smoke.html -w '%{http_code}' http://127.0.0.1:${PORT}/access || true)
+echo "smoke /access -> $CODE"
 if [ "$CODE" != "200" ]; then
+  sudo -n systemctl status foodtracker --no-pager -l | tail -20
+  exit 1
+fi
+API_CODE=$(curl -s -o /tmp/ft-smoke-api.json -w '%{http_code}' http://127.0.0.1:${PORT}/api/users || true)
+echo "smoke anonymous /api/users -> $API_CODE"
+if [ "$API_CODE" != "401" ] && [ "$API_CODE" != "200" ]; then
   sudo -n systemctl status foodtracker --no-pager -l | tail -20
   exit 1
 fi
