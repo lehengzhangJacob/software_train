@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
-import { Sidebar } from "@/components/sidebar"
+import { AppChrome } from "@/components/app-chrome"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 
@@ -32,16 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             跳至主要内容
           </a>
-          <div className="min-h-screen bg-[var(--app-canvas)]">
-            <Sidebar />
-            <main
-              id="main-content"
-              tabIndex={-1}
-              className="min-h-screen px-4 pb-[calc(5rem+env(safe-area-inset-bottom))] pt-[4.5rem] sm:px-5 lg:px-8 lg:pb-10 lg:pt-[6.25rem]"
-            >
-              <div className="app-page">{children}</div>
-            </main>
-          </div>
+          <AppChrome>{children}</AppChrome>
           <Toaster richColors position="top-center" />
         </ThemeProvider>
       </body>
