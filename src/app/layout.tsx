@@ -14,6 +14,11 @@ export const metadata: Metadata = {
     template: "%s | 营养 Agent",
   },
   description: "本地优先的个人饮食、运动与营养管理工具",
+  icons: {
+    icon: [{ url: "/brand/nutrition-agent-icon.png", type: "image/png" }],
+    shortcut: ["/brand/nutrition-agent-icon.png"],
+    apple: [{ url: "/brand/nutrition-agent-icon.png", type: "image/png" }],
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

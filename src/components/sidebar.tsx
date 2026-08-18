@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -73,7 +74,13 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
         compact ? "size-7 text-xs" : "size-8 text-sm"
       )}
     >
-      N
+      <Image
+        src="/brand/nutrition-agent-icon.png"
+        alt=""
+        width={compact ? 28 : 32}
+        height={compact ? 28 : 32}
+        className="size-full rounded-md object-cover"
+      />
     </span>
   )
 }

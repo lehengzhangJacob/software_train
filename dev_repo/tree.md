@@ -23,8 +23,8 @@ C-01 - 全栈功能初版 [completed]
                                 └── S3 README/文档截图素材 [completed：2 张真实云端截图、7 张 UI 参考图、README 与演示索引]
                                 └── C-13 - Android 拍照闭环与产品图标收口 [in_progress]
                                         ├── S1 相机入口、CAMERA 权限与 Debug APK [completed：Web/TypeScript/Android 构建通过；ADB 设备待接入]
-                                        ├── S2 产品图标设计与 Web/Android 资源接入 [in_progress]
-                                        └── S3 真机 ADB 拍照识别闭环与最终发布检查 [pending]
+                                        ├── S2 产品图标设计与 Web/Android 资源接入 [completed：内置图像生成 + 512/1024 Web 资源 + Android 多密度资源]
+                                        └── S3 真机 ADB 拍照识别闭环与最终发布检查 [in_progress：等待设备出现在当前 ADB 服务]
 ```
 
 
