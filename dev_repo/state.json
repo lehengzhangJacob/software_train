@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-12",
+  "active_contract_id": "C-13",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -275,6 +275,22 @@
         "C-06-L4-A2-S1"
       ],
       "return_to": "C-06-L4"
+    },
+    "C-13": {
+      "contract_id": "C-13",
+      "parent_contract_id": "C-12",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "Android 拍照闭环与产品图标收口",
+      "goal": "让 Android 端通过现有 Capacitor WebView 完成拍照、AI 识别、审核保存，并交付统一产品图标与真机回归证据",
+      "current_slice": "C-13-S2",
+      "completed_slices": [
+        "C-13-S1"
+      ],
+      "deferred_slices": [
+        "C-13-S3"
+      ],
+      "return_to": "web_completion_audit"
     }
   }
 }

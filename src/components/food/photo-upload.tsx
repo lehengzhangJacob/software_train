@@ -114,7 +114,7 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
       <input
         ref={cameraInputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept="image/*"
         capture="environment"
         className="hidden"
         onChange={handleFileSelect}

@@ -1,0 +1,37 @@
+{
+  "contract_id": "C-13",
+  "slice_id": "C-13-S1",
+  "summary": "Android 相机入口与运行时权限补齐",
+  "status": "pass_with_device_pending",
+  "scope": {
+    "files": [
+      "src/components/food/photo-upload.tsx",
+      "android/app/src/main/AndroidManifest.xml"
+    ],
+    "no_touch": [
+      "prisma/**",
+      "src/lib/agent/**",
+      "src/lib/mcp/**",
+      "cloud credentials"
+    ]
+  },
+  "verification": {
+    "camera_capture_branch": "pass: hidden camera input uses accept=image/* with capture=environment",
+    "camera_runtime_permission": "pass: Android source manifest declares android.permission.CAMERA",
+    "merged_manifest": "pass: android/app/build/intermediates/merged_manifests/debug/processDebugManifest/AndroidManifest.xml contains CAMERA",
+    "capacitor_sync": "pass: npx cap sync android",
+    "lint": "pass: npm run lint",
+    "typecheck": "pass: npm run typecheck",
+    "android_debug_build": "pass: assembleDebug; app-debug.apk 6372594 bytes",
+    "adb_device_e2e": "not_run: adb start-server and adb devices -l returned an empty device list"
+  },
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "red_line_crossed": false,
+  "artifacts": [
+    "android/app/build/outputs/apk/debug/app-debug.apk",
+    "android/app/build/intermediates/merged_manifests/debug/processDebugManifest/AndroidManifest.xml"
+  ]
+}
