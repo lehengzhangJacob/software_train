@@ -940,5 +940,12 @@
       "path": "dev_repo/evidence/C-12/data-manifest.json",
       "description": "新增记录 ID、日期范围、回读验证与不调用订单/支付/直接数据库写入的安全断言"
     }
+  ],
+  "C-12-S2": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-12/e2e/real-core-flows.json",
+      "description": "真实云端照片识别、健康 Agent 时间线、麦当劳 MCP 只读探测与移动视口同源回归证据"
+    }
   ]
 }

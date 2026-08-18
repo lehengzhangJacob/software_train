@@ -169,9 +169,10 @@
       "status": "in_progress",
       "summary": "用真实云端数据生成、核心功能回归和 README 截图素材",
       "goal": "为测试用户补充可重复的真实 API 演示数据，完成照片识别、Agent、MCP 只读和双端回归，并产出文档截图素材",
-      "current_slice": "C-12-S2",
+      "current_slice": "C-12-S3",
       "completed_slices": [
-        "C-12-S1"
+        "C-12-S1",
+        "C-12-S2"
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit"

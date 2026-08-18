@@ -1,0 +1,103 @@
+{
+  "contractId": "C-12",
+  "sliceId": "C-12-S2",
+  "generatedAt": "2026-08-18T06:53:32.8239921Z",
+  "environment": {
+    "baseUrl": "http://8.148.206.131:8000",
+    "userScope": "primary test user only",
+    "userId": 1,
+    "accessCodeRecorded": false,
+    "credentialsRecorded": false
+  },
+  "photoRecognition": {
+    "status": "passed",
+    "uiRoute": "/meals",
+    "requestPath": "/api/ai/recognize",
+    "testAsset": "public/images/nutrition/meal-hero.webp",
+    "recognizedItems": 9,
+    "savedItems": 9,
+    "postSaveTodayItemCount": 13,
+    "observedUi": [
+      "识别结果待审核",
+      "9 / 9 项将保存",
+      "已加入 9 项待审核食物"
+    ],
+    "imagePersisted": false
+  },
+  "agentConversation": {
+    "status": "passed",
+    "uiRoute": "/agent",
+    "threadId": 4,
+    "messageCountAfter": 4,
+    "promptClass": "two-week diet and activity review with memory-aware breakfast recommendation",
+    "timeline": {
+      "stepCount": 2,
+      "completedCount": 2,
+      "steps": [
+        "整理饮食档案与对话上下文",
+        "健康 Agent 生成建议"
+      ],
+      "generationDurationMs": 59100
+    },
+    "responseAnchors": [
+      "无糖豆浆 300ml + 全麦吐司 2 片 + 水煮蛋 2 个",
+      "结合活动量数据",
+      "对齐长期记忆与生活习惯"
+    ]
+  },
+  "mcdonaldMcp": {
+    "status": "passed",
+    "probePath": "/api/settings/mcdonalds/test",
+    "httpStatus": 200,
+    "toolCount": 29,
+    "latencyMs": 646,
+    "readOnlyProbe": true,
+    "orderSubmitCalled": false,
+    "paymentCalled": false,
+    "orderCreateCalled": false
+  },
+  "cloudDataAndResponsiveParity": {
+    "apiStatuses": {
+      "meals": 200,
+      "healthRecent": 200,
+      "threads": 200,
+      "memories": 200
+    },
+    "primaryUser": {
+      "todayMealItems": 13,
+      "activityDays": 7,
+      "activityDates": [
+        "2026-08-12",
+        "2026-08-13",
+        "2026-08-14",
+        "2026-08-15",
+        "2026-08-16",
+        "2026-08-17",
+        "2026-08-18"
+      ],
+      "threadCount": 3,
+      "memoryCount": 3
+    },
+    "mobileViewport": {
+      "size": "375x812",
+      "dashboardShowsSameUser": true,
+      "dashboardShowsSameTodayMealCount": true,
+      "agentShowsSamePromptAndRecommendation": true
+    },
+    "android": {
+      "status": "not_run_in_this_slice",
+      "reason": "No ADB device was connected in the current environment",
+      "continuityReference": "C-11-S3 Android cloud-shell same-source regression"
+    }
+  },
+  "safety": {
+    "primaryUserOnly": true,
+    "secondaryUserWrite": false,
+    "schemaChanged": false,
+    "migrationRun": false,
+    "directDatabaseWrite": false,
+    "orderSubmitCalled": false,
+    "paymentCalled": false,
+    "credentialMaterialInEvidence": false
+  }
+}
