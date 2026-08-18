@@ -947,5 +947,17 @@
       "path": "dev_repo/evidence/C-12/e2e/real-core-flows.json",
       "description": "真实云端照片识别、健康 Agent 时间线、麦当劳 MCP 只读探测与移动视口同源回归证据"
     }
+  ],
+  "C-12-S3": [
+    {
+      "type": "implementation",
+      "path": "README.md, docs/demo/C-12-E2E.md",
+      "description": "云端演示数据、核心闭环结果、截图使用说明和安全边界文档"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-12/screenshot-index.json, docs/demo/",
+      "description": "真实云端桌面/移动截图、干净裁切图与 Agent/拍照/设置 UI 参考素材索引"
+    }
   ]
 }

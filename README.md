@@ -72,3 +72,13 @@ prisma/           Schema、migration 和 reference seed
 scripts/          发布与端到端验证
 dev_repo/         合同、架构、数据模型和证据真相
 ```
+
+## C-12 云端演示与核心 E2E
+
+测试用户已经填充了一组可重复的真实演示数据：14 天饮食、7 天活动量、3 条运动计划和 3 条长期记忆。真实云端回归确认了三条核心闭环：照片识别返回并保存 9 项食物，健康 Agent 真实完成 2/2 步骤的时间线回合，麦当劳 MCP 只读探测返回 29 个工具且没有创建订单或触发支付。
+
+![云端营养首页（桌面）](docs/demo/c12-dashboard-desktop-clean.jpg)
+
+![云端营养首页（375x812 移动端）](docs/demo/c12-dashboard-mobile.png)
+
+完整截图索引、UI 参考图和 E2E 证据见 [`docs/demo/C-12-E2E.md`](docs/demo/C-12-E2E.md) 与 [`dev_repo/evidence/C-12/e2e/real-core-flows.json`](dev_repo/evidence/C-12/e2e/real-core-flows.json)。

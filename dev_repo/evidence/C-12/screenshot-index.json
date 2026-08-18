@@ -1,0 +1,52 @@
+{
+  "contractId": "C-12",
+  "sliceId": "C-12-S3",
+  "generatedAt": "2026-08-18T06:53:32.8239921Z",
+  "realCloudScreenshots": [
+    {
+      "file": "docs/demo/c12-dashboard-desktop.png",
+      "viewport": "1440x1000",
+      "format": "jpeg-bytes-in-png-named-file",
+      "sha256": "a0ce1ed21931b4a88924eb5326463d23ec946aebcbf9c2b5006777a5bea56fb5",
+      "source": "IAB authenticated cloud page /dashboard",
+      "note": "Raw screenshot retained; IAB rendered the page twice horizontally, so README uses the clean left crop."
+    },
+    {
+      "file": "docs/demo/c12-dashboard-desktop-clean.jpg",
+      "viewport": "720x1000 crop from 1440x1000",
+      "format": "jpeg",
+      "sha256": "d068f07207e4e77b07a4c5cf530870df9a370bce339e15d682f4ef8dc79f2ad6",
+      "source": "derived from the authenticated cloud desktop screenshot",
+      "note": "Documentation-safe crop of the left rendered page; no data was changed."
+    },
+    {
+      "file": "docs/demo/c12-dashboard-mobile.png",
+      "viewport": "375x812",
+      "format": "jpeg-bytes-in-png-named-file",
+      "sha256": "b90d41dd2ac5f786e4ca8cae67ee587e3f83f94730ea9e5e5cf419b8212ee3f0",
+      "source": "IAB authenticated cloud page /dashboard",
+      "note": "Real mobile viewport; shows the seeded primary user and 13 today items."
+    }
+  ],
+  "uiReferenceScreenshots": [
+    "docs/demo/c12-ui-reference-agent-desktop.png",
+    "docs/demo/c12-ui-reference-agent-mobile.png",
+    "docs/demo/c12-ui-reference-meals-desktop.png",
+    "docs/demo/c12-ui-reference-meals-mobile.png",
+    "docs/demo/c12-ui-reference-settings-desktop.png",
+    "docs/demo/c12-ui-reference-settings-mobile.png",
+    "docs/demo/c12-ui-reference-access-gate.png"
+  ],
+  "captureLimit": {
+    "status": "partial",
+    "reason": "After the two real cloud captures, repeated IAB Page.captureScreenshot calls timed out while DOM navigation and assertions continued to pass.",
+    "notHidden": true,
+    "coreFlowEvidence": "dev_repo/evidence/C-12/e2e/real-core-flows.json"
+  },
+  "safety": {
+    "accessCodeInImages": false,
+    "apiKeyInImages": false,
+    "mcpTokenInImages": false,
+    "orderOrPaymentUiAction": false
+  }
+}

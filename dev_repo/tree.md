@@ -1,8 +1,8 @@
 # Campaign: nutrition-agent
 
-- 当前合同：`C-12 - 测试数据、核心功能回归与 README 素材 [in_progress]`
-- 当前切片：`C-12-S3 - README/文档截图素材`
-- 下一步：生成桌面/移动截图、补齐 README 素材并完成 C-12 归档
+- 当前合同：`C-12 - 测试数据、核心功能回归与 README 素材 [completed]`
+- 当前切片：无
+- 下一步：回到 `web_completion_audit`，继续发布收口
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text
@@ -17,10 +17,10 @@ C-01 - 全栈功能初版 [completed]
                         ├── S1 部署通道：standalone + systemd + 云端种子 [completed]
                         ├── S2 公网访问门：middleware + 访问码 + 401 [completed]
                         └── S3 Android 形态 B + 双端同源回归 [completed]
-                            └── C-12 - 测试数据、核心功能回归与 README 素材 [in_progress]
+                        └── C-12 - 测试数据、核心功能回归与 README 素材 [completed]
                                 ├── S1 真实云端演示数据生成 [completed：14 天/56 条餐食、7 天活动、3 条运动、3 条记忆；幂等复跑通过]
                                 ├── S2 核心功能与双端 E2E 回归 [completed：照片识别 9 项、Agent 2/2、MCP 29 工具、移动视口同源]
-                                └── S3 README/文档截图素材 [in_progress]
+                                └── S3 README/文档截图素材 [completed：2 张真实云端截图、7 张 UI 参考图、README 与演示索引]
 ```
 
 
