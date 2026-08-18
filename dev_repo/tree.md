@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-17 - 账户体系、邀请码注册与跨账户数据隔离` [in_progress]
-- Current slice: `C-17-S3 - 登录/注册 UI 与退出入口`
+- Current slice: `C-17-S4 - 云端迁移、双端同步与最终发布检查`
 - Return path: `C-13-S3`
 - The older C-13 current-line text below is historical and is superseded by the runtime state above.
 
@@ -39,6 +39,12 @@ C-01 - 全栈功能初版 [completed]
                                                         └── S1 紧凑入口表面、云端发布与模拟器回归 [completed]
                                                 └── C-16 - 访问门背景材质补强 [completed]
                                                         └── S1 接入餐食摄影背景与模拟器回归 [completed]
+                                                └── C-17 - 账户体系、邀请码注册与跨账户数据隔离 [in_progress]
+                                                        ├── A1 账户/会话/邀请码数据模型 [completed]
+                                                        ├── S1 认证核心 API、会话门与安全边界 [completed]
+                                                        ├── S2 业务数据与 AI/MCP 配置按账户隔离 [completed]
+                                                        ├── S3 登录、邀请码注册、退出与认证 UI [completed]
+                                                        └── S4 云端迁移、双端同步与最终发布检查 [in_progress]
 ```
 
 

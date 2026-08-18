@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import {
   BarChart3,
@@ -12,6 +13,7 @@ import {
   Camera,
   ChevronDown,
   House,
+  LogOut,
   Settings2,
   ShieldCheck,
   UserRound,
@@ -23,6 +25,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
+type SessionUser = {
+  username: string
+  login: string
+}
 
 const desktopNav = [
   { href: "/dashboard", label: "今天", matches: ["/dashboard"] },
@@ -88,6 +95,34 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
 export function Sidebar() {
   const pathname = usePathname()
   const router = useRouter()
+  const [sessionUser, setSessionUser] = useState<SessionUser | null>(null)
+
+  useEffect(() => {
+    let active = true
+    void fetch("/api/auth/session", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) return null
+        return (await response.json()) as { data?: { user?: SessionUser } | null }
+      })
+      .then((payload) => {
+        if (active) setSessionUser(payload?.data?.user ?? null)
+      })
+      .catch(() => {
+        if (active) setSessionUser(null)
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => undefined)
+    router.replace("/access")
+    router.refresh()
+  }
+
+  const displayName = sessionUser?.username?.trim() || "我的空间"
+  const avatar = displayName.slice(0, 1)
 
   const personalMenu = (
     <DropdownMenuContent align="end" className="w-44">
@@ -103,6 +138,11 @@ export function Sidebar() {
       <DropdownMenuItem onClick={() => router.push("/settings/memory")}>
         <Brain />
         长期记忆
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem onClick={handleLogout}>
+        <LogOut />
+        退出登录
       </DropdownMenuItem>
     </DropdownMenuContent>
   )
@@ -144,13 +184,14 @@ export function Sidebar() {
           <div className="ml-auto flex items-center gap-3">
             <div className="flex h-9 items-center gap-2 rounded-full bg-white/8 px-3 text-xs text-white/70">
               <ShieldCheck className="size-3.5 text-[var(--brand-mint)]" />
-              数据仅存本机
+              私密同步
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger className="flex h-9 items-center gap-2 rounded-md px-1.5 outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint)]">
                 <span className="grid size-8 place-items-center rounded-full bg-[var(--brand-lavender)] text-xs font-bold text-white">
-                  我
+                  {avatar}
                 </span>
+                <span className="max-w-28 truncate text-xs text-white/75">{displayName}</span>
                 <ChevronDown className="size-3.5 text-white/55" />
                 <span className="sr-only">打开个人菜单</span>
               </DropdownMenuTrigger>
@@ -176,7 +217,7 @@ export function Sidebar() {
             title="个人设置"
             className="grid size-8 place-items-center rounded-full bg-[var(--brand-lavender)] text-xs font-bold text-white outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint-deep)]"
           >
-            我
+            {avatar}
           </DropdownMenuTrigger>
           {personalMenu}
         </DropdownMenu>

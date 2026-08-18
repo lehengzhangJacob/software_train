@@ -1028,5 +1028,22 @@
       "path": "dev_repo/evidence/C-17/S2/verification.json",
       "description": "业务数据账户 owner 审计、双账户真实 HTTP 隔离回归、未登录 401 与完整质量门"
     }
+  ],
+  "C-17-S3": [
+    {
+      "type": "implementation",
+      "path": "src/app/access/page.tsx, src/app/auth/page.tsx, src/components/app-chrome.tsx, src/components/sidebar.tsx",
+      "description": "登录/邀请码注册双态入口、账户身份显示、退出登录与认证路由别名；沿用餐食摄影和梅紫/薄荷绿产品视觉"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/S3/verification.json",
+      "description": "真实浏览器注册、会话、退出、重新登录，移动视口无横向溢出，类型检查、lint 与 production build"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-17/S3/access-login-desktop.png, dev_repo/evidence/C-17/S3/access-login-mobile.png, dev_repo/evidence/C-17/S3/access-register-mobile.png",
+      "description": "认证入口桌面登录、移动登录与移动邀请码注册截图"
+    }
   ]
 }

@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 
 export function AppChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname()
-  const isAccessRoute = pathname === "/access"
+  const isAccessRoute = pathname === "/access" || pathname === "/auth"
 
   return (
     <div className="min-h-screen bg-[var(--app-canvas)]">

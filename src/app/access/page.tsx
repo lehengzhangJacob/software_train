@@ -8,38 +8,96 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-// Shared-passcode entry page for the cloud instance (ADR-0007). Unauthenticated
-// visitors get the product's entry rhythm without seeing app navigation.
+type AuthMode = "login" | "register"
+
+type AuthForm = {
+  username: string
+  login: string
+  password: string
+  confirmPassword: string
+  inviteCode: string
+}
+
+type ApiResponse = {
+  error?: string | null
+}
+
+const initialForm: AuthForm = {
+  username: "",
+  login: "",
+  password: "",
+  confirmPassword: "",
+  inviteCode: "",
+}
+
+function getErrorMessage(payload: ApiResponse | null, fallback: string) {
+  return payload?.error?.trim() || fallback
+}
+
 export default function AccessPage() {
   const router = useRouter()
-  const [code, setCode] = useState("")
+  const [mode, setMode] = useState<AuthMode>("login")
+  const [form, setForm] = useState<AuthForm>(initialForm)
   const [error, setError] = useState<string | null>(null)
   const [pending, setPending] = useState(false)
+
+  function updateField(field: keyof AuthForm, value: string) {
+    setForm((current) => ({ ...current, [field]: value }))
+    if (error) setError(null)
+  }
+
+  function switchMode(nextMode: AuthMode) {
+    if (pending || mode === nextMode) return
+    setMode(nextMode)
+    setError(null)
+  }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (pending) return
+
+    if (mode === "register" && form.password !== form.confirmPassword) {
+      setError("两次输入的密码不一致")
+      return
+    }
+
     setPending(true)
     setError(null)
+
     try {
-      const response = await fetch("/api/auth/verify", {
+      const body = mode === "register"
+        ? {
+            username: form.username,
+            login: form.login,
+            password: form.password,
+            inviteCode: form.inviteCode,
+          }
+        : {
+            login: form.login,
+            password: form.password,
+          }
+      const response = await fetch(`/api/auth/${mode}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify(body),
       })
-      const payload = (await response.json().catch(() => null)) as { error?: string | null } | null
+      const payload = (await response.json().catch(() => null)) as ApiResponse | null
+
       if (response.ok) {
-        router.replace("/")
+        router.replace("/dashboard")
         router.refresh()
         return
       }
-      setError(payload?.error ?? "访问码不正确")
+
+      setError(getErrorMessage(payload, mode === "register" ? "注册没有完成，请检查邀请码" : "账号或密码不正确"))
     } catch {
-      setError("网络异常，请重试")
+      setError("网络暂时不可用，请稍后重试")
     } finally {
       setPending(false)
     }
   }
+
+  const isRegister = mode === "register"
 
   return (
     <div className="w-full">
@@ -60,87 +118,194 @@ export default function AccessPage() {
       </header>
 
       <section
-        className="surface-card mt-7 grid overflow-hidden lg:mt-9 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]"
+        className="relative isolate mt-7 overflow-hidden border-y border-border/70 bg-[var(--brand-plum)] text-white shadow-[0_22px_65px_rgba(45,39,53,0.14)] lg:mt-9 lg:grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
         aria-label="进入私人营养空间"
       >
-        <div className="relative isolate overflow-hidden bg-[var(--brand-plum)] px-6 py-6 text-white sm:px-10 sm:py-9 lg:flex lg:min-h-[310px] lg:flex-col lg:justify-between lg:px-12 lg:py-10">
+        <div className="relative isolate flex min-h-[330px] flex-col justify-between overflow-hidden px-6 py-7 sm:px-10 sm:py-9 lg:min-h-[580px] lg:px-12 lg:py-12">
           <Image
             src="/images/nutrition/meal-hero.webp"
             alt=""
             fill
             priority
-            sizes="(min-width: 1024px) 45vw, 100vw"
-            className="object-cover object-center opacity-60 saturate-[0.82]"
+            sizes="(min-width: 1024px) 43vw, 100vw"
+            className="object-cover object-center opacity-65 saturate-[0.82]"
           />
           <div
-            className="absolute inset-0 bg-[linear-gradient(105deg,rgba(45,39,53,0.95)_0%,rgba(45,39,53,0.84)_52%,rgba(45,39,53,0.62)_100%)]"
+            className="absolute inset-0 bg-[linear-gradient(145deg,rgba(45,39,53,0.98)_0%,rgba(45,39,53,0.82)_52%,rgba(45,39,53,0.48)_100%)]"
             aria-hidden="true"
           />
           <div className="relative z-10">
-            <div className="flex items-center gap-2 text-xs font-medium text-white/55">
+            <div className="flex items-center gap-2 text-xs font-medium tracking-[0.12em] text-white/60">
               <span className="size-2 rounded-full bg-[var(--brand-mint)]" aria-hidden="true" />
               <span>私人营养空间</span>
             </div>
-            <h1 className="mt-5 max-w-md text-2xl font-semibold leading-tight tracking-[-0.025em] sm:mt-8 sm:text-[clamp(2rem,4vw,3.2rem)] sm:leading-[1.08]">
-              回到你的营养节奏。
+            <h1 className="mt-6 max-w-md text-3xl font-semibold leading-[1.08] tracking-[-0.035em] sm:mt-10 sm:text-[clamp(2.4rem,4.5vw,4.5rem)]">
+              把每一餐，记成自己的节奏。
             </h1>
-            <p className="mt-3 max-w-md text-sm leading-6 text-white/65 sm:mt-4 sm:leading-7 sm:text-base">
-              饮食、运动和对话，都从这里继续。
+            <p className="mt-5 max-w-md text-sm leading-7 text-white/68 sm:text-base">
+              饮食、运动和对话，从同一个空间继续。你的记录会跟着账户走，在每一次打开时回到身边。
             </p>
           </div>
-          <div className="relative z-10 mt-6 flex items-center gap-3 text-xs text-white/45 sm:mt-8 lg:mt-10">
-            <span className="h-px w-8 bg-[var(--brand-mint)]" aria-hidden="true" />
-            <span>记录 · 复盘 · 调整</span>
+          <div className="relative z-10 mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-white/18 pt-5 text-xs text-white/60">
+            <div>
+              <p className="text-lg font-semibold text-white">01</p>
+              <p className="mt-1">记录饮食</p>
+            </div>
+            <div>
+              <p className="text-lg font-semibold text-white">02</p>
+              <p className="mt-1">理解身体</p>
+            </div>
+            <div>
+              <p className="text-lg font-semibold text-white">03</p>
+              <p className="mt-1">一起调整</p>
+            </div>
           </div>
         </div>
 
-        <div className="bg-card p-6 sm:p-10 lg:flex lg:flex-col lg:justify-center lg:p-12">
-          <div className="flex items-start justify-between gap-4">
+        <div className="relative bg-[color-mix(in_srgb,var(--brand-paper)_94%,transparent)] px-6 py-8 text-[var(--brand-heading)] backdrop-blur sm:px-10 sm:py-10 lg:border-l lg:border-white/10 lg:px-12 lg:py-12">
+          <div className="flex items-end justify-between gap-5 border-b border-border/80 pb-5">
             <div>
-              <p className="page-eyebrow">欢迎回来</p>
-              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-[var(--brand-heading)] sm:text-3xl">
-                输入访问码
+              <p className="page-eyebrow">{isRegister ? "第一次来到这里" : "欢迎回来"}</p>
+              <h2 className="mt-2 text-2xl font-semibold tracking-[-0.025em] sm:text-3xl">
+                {isRegister ? "建立你的空间" : "进入你的空间"}
               </h2>
             </div>
+            <span className="hidden text-right text-xs leading-5 text-muted-foreground sm:block">
+              账户登录后
+              <br />
+              记录会自动同步
+            </span>
           </div>
-          <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-            验证后，回到你的饮食与运动记录。
+
+          <div className="mt-5 flex items-center gap-5 border-b border-border/70" role="tablist" aria-label="账户操作">
+            {(["login", "register"] as const).map((item) => (
+              <button
+                key={item}
+                type="button"
+                role="tab"
+                aria-selected={mode === item}
+                onClick={() => switchMode(item)}
+                className={`relative -mb-px px-1 pb-3 pt-1 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint-deep)] focus-visible:ring-offset-2 ${
+                  mode === item
+                    ? "text-[var(--brand-heading)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[var(--brand-mint-deep)]"
+                    : "text-muted-foreground hover:text-[var(--brand-heading)]"
+                }`}
+              >
+                {item === "login" ? "登录" : "邀请码注册"}
+              </button>
+            ))}
+          </div>
+
+          <p className="mt-5 max-w-md text-sm leading-6 text-muted-foreground">
+            {isRegister
+              ? "用注册邀请码创建账户。之后，饮食记录、长期记忆和工具配置都归属于你的空间。"
+              : "登录后继续记录饮食、运动，也可以直接和营养教练聊天。"}
           </p>
-          <form className="mt-7 space-y-5" onSubmit={onSubmit}>
+
+          <form className="mt-7 space-y-4" onSubmit={onSubmit}>
+            {isRegister ? (
+              <div className="space-y-2">
+                <Label htmlFor="auth-username" className="text-[var(--brand-heading)]">显示名称</Label>
+                <Input
+                  id="auth-username"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  maxLength={60}
+                  value={form.username}
+                  onChange={(event) => updateField("username", event.target.value)}
+                  placeholder="例如：张三"
+                  className="h-12 bg-white/75"
+                />
+              </div>
+            ) : null}
+
             <div className="space-y-2">
-              <Label htmlFor="access-code" className="text-[var(--brand-heading)]">
-                访问码
-              </Label>
+              <Label htmlFor="auth-login" className="text-[var(--brand-heading)]">账号</Label>
               <Input
-                id="access-code"
-                type="password"
-                autoComplete="current-password"
+                id="auth-login"
+                type="text"
+                autoComplete="username"
                 required
-                value={code}
-                onChange={(event) => setCode(event.target.value)}
-                aria-invalid={error ? true : undefined}
-                placeholder="输入授权访问码"
-                className="h-12 bg-[var(--brand-paper)] tracking-[0.22em] placeholder:tracking-normal"
+                minLength={3}
+                maxLength={80}
+                value={form.login}
+                onChange={(event) => updateField("login", event.target.value)}
+                placeholder="输入你的登录账号"
+                className="h-12 bg-white/75"
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="auth-password" className="text-[var(--brand-heading)]">密码</Label>
+              <Input
+                id="auth-password"
+                type="password"
+                autoComplete={isRegister ? "new-password" : "current-password"}
+                required
+                minLength={isRegister ? 8 : 1}
+                maxLength={128}
+                value={form.password}
+                onChange={(event) => updateField("password", event.target.value)}
+                placeholder={isRegister ? "至少 8 位" : "输入账户密码"}
+                className="h-12 bg-white/75"
+              />
+            </div>
+
+            {isRegister ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="auth-confirm-password" className="text-[var(--brand-heading)]">确认密码</Label>
+                  <Input
+                    id="auth-confirm-password"
+                    type="password"
+                    autoComplete="new-password"
+                    required
+                    minLength={8}
+                    maxLength={128}
+                    value={form.confirmPassword}
+                    onChange={(event) => updateField("confirmPassword", event.target.value)}
+                    placeholder="再输入一次密码"
+                    className="h-12 bg-white/75"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="auth-invite-code" className="text-[var(--brand-heading)]">注册邀请码</Label>
+                  <Input
+                    id="auth-invite-code"
+                    type="password"
+                    autoComplete="one-time-code"
+                    required
+                    minLength={4}
+                    maxLength={128}
+                    value={form.inviteCode}
+                    onChange={(event) => updateField("inviteCode", event.target.value)}
+                    placeholder="输入收到的邀请码"
+                    className="h-12 bg-white/75 tracking-[0.12em] placeholder:tracking-normal"
+                  />
+                </div>
+              </>
+            ) : null}
+
             {error ? (
-              <p role="alert" className="text-sm text-[var(--brand-coral-ink)]">
+              <p role="alert" className="border-l-2 border-[var(--brand-coral)] bg-[var(--brand-coral-soft)] px-3 py-2 text-sm leading-6 text-[var(--brand-coral-ink)]">
                 {error}
               </p>
             ) : null}
+
             <Button
               type="submit"
-              className="h-11 w-full bg-[var(--brand-plum)] text-white hover:bg-[var(--brand-plum-soft)]"
-              disabled={pending || code.length === 0}
+              className="mt-2 h-12 w-full bg-[var(--brand-plum)] text-white hover:bg-[var(--brand-plum-soft)]"
+              disabled={pending || form.login.trim().length < 3 || form.password.length === 0 || (isRegister && (!form.username.trim() || !form.inviteCode.trim()))}
             >
-              {pending ? "正在进入…" : "进入空间"}
+              {pending ? "正在处理…" : isRegister ? "创建我的空间" : "登录并继续"}
             </Button>
           </form>
         </div>
       </section>
 
-      <p className="mt-4 text-center text-xs text-muted-foreground">
-        访问码仅用于进入此服务，不会保存到页面
+      <p className="mt-4 text-center text-xs leading-5 text-muted-foreground">
+        账户用于区分你的记录与配置；密码只以不可逆摘要保存。
       </p>
     </div>
   )
