@@ -1,0 +1,47 @@
+{
+  "contract": "C-06-L4-A2",
+  "slice": "C-06-L4-A2-S1",
+  "type": "frontend-implementation-and-browser-regression",
+  "date": "2026-08-18",
+  "surface": "http://127.0.0.1:3102/agent",
+  "summary": "将 Agent 活动面板由卡片重构为品牌色纵向时间线，保持活动流协议、安全摘要和消息事实不变。",
+  "assertions": {
+    "timeline_visual": "pass: 外层卡片背景、边框和阴影移除；步骤沿纵向轨道显示，节点、连线、状态和耗时可读",
+    "streaming_auto_expand": "pass: 同一条真实 Agent 活动流在实时态自动展开，显示整理信息与生成建议两个节点",
+    "activity_completion": "pass: 同一回合完成为 2/2，两个节点均显示已完成与耗时",
+    "activity_disclosure": "pass: 完成态点击可折叠 aria-expanded=false 且时间线节点隐藏，再次点击恢复 aria-expanded=true",
+    "mobile_geometry": "pass: 375x800 下 documentScrollWidth=360；活动面板 x=32、right=328.53、width=296.53，安全说明和输入框均保留",
+    "desktop_geometry": "pass: 1440x900 下 documentScrollWidth=1425；活动面板 x=505.43、right=1365.07、width=859.63",
+    "lint": "pass: 0 errors，16 warnings 均来自既有 Android 生成文件",
+    "typecheck": "pass",
+    "build": "pass: Next.js 16.3.1 production build"
+  },
+  "red_line_audit": {
+    "activity_contract": "pass: 未修改 /api/agent 活动流、事件顺序或 Agent 编排",
+    "secret_boundary": "pass: 时间线仅显示安全标签、状态、工具名和耗时；未显示 Token、原始参数或支付凭据",
+    "data_boundary": "pass: 未修改 AgentThread、AgentMessage、AgentSessionDigest 或任何数据库迁移",
+    "unrelated_worktree": "pass: C-10 的 prisma、repository 和 journal 改动未被本切片编辑"
+  },
+  "architecture_delta": "none: 仅调整 frontend.components 的活动投影呈现层",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "artifacts": [
+    {
+      "path": "C:/Users/zzy/.codex/visualizations/2026/08/18/agent-timeline-desktop.png",
+      "type": "browser-screenshot",
+      "description": "同一真实 Agent 回合的 1440x900 桌面时间线"
+    },
+    {
+      "path": "C:/Users/zzy/.codex/visualizations/2026/08/18/agent-timeline-mobile.png",
+      "type": "browser-screenshot",
+      "description": "同一真实 Agent 回合的 375x800 移动时间线"
+    }
+  ],
+  "evidence_commands": [
+    "npm run lint",
+    "npm run typecheck",
+    "npm run build",
+    "production browser smoke at 1440x900 and 375x800"
+  ]
+}

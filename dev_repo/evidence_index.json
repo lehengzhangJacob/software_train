@@ -887,5 +887,27 @@
       "path": "dev_repo/evidence/C-09/verification.json",
       "description": "教练页模块收敛实证：工具台移除、实机 DOM 验证、网关层未动"
     }
+  ],
+  "C-06-L4-A2": [
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-activity-panel.tsx",
+      "description": "无卡片纵向活动时间线：实时展开、状态节点、耗时与安全摘要"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-L4-A2/ui-timeline.json",
+      "description": "同一真实 Agent 回合的桌面/375px 时间线、折叠行为、无横向溢出与安全边界证据"
+    },
+    {
+      "type": "verification",
+      "path": "C:/Users/zzy/.codex/visualizations/2026/08/18/agent-timeline-desktop.png",
+      "description": "1440x900 桌面时间线截图"
+    },
+    {
+      "type": "verification",
+      "path": "C:/Users/zzy/.codex/visualizations/2026/08/18/agent-timeline-mobile.png",
+      "description": "375x800 移动时间线截图"
+    }
   ]
 }

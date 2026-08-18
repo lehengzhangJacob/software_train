@@ -213,6 +213,19 @@
         "C-06-L4-A1-S2"
       ],
       "return_to": "C-06-L4"
+    },
+    "C-06-L4-A2": {
+      "contract_id": "C-06-L4-A2",
+      "parent_contract_id": "C-06",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "将 Agent 执行过程改为无卡片纵向时间线并完成双端真实回归",
+      "goal": "让当前回合的活动步骤与会话流自然衔接，同时保持实时展开、可折叠和安全摘要边界",
+      "current_slice": null,
+      "completed_slices": [
+        "C-06-L4-A2-S1"
+      ],
+      "return_to": "C-06-L4"
     }
   }
 }

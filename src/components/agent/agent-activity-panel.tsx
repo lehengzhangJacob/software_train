@@ -11,10 +11,10 @@ interface AgentActivityPanelProps {
 }
 
 const kindLabels: Record<AgentActivityKind, string> = {
-  context: "上下文",
-  model: "模型",
-  tool: "MCP 工具",
-  policy: "策略",
+  context: "整理信息",
+  model: "生成建议",
+  tool: "调用服务",
+  policy: "安全校验",
 }
 
 const statusLabels: Record<AgentActivityStatus, string> = {
@@ -50,8 +50,16 @@ function statusClass(status: AgentActivityStatus) {
   return "text-[var(--brand-coral)]"
 }
 
+function statusNodeClass(status: AgentActivityStatus) {
+  if (status === "running") return "bg-[var(--brand-lavender-soft)] text-[var(--brand-lavender-deep)]"
+  if (status === "completed") return "bg-[var(--brand-mint)]/20 text-[var(--brand-mint-deep)]"
+  if (status === "blocked") return "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300"
+  return "bg-[var(--brand-coral-soft)] text-[var(--brand-coral)]"
+}
+
 export function AgentActivityPanel({ activities, active }: AgentActivityPanelProps) {
-  const [expanded, setExpanded] = useState(active)
+  const [expanded, setExpanded] = useState(true)
+  const isExpanded = active || expanded
   const completedCount = useMemo(
     () => activities.filter((activity) => activity.status === "completed").length,
     [activities],
@@ -62,41 +70,41 @@ export function AgentActivityPanel({ activities, active }: AgentActivityPanelPro
 
   return (
     <section
-      className="rounded-lg border border-border/70 bg-card shadow-sm"
+      className="min-w-0 py-1"
       aria-label="Agent 执行过程"
       data-testid="agent-activity-panel"
     >
       <button
         type="button"
-        className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint)]"
-        aria-expanded={expanded}
+        className="group flex w-full min-w-0 items-center gap-3 border-b border-border/60 pb-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint)]"
+        aria-expanded={isExpanded}
+        aria-controls="agent-activity-timeline"
         onClick={() => setExpanded((current) => !current)}
       >
-        <span className={cn("grid size-8 shrink-0 place-items-center rounded-md bg-[var(--brand-lavender-soft)]", hasFailure ? "text-[var(--brand-coral)]" : "text-[var(--brand-plum)]")}>
+        <span className={cn("grid size-8 shrink-0 place-items-center rounded-full", hasFailure ? "bg-[var(--brand-coral-soft)] text-[var(--brand-coral)]" : "bg-[var(--brand-lavender-soft)] text-[var(--brand-plum)]")}>
           {hasFailure ? <CircleAlert className="size-4" aria-hidden="true" /> : <Activity className="size-4" aria-hidden="true" />}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-semibold text-[var(--brand-heading)]">Agent 执行过程</span>
+          <span className="block text-sm font-semibold text-[var(--brand-heading)]">本回合时间线</span>
           <span className="mt-0.5 block text-[11px] text-muted-foreground">
             {active ? "实时更新中" : `${activities.length} 个步骤 · ${completedCount} 个已完成`}
           </span>
         </span>
-        <span className={cn("hidden rounded-full px-2 py-1 text-[11px] font-medium sm:inline-flex", hasFailure ? "bg-[var(--brand-coral-soft)] text-[var(--brand-coral)]" : "bg-[var(--brand-mint)]/20 text-[var(--brand-mint-deep)]")}>
+        <span className={cn("hidden text-[11px] font-medium tabular-nums sm:inline-flex", hasFailure ? "text-[var(--brand-coral)]" : "text-[var(--brand-mint-deep)]")}>
           {completedCount}/{activities.length}
         </span>
-        <ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180")} aria-hidden="true" />
+        <ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform group-hover:text-[var(--brand-plum)]", isExpanded && "rotate-180")} aria-hidden="true" />
       </button>
 
-      {expanded ? (
-        <div className="border-t border-border/60 px-4 py-3" aria-live={active ? "polite" : undefined}>
-          <ol className="space-y-1">
-            {activities.map((activity, index) => (
-              <li key={activity.activityId} className="relative flex gap-3 pb-3 last:pb-0">
-                {index < activities.length - 1 ? <span className="absolute left-3.5 top-7 h-[calc(100%-1.25rem)] w-px bg-border" aria-hidden="true" /> : null}
-                <span className={cn("relative z-10 grid size-7 shrink-0 place-items-center rounded-full border bg-card", statusClass(activity.status))}>
+      {isExpanded ? (
+        <div id="agent-activity-timeline" className="min-w-0 pt-4" aria-live={active ? "polite" : undefined}>
+          <ol className="ml-3 min-w-0 border-l border-[var(--brand-mint)]/40 pl-6 sm:ml-4 sm:pl-7">
+            {activities.map((activity) => (
+              <li key={activity.activityId} className="relative min-w-0 pb-5 last:pb-0">
+                <span className={cn("absolute -left-[2.25rem] top-0 grid size-6 place-items-center rounded-full ring-4 ring-[var(--brand-paper)]", statusNodeClass(activity.status))}>
                   {statusIcon(activity.status)}
                 </span>
-                <div className="min-w-0 flex-1 pt-0.5">
+                <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span className="text-sm font-medium text-foreground">{activity.label}</span>
                     <span className={cn("inline-flex items-center gap-1 text-[11px]", statusClass(activity.status))}>
@@ -105,7 +113,7 @@ export function AgentActivityPanel({ activities, active }: AgentActivityPanelPro
                     </span>
                   </div>
                   <div className="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-                    {activity.toolName ? <code className="rounded bg-muted px-1.5 py-0.5 font-mono">{activity.toolName}</code> : null}
+                    {activity.toolName ? <code className="break-all font-mono text-[10px] text-muted-foreground">{activity.toolName}</code> : null}
                     {formatDuration(activity.durationMs) ? <span>{formatDuration(activity.durationMs)}</span> : null}
                   </div>
                   {activity.detail ? <p className="mt-1 break-words text-xs leading-5 text-muted-foreground">{activity.detail}</p> : null}
@@ -113,7 +121,7 @@ export function AgentActivityPanel({ activities, active }: AgentActivityPanelPro
               </li>
             ))}
           </ol>
-          <p className="mt-3 border-t border-border/60 pt-3 text-[11px] leading-5 text-muted-foreground">
+          <p className="mt-4 border-l-2 border-[var(--brand-lavender)]/60 pl-4 text-[11px] leading-5 text-muted-foreground">
             这里只展示当前回合的安全摘要，不包含 Token、原始参数或支付凭据。
           </p>
         </div>
