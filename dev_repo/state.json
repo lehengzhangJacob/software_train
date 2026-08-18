@@ -155,7 +155,8 @@
       "current_slice": null,
       "completed_slices": [
         "C-11-A1",
-        "C-11-S1"
+        "C-11-S1",
+        "C-11-S2"
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit"

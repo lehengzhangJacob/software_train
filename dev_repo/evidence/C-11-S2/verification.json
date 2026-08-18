@@ -1,0 +1,18 @@
+{
+  "contract_id": "C-11",
+  "slice_id": "C-11-S2",
+  "timestamp": "2026-08-18T12:35:00+08:00",
+  "summary": "公网访问门上线：middleware（token 未设全放行）+ /access 访问码页 + /api/auth/verify（限速 10 次/10 分钟）+ API 401/页面重定向；服务切 0.0.0.0:8000；公网 7/7 实证全绿",
+  "verification": {
+    "test_access": "pass:9/9（放行/门页/401/门面可达/已认证/digest 稳定性/常数时间比较/限速窗口/cookie 常量）",
+    "local_gates": "pass:lint 0 错 0 警 + typecheck + build（随 deploy 全量构建）",
+    "cloud_public": "pass:7/7 —— 未认证 API 401、未认证页面 307→/access、/access 渲染、错码 401、对码 200+ft_access cookie（cookie 不含访问码本体）、持 cookie API 200、持 cookie /agent 200",
+    "local_loop": "pass:本机生产启动无 token 时 /api/users 与 /dashboard 均 200（零变化红线双侧实证）",
+    "secrets": "pass:访问码仅存服务器 .env.production(0600) 与本地 .jspace 笔记，未入 Git、日志与响应"
+  },
+  "red_lines": "未击穿：门就绪后才切公网绑定；token 未设零行为变化；访问码未出现在响应/日志/cookie（cookie 为 sha256 摘要）",
+  "architecture_delta": "cloud.delivery 实现状态 partial→confirmed（访问门落地，公网暴露面开始服务）",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}
