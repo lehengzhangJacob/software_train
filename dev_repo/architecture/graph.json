@@ -1,33 +1,34 @@
 {
-  "schema_version": 4,
+  "schema_version": 5,
   "amendment": {
-    "contract_id": "C-10",
-    "decision": "session_digest_and_background_consolidation",
+    "contract_id": "C-11",
+    "decision": "cloud_delivery_shared_gate_and_cloud_credentials",
     "status": "accepted",
-    "return_to": "C-06-L4"
+    "return_to": "web_completion_audit"
   },
   "nodes": [
     {
       "id": "local_user",
-      "purpose": "在本机使用个人营养、记忆和工具能力的单个用户",
+      "purpose": "在本机或公网（经共享访问码门）使用同一营养、记忆和工具能力的单个用户",
       "owned_files": [],
       "public_interfaces": [
         "browser interaction"
       ],
       "depends_on": [
         "frontend",
-        "android.shell"
+        "android.shell",
+        "cloud.delivery"
       ],
       "depended_on_by": [],
       "invariants": [
-        "不被表述为已认证的公网身份",
+        "不拥有账号体系身份；公网可达性仅由共享访问码门约束，不构成个人身份认证",
         "所有外部写操作由本人最终确认"
       ],
       "allowed_change_types": [
         "local personal tool workflow"
       ],
       "requires_amendment_when": [
-        "引入第二个并发用户或公网身份"
+        "引入第二个并发用户或个人账号身份"
       ],
       "verification": [
         "course demo screenplay",
@@ -309,7 +310,7 @@
     },
     {
       "id": "database.sqlite",
-      "purpose": "单实例课程项目持久化",
+      "purpose": "运行服务一侧的单写 SQLite 持久化（本地开发库与云端生产库各自单实例，云端库为生产真相源）",
       "owned_files": [
         "database/*.db (runtime ignored)"
       ],
@@ -430,11 +431,12 @@
         "database.prisma"
       ],
       "depended_on_by": [
-        "local_user"
+        "local_user",
+        "cloud.delivery"
       ],
       "invariants": [
         "CI 不调用真实 AI",
-        "默认只监听 loopback",
+        "本地回路默认只监听 loopback",
         "绿测后才称 RC"
       ],
       "allowed_change_types": [
@@ -443,7 +445,6 @@
         "CI"
       ],
       "requires_amendment_when": [
-        "公网部署",
         "容器成为必选运行时"
       ],
       "verification": [
@@ -502,7 +503,7 @@
     },
     {
       "id": "local.secret_store",
-      "purpose": "保存 GUI 提交的本机 AI 与 MCP 凭据",
+      "purpose": "保存 GUI 提交的 AI 与 MCP 凭据：文件位于运行服务一侧（本地开发机或云端服务器 data/ 目录），env 作回退；云端实例即凭据上云的落点",
       "owned_files": [
         "src/lib/ai/settings.ts",
         "data/credentials.json (runtime ignored)"
@@ -524,7 +525,7 @@
         "OS credential adapter"
       ],
       "requires_amendment_when": [
-        "凭据同步到云端"
+        "凭据交由第三方托管服务或 KMS"
       ],
       "verification": [
         "secret scan",
@@ -761,7 +762,8 @@
       "invariants": [
         "壳不持有业务数据唯一真相",
         "仅经用户授权读取 Health Connect 自然日聚合",
-        "开发回路走 adb reverse loopback"
+        "开发回路走 adb reverse loopback（形态 A）",
+        "形态 B 直连云端 URL，同样经过共享访问码门"
       ],
       "allowed_change_types": [
         "shell config",
@@ -776,14 +778,65 @@
       "verification": [
         "device build",
         "test:health contract tests",
-        "adb reverse manual smoke"
+        "adb reverse manual smoke",
+        "form B cloud regression"
       ],
       "known_debt": [
-        "形态 B 部署 URL 未定",
         "真机回归未入 CI"
       ],
       "confidence": "confirmed",
       "implementation_status": "confirmed"
+    },
+    {
+      "id": "cloud.delivery",
+      "purpose": "公网服务器上的正式交付实例：standalone Next.js 常驻服务（systemd）、共享访问码门、云端凭据与 SQLite 生产真相源；部署以本仓构建产物为唯一来源",
+      "owned_files": [
+        "scripts/deploy.mjs",
+        "scripts/verify-cloud-gate.mjs",
+        "src/middleware.ts",
+        "src/lib/access/**",
+        "src/app/access/**",
+        "src/app/api/auth/**"
+      ],
+      "public_interfaces": [
+        "http://<server>:8000（访问门后）",
+        "systemd unit foodtracker.service"
+      ],
+      "depends_on": [
+        "delivery",
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "local_user"
+      ],
+      "invariants": [
+        "未设共享访问门（APP_ACCESS_TOKEN）前不得绑定公网地址",
+        "APP_ACCESS_TOKEN 未设置时全链路与本地开发行为一致",
+        "未认证请求不得触达业务 API（含 SSE）或个性化页面",
+        "服务器上不执行构建，只接收本仓构建产物",
+        ".env.production 权限 0600 且不入 Git"
+      ],
+      "allowed_change_types": [
+        "deploy pipeline",
+        "access gate policy",
+        "server provisioning"
+      ],
+      "requires_amendment_when": [
+        "引入个人账号体系或多用户",
+        "启用 TLS/域名或反代",
+        "容器化或多实例"
+      ],
+      "verification": [
+        "SSH 隧道 loopback smoke",
+        "verify-cloud-gate 公网 401/200 实证",
+        "migrate status 无 pending"
+      ],
+      "known_debt": [
+        "纯 IP HTTP 无 TLS（Capacitor 已允许 cleartext）",
+        "访问码验证为进程内限速，重启即清零"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "planned"
     },
     {
       "id": "external.health_connect",
@@ -935,7 +988,32 @@
     {
       "source": "android.shell",
       "target": "backend.api",
-      "label": "same-origin POST /api/health"
+      "label": "same-origin POST /api/health（形态 A loopback / 形态 B 云端）"
+    },
+    {
+      "source": "local_user",
+      "target": "cloud.delivery",
+      "label": "public browser/android via shared access gate"
+    },
+    {
+      "source": "cloud.delivery",
+      "target": "delivery",
+      "label": "consumes build artifacts and verify chain"
+    },
+    {
+      "source": "cloud.delivery",
+      "target": "database.prisma",
+      "label": "provision-time migrate deploy"
+    },
+    {
+      "source": "cloud.delivery",
+      "target": "frontend",
+      "label": "access gate middleware on page routes"
+    },
+    {
+      "source": "cloud.delivery",
+      "target": "backend.api",
+      "label": "401 gate on business APIs (incl. SSE)"
     }
   ]
 }

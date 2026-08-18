@@ -1,8 +1,11 @@
 flowchart LR
-  user[本机单个用户] --> browser[Personal Tool UI]
-  browser --> next[Next.js 16 Server]
+  user[单个用户] --> browser[Personal Tool UI]
   user --> shell[Android 薄壳]
-  shell --> next
+  browser --> gate{{云端交付 8000 共享访问码门}}
+  shell --> gate
+  gate --> next[Next.js 16 Server]
+  browser -. 本地开发 loopback .-> next
+  shell -. 形态A adb reverse .-> next
   shell --> hc[Health Connect]
   next --> prisma[Prisma]
   prisma --> sqlite[(SQLite)]

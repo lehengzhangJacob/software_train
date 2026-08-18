@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "architecture_entry": "dev_repo/architecture/README.md",
   "files": [
     {
@@ -101,6 +101,11 @@
       "path": "dev_repo/architecture/decisions/ADR-0006-agent-activity-observability.md",
       "node": "agent.runtime",
       "description": "Agent 当前回合 activity SSE 投影与安全可观测性"
+    },
+    {
+      "path": "dev_repo/architecture/decisions/ADR-0007-cloud-delivery-and-access-gate.md",
+      "node": "cloud.delivery",
+      "description": "云端交付实例、共享访问码门与凭据上云"
     }
   ],
   "ownership": [
@@ -183,6 +188,26 @@
     {
       "glob": "src/lib/actions/**",
       "node": "action.policy"
+    },
+    {
+      "glob": "scripts/{deploy.mjs,verify-cloud-gate.mjs}",
+      "node": "cloud.delivery"
+    },
+    {
+      "glob": "src/middleware.ts",
+      "node": "cloud.delivery"
+    },
+    {
+      "glob": "src/lib/access/**",
+      "node": "cloud.delivery"
+    },
+    {
+      "glob": "src/app/access/**",
+      "node": "cloud.delivery"
+    },
+    {
+      "glob": "src/app/api/auth/**",
+      "node": "cloud.delivery"
     }
   ]
 }
