@@ -144,6 +144,21 @@
       ],
       "return_to": "web_completion_audit"
     },
+    "C-10": {
+      "contract_id": "C-10",
+      "parent_contract_id": "C-05",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "会话摘要与后台整理运行时已接通，并完成长期记忆物化",
+      "goal": "让单一营养 Agent 在长对话中使用滚动摘要、尾部消息和可治理的长期记忆",
+      "current_slice": null,
+      "completed_slices": [
+        "C-10-S1",
+        "C-10-S2-S1",
+        "C-10-S2-S2"
+      ],
+      "return_to": "C-06-L4"
+    },
     "C-06-A1": {
       "contract_id": "C-06-A1",
       "parent_contract_id": "C-06",

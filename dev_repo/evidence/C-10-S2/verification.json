@@ -1,0 +1,34 @@
+{
+  "contract": "C-10-S2",
+  "slice": "C-10-S2-S2",
+  "date": "2026-08-18",
+  "summary": "Session digest is connected to Agent context, rolling consolidation, and governed long-term memory materialization.",
+  "gates": {
+    "migration_status": "pass: database schema is up to date",
+    "verify_memory_migration": "pass: legacy rows 2/14/2/32 preserved; new tables zero-backfill; cascade and SET NULL semantics passed",
+    "test_agent": "pass: 8/8",
+    "test_consolidation": "pass: 4/4",
+    "verify_agent_api": "pass: thread persistence, automatic memory materialization, next-turn context, duplicate reuse, disabled suppression, compatibility, deletion survival, activity stream",
+    "verify_memory_api": "pass: profile isolation, provenance, disable/filter, hard delete",
+    "verify": "pass: AI/Memory/Agent/MCP/ordering/health tests, lint 0 errors, typecheck, production build",
+    "release_smoke": "pass: production home, Agent, report, memory, MCP registry, invalid-input smoke"
+  },
+  "red_line_audit": {
+    "digest_tail": "pass: digest summary plus messages after covered_message_id, bounded to 24 tail messages",
+    "background_failure": "pass: consolidation catches failures and never changes the main chat result",
+    "watermark": "pass: upsert rejects non-increasing covered_message_id inside a transaction",
+    "memory_governance": "pass: active exact duplicates reuse and disabled exact matches suppress session_digest recreation",
+    "secret_boundary": "pass: digest transcript/output removes credentials, tokens, image data, and external/payment links"
+  },
+  "implementation": [
+    "src/lib/agent/consolidation.ts",
+    "src/lib/agent/repository.ts",
+    "src/lib/agent/context.ts",
+    "src/app/api/agent/chat/route.ts",
+    "prisma/schema.prisma",
+    "prisma/migrations/20260817095137_add_session_digest/migration.sql",
+    "scripts/verify-memory-migration.mjs",
+    "scripts/consolidation-contract.test.ts"
+  ],
+  "return_to": "C-06-L4"
+}

@@ -6,7 +6,12 @@ import { DatabaseSync } from "node:sqlite"
 const root = process.cwd()
 const runtimeDatabase = path.join(root, "database", "food_tracker.db")
 const oldTables = ["user_profile", "meal_records", "exercise_suggestions", "exercise_calorie_reference"]
-const newTables = ["agent_threads", "agent_messages", "memory_items"]
+const newTables = ["agent_threads", "agent_messages", "memory_items", "daily_activity", "agent_session_digests"]
+const replayedMigrations = [
+  "20260815205500_add_agent_memory",
+  "20260817062220_add_daily_activity",
+  "20260817095137_add_session_digest",
+]
 
 function databaseUrl(databasePath) {
   const relativePath = path.relative(path.join(root, "prisma"), databasePath).replaceAll("\\", "/")
@@ -39,6 +44,24 @@ function snapshotLegacy(database) {
       exercise_calorie_reference: rows(database, "SELECT exercise_id AS id FROM exercise_calorie_reference ORDER BY exercise_id").map((row) => row.id),
     },
     sequence: rows(database, "SELECT name, seq FROM sqlite_sequence WHERE name IN ('user_profile','meal_records','exercise_suggestions','exercise_calorie_reference') ORDER BY name"),
+  }
+}
+
+function prepareLegacyReplay(databasePath) {
+  const database = new DatabaseSync(databasePath)
+  try {
+    // The checked-in runtime database may already contain legitimate Agent
+    // rows from previous smoke tests. Rebuild only the verification copy back
+    // to the legacy boundary so zero-backfill assertions test the migrations,
+    // not the current local runtime state.
+    database.exec("PRAGMA foreign_keys = OFF")
+    for (const table of ["agent_session_digests", "memory_items", "agent_messages", "agent_threads", "daily_activity"]) {
+      database.exec(`DROP TABLE IF EXISTS \"${table}\"`)
+    }
+    const placeholders = replayedMigrations.map(() => "?").join(", ")
+    database.prepare(`DELETE FROM _prisma_migrations WHERE migration_name IN (${placeholders})`).run(...replayedMigrations)
+  } finally {
+    database.close()
   }
 }
 
@@ -82,6 +105,7 @@ try {
   const legacyCopy = path.join(temporaryRoot, "legacy.db")
   const emptyDatabase = path.join(temporaryRoot, "empty.db")
   await copyFile(runtimeDatabase, legacyCopy)
+  prepareLegacyReplay(legacyCopy)
 
   const beforeDatabase = new DatabaseSync(legacyCopy, { readOnly: true })
   const legacySnapshot = snapshotLegacy(beforeDatabase)
