@@ -1093,5 +1093,22 @@
       "path": "dev_repo/evidence/C-18/S2/verification.json",
       "description": "动效 CSS、减少动画偏好、桌面/移动视觉回归、公网登录/注册首屏与发布检查证据"
     }
+  ],
+  "C-19-S1": [
+    {
+      "type": "implementation",
+      "path": "src/app/access/page.tsx, src/app/globals.css",
+      "description": "食刻入口页编辑式健康工作室视觉、时间线节点、场景网格、纸张轨道和分层动效"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-19/S1/access-desktop-login.png, dev_repo/evidence/C-19/S1/access-desktop-register.png, dev_repo/evidence/C-19/S1/access-mobile-login.png, dev_repo/evidence/C-19/S1/access-mobile-register.png",
+      "description": "生产构建桌面/移动登录与注册视觉证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-19/S1/verification.json",
+      "description": "lint、typecheck、build、双尺寸布局、登录/注册字段和动效计算值"
+    }
   ]
 }

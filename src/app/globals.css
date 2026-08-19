@@ -199,11 +199,323 @@
   }
 
   .access-page-content {
+    position: relative;
     isolation: isolate;
   }
 
   .access-hero {
     border-radius: 1.25rem;
+    box-shadow: 0 28px 80px color-mix(in srgb, var(--brand-plum) 16%, transparent);
+    overflow: clip;
+    transform: translateZ(0);
+  }
+
+  .access-brandbar {
+    position: relative;
+    animation: access-brand-in 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .access-brandbar::after {
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 5rem;
+    height: 2px;
+    background: var(--brand-mint);
+    content: "";
+    transform-origin: left center;
+    animation: access-line-draw 900ms cubic-bezier(0.22, 1, 0.36, 1) 160ms both;
+  }
+
+  .access-brand-mark {
+    animation: access-mark-pop 900ms cubic-bezier(0.16, 1, 0.3, 1) 80ms both;
+  }
+
+  .access-brand-copy {
+    animation: access-copy-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+  }
+
+  .access-hero-scene {
+    isolation: isolate;
+  }
+
+  .access-scene-grid {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+    background-position: 0 0, 0 0;
+    background-size: 4.5rem 4.5rem;
+    mask-image: linear-gradient(115deg, black 0%, transparent 72%);
+    opacity: 0.22;
+    animation: access-grid-drift 24s linear infinite;
+  }
+
+  .access-scene-signal {
+    position: absolute;
+    z-index: 2;
+    top: 1.5rem;
+    right: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    opacity: 0;
+    animation: access-signal-in 800ms ease-out 560ms both;
+  }
+
+  .access-scene-signal-dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 999px;
+    background: var(--brand-coral);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-coral) 42%, transparent);
+    animation: access-signal-pulse 2.4s ease-out 1.1s infinite;
+  }
+
+  .access-scene-signal-count {
+    margin-left: 0.4rem;
+    color: rgba(255, 255, 255, 0.34);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .access-hero-copy > .access-hero-kicker,
+  .access-hero-copy > .access-hero-title,
+  .access-hero-copy > .access-hero-description {
+    opacity: 0;
+    animation: access-copy-in 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .access-hero-copy > .access-hero-kicker {
+    animation-delay: 220ms;
+  }
+
+  .access-hero-copy > .access-hero-title {
+    animation-delay: 340ms;
+  }
+
+  .access-hero-copy > .access-hero-description {
+    animation-delay: 480ms;
+  }
+
+  .access-timeline {
+    position: relative;
+  }
+
+  .access-timeline::before {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--brand-mint);
+    content: "";
+    animation: access-line-draw 900ms cubic-bezier(0.22, 1, 0.36, 1) 620ms both;
+  }
+
+  .access-timeline > div {
+    position: relative;
+    opacity: 0;
+    animation: access-node-in 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .access-timeline > div::before {
+    position: absolute;
+    top: -1.72rem;
+    left: 0;
+    width: 0.42rem;
+    height: 0.42rem;
+    border: 1px solid rgba(255, 255, 255, 0.56);
+    border-radius: 999px;
+    background: var(--brand-plum);
+    content: "";
+    transform: scale(0);
+    animation: access-node-pop 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .access-timeline > div:nth-child(1) {
+    animation-delay: 720ms;
+  }
+
+  .access-timeline > div:nth-child(2) {
+    animation-delay: 840ms;
+  }
+
+  .access-timeline > div:nth-child(3) {
+    animation-delay: 960ms;
+  }
+
+  .access-timeline > div:nth-child(1)::before {
+    animation-delay: 760ms;
+  }
+
+  .access-timeline > div:nth-child(2)::before {
+    animation-delay: 880ms;
+  }
+
+  .access-timeline > div:nth-child(3)::before {
+    animation-delay: 1s;
+  }
+
+  .access-timeline-index {
+    transition: color 260ms ease, transform 260ms ease;
+  }
+
+  .access-timeline > div:hover .access-timeline-index {
+    color: var(--brand-mint);
+    transform: translateX(0.25rem);
+  }
+
+  .access-auth-panel {
+    isolation: isolate;
+    background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.36), transparent 42%), repeating-linear-gradient(0deg, transparent 0, transparent 2rem, rgba(45, 39, 53, 0.028) 2.05rem);
+  }
+
+  .access-auth-panel::before {
+    position: absolute;
+    z-index: 0;
+    top: -6rem;
+    right: -4rem;
+    width: 18rem;
+    height: 18rem;
+    border-radius: 999px;
+    background: radial-gradient(circle, color-mix(in srgb, var(--brand-lavender) 18%, transparent), transparent 70%);
+    content: "";
+    pointer-events: none;
+    animation: access-orbit 16s ease-in-out -4s infinite alternate-reverse;
+  }
+
+  .access-auth-panel::after {
+    position: absolute;
+    z-index: 0;
+    top: 2.5rem;
+    bottom: 2.5rem;
+    left: 1.45rem;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--brand-mint) 34%, transparent) 18%, transparent 86%);
+    content: "";
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .access-auth-panel > *:not(.access-panel-rail):not(.access-panel-orbit) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .access-panel-rail {
+    position: absolute;
+    z-index: 0;
+    right: 2.25rem;
+    bottom: 2.5rem;
+    width: 5rem;
+    height: 5rem;
+    border: 1px solid color-mix(in srgb, var(--brand-plum) 12%, transparent);
+    border-radius: 999px;
+    pointer-events: none;
+    animation: access-rail-float 8s ease-in-out infinite alternate;
+  }
+
+  .access-panel-orbit {
+    position: absolute;
+    z-index: 0;
+    top: 1.25rem;
+    right: 1.6rem;
+    width: 6.5rem;
+    height: 6.5rem;
+    border: 1px solid color-mix(in srgb, var(--brand-mint-deep) 22%, transparent);
+    border-radius: 999px;
+    pointer-events: none;
+    transform: rotate(-16deg);
+    animation: access-panel-spin 18s linear infinite;
+  }
+
+  .access-auth-heading {
+    animation: access-copy-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 180ms both;
+  }
+
+  .access-tabs {
+    animation: access-copy-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 300ms both;
+  }
+
+  .access-tab {
+    isolation: isolate;
+  }
+
+  .access-tab::after {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--brand-mint-deep);
+    content: "";
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .access-tab-active::after {
+    transform: scaleX(1);
+  }
+
+  .access-auth-copy {
+    animation: access-copy-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 420ms both;
+  }
+
+  .access-form-field {
+    opacity: 0;
+    animation: access-field-in 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .access-form-field:nth-of-type(1) {
+    animation-delay: 520ms;
+  }
+
+  .access-form-field:nth-of-type(2) {
+    animation-delay: 620ms;
+  }
+
+  .access-form-field:nth-of-type(3) {
+    animation-delay: 720ms;
+  }
+
+  .access-form-field:nth-of-type(4) {
+    animation-delay: 820ms;
+  }
+
+  .access-form-field:nth-of-type(5) {
+    animation-delay: 920ms;
+  }
+
+  .access-submit-button {
+    isolation: isolate;
+    animation: access-field-in 650ms cubic-bezier(0.22, 1, 0.36, 1) 960ms both;
+    transition: transform 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+  }
+
+  .access-submit-button::before {
+    position: absolute;
+    z-index: 0;
+    top: -40%;
+    bottom: -40%;
+    left: -70%;
+    width: 38%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+    content: "";
+    transform: skewX(-18deg);
+  }
+
+  .access-submit-button:hover:not(:disabled)::before {
+    animation: access-button-sheen 850ms ease-out both;
+  }
+
+  .access-submit-button:active:not(:disabled) {
+    transform: translateY(1px) scale(0.99);
   }
 
   .access-hero::before,
@@ -269,6 +581,147 @@
     box-shadow: 0 12px 24px color-mix(in srgb, var(--brand-plum) 22%, transparent);
   }
 
+  @keyframes access-brand-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes access-mark-pop {
+    0% {
+      opacity: 0;
+      transform: scale(0.72) rotate(-8deg);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(1.06) rotate(2deg);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) rotate(0);
+    }
+  }
+
+  @keyframes access-copy-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.8rem, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes access-line-draw {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes access-grid-drift {
+    from {
+      background-position: 0 0, 0 0;
+    }
+    to {
+      background-position: 4.5rem 2.25rem, 2.25rem 4.5rem;
+    }
+  }
+
+  @keyframes access-signal-in {
+    from {
+      opacity: 0;
+      transform: translateY(-0.45rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes access-signal-pulse {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand-coral) 42%, transparent);
+    }
+    70% {
+      box-shadow: 0 0 0 0.45rem transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  @keyframes access-node-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.6rem);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes access-node-pop {
+    from {
+      transform: scale(0);
+    }
+    70% {
+      transform: scale(1.3);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes access-rail-float {
+    from {
+      opacity: 0.36;
+      transform: translate3d(0, 0, 0) rotate(0deg);
+    }
+    to {
+      opacity: 0.72;
+      transform: translate3d(-0.5rem, -0.5rem, 0) rotate(12deg);
+    }
+  }
+
+  @keyframes access-panel-spin {
+    from {
+      transform: rotate(-16deg) scale(0.92);
+    }
+    to {
+      transform: rotate(344deg) scale(1.04);
+    }
+  }
+
+  @keyframes access-field-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.7rem, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes access-button-sheen {
+    from {
+      transform: translateX(0) skewX(-18deg);
+    }
+    to {
+      transform: translateX(440%) skewX(-18deg);
+    }
+  }
+
   @keyframes access-rise {
     from {
       opacity: 0;
@@ -300,11 +753,42 @@
     }
   }
 
+  @media (max-width: 640px) {
+    .access-scene-signal {
+      top: 1.1rem;
+      right: 1.1rem;
+      font-size: 0.5rem;
+    }
+
+    .access-scene-grid {
+      background-size: 3rem 3rem;
+    }
+
+    .access-auth-panel::after {
+      left: 1rem;
+    }
+
+    .access-panel-orbit {
+      top: 1rem;
+      right: 1rem;
+      width: 5rem;
+      height: 5rem;
+    }
+
+    .access-panel-rail {
+      right: 1rem;
+      bottom: 1.25rem;
+      width: 4rem;
+      height: 4rem;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .access-page-content *,
     .access-page-content *::before,
     .access-page-content *::after {
       animation-duration: 1ms !important;
+      animation-delay: 0ms !important;
       animation-iteration-count: 1 !important;
       scroll-behavior: auto !important;
       transition-duration: 1ms !important;

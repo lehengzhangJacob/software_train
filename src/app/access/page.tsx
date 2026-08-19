@@ -100,9 +100,9 @@ export default function AccessPage() {
   const isRegister = mode === "register"
 
   return (
-    <div className="access-page-content w-full">
+    <div className="access-page-content w-full" data-mode={mode}>
       <header className="access-brandbar flex items-center gap-3 border-b border-border/70 pb-4" aria-label="产品信息">
-        <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-[var(--brand-mint)] p-1 shadow-[0_8px_20px_rgba(40,214,155,0.18)]">
+        <span className="access-brand-mark grid size-10 shrink-0 place-items-center rounded-lg bg-[var(--brand-mint)] p-1 shadow-[0_8px_20px_rgba(40,214,155,0.18)]">
           <Image
             src="/brand/nutrition-agent-icon.png"
             alt=""
@@ -111,17 +111,17 @@ export default function AccessPage() {
             className="size-full rounded-[5px] object-cover"
           />
         </span>
-        <div>
+        <div className="access-brand-copy">
           <p className="text-sm font-semibold text-[var(--brand-heading)]">食刻</p>
           <p className="text-xs text-muted-foreground">记录每一餐，照顾每一天</p>
         </div>
       </header>
 
       <section
-        className="access-hero relative isolate mt-6 overflow-hidden border-y border-border/70 bg-[var(--brand-plum)] text-white shadow-[0_22px_65px_rgba(45,39,53,0.14)] lg:mt-6 lg:grid lg:h-[min(620px,calc(100dvh-170px))] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
+        className="access-hero relative isolate mt-6 overflow-clip border-y border-border/70 bg-[var(--brand-plum)] text-white shadow-[0_22px_65px_rgba(45,39,53,0.14)] lg:mt-6 lg:grid lg:h-[min(620px,calc(100dvh-170px))] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
         aria-label="进入食刻"
       >
-        <div className="relative isolate flex min-h-[330px] flex-col justify-between overflow-hidden px-6 py-7 sm:px-10 sm:py-9 lg:min-h-0 lg:px-12 lg:py-10">
+        <div className="access-hero-scene relative isolate flex min-h-[330px] flex-col justify-between overflow-hidden px-6 py-7 sm:px-10 sm:py-9 lg:min-h-0 lg:px-12 lg:py-10">
           <Image
             src="/images/nutrition/meal-hero.webp"
             alt=""
@@ -134,19 +134,25 @@ export default function AccessPage() {
             className="absolute inset-0 bg-[linear-gradient(145deg,rgba(45,39,53,0.98)_0%,rgba(45,39,53,0.82)_52%,rgba(45,39,53,0.48)_100%)]"
             aria-hidden="true"
           />
+          <div className="access-scene-grid" aria-hidden="true" />
+          <div className="access-scene-signal" aria-hidden="true">
+            <span className="access-scene-signal-dot" />
+            <span>DAILY RHYTHM</span>
+            <span className="access-scene-signal-count">01—03</span>
+          </div>
           <div className="access-hero-copy relative z-10">
-            <div className="flex items-center gap-2 text-xs font-medium tracking-[0.12em] text-white/60">
+            <div className="access-hero-kicker flex items-center gap-2 text-xs font-medium tracking-[0.12em] text-white/60">
               <span className="size-2 rounded-full bg-[var(--brand-mint)]" aria-hidden="true" />
               <span>食刻 · 个人营养空间</span>
             </div>
-            <h1 className="mt-6 max-w-md text-3xl font-semibold leading-[1.08] tracking-[-0.035em] sm:mt-10 sm:text-[clamp(2.4rem,4.5vw,4.5rem)]">
+            <h1 className="access-hero-title mt-6 max-w-md text-3xl font-semibold leading-[1.08] tracking-[-0.035em] sm:mt-10 sm:text-[clamp(2.4rem,4.5vw,4.5rem)]">
               把每一餐，记成自己的节奏。
             </h1>
-            <p className="mt-5 max-w-md text-sm leading-7 text-white/68 sm:text-base">
+            <p className="access-hero-description mt-5 max-w-md text-sm leading-7 text-white/68 sm:text-base">
               饮食、运动和对话，从同一个空间继续。你的记录会跟着账户走，在每一次打开时回到身边。
             </p>
           </div>
-          <div className="access-hero-stats relative z-10 mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-white/18 pt-5 text-xs text-white/60">
+          <div className="access-hero-stats access-timeline relative z-10 mt-10 grid max-w-md grid-cols-3 gap-4 border-t border-white/18 pt-5 text-xs text-white/60">
             <div>
               <p className="text-lg font-semibold text-white">01</p>
               <p className="mt-1">记录饮食</p>
@@ -162,7 +168,9 @@ export default function AccessPage() {
           </div>
         </div>
 
-        <div className="access-auth-panel relative min-h-0 overflow-y-auto bg-[color-mix(in_srgb,var(--brand-paper)_94%,transparent)] px-6 py-8 text-[var(--brand-heading)] backdrop-blur sm:px-10 sm:py-10 lg:border-l lg:border-white/10 lg:px-10 lg:py-8">
+        <div className="access-auth-panel relative min-h-0 overflow-x-hidden overflow-y-auto bg-[color-mix(in_srgb,var(--brand-paper)_94%,transparent)] px-6 py-8 text-[var(--brand-heading)] backdrop-blur sm:px-10 sm:py-10 lg:border-l lg:border-white/10 lg:px-10 lg:py-8">
+          <div className="access-panel-rail" aria-hidden="true" />
+          <div className="access-panel-orbit" aria-hidden="true" />
           <div className="access-auth-heading flex items-end justify-between gap-5 border-b border-border/80 pb-5 lg:pb-4">
             <div>
               <p className="page-eyebrow">{isRegister ? "第一次来到这里" : "欢迎回来"}</p>
@@ -185,9 +193,9 @@ export default function AccessPage() {
                 role="tab"
                 aria-selected={mode === item}
                 onClick={() => switchMode(item)}
-                className={`relative -mb-px px-1 pb-3 pt-1 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint-deep)] focus-visible:ring-offset-2 ${
+                className={`access-tab relative -mb-px px-1 pb-3 pt-1 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint-deep)] focus-visible:ring-offset-2 ${
                   mode === item
-                    ? "text-[var(--brand-heading)] after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-[var(--brand-mint-deep)]"
+                    ? "access-tab-active text-[var(--brand-heading)]"
                     : "text-muted-foreground hover:text-[var(--brand-heading)]"
                 }`}
               >
@@ -204,7 +212,7 @@ export default function AccessPage() {
 
           <form className="access-auth-form mt-7 space-y-4 lg:mt-5 lg:grid lg:grid-cols-2 lg:gap-x-5 lg:gap-y-3 lg:space-y-0" onSubmit={onSubmit}>
             {isRegister ? (
-              <div className="space-y-2">
+              <div className="access-form-field space-y-2">
                 <Label htmlFor="auth-username" className="text-[var(--brand-heading)]">显示名称</Label>
                 <Input
                   id="auth-username"
@@ -220,7 +228,7 @@ export default function AccessPage() {
               </div>
             ) : null}
 
-            <div className="space-y-2">
+            <div className="access-form-field space-y-2">
               <Label htmlFor="auth-login" className="text-[var(--brand-heading)]">账号</Label>
               <Input
                 id="auth-login"
@@ -236,7 +244,7 @@ export default function AccessPage() {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="access-form-field space-y-2">
               <Label htmlFor="auth-password" className="text-[var(--brand-heading)]">密码</Label>
               <Input
                 id="auth-password"
@@ -254,7 +262,7 @@ export default function AccessPage() {
 
             {isRegister ? (
               <>
-                <div className="space-y-2">
+                <div className="access-form-field space-y-2">
                   <Label htmlFor="auth-confirm-password" className="text-[var(--brand-heading)]">确认密码</Label>
                   <Input
                     id="auth-confirm-password"
@@ -269,7 +277,7 @@ export default function AccessPage() {
                     className="h-12 bg-white/75 lg:h-11"
                   />
                 </div>
-                <div className="space-y-2 lg:col-span-2">
+                <div className="access-form-field space-y-2 lg:col-span-2">
                   <Label htmlFor="auth-invite-code" className="text-[var(--brand-heading)]">注册邀请码</Label>
                   <Input
                     id="auth-invite-code"
@@ -295,10 +303,12 @@ export default function AccessPage() {
 
             <Button
               type="submit"
-              className="mt-2 h-12 w-full bg-[var(--brand-plum)] text-white hover:bg-[var(--brand-plum-soft)] lg:col-span-2 lg:mt-0 lg:h-11"
+              className="access-submit-button relative mt-2 h-12 w-full overflow-hidden bg-[var(--brand-plum)] text-white hover:bg-[var(--brand-plum-soft)] lg:col-span-2 lg:mt-0 lg:h-11"
               disabled={pending || form.login.trim().length < 3 || form.password.length === 0 || (isRegister && (!form.username.trim() || !form.inviteCode.trim()))}
             >
-              {pending ? "正在处理…" : isRegister ? "创建我的空间" : "登录并继续"}
+              <span className="access-submit-label relative z-10">
+                {pending ? "正在处理…" : isRegister ? "创建我的空间" : "登录并继续"}
+              </span>
             </Button>
           </form>
         </div>

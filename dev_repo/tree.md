@@ -2,8 +2,8 @@
 
 ## Current execution override
 
-- Current contract: `C-18 - 食刻落地页视口收口、品牌替换与动效升级` [completed]
-- Current slice: none
+- Current contract: `C-19 - Editorial wellness studio access motion iteration` [in_progress]
+- Current slice: `C-19-S2 - Motion/evidence/deploy closeout`
 - Return path: `web_completion_audit`
 - The older C-13 current-line text below is historical and is superseded by the runtime state above.
 
