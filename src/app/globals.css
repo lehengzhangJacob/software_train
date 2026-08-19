@@ -197,4 +197,117 @@
   .brand-panel {
     @apply rounded-lg bg-[var(--brand-plum)] text-white;
   }
+
+  .access-page-content {
+    isolation: isolate;
+  }
+
+  .access-hero {
+    border-radius: 1.25rem;
+  }
+
+  .access-hero::before,
+  .access-hero::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 999px;
+    filter: blur(2px);
+  }
+
+  .access-hero::before {
+    width: 26rem;
+    height: 26rem;
+    top: -15rem;
+    left: 34%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--brand-mint) 22%, transparent), transparent 68%);
+    animation: access-orbit 18s ease-in-out infinite alternate;
+  }
+
+  .access-hero::after {
+    width: 22rem;
+    height: 22rem;
+    right: -10rem;
+    bottom: -13rem;
+    background: radial-gradient(circle, color-mix(in srgb, var(--brand-lavender) 24%, transparent), transparent 70%);
+    animation: access-orbit 22s ease-in-out -5s infinite alternate-reverse;
+  }
+
+  .access-hero-copy,
+  .access-hero-stats,
+  .access-auth-panel {
+    animation: access-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .access-hero-stats {
+    animation-delay: 120ms;
+  }
+
+  .access-auth-panel {
+    animation-delay: 90ms;
+  }
+
+  .access-photo {
+    transform: scale(1.04);
+    animation: access-photo-breathe 18s ease-in-out infinite alternate;
+  }
+
+  .access-tabs button,
+  .access-auth-form input,
+  .access-auth-form button {
+    transition-duration: 220ms;
+  }
+
+  .access-auth-form input:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--brand-mint) 14%, transparent);
+  }
+
+  .access-auth-form > button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px color-mix(in srgb, var(--brand-plum) 22%, transparent);
+  }
+
+  @keyframes access-rise {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes access-photo-breathe {
+    from {
+      transform: scale(1.04) translate3d(-0.5%, -0.5%, 0);
+    }
+    to {
+      transform: scale(1.09) translate3d(0.8%, 0.6%, 0);
+    }
+  }
+
+  @keyframes access-orbit {
+    from {
+      transform: translate3d(-1.5rem, 0.75rem, 0) scale(0.96);
+      opacity: 0.45;
+    }
+    to {
+      transform: translate3d(1rem, -0.75rem, 0) scale(1.04);
+      opacity: 0.8;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .access-page-content *,
+    .access-page-content *::before,
+    .access-page-content *::after {
+      animation-duration: 1ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 1ms !important;
+    }
+  }
 }

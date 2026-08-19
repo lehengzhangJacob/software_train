@@ -354,8 +354,8 @@
       "status": "in_progress",
       "summary": "食刻落地页视口收口、品牌替换与动效升级",
       "goal": "让认证入口具备清晰的 App 品牌、无页面级纵向滚动的桌面首屏与克制的可访问动效，同时保持登录注册边界不变",
-      "current_slice": "C-18-S1",
-      "completed_slices": [],
+      "current_slice": "C-18-S2",
+      "completed_slices": ["C-18-S1"],
       "deferred_slices": [],
       "return_to": "web_completion_audit"
     }

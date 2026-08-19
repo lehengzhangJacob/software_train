@@ -1,0 +1,45 @@
+{
+  "contract_id": "C-18",
+  "slice_id": "C-18-S2",
+  "summary": "食刻落地页克制动效与 reduced-motion 收口",
+  "verification": {
+    "lint": "passed",
+    "typecheck": "passed",
+    "production_build": "passed",
+    "browser_console": "no errors or warnings",
+    "desktop_motion_1440x900": {
+      "document_scroll_height": 900,
+      "document_client_height": 900,
+      "document_scroll_width": 1440,
+      "document_client_width": 1440,
+      "auth_panel_scroll_height": 619,
+      "auth_panel_client_height": 619,
+      "hero_before_animation": "access-orbit",
+      "photo_animation": "access-photo-breathe",
+      "hero_copy_animation": "access-rise",
+      "reduced_motion_rule": true
+    },
+    "mobile_motion_375x812": {
+      "document_scroll_width": 360,
+      "document_client_width": 360,
+      "horizontal_overflow": false,
+      "hero_before_animation": "access-orbit",
+      "photo_animation": "access-photo-breathe",
+      "reduced_motion_rule": true
+    },
+    "reduced_motion_emulation": {
+      "photo_duration": "0.001s",
+      "hero_before_duration": "0.001s",
+      "input_transition_duration": "0.001s",
+      "result": "animations and transitions reduced to near-zero"
+    },
+    "architecture_delta": "none",
+    "data_model_delta": "none",
+    "migration_required": false,
+    "backfill_required": false
+  },
+  "artifacts": [
+    "dev_repo/evidence/C-18/S2/access-desktop-motion.png",
+    "dev_repo/evidence/C-18/S2/access-mobile-motion.png"
+  ]
+}
