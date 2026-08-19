@@ -1,0 +1,48 @@
+{
+  "contract_id": "C-19",
+  "slice_id": "C-19-S2",
+  "status": "green",
+  "commit": "release-20260819143912",
+  "tests": {
+    "npm_run_deploy": "passed",
+    "cloud_access_status": 200,
+    "cloud_access_brand_marker": "食刻",
+    "cloud_anonymous_api_users_status": 401,
+    "cloud_anonymous_api_users_body": "{\"data\":null,\"error\":\"unauthorized\"}",
+    "reduced_motion_css": "present",
+    "git_diff_check": "passed"
+  },
+  "cloud_visual_cases": [
+    {
+      "case": "cloud-desktop-login",
+      "url": "http://8.148.206.131:8000/access",
+      "viewport": "1440x900",
+      "mode": "login",
+      "screenshot": "dev_repo/evidence/C-19/S2/access-cloud-desktop-login.png"
+    },
+    {
+      "case": "cloud-desktop-register",
+      "url": "http://8.148.206.131:8000/access",
+      "viewport": "1440x900",
+      "mode": "register",
+      "register_field_count": 5,
+      "screenshot": "dev_repo/evidence/C-19/S2/access-cloud-desktop-register.png"
+    },
+    {
+      "case": "cloud-mobile-login",
+      "url": "http://8.148.206.131:8000/access",
+      "viewport": "375x812",
+      "mode": "login",
+      "screenshot": "dev_repo/evidence/C-19/S2/access-cloud-mobile-login.png"
+    }
+  ],
+  "release": "20260819143912",
+  "red_line_crossed": false,
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "warnings": [
+    "Next.js middleware convention is deprecated; migration to proxy remains a separate maintenance item."
+  ]
+}

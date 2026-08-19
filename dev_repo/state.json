@@ -2,8 +2,8 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-19",
-  "status": "in_progress",
+  "active_contract_id": null,
+  "status": "completed",
   "contracts": {
     "C-01": {
       "status": "completed",
@@ -363,12 +363,13 @@
       "contract_id": "C-19",
       "parent_contract_id": "C-18",
       "root_campaign": "nutrition-agent",
-      "status": "in_progress",
+      "status": "completed",
       "summary": "Editorial wellness studio access motion iteration",
       "goal": "Upgrade the FoodMoment access landing page from a sparse auth form to an editorial wellness studio with richer but controlled motion.",
-      "current_slice": "C-19-S2",
+      "current_slice": null,
       "completed_slices": [
-        "C-19-S1"
+        "C-19-S1",
+        "C-19-S2"
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit"

@@ -2,8 +2,8 @@
 
 ## Current execution override
 
-- Current contract: `C-19 - Editorial wellness studio access motion iteration` [in_progress]
-- Current slice: `C-19-S2 - Motion/evidence/deploy closeout`
+- Current contract: `C-19 - Editorial wellness studio access motion iteration` [completed]
+- Current slice: none
 - Return path: `web_completion_audit`
 - The older C-13 current-line text below is historical and is superseded by the runtime state above.
 

@@ -1110,5 +1110,22 @@
       "path": "dev_repo/evidence/C-19/S1/verification.json",
       "description": "lint、typecheck、build、双尺寸布局、登录/注册字段和动效计算值"
     }
+  ],
+  "C-19-S2": [
+    {
+      "type": "delivery",
+      "path": "scripts/deploy.mjs, cloud http smoke",
+      "description": "编辑式入口动效版本的公网发布、迁移检查与匿名 API 401 边界"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-19/S2/access-cloud-desktop-login.png, dev_repo/evidence/C-19/S2/access-cloud-desktop-register.png, dev_repo/evidence/C-19/S2/access-cloud-mobile-login.png",
+      "description": "公网桌面登录/注册与移动登录视觉证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-19/S2/verification.json",
+      "description": "npm run deploy、云端入口 200、匿名业务 API 401 与 reduced-motion 发布验证"
+    }
   ]
 }
