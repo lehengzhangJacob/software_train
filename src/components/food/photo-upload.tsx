@@ -2,7 +2,9 @@
 
 import { useCallback, useRef, useState } from "react"
 import Image from "next/image"
-import { Camera, ImagePlus, Loader2, ShieldCheck, Sparkles, Upload } from "lucide-react"
+import { Capacitor } from "@capacitor/core"
+import { Camera as CapacitorCamera, CameraResultType, CameraSource } from "@capacitor/camera"
+import { Camera as CameraIcon, ImagePlus, Loader2, ShieldCheck, Sparkles, Upload } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 
@@ -24,6 +26,18 @@ interface FoodPhotoUploadProps {
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 const ACCEPTED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"])
+
+function cameraDataUrlToFile(dataUrl: string, format: string) {
+  const separator = dataUrl.indexOf(",")
+  if (separator < 0) throw new Error("相机返回的图片无效")
+
+  const metadata = dataUrl.slice(0, separator)
+  const payload = dataUrl.slice(separator + 1)
+  const mimeType = metadata.match(/^data:(.*?);base64$/)?.[1] ?? `image/${format || "jpeg"}`
+  const binary = atob(payload)
+  const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0))
+  return new File([bytes], `camera.${format || "jpeg"}`, { type: mimeType })
+}
 
 export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled }: FoodPhotoUploadProps) {
   const [analyzing, setAnalyzing] = useState(false)
@@ -102,6 +116,28 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
     if (file) void processFile(file)
   }
 
+  const handleCameraCapture = useCallback(async () => {
+    if (!Capacitor.isNativePlatform()) {
+      cameraInputRef.current?.click()
+      return
+    }
+
+    try {
+      const photo = await CapacitorCamera.getPhoto({
+        quality: 90,
+        width: 2048,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Camera,
+        correctOrientation: true,
+      })
+      if (!photo.dataUrl) throw new Error("相机没有返回图片")
+      void processFile(cameraDataUrlToFile(photo.dataUrl, photo.format ?? "jpeg"))
+    } catch (error) {
+      if (error instanceof Error && /cancel|canceled|cancelled/i.test(error.message)) return
+      toast.error(error instanceof Error ? `相机不可用：${error.message}` : "无法打开相机，请检查权限")
+    }
+  }, [processFile])
+
   return (
     <div className="space-y-3">
       <input
@@ -174,9 +210,9 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
           type="button"
           className="h-11 gap-2 bg-[var(--brand-mint)] text-[var(--brand-plum)] hover:bg-[var(--brand-mint)]/90"
           disabled={disabled || analyzing}
-          onClick={() => cameraInputRef.current?.click()}
+          onClick={() => void handleCameraCapture()}
         >
-          <Camera className="size-4" />
+          <CameraIcon className="size-4" />
           立即拍照
         </Button>
       </div>

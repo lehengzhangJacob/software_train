@@ -13,6 +13,11 @@
       "description": "Account-owned AI and McDonald's runtime settings"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0010-native-camera-capture-adapter.md",
+      "node": "android.shell",
+      "description": "Native Android camera capture re-enters the shared food review pipeline"
+    },
+    {
       "path": "dev_repo/architecture/README.md",
       "node": "dev_repo",
       "description": "架构宪法入口"

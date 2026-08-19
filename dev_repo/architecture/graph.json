@@ -7,9 +7,9 @@
     "return_to": "web_completion_audit"
   },
   "active_amendment": {
-    "contract_id": "C-17",
-    "decision": "invited_account_authentication_profile_and_settings_scoping",
-    "status": "in_progress",
+    "contract_id": "C-13-S3-A1",
+    "decision": "android_native_camera_capture_adapter",
+    "status": "accepted",
     "return_to": "C-13-S3"
   },
   "nodes": [
@@ -805,17 +805,21 @@
         "壳不持有业务数据唯一真相",
         "仅经用户授权读取 Health Connect 自然日聚合",
         "开发回路走 adb reverse loopback（形态 A）",
-        "形态 B 直连云端 URL，同样经过账户会话门"
+        "形态 B 直连云端 URL，同样经过账户会话门",
+        "Native camera capture uses the Capacitor bridge and returns to the shared recognition/review/save path",
+        "Camera cancellation or permission failure is never reported as recognition success"
       ],
       "allowed_change_types": [
         "shell config",
         "plugin upgrade",
+        "native capture adapter",
         "splash/branding"
       ],
       "requires_amendment_when": [
         "壳内实现独立业务逻辑或本地数据库",
         "读取非聚合健康数据",
-        "壳成为独立发布真相来源"
+        "壳成为独立发布真相来源",
+        "adding another native media storage authority"
       ],
       "verification": [
         "device build",

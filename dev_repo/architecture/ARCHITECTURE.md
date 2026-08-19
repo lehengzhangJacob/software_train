@@ -1,5 +1,15 @@
 # Nutrition Agent 架构
 
+## C-13-S3-A1 原生拍照适配 amendment
+
+Android 仍是渲染云端服务的薄壳，但“立即拍照”由宿主能力明确承接：原生平台通过
+`@capacitor/camera` 打开系统相机，返回的内存 Data URL 交回现有食物识别组件，继续走
+同一个 `/api/ai/recognize` → 人工审核 → `/api/meals` 事务链路。浏览器继续使用 HTML
+文件选择器作为兼容回路；两端都不把原始照片写入 SQLite、Agent 对话或长期记忆。
+
+这次 amendment 只改变 Android shell 与前端拍照组件之间的能力适配，不改变 API、数据模型、
+审核语义或单一云端真相源。详见 ADR-0010。
+
 ## C-17 账户身份与授权边界
 
 The product now supports invited user accounts while keeping the existing
