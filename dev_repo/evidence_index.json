@@ -1127,5 +1127,17 @@
       "path": "dev_repo/evidence/C-19/S2/verification.json",
       "description": "npm run deploy、云端入口 200、匿名业务 API 401 与 reduced-motion 发布验证"
     }
+  ],
+  "C-20-S1": [
+    {
+      "type": "documentation",
+      "path": "README.md",
+      "description": "食刻产品、三条核心闭环、架构、配置、部署、安全边界、真实证据与图文演示文档"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-20/S1/verification.json",
+      "description": "README 素材引用、lint、typecheck、production build 与远端快进发布验证"
+    }
   ]
 }

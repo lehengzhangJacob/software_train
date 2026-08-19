@@ -373,6 +373,20 @@
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit"
+    },
+    "C-20": {
+      "contract_id": "C-20",
+      "parent_contract_id": "C-19",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "食刻专业化图文 README 与远端发布",
+      "goal": "把食刻的产品闭环、架构、配置、安全边界、真实回归证据与部署方式整理为可对外阅读的 README，并推送当前 main 历史到 origin。",
+      "current_slice": null,
+      "completed_slices": [
+        "C-20-S1"
+      ],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit"
     }
   }
 }

@@ -1,0 +1,59 @@
+{
+  "contract_id": "C-20",
+  "slice_id": "C-20-S1",
+  "status": "green",
+  "commit": "docs-readme-release",
+  "documentation": {
+    "file": "README.md",
+    "line_count": 330,
+    "local_references_checked": 19,
+    "missing_local_references": 0,
+    "sections": [
+      "product positioning",
+      "three core loops",
+      "photo recognition",
+      "health Agent and long-term memory",
+      "McDonald's MCP boundary",
+      "visual product tour",
+      "architecture and data sync",
+      "local setup",
+      "AI/MCP configuration",
+      "Android",
+      "cloud deployment",
+      "release gates",
+      "security boundaries",
+      "known limitations"
+    ]
+  },
+  "tests": {
+    "git_diff_check": "passed",
+    "npm_run_lint": "passed",
+    "npm_run_typecheck": "passed",
+    "npm_run_build": "passed",
+    "remote_ancestor_check": "passed",
+    "remote_push": "verified after commit in terminal execution"
+  },
+  "remote": {
+    "branch": "main",
+    "remote": "origin",
+    "remote_before_push": "8c22d1a8cb6a9c199ef1a19d0a1301f035660cdb",
+    "push_mode": "fast-forward only",
+    "force_push": false
+  },
+  "evidence": [
+    "dev_repo/evidence/C-12/e2e/real-core-flows.json",
+    "dev_repo/evidence/C-12/screenshot-index.json",
+    "dev_repo/evidence/C-19/S2/access-cloud-desktop-login.png",
+    "dev_repo/evidence/C-19/S2/access-cloud-desktop-register.png",
+    "dev_repo/evidence/C-19/S2/access-cloud-mobile-login.png"
+  ],
+  "red_line_crossed": false,
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "unrelated_worktree_changes_preserved": [
+    "dev_repo/evidence/C-13/S3/*.png",
+    "dev_repo/evidence/C-14/S2/*.png"
+  ]
+}
