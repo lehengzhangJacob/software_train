@@ -1137,7 +1137,7 @@
     {
       "type": "verification",
       "path": "dev_repo/evidence/C-20/S1/verification.json",
-      "description": "README 素材引用、lint、typecheck、production build 与远端快进发布验证"
+      "description": "README 素材引用、lint、typecheck、production build 通过；远端推送因当前 GitHub 身份仅有 READ 权限而暂停"
     }
   ]
 }

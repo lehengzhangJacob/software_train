@@ -2,8 +2,8 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": null,
-  "status": "completed",
+  "active_contract_id": "C-20",
+  "status": "in_progress",
   "contracts": {
     "C-01": {
       "status": "completed",
@@ -378,15 +378,16 @@
       "contract_id": "C-20",
       "parent_contract_id": "C-19",
       "root_campaign": "nutrition-agent",
-      "status": "completed",
-      "summary": "食刻专业化图文 README 与远端发布",
+      "status": "in_progress",
+      "summary": "食刻专业化图文 README 已完成，远端推送等待写权限",
       "goal": "把食刻的产品闭环、架构、配置、安全边界、真实回归证据与部署方式整理为可对外阅读的 README，并推送当前 main 历史到 origin。",
-      "current_slice": null,
+      "current_slice": "C-20-S2",
       "completed_slices": [
         "C-20-S1"
       ],
       "deferred_slices": [],
-      "return_to": "web_completion_audit"
+      "return_to": "web_completion_audit",
+      "blocked_reason": "origin/lehengzhangJacob/software_train grants READ only to the active GitHub identity; git push returned HTTP 403"
     }
   }
 }

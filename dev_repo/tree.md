@@ -2,8 +2,8 @@
 
 ## Current execution override
 
-- Current contract: `C-20 - 食刻专业化图文 README 与远端发布` [completed]
-- Current slice: none
+- Current contract: `C-20 - 食刻专业化图文 README 与远端发布` [in_progress]
+- Current slice: `C-20-S2 - 修复远端仓库写权限后重试推送`
 - Return path: `web_completion_audit`
 - The older C-13 current-line text below is historical and is superseded by the runtime state above.
 
