@@ -2,14 +2,14 @@
 
 ## Current execution override
 
-- Current contract: `C-18 - 食刻落地页视口收口、品牌替换与动效升级` [in_progress]
-- Current slice: `C-18-S2 - 克制动效与 reduced-motion 回归` [in_progress]
+- Current contract: `C-18 - 食刻落地页视口收口、品牌替换与动效升级` [completed]
+- Current slice: none
 - Return path: `web_completion_audit`
 - The older C-13 current-line text below is historical and is superseded by the runtime state above.
 
-- 当前合同：`C-18 - 食刻落地页视口收口、品牌替换与动效升级 [in_progress]`
-- 当前切片：`C-18-S2 - 克制动效与 reduced-motion 回归`
-- 下一步：完成认证入口桌面视口收口后进入 C-18-S2 动效与视觉证据
+- 当前合同：`C-18 - 食刻落地页视口收口、品牌替换与动效升级 [completed]`
+- 当前切片：无
+- 下一步：返回 `web_completion_audit`
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text
@@ -45,7 +45,7 @@ C-01 - 全栈功能初版 [completed]
                                                         ├── S2 业务数据与 AI/MCP 配置按账户隔离 [completed]
                                                         ├── S3 登录、邀请码注册、退出与认证 UI [completed]
                                                         └── S4 云端迁移、双端同步与最终发布检查 [completed：云端公网、账户同步、Android 云壳构建与 release gate]
-                                                        └── C-18 - 食刻落地页视口收口、品牌替换与动效升级 [in_progress]
+                                                        └── C-18 - 食刻落地页视口收口、品牌替换与动效升级 [completed]
 ```
 
 
