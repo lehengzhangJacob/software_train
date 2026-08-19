@@ -5,6 +5,7 @@ import type { Prisma, PrismaClient } from "@prisma/client"
 
 import { prisma } from "@/lib/prisma"
 import { createSessionToken, digestToken } from "@/lib/auth/crypto"
+import { shouldUseSecureAuthCookie } from "@/lib/auth/cookie-policy"
 
 export const AUTH_COOKIE = "ft_session"
 export const AUTH_SESSION_MAX_AGE = 60 * 60 * 24 * 30
@@ -125,7 +126,7 @@ export async function setSessionCookie(token: string) {
   jar.set(AUTH_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureAuthCookie(),
     path: "/",
     maxAge: AUTH_SESSION_MAX_AGE,
   })
@@ -136,7 +137,7 @@ export async function clearSessionCookie() {
   jar.set(AUTH_COOKIE, "", {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure: shouldUseSecureAuthCookie(),
     path: "/",
     maxAge: 0,
   })

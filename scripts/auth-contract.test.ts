@@ -3,6 +3,7 @@ import test from "node:test"
 
 import { decideAccess } from "../src/lib/access/gate"
 import { createSessionToken, digestToken, hashPassword, normalizeLogin, verifyPassword } from "../src/lib/auth/crypto"
+import { shouldUseSecureAuthCookie } from "../src/lib/auth/cookie-policy"
 import { parseLoginInput, parseRegisterInput, AuthValidationError } from "../src/lib/auth/validation"
 
 test("account gate: local compatibility and cloud session boundary", () => {
@@ -28,6 +29,13 @@ test("session tokens: random raw token and stable digest", () => {
   assert.match(token, /^[A-Za-z0-9_-]{40,}$/)
   assert.match(digestToken(token), /^[0-9a-f]{64}$/)
   assert.notEqual(createSessionToken(), token)
+})
+
+test("session cookie security: HTTPS stays secure and plain HTTP is explicit", () => {
+  assert.equal(shouldUseSecureAuthCookie({ NODE_ENV: "production" }), true)
+  assert.equal(shouldUseSecureAuthCookie({ NODE_ENV: "production", AUTH_COOKIE_SECURE: "false" }), false)
+  assert.equal(shouldUseSecureAuthCookie({ NODE_ENV: "production", AUTH_COOKIE_SECURE: "true" }), true)
+  assert.equal(shouldUseSecureAuthCookie({ NODE_ENV: "development", AUTH_COOKIE_SECURE: "true" }), true)
 })
 
 test("auth input: login normalization and registration defaults", () => {
