@@ -1,0 +1,139 @@
+erDiagram
+  UserAccount ||--|| UserProfile : authenticates
+  UserAccount ||--o| AccountSettings : configures
+  UserAccount ||--o{ AuthSession : opens
+  InviteCode }o--o{ UserAccount : admits
+  %% C-05-A1: active/unexpired Agent inferences are eligible before user review;
+  %% is_user_confirmed records review provenance, while disabled exact matches suppress regeneration.
+  %% C-06-A1: DailyActivity stores per-day aggregates only (steps, active calories,
+  %% exercise minutes); raw Health Connect samples stay on-device and never persist here.
+  UserProfile ||--o{ MealRecord : owns
+  UserProfile ||--o{ ExerciseSuggestion : owns
+  UserProfile ||--o{ AgentThread : owns
+  AgentThread ||--o{ AgentMessage : contains
+  UserProfile ||--o{ MemoryItem : owns
+  AgentMessage o|--o{ MemoryItem : sources
+  UserProfile ||--o{ DailyActivity : owns
+  AgentThread ||--o| AgentSessionDigest : compacts
+  ExerciseCalorieReference {
+    int exercise_id PK
+    string exercise_name UK
+    float calories_per_30min
+    string category
+    float met_value
+  }
+  UserProfile {
+    int user_id PK
+    string username
+    string gender
+    int age
+    float height_cm
+    float weight_kg
+    int daily_calorie_target
+    float bmr DERIVED
+    string activity_level
+  }
+  UserAccount {
+    int account_id PK
+    string login UK
+    string password_hash
+    string status
+    int profile_id FK UK
+    datetime created_at
+    datetime updated_at
+  }
+  AuthSession {
+    int session_id PK
+    int account_id FK
+    string token_digest UK
+    datetime expires_at
+    datetime last_seen_at
+    datetime created_at
+  }
+  InviteCode {
+    int invite_id PK
+    string code_digest UK
+    string label
+    int max_uses
+    int used_count
+    datetime expires_at
+    boolean active
+  }
+  AccountSettings {
+    int settings_id PK
+    int account_id FK UK
+    string ai_settings_json
+    string mcdonalds_endpoint
+    string mcdonalds_token
+    datetime created_at
+    datetime updated_at
+  }
+  MealRecord {
+    int record_id PK
+    int user_id FK
+    string food_name
+    string meal_type
+    float calories
+    string record_date
+    string record_time
+    string recognition_raw
+  }
+  ExerciseSuggestion {
+    int suggestion_id PK
+    int user_id FK
+    string suggestion_date
+    string exercise_type
+    int duration_minutes
+    float calorie_burn_estimate
+    int is_adopted
+  }
+  AgentThread {
+    int thread_id PK
+    int user_id FK
+    string title
+    string status
+    datetime created_at
+    datetime updated_at
+  }
+  AgentMessage {
+    int message_id PK
+    int thread_id FK
+    string role
+    string content
+    string metadata_json
+    datetime created_at
+  }
+  MemoryItem {
+    int memory_id PK
+    int user_id FK
+    int source_message_id FK
+    string category
+    string content
+    string source_kind
+    string source_ref
+    float confidence
+    float importance
+    string status
+    boolean is_user_confirmed
+    datetime expires_at
+    datetime updated_at
+  }
+  DailyActivity {
+    int activity_id PK
+    int user_id FK
+    string activity_date UK
+    int steps
+    float active_calories
+    int exercise_minutes
+    string source_kind
+    datetime synced_at
+    datetime updated_at
+  }
+  AgentSessionDigest {
+    int digest_id PK
+    int thread_id FK UK
+    int covered_message_id
+    string summary
+    datetime created_at
+    datetime updated_at
+  }

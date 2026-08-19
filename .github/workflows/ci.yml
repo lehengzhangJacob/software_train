@@ -1,0 +1,29 @@
+name: Verify
+
+on:
+  push:
+    branches: ["codex/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DATABASE_URL: file:../database/ci.db
+      STEP_API_KEY: ""
+      STEP_API_BASE_URL: https://api.stepfun.com/v1
+      STEP_API_MODEL: step-3.7-flash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run db:init
+      - run: npm run verify
+      - run: npm run smoke

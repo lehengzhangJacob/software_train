@@ -1,0 +1,43 @@
+{
+  "contract": "C-06-L4-A1-S2",
+  "verifiedAt": "2026-08-18",
+  "surface": "http://127.0.0.1:3102/agent",
+  "checks": [
+    {
+      "name": "streaming-activity",
+      "status": "pass",
+      "details": "A real health chat rendered the current-turn activity panel during streaming and completed with two safe-summary steps: context preparation and model response."
+    },
+    {
+      "name": "activity-disclosure",
+      "status": "pass",
+      "details": "The timeline was collapsed by default after completion; expanding it exposed step labels, kind, status, duration, and the safety note. aria-expanded changed true/false and details hid again."
+    },
+    {
+      "name": "theme-regression",
+      "status": "pass",
+      "details": "Light and dark theme controls both applied to the agent workspace; the activity panel remained visible in dark mode and the light theme was restored."
+    },
+    {
+      "name": "mobile-regression",
+      "status": "pass",
+      "details": "At a 375x800 viewport the agent workspace and activity panel remained visible with no horizontal overflow (document scrollWidth matched clientWidth)."
+    },
+    {
+      "name": "mobile-activity-overflow-regression",
+      "status": "pass",
+      "details": "After a real streamed turn with the timeline expanded, the 375px layout kept the activity panel inside the main column and preserved the input area; the grid uses a zero-minimum single column at mobile widths."
+    },
+    {
+      "name": "browser-console",
+      "status": "pass",
+      "details": "No browser console warnings or errors were observed during the smoke and regression checks."
+    }
+  ],
+  "safety": {
+    "mcdonaldsCreateOrder": "not invoked",
+    "rawCredentialsInActivity": "none observed",
+    "rawToolArgumentsInActivity": "none observed",
+    "paymentUrlsInActivity": "none observed"
+  }
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">FoodTracker</string>
+    <string name="title_activity_main">FoodTracker</string>
+    <string name="package_name">com.csptr.foodtracker</string>
+    <string name="custom_url_scheme">com.csptr.foodtracker</string>
+</resources>

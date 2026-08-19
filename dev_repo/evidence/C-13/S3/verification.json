@@ -1,0 +1,77 @@
+{
+  "contract_id": "C-13",
+  "slice_id": "C-13-S3",
+  "verified_at": "2026-08-18T23:25:00+08:00",
+  "status": "pass_with_blockers",
+  "red_line_crossed": true,
+  "scope": "foodtest AVD 上的云端 Android APK 回归；本轮只采集运行证据，不修改产品代码、schema 或架构",
+  "environment": {
+    "avd": "foodtest",
+    "device": "emulator-5554",
+    "adb_state": "device",
+    "apk": "android/app/build/outputs/apk/debug/app-debug.apk",
+    "cloud_url": "http://8.148.206.131:8000"
+  },
+  "account_gate": {
+    "status": "red",
+    "physical_login": "真实填写 demo account 并点击登录后仍停留在 /access",
+    "direct_api_login": "same credentials returned HTTP 200",
+    "webview_session_after_form": "fetch /api/auth/session returned HTTP 401",
+    "root_cause": "src/lib/auth/server.ts sets secure=true whenever NODE_ENV=production, but the cloud authority is plain HTTP on an IP; Android WebView therefore does not persist ft_session",
+    "evidence": [
+      "emulator-account-entry.png",
+      "emulator-login-result.png",
+      "emulator-login-tap.png"
+    ]
+  },
+  "camera_entry": {
+    "permission": "pass: Android permission dialog appeared and While using the app was accepted",
+    "product_button": "立即拍照 opens com.google.android.providers.media.module PhotoPickerGetContentActivity on this AVD; picker exposes Photos/Albums/Browse and no direct camera option",
+    "avd_camera": "pass: direct android.media.action.IMAGE_CAPTURE opens com.android.camera2 and shows a shutter surface",
+    "evidence": [
+      "emulator-camera-permission.png",
+      "emulator-photo-picker.png",
+      "emulator-system-camera.png"
+    ]
+  },
+  "photo_recognition": {
+    "isolation": "after the auth red line, a one-time test session cookie was injected only to isolate the photo flow; this is not claimed as a full login-green run",
+    "input": "real food image public/images/nutrition/meal-hero.webp pushed to the AVD and selected through the Android Photo Picker",
+    "recognition": "real cloud AI response completed and produced 9 review items; first item 烤三文鱼, confidence 95%, 250 kcal, 24 g protein, 15 g fat",
+    "review_surface": "9 / 9 items visible with editable food, meal type, portion and nutrition fields",
+    "save": "WebView POST /api/meals completed; authenticated readback returned HTTP 200 and 22 items for 2026-08-18, prior count 13 plus 9 newly saved items",
+    "physical_confirmation": "ADB coordinate taps did not activate the confirmation button reliably; CDP mouse dispatch was used as a fallback to complete this isolated save, so physical confirmation is not claimed green",
+    "evidence": [
+      "emulator-photo-selected.png",
+      "emulator-recognition-review.png",
+      "emulator-recognition-review-form.png",
+      "emulator-recognition-save.png",
+      "emulator-save-after-tap.png"
+    ]
+  },
+  "conclusion": {
+    "green": [
+      "AVD online and current cloud APK installed",
+      "camera permission request works",
+      "photo selection, real recognition, review and cloud meal persistence work when authenticated"
+    ],
+    "red": [
+      "real Android login cannot persist the production Secure cookie over the current HTTP cloud URL",
+      "立即拍照 does not open the camera directly on this AVD",
+      "physical ADB confirmation tap is not reliable"
+    ],
+    "next_exact_action": "open the smallest C-13-S3 fix slice for HTTP cookie policy and camera/file-input adapter behavior, then repeat clean-login and physical confirmation on the same foodtest AVD"
+  },
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "artifacts": [
+    "dev_repo/evidence/C-13/S3/emulator-account-entry.png",
+    "dev_repo/evidence/C-13/S3/emulator-camera-permission.png",
+    "dev_repo/evidence/C-13/S3/emulator-photo-picker.png",
+    "dev_repo/evidence/C-13/S3/emulator-recognition-review-form.png",
+    "dev_repo/evidence/C-13/S3/emulator-recognition-save.png",
+    "dev_repo/evidence/C-13/S3/emulator-system-camera.png"
+  ]
+}

@@ -1,0 +1,1080 @@
+{
+  "schema_version": 6,
+  "amendment": {
+    "contract_id": "C-11",
+    "decision": "cloud_delivery_shared_gate_and_cloud_credentials",
+    "status": "accepted",
+    "return_to": "web_completion_audit"
+  },
+  "active_amendment": {
+    "contract_id": "C-13-S3-A1",
+    "decision": "android_native_camera_capture_adapter",
+    "status": "accepted",
+    "return_to": "C-13-S3"
+  },
+  "nodes": [
+    {
+      "id": "local_user",
+      "purpose": "在本机或公网经账户会话使用同一营养、记忆和工具能力的个人账户",
+      "owned_files": [],
+      "public_interfaces": [
+        "browser interaction"
+      ],
+      "depends_on": [
+        "frontend",
+        "android.shell",
+        "cloud.delivery"
+      ],
+      "depended_on_by": [],
+      "invariants": [
+        "账户身份由 auth.identity 提供；业务数据按账户绑定的 UserProfile 隔离",
+        "所有外部写操作由本人最终确认"
+      ],
+      "allowed_change_types": [
+        "local personal tool workflow"
+      ],
+      "requires_amendment_when": [
+        "引入多租户、角色权限或跨账户共享"
+      ],
+      "verification": [
+        "course demo screenplay",
+        "browser E2E"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed",
+      "superseded_by": "auth.identity"
+    },
+    {
+      "id": "auth.identity",
+      "purpose": "Database-backed invited account identity, sessions, and registration policy",
+      "owned_files": [
+        "src/lib/auth/**",
+        "src/app/api/auth/**",
+        "src/app/auth/**",
+        "prisma/schema.prisma",
+        "prisma/migrations/**"
+      ],
+      "public_interfaces": [
+        "/auth",
+        "/api/auth/register",
+        "/api/auth/login",
+        "/api/auth/logout"
+      ],
+      "depends_on": ["database.prisma", "cloud.delivery"],
+      "depended_on_by": ["backend.api", "frontend", "android.shell"],
+      "invariants": [
+        "Passwords are salted hashes only",
+        "Session and invite raw values are never persisted",
+        "One account binds to exactly one nutrition profile"
+      ],
+      "allowed_change_types": ["credential policy", "session lifecycle", "invite registration policy"],
+      "requires_amendment_when": ["adding roles or tenants", "changing profile cardinality", "adding external identity providers"],
+      "verification": ["auth contract tests", "cross-account E2E", "cloud and Android smoke"],
+      "known_debt": ["single-instance SQLite session store", "no password reset or email verification in v1"],
+      "confidence": "confirmed",
+      "implementation_status": "active"
+    },
+    {
+      "id": "frontend",
+      "purpose": "浏览器外壳、导航、全局状态与视觉系统",
+      "owned_files": [
+        "src/app/layout.tsx",
+        "src/app/globals.css",
+        "src/components/sidebar.tsx"
+      ],
+      "public_interfaces": [
+        "HTML",
+        "client navigation"
+      ],
+      "depends_on": [
+        "frontend.pages",
+        "frontend.components"
+      ],
+      "depended_on_by": [
+        "local_user"
+      ],
+      "invariants": [
+        "375px-1440px 可用",
+        "移动导航不遮挡内容"
+      ],
+      "allowed_change_types": [
+        "layout",
+        "styling",
+        "accessibility"
+      ],
+      "requires_amendment_when": [
+        "改变客户端/服务端边界",
+        "引入新的前端运行时"
+      ],
+      "verification": [
+        "responsive browser matrix",
+        "axe"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "frontend.pages",
+      "purpose": "档案、看板、餐食、日历、运动和报告页面",
+      "owned_files": [
+        "src/app/dashboard/**",
+        "src/app/profile/**",
+        "src/app/meals/**",
+        "src/app/calendar/**",
+        "src/app/exercise/**",
+        "src/app/reports/**",
+        "src/app/settings/**",
+        "src/app/agent/**"
+      ],
+      "public_interfaces": [
+        "/dashboard",
+        "/profile",
+        "/meals",
+        "/calendar",
+        "/exercise",
+        "/reports",
+        "/settings",
+        "/agent"
+      ],
+      "depends_on": [
+        "frontend.components",
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "frontend"
+      ],
+      "invariants": [
+        "个性化页面动态渲染",
+        "无 profile 时进入建档闭环"
+      ],
+      "allowed_change_types": [
+        "page composition",
+        "loading/error states"
+      ],
+      "requires_amendment_when": [
+        "页面改为公开缓存",
+        "新增身份上下文"
+      ],
+      "verification": [
+        "build manifest PII gate",
+        "browser E2E"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "frontend.components",
+      "purpose": "业务组件、图表和 UI primitives",
+      "owned_files": [
+        "src/components/**"
+      ],
+      "public_interfaces": [
+        "React component props"
+      ],
+      "depends_on": [
+        "backend.api",
+        "ai.gateway"
+      ],
+      "depended_on_by": [
+        "frontend.pages"
+      ],
+      "invariants": [
+        "AI 先审核后保存",
+        "状态可被键盘和读屏理解"
+      ],
+      "allowed_change_types": [
+        "component behavior",
+        "visual tokens",
+        "forms"
+      ],
+      "requires_amendment_when": [
+        "改变持久化所有权",
+        "直接调用外部 AI"
+      ],
+      "verification": [
+        "component tests",
+        "browser E2E",
+        "axe"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "partial",
+      "activity_projection": {
+        "owner": "current Agent turn presentation",
+        "source": "server activity events only",
+        "keyboard_accessible": true
+      }
+    },
+    {
+      "id": "backend.api",
+      "purpose": "同源业务 API、输入校验、错误映射与 primary profile 边界",
+      "owned_files": [
+        "src/app/api/users/**",
+        "src/app/api/meals/**",
+        "src/app/api/reports/**",
+        "src/app/api/exercise/**",
+        "src/app/api/health/**",
+        "src/lib/api*.ts",
+        "src/lib/validation*.ts"
+      ],
+      "public_interfaces": [
+        "/api/users GET/PUT",
+        "/api/meals GET/PUT/DELETE",
+        "/api/meals POST items[] (approved target)",
+        "/api/reports GET continuous-day series (approved target)",
+        "/api/exercise/suggest GET/POST/PATCH (approved target)",
+        "/api/health/sync POST daily-aggregate upsert (approved target)",
+        "/api/health/recent GET local-date window (approved target)"
+      ],
+      "depends_on": [
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "frontend.components",
+        "frontend.pages",
+        "android.shell"
+      ],
+      "invariants": [
+        "不信任客户端 userId",
+        "响应为 data/error",
+        "错误脱敏"
+      ],
+      "allowed_change_types": [
+        "DTO validation",
+        "same-origin API behavior"
+      ],
+      "requires_amendment_when": [
+        "新增公网身份",
+        "改变所有权或 API 版本"
+      ],
+      "verification": [
+        "route integration tests",
+        "invalid input matrix"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "ai.gateway",
+      "purpose": "服务端多提供商注册表、凭据读取、模型调用与输出校验",
+      "owned_files": [
+        "src/app/api/ai/**",
+        "src/app/api/settings/ai/**",
+        "src/lib/ai/**"
+      ],
+      "public_interfaces": [
+        "/api/ai/recognize",
+        "/api/settings/ai",
+        "/api/settings/ai/test"
+      ],
+      "depends_on": [
+        "account.secret_store",
+        "external.ai_providers"
+      ],
+      "depended_on_by": [
+        "frontend.components",
+        "agent.runtime"
+      ],
+      "invariants": [
+        "完整密钥不回传浏览器",
+        "失败不得伪装成功",
+        "提供商响应脱敏"
+      ],
+      "allowed_change_types": [
+        "provider adapter",
+        "model registry",
+        "response schema"
+      ],
+      "requires_amendment_when": [
+        "浏览器直连提供商",
+        "改变数据外发类型"
+      ],
+      "verification": [
+        "provider contract tests",
+        "missing-key test",
+        "secret scan"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "database.prisma",
+      "purpose": "ORM、schema 与正式 migration",
+      "owned_files": [
+        "prisma/schema.prisma",
+        "prisma/migrations/**",
+        "prisma/seed.ts",
+        "src/lib/prisma.ts"
+      ],
+      "public_interfaces": [
+        "PrismaClient models",
+        "prisma migrate deploy"
+      ],
+      "depends_on": [
+        "database.sqlite"
+      ],
+      "depended_on_by": [
+        "backend.api",
+        "frontend.pages"
+      ],
+      "invariants": [
+        "migration 是生产 schema 真相",
+        "seed 幂等且不默认写 demo 用户"
+      ],
+      "allowed_change_types": [
+        "migration",
+        "indexes",
+        "constraints",
+        "reference seed"
+      ],
+      "requires_amendment_when": [
+        "改变实体身份或关系",
+        "更换数据库 provider"
+      ],
+      "verification": [
+        "prisma validate",
+        "fresh migrate",
+        "copy migration"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "database.sqlite",
+      "purpose": "运行服务一侧的单写 SQLite 持久化（本地开发库与云端生产库各自单实例，云端库为生产真相源）",
+      "owned_files": [
+        "database/*.db (runtime ignored)"
+      ],
+      "public_interfaces": [
+        "DATABASE_URL file path"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "database.prisma"
+      ],
+      "invariants": [
+        "仅单实例写入",
+        "真实 DB 不进入 Git",
+        "迁移前备份"
+      ],
+      "allowed_change_types": [
+        "local file location",
+        "backup/restore"
+      ],
+      "requires_amendment_when": [
+        "多实例",
+        "切换托管数据库"
+      ],
+      "verification": [
+        "PRAGMA integrity_check",
+        "foreign_key_check"
+      ],
+      "known_debt": [
+        "当前 demo DB 由 db push 创建"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "database.legacy_design",
+      "purpose": "保存最初 SQL 设计与数据库说明，仅作参考",
+      "owned_files": [
+        "database/schema.sql",
+        "database/init_data.sql",
+        "database/README.md"
+      ],
+      "public_interfaces": [],
+      "depends_on": [],
+      "depended_on_by": [
+        "database.prisma"
+      ],
+      "invariants": [
+        "不得作为部署时隐式第二 schema 真相"
+      ],
+      "allowed_change_types": [
+        "documentation alignment"
+      ],
+      "requires_amendment_when": [
+        "重新提升为生产 schema 权威"
+      ],
+      "verification": [
+        "architecture index review"
+      ],
+      "known_debt": [
+        "C-02-S1 将标注 legacy"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "legacy"
+    },
+    {
+      "id": "external.ai_providers",
+      "purpose": "StepFun、GLM 与 OpenAI-compatible 外部模型服务",
+      "owned_files": [],
+      "public_interfaces": [
+        "provider-specific or OpenAI-compatible chat completions"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "ai.gateway"
+      ],
+      "invariants": [
+        "密钥不入 Git",
+        "图片和上下文外发需用户知情"
+      ],
+      "allowed_change_types": [
+        "provider",
+        "model name",
+        "base URL through server settings"
+      ],
+      "requires_amendment_when": [
+        "新增不同风险级别的数据外发"
+      ],
+      "verification": [
+        "manual smoke with local secret",
+        "mock contract in CI"
+      ],
+      "known_debt": [
+        "真实 API 只做人工作业演示 smoke"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "partial"
+    },
+    {
+      "id": "delivery",
+      "purpose": "可复现安装、质量门、构建与课程演示",
+      "owned_files": [
+        "package.json",
+        "package-lock.json",
+        "README.md",
+        "scripts/release-smoke.mjs",
+        "scripts/*.test.ts",
+        ".github/**",
+        "playwright.config.*",
+        "tests/**"
+      ],
+      "public_interfaces": [
+        "npm scripts",
+        "CI workflow"
+      ],
+      "depends_on": [
+        "frontend",
+        "backend.api",
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "local_user",
+        "cloud.delivery"
+      ],
+      "invariants": [
+        "CI 不调用真实 AI",
+        "本地回路默认只监听 loopback",
+        "绿测后才称 RC"
+      ],
+      "allowed_change_types": [
+        "scripts",
+        "test harness",
+        "CI"
+      ],
+      "requires_amendment_when": [
+        "容器成为必选运行时"
+      ],
+      "verification": [
+        "clean install",
+        "prisma migrate deploy",
+        "seed",
+        "lint",
+        "typecheck",
+        "build",
+        "production loopback smoke",
+        "manual browser E2E"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "dev_repo",
+      "purpose": "合同、架构、ER、日志和证据真相",
+      "owned_files": [
+        "dev_repo/**"
+      ],
+      "public_interfaces": [
+        "state.json",
+        "tree.md",
+        "evidence_index.json",
+        "journal.jsonl"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "delivery"
+      ],
+      "invariants": [
+        "不补造历史证据",
+        "每片更新真实状态",
+        "子合同显式 return_to"
+      ],
+      "allowed_change_types": [
+        "contract state",
+        "architecture census",
+        "evidence index"
+      ],
+      "requires_amendment_when": [
+        "改变治理不变量"
+      ],
+      "verification": [
+        "JSON parse",
+        "path existence",
+        "git history"
+      ],
+      "known_debt": [
+        "C-01 完成声明证据不足，保留历史标注"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "active"
+    },
+    {
+      "id": "account.secret_store",
+      "purpose": "保存 GUI 提交的 AI 与 MCP 凭据：文件位于运行服务一侧（本地开发机或云端服务器 data/ 目录），env 作回退；云端实例即凭据上云的落点",
+      "scope_note": "AccountSettings is the cloud source of truth; legacy files and environment variables are local no-account compatibility inputs only.",
+      "owned_files": [
+        "src/lib/account/settings.ts",
+        "src/lib/ai/settings.ts",
+        "src/lib/mcp/settings.ts",
+        "prisma/schema.prisma",
+        "data/credentials.json (legacy runtime ignored)",
+        "data/mcdonalds.json (legacy runtime ignored)"
+      ],
+      "public_interfaces": [
+        "masked provider settings"
+      ],
+      "depends_on": ["auth.identity", "database.prisma"],
+      "depended_on_by": [
+        "ai.gateway",
+        "mcp.gateway"
+      ],
+      "invariants": [
+        "完整密钥不回传",
+        "凭据不进入 Git、日志或 Agent 记忆"
+      ],
+      "allowed_change_types": [
+        "account credential format",
+        "credential encryption or rotation"
+      ],
+      "requires_amendment_when": [
+        "凭据交由第三方托管服务或 KMS"
+      ],
+      "verification": [
+        "secret scan",
+        "masked readback test"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "memory.store",
+      "purpose": "跨会话保存可审计、可遗忘的用户记忆与对话；维护线程滚动摘要并承接后台整理蒸馏",
+      "owned_files": [
+        "prisma/schema.prisma",
+        "prisma/migrations/**",
+        "src/lib/memory/**"
+      ],
+      "public_interfaces": [
+        "memory repository",
+        "session digest repository"
+      ],
+      "depends_on": [
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "agent.runtime"
+      ],
+      "invariants": [
+        "记忆带来源和置信度",
+        "用户可修正与删除",
+        "不保存凭据",
+        "自动推断可用但必须可见可停用",
+        "用户停用的精确记忆不得被自动恢复",
+        "session_digest 来源与其他来源同治理权，物化复用既有规则"
+      ],
+      "allowed_change_types": [
+        "memory policy",
+        "retrieval",
+        "retention"
+      ],
+      "requires_amendment_when": [
+        "改变记忆身份、作用域或保留语义"
+      ],
+      "verification": [
+        "migration",
+        "cross-session recall",
+        "forget test"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "agent.runtime",
+      "purpose": "编排档案、餐食、记忆、近 7 天活动量、模型与工具的营养对话运行时；长对话以滚动摘要 + 水位尾部组装上下文",
+      "owned_files": [
+        "src/app/agent/**",
+        "src/app/api/agent/**",
+        "src/lib/agent/**"
+      ],
+      "public_interfaces": [
+        "/agent",
+        "/api/agent",
+        "/api/agent Accept: text/event-stream (activity projection)"
+      ],
+      "depends_on": [
+        "backend.api",
+        "ai.gateway",
+        "memory.store",
+        "mcp.gateway"
+      ],
+      "depended_on_by": [
+        "frontend.pages"
+      ],
+      "invariants": [
+        "推断不冒充事实",
+        "建议不是医疗诊断",
+        "工具调用经过策略层",
+        "只有当前消息的明确点餐意图可授权创建一笔未支付订单",
+        "上下文 = 滚动摘要 + 水位后尾部，历史只压缩不丢弃",
+        "后台整理非阻塞且失败静默，不影响对话主流程"
+      ],
+      "allowed_change_types": [
+        "prompt orchestration",
+        "context selection",
+        "tool loop"
+      ],
+      "requires_amendment_when": [
+        "扩大自主建单授权范围或新增支付能力"
+      ],
+      "verification": [
+        "context tests",
+        "memory tests",
+        "tool policy tests"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed",
+      "activity_projection": {
+        "transport": "optional SSE via Accept: text/event-stream",
+        "persistence": "ephemeral turn presentation only",
+        "secret_policy": "labels and timings only; no raw tool payloads or credentials"
+      }
+    },
+    {
+      "id": "mcp.gateway",
+      "purpose": "发现、校验并调用本机配置的 MCP 工具",
+      "owned_files": [
+        "src/app/api/mcp/**",
+        "src/lib/mcp/**"
+      ],
+      "public_interfaces": [
+        "tool discovery",
+        "guarded tool invocation"
+      ],
+      "depends_on": [
+        "account.secret_store",
+        "action.policy",
+        "external.mcp_services"
+      ],
+      "depended_on_by": [
+        "agent.runtime"
+      ],
+      "invariants": [
+        "工具白名单",
+        "超时",
+        "输出不可信"
+      ],
+      "allowed_change_types": [
+        "transport",
+        "tool adapter",
+        "capability mapping"
+      ],
+      "requires_amendment_when": [
+        "新增可绕过确认的外部写能力"
+      ],
+      "verification": [
+        "fixture MCP",
+        "timeout",
+        "malicious output"
+      ],
+      "known_debt": [
+        "C-06-L2 将通用占位连接器收敛为麦当劳中国官方 MCP"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "action.policy",
+      "purpose": "区分只读动作、明确点餐授权、未支付订单创建与始终由用户完成的支付",
+      "owned_files": [
+        "src/lib/actions/**"
+      ],
+      "public_interfaces": [
+        "action classification",
+        "confirmation token"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "mcp.gateway",
+        "agent.runtime"
+      ],
+      "invariants": [
+        "模型不能自我确认",
+        "当前消息的明确点餐意图最多授权创建一笔未支付订单",
+        "支付和账户变更始终需要用户操作",
+        "支付凭据不持久化"
+      ],
+      "allowed_change_types": [
+        "policy rules",
+        "confirmation expiry"
+      ],
+      "requires_amendment_when": [
+        "允许自动支付、账户变更或无明确点餐意图建单"
+      ],
+      "verification": [
+        "confirmation bypass tests"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "external.mcp_services",
+      "purpose": "用户授权的麦当劳中国官方 MCP 与其他只读外部服务",
+      "owned_files": [],
+      "public_interfaces": [
+        "MCP tools"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "mcp.gateway"
+      ],
+      "invariants": [
+        "位置访问需授权",
+        "真实写操作取决于官方或用户授权能力",
+        "支付能力不暴露给 Agent"
+      ],
+      "allowed_change_types": [
+        "configured MCP server"
+      ],
+      "requires_amendment_when": [
+        "服务获得支付或账户写权限"
+      ],
+      "verification": [
+        "real connector probe",
+        "fixture fallback"
+      ],
+      "known_debt": [
+        "C-06-L2 尚未完成麦当劳官方 MCP 适配"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "approved_target"
+    },
+    {
+      "id": "android.shell",
+      "purpose": "Android 原生薄壳：WebView 渲染 live web 服务，原生读取 Health Connect 聚合并 POST 同步",
+      "owned_files": [
+        "android/**",
+        "capacitor.config.ts",
+        "capacitor-web/**"
+      ],
+      "public_interfaces": [
+        "Capacitor WebView shell",
+        "Health Connect aggregated sync (via capgo-capacitor-health)"
+      ],
+      "depends_on": [
+        "backend.api",
+        "external.health_connect"
+      ],
+      "depended_on_by": [
+        "local_user"
+      ],
+      "invariants": [
+        "壳不持有业务数据唯一真相",
+        "仅经用户授权读取 Health Connect 自然日聚合",
+        "开发回路走 adb reverse loopback（形态 A）",
+        "形态 B 直连云端 URL，同样经过账户会话门",
+        "Native camera capture uses the Capacitor bridge and returns to the shared recognition/review/save path",
+        "Camera cancellation or permission failure is never reported as recognition success"
+      ],
+      "allowed_change_types": [
+        "shell config",
+        "plugin upgrade",
+        "native capture adapter",
+        "splash/branding"
+      ],
+      "requires_amendment_when": [
+        "壳内实现独立业务逻辑或本地数据库",
+        "读取非聚合健康数据",
+        "壳成为独立发布真相来源",
+        "adding another native media storage authority"
+      ],
+      "verification": [
+        "device build",
+        "test:health contract tests",
+        "adb reverse manual smoke",
+        "form B cloud regression"
+      ],
+      "known_debt": [
+        "真机回归未入 CI"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "cloud.delivery",
+      "purpose": "公网服务器上的正式交付实例：standalone Next.js 常驻服务（systemd）、数据库账户会话门、账户级凭据与 SQLite 生产真相源；部署以本仓构建产物为唯一来源",
+      "owned_files": [
+        "scripts/deploy.mjs",
+        "scripts/verify-cloud-gate.mjs",
+        "src/middleware.ts",
+        "src/lib/access/**",
+        "src/app/access/**",
+        "src/app/api/auth/**"
+      ],
+      "public_interfaces": [
+        "http://<server>:8000（访问门后）",
+        "systemd unit foodtracker.service"
+      ],
+      "depends_on": [
+        "delivery",
+        "database.prisma"
+      ],
+      "depended_on_by": [
+        "local_user"
+      ],
+      "invariants": [
+        "AUTH_REQUIRED=true 且 bootstrap invite 就绪后才开放账户注册",
+        "APP_ACCESS_TOKEN 仅作为迁移期 InviteCode 输入，不是业务授权凭据",
+        "未认证请求不得触达业务 API（含 SSE）或个性化页面",
+        "服务器上不执行构建，只接收本仓构建产物",
+        ".env.production 权限 0600 且不入 Git"
+      ],
+      "allowed_change_types": [
+        "deploy pipeline",
+        "access gate policy",
+        "server provisioning"
+      ],
+      "requires_amendment_when": [
+        "引入多租户、角色权限或跨账户共享",
+        "启用 TLS/域名或反代",
+        "容器化或多实例"
+      ],
+      "verification": [
+        "SSH 隧道 loopback smoke",
+        "verify-cloud-gate 公网 401/307/登录会话实证",
+        "migrate status 无 pending"
+      ],
+      "known_debt": [
+        "纯 IP HTTP 无 TLS（Capacitor 已允许 cleartext）",
+        "登录/注册尝试限速为进程内计数，重启即清零"
+      ],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    },
+    {
+      "id": "external.health_connect",
+      "purpose": "设备端健康数据聚合服务，提供步数、活动消耗与运动分钟数",
+      "owned_files": [],
+      "public_interfaces": [
+        "Health Connect aggregated read APIs"
+      ],
+      "depends_on": [],
+      "depended_on_by": [
+        "android.shell"
+      ],
+      "invariants": [
+        "读取需设备级用户授权",
+        "原始明细不进入本产品持久层"
+      ],
+      "allowed_change_types": [
+        "Health Connect 权限范围"
+      ],
+      "requires_amendment_when": [
+        "写入 Health Connect",
+        "读取非聚合或敏感健康明细"
+      ],
+      "verification": [
+        "shell sync probe",
+        "manual device smoke"
+      ],
+      "known_debt": [],
+      "confidence": "confirmed",
+      "implementation_status": "confirmed"
+    }
+  ],
+  "edges": [
+    {
+      "source": "local_user",
+      "target": "auth.identity",
+      "label": "login or invited registration"
+    },
+    {
+      "source": "auth.identity",
+      "target": "database.prisma",
+      "label": "accounts, sessions, and invite policy"
+    },
+    {
+      "source": "auth.identity",
+      "target": "backend.api",
+      "label": "authenticated profile owner"
+    },
+    {
+      "source": "local_user",
+      "target": "frontend",
+      "label": "local browser"
+    },
+    {
+      "source": "frontend",
+      "target": "frontend.pages",
+      "label": "renders"
+    },
+    {
+      "source": "frontend.pages",
+      "target": "frontend.components",
+      "label": "composes"
+    },
+    {
+      "source": "frontend.components",
+      "target": "backend.api",
+      "label": "same-origin fetch"
+    },
+    {
+      "source": "frontend.components",
+      "target": "ai.gateway",
+      "label": "review workflows"
+    },
+    {
+      "source": "backend.api",
+      "target": "database.prisma",
+      "label": "validated queries"
+    },
+    {
+      "source": "frontend.pages",
+      "target": "database.prisma",
+      "label": "dynamic server reads"
+    },
+    {
+      "source": "database.prisma",
+      "target": "database.sqlite",
+      "label": "single-instance persistence"
+    },
+    {
+      "source": "database.legacy_design",
+      "target": "database.prisma",
+      "label": "reference only"
+    },
+    {
+      "source": "ai.gateway",
+      "target": "external.ai_providers",
+      "label": "server-side HTTP"
+    },
+    {
+      "source": "delivery",
+      "target": "frontend",
+      "label": "build and E2E"
+    },
+    {
+      "source": "delivery",
+      "target": "backend.api",
+      "label": "integration tests"
+    },
+    {
+      "source": "delivery",
+      "target": "dev_repo",
+      "label": "evidence"
+    },
+    {
+      "source": "ai.gateway",
+      "target": "account.secret_store",
+      "label": "reads account-scoped credentials"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "backend.api",
+      "label": "nutrition context"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "ai.gateway",
+      "label": "model inference"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "memory.store",
+      "label": "recall and remember"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "mcp.gateway",
+      "label": "guarded tools"
+    },
+    {
+      "source": "memory.store",
+      "target": "database.prisma",
+      "label": "persistent records"
+    },
+    {
+      "source": "mcp.gateway",
+      "target": "action.policy",
+      "label": "classifies actions"
+    },
+    {
+      "source": "mcp.gateway",
+      "target": "external.mcp_services",
+      "label": "authorized MCP transport"
+    },
+    {
+      "source": "local_user",
+      "target": "android.shell",
+      "label": "native shell"
+    },
+    {
+      "source": "android.shell",
+      "target": "external.health_connect",
+      "label": "authorized aggregated reads"
+    },
+    {
+      "source": "android.shell",
+      "target": "backend.api",
+      "label": "same-origin POST /api/health（形态 A loopback / 形态 B 云端）"
+    },
+    {
+      "source": "local_user",
+      "target": "cloud.delivery",
+      "label": "public browser/android via shared access gate"
+    },
+    {
+      "source": "cloud.delivery",
+      "target": "delivery",
+      "label": "consumes build artifacts and verify chain"
+    },
+    {
+      "source": "cloud.delivery",
+      "target": "database.prisma",
+      "label": "provision-time migrate deploy"
+    },
+    {
+      "source": "cloud.delivery",
+      "target": "frontend",
+      "label": "access gate middleware on page routes"
+    },
+    {
+      "source": "cloud.delivery",
+      "target": "backend.api",
+      "label": "401 gate on business APIs (incl. SSE)"
+    }
+  ]
+}

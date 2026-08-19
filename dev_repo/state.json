@@ -1,0 +1,393 @@
+{
+  "campaign_id": "nutrition-agent",
+  "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
+  "root_contract_id": "C-01",
+  "active_contract_id": "C-20",
+  "status": "in_progress",
+  "contracts": {
+    "C-01": {
+      "status": "completed",
+      "summary": "全栈饮食记录系统 - Next.js、Prisma 与 StepFun",
+      "current_slice": null,
+      "completed_slices": [
+        "C-01-S0",
+        "C-01-S1",
+        "C-01-S2",
+        "C-01-S3",
+        "C-01-S4",
+        "C-01-S5",
+        "C-01-S6"
+      ],
+      "return_to": null
+    },
+    "C-02": {
+      "contract_id": "C-02",
+      "parent_contract_id": "C-01",
+      "root_campaign": "food-tracker",
+      "status": "completed",
+      "summary": "课程项目接手验收与发布收口",
+      "current_slice": null,
+      "completed_slices": [
+        "C-02-S0",
+        "C-02-A1",
+        "C-02-S1",
+        "C-02-S2",
+        "C-02-S3",
+        "C-02-S4",
+        "C-02-S5",
+        "C-02-S6",
+        "C-02-S7"
+      ],
+      "return_to": "C-03"
+    },
+    "C-03": {
+      "contract_id": "C-03",
+      "parent_contract_id": "C-02",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "迁移成熟能力并升级为本地个人营养 Agent",
+      "goal": "完成仓库与数据迁移、个人工具体验、多提供商、长期记忆和受控 MCP 工具层",
+      "current_slice": null,
+      "completed_slices": [
+        "C-03-M0",
+        "C-03-M1",
+        "C-03-M2",
+        "C-03-M3",
+        "C-03-A1",
+        "C-03-M4A",
+        "C-03-M4B",
+        "C-03-S2",
+        "C-03-S3",
+        "C-03-S4"
+      ],
+      "return_to": "web_completion_audit"
+    },
+    "C-03-A1": {
+      "contract_id": "C-03-A1",
+      "parent_contract_id": "C-03",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "定义 Agent 对话与长期记忆的实体、来源、确认和删除语义",
+      "current_slice": null,
+      "completed_slices": [
+        "C-03-A1-S1"
+      ],
+      "return_to": "C-03-M4"
+    },
+    "C-03-M1A": {
+      "contract_id": "C-03-M1A",
+      "parent_contract_id": "C-03",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "归一化旧 SQLite 表结构并消除 Prisma schema diff",
+      "current_slice": null,
+      "completed_slices": [
+        "C-03-M1A-S1"
+      ],
+      "return_to": "C-03-M1"
+    },
+    "C-04": {
+      "contract_id": "C-04",
+      "parent_contract_id": "C-03",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "按 Keep 风格原型完成全界面产品化",
+      "goal": "将九张 Web 与 Android 尺寸原型落到现有真实路由、组件和数据能力上",
+      "current_slice": null,
+      "completed_slices": [
+        "C-04-S1",
+        "C-04-S2",
+        "C-04-S3",
+        "C-04-S4",
+        "C-04-S5"
+      ],
+      "deferred_slices": [
+        "C-04-S0"
+      ],
+      "return_to": "web_completion_audit"
+    },
+    "C-05": {
+      "contract_id": "C-05",
+      "parent_contract_id": "C-04",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "收敛移动导航并改为 Agent 自动生成长期记忆",
+      "goal": "分离核心任务与个人设置，并让 Agent 在对话收尾阶段自动提炼、持久化且可由用户治理长期记忆",
+      "current_slice": null,
+      "completed_slices": [
+        "C-05-A1",
+        "C-05-S1",
+        "C-05-S2",
+        "C-05-S3"
+      ],
+      "return_to": "web_completion_audit"
+    },
+    "C-06": {
+      "contract_id": "C-06",
+      "parent_contract_id": "C-05",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "麦当劳本地点餐闭环（最终发布回归 C-06-L4 已收口）",
+      "goal": "让 Agent 在用户明确点餐后自主选餐、计价并创建一笔未支付订单，支付仍由用户完成",
+      "current_slice": null,
+      "completed_slices": [
+        "C-06-L1",
+        "C-06-L2",
+        "C-06-L3-S1",
+        "C-06-L3-S2",
+        "C-06-L3-S3",
+        "C-06-L4"
+      ],
+      "deferred_slices": [
+        "C-06-S0",
+        "C-06-S4",
+        "C-06-S5"
+      ],
+      "return_to": "web_completion_audit"
+    },
+    "C-11": {
+      "contract_id": "C-11",
+      "parent_contract_id": "C-06",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "云端交付与双端收口：公网部署、共享访问码门、凭据上云、Android 形态 B（全部完成）",
+      "goal": "将 Next.js 服务以 standalone 产物部署到公网服务器（8000 端口，systemd 常驻），Web/Android 双端共用云端 SQLite 真相源（含对话记录），API/MCP 凭据收敛云端，未设门前不暴露公网",
+      "current_slice": null,
+      "completed_slices": [
+        "C-11-A1",
+        "C-11-S1",
+        "C-11-S2",
+        "C-11-S3"
+      ],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit"
+    },
+    "C-12": {
+      "contract_id": "C-12",
+      "parent_contract_id": "C-11",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "用真实云端数据生成、核心功能回归和 README 截图素材",
+      "goal": "为测试用户补充可重复的真实 API 演示数据，完成照片识别、Agent、MCP 只读和双端回归，并产出文档截图素材",
+      "current_slice": null,
+      "completed_slices": [
+        "C-12-S1",
+        "C-12-S2",
+        "C-12-S3"
+      ],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit"
+    },
+    "C-10": {
+      "contract_id": "C-10",
+      "parent_contract_id": "C-05",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "会话摘要与后台整理运行时已接通，并完成长期记忆物化",
+      "goal": "让单一营养 Agent 在长对话中使用滚动摘要、尾部消息和可治理的长期记忆",
+      "current_slice": null,
+      "completed_slices": [
+        "C-10-S1",
+        "C-10-S2-S1",
+        "C-10-S2-S2"
+      ],
+      "return_to": "C-06-L4"
+    },
+    "C-06-A1": {
+      "contract_id": "C-06-A1",
+      "parent_contract_id": "C-06",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "追认 Android 健康壳与 DailyActivity 的架构与 ER 修宪并补齐运行时账本",
+      "goal": "为 C-06-L2 之后 4 个游离 commit 补 journal 账，将 DailyActivity 实体与 android.shell/external.health_connect 边界入宪追认，处置 capacitor adb reverse 遗留改动",
+      "current_slice": null,
+      "completed_slices": [
+        "C-06-A1-S1",
+        "C-06-A1-S2",
+        "C-06-A1-S3"
+      ],
+      "return_to": "C-06-L3"
+    },
+    "C-07": {
+      "contract_id": "C-07",
+      "parent_contract_id": "C-06",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "深色模式与系统主题跟随",
+      "goal": "补全深色令牌体系、接入系统主题跟随并清扫全仓硬编码颜色，浅色零回归",
+      "current_slice": null,
+      "completed_slices": [
+        "C-07-S1",
+        "C-07-S2",
+        "C-07-S3"
+      ],
+      "return_to": "C-06-L4"
+    },
+    "C-08": {
+      "contract_id": "C-08",
+      "parent_contract_id": "C-07",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "教练页窄幅排版修复（对话优先+单层滚动）",
+      "goal": null,
+      "current_slice": null,
+      "completed_slices": [
+        "C-08-S1"
+      ],
+      "return_to": "C-06-L4"
+    },
+    "C-09": {
+      "contract_id": "C-09",
+      "parent_contract_id": "C-08",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "移除教练页遗留外卖演示台",
+      "goal": null,
+      "current_slice": null,
+      "completed_slices": [
+        "C-09-S1"
+      ],
+      "return_to": "C-06-L4"
+    },
+    "C-06-L4-A1": {
+      "contract_id": "C-06-L4-A1",
+      "parent_contract_id": "C-06",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "参考 DeepTutor 与 DeerFlow，为 Agent 增加可折叠、可流式观察的多步调用时间线",
+      "goal": "把 Agent 当前回合的上下文、模型、工具和策略步骤投影为安全摘要，并在工作台实时展示",
+      "current_slice": null,
+      "completed_slices": [
+        "C-06-L4-A1-S1",
+        "C-06-L4-A1-S2"
+      ],
+      "return_to": "C-06-L4"
+    },
+    "C-06-L4-A2": {
+      "contract_id": "C-06-L4-A2",
+      "parent_contract_id": "C-06",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "将 Agent 执行过程改为无卡片纵向时间线并完成双端真实回归",
+      "goal": "让当前回合的活动步骤与会话流自然衔接，同时保持实时展开、可折叠和安全摘要边界",
+      "current_slice": null,
+      "completed_slices": [
+        "C-06-L4-A2-S1"
+      ],
+      "return_to": "C-06-L4"
+    },
+    "C-13": {
+      "contract_id": "C-13",
+      "parent_contract_id": "C-12",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "Android 拍照闭环与产品图标收口",
+      "goal": "让 Android 端通过现有 Capacitor WebView 完成拍照、AI 识别、审核保存，并交付统一产品图标与真机回归证据",
+      "current_slice": null,
+      "completed_slices": [
+        "C-13-S1",
+        "C-13-S2",
+        "C-13-S3"
+      ],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit"
+    },
+    "C-14": {
+      "contract_id": "C-14",
+      "parent_contract_id": "C-13",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "让访问门回到产品主视觉",
+      "goal": "让未认证入口与营养 Agent 的梅紫、薄荷绿和编辑式布局一致，同时保留访问码安全边界",
+      "current_slice": null,
+      "completed_slices": [
+        "C-14-S1",
+        "C-14-S2"
+      ],
+      "deferred_slices": [],
+      "return_to": "C-13-S3"
+    },
+    "C-15": {
+      "contract_id": "C-15",
+      "parent_contract_id": "C-13",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "访问门高级入口视觉收口",
+      "goal": "让未认证入口与应用内页共享同一套克制、紧凑的产品视觉，同时保持访问码安全边界",
+      "current_slice": null,
+      "completed_slices": [
+        "C-15-S1"
+      ],
+      "deferred_slices": [],
+      "return_to": "C-13-S3"
+    },
+    "C-16": {
+      "contract_id": "C-16",
+      "parent_contract_id": "C-13",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "访问门背景材质补强",
+      "goal": "为访问门引导区接入本地餐食摄影背景，补足产品空间感，同时保持文字可读性与访问码安全边界",
+      "current_slice": null,
+      "completed_slices": [
+        "C-16-S1"
+      ],
+      "deferred_slices": [],
+      "return_to": "C-13-S3"
+    },
+    "C-17": {
+      "contract_id": "C-17",
+      "parent_contract_id": "C-13",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "账户体系、邀请码注册与跨账户数据隔离",
+      "goal": "将共享访问码升级为数据库账户体系，支持邀请码注册、登录会话、退出和双端同一账户同步，同时保留现有测试数据",
+      "current_slice": null,
+      "completed_slices": ["C-17-A1", "C-17-S1", "C-17-S2", "C-17-S3", "C-17-S4"],
+      "deferred_slices": [],
+      "return_to": "C-13-S3"
+    },
+    "C-18": {
+      "contract_id": "C-18",
+      "parent_contract_id": "C-13",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "食刻落地页视口收口、品牌替换与动效升级",
+      "goal": "让认证入口具备清晰的 App 品牌、无页面级纵向滚动的桌面首屏与克制的可访问动效，同时保持登录注册边界不变",
+      "current_slice": null,
+      "completed_slices": ["C-18-S1", "C-18-S2"],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit"
+    },
+    "C-19": {
+      "contract_id": "C-19",
+      "parent_contract_id": "C-18",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "Editorial wellness studio access motion iteration",
+      "goal": "Upgrade the FoodMoment access landing page from a sparse auth form to an editorial wellness studio with richer but controlled motion.",
+      "current_slice": null,
+      "completed_slices": [
+        "C-19-S1",
+        "C-19-S2"
+      ],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit"
+    },
+    "C-20": {
+      "contract_id": "C-20",
+      "parent_contract_id": "C-19",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "食刻专业化图文 README 已完成，远端推送等待写权限",
+      "goal": "把食刻的产品闭环、架构、配置、安全边界、真实回归证据与部署方式整理为可对外阅读的 README，并推送当前 main 历史到 origin。",
+      "current_slice": "C-20-S2",
+      "completed_slices": [
+        "C-20-S1"
+      ],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit",
+      "blocked_reason": "origin/lehengzhangJacob/software_train grants READ only to the active GitHub identity; git push returned HTTP 403"
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "contract_id": "C-19",
+  "slice_id": "C-19-S1",
+  "status": "green",
+  "commit": "40446bc",
+  "tests": {
+    "git_diff_check": "passed",
+    "npm_run_lint": "passed",
+    "npm_run_typecheck": "passed",
+    "npm_run_build": "passed"
+  },
+  "browser_cases": [
+    {
+      "case": "production-desktop-login",
+      "url": "http://localhost:3001/access",
+      "viewport": "1440x900",
+      "mode": "login",
+      "document_scroll_width": 1440,
+      "document_scroll_height": 900,
+      "motion": [
+        "access-brand-in",
+        "access-grid-drift",
+        "access-signal-in",
+        "access-panel-spin",
+        "access-field-in"
+      ],
+      "screenshot": "dev_repo/evidence/C-19/S1/access-desktop-login.png"
+    },
+    {
+      "case": "production-desktop-register",
+      "url": "http://localhost:3001/access",
+      "viewport": "1440x900",
+      "mode": "register",
+      "register_field_count": 5,
+      "document_scroll_width": 1440,
+      "document_scroll_height": 900,
+      "screenshot": "dev_repo/evidence/C-19/S1/access-desktop-register.png"
+    },
+    {
+      "case": "production-mobile-login",
+      "url": "http://localhost:3001/access",
+      "viewport": "375x812",
+      "mode": "login",
+      "layout_client_width": 360,
+      "document_scroll_width": 360,
+      "document_scroll_height": 1063,
+      "panel_overflow_x": "hidden",
+      "screenshot": "dev_repo/evidence/C-19/S1/access-mobile-login.png"
+    },
+    {
+      "case": "production-mobile-register",
+      "url": "http://localhost:3001/access",
+      "viewport": "375x812",
+      "mode": "register",
+      "register_field_count": 5,
+      "layout_client_width": 360,
+      "document_scroll_width": 360,
+      "hero_overflow": "clip",
+      "hero_scroll_top_after_tab_switch": 0,
+      "screenshot": "dev_repo/evidence/C-19/S1/access-mobile-register.png"
+    }
+  ],
+  "red_line_crossed": false,
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}

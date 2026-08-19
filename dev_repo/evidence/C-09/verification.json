@@ -1,0 +1,21 @@
+{
+  "contract": "C-09",
+  "type": "fix",
+  "date": "2026-08-17",
+  "goal": "教练页模块组合收敛：移除遗留外卖演示台，页面回归 问候/历史 + 对话 两模块",
+  "slice": {
+    "C-09-S1": {
+      "commit": "d341185",
+      "files": [
+        "src/components/agent/agent-workspace.tsx",
+        "src/components/agent/takeout-tools-panel.tsx (deleted)"
+      ]
+    }
+  },
+  "verification": {
+    "gates": "pass: lint 0 errors / typecheck / build",
+    "live_dom": "pass: 494px 用户实机标签页 reload 后 外卖工具台/Local MCP tools 节点消失，对话与最近对话俱在",
+    "scope": "仅删 UI 组件与挂载；/api/mcp/takeout/* 网关与 lib 未动（mcp.gateway 语义不变）"
+  },
+  "rationale": "工具台是 C-03 通用外卖 MCP 演示面，唯一消费方即教练页；C-06-L2 已将真实连接器收敛为麦当劳官方 MCP、C-06-L3 点餐走对话编排，面板永久『未配置』，属演示残留"
+}

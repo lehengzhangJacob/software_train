@@ -1,0 +1,46 @@
+{
+  "contract_id": "C-13",
+  "slice_id": "C-13-S2",
+  "summary": "产品图标设计与 Web/Android 资源接入",
+  "status": "pass_with_device_pending",
+  "generation": {
+    "mode": "built_in_image_gen",
+    "concept": "深梅紫底、薄荷绿碗叶、淡薰衣草星芒；无文字、无水印",
+    "source_copy": "public/brand/nutrition-agent-icon.png"
+  },
+  "assets": {
+    "web": [
+      "public/brand/nutrition-agent-icon.png",
+      "public/brand/nutrition-agent-mark.png",
+      "src/app/icon.png"
+    ],
+    "android": [
+      "android/app/src/main/res/mipmap-*/ic_launcher.png",
+      "android/app/src/main/res/mipmap-*/ic_launcher_round.png",
+      "android/app/src/main/res/mipmap-*/ic_launcher_foreground.png",
+      "android/app/src/main/res/values/ic_launcher_background.xml"
+    ]
+  },
+  "verification": {
+    "small_icon_preview": "pass: mdpi 48x48 preview remains a recognizable bowl and leaf",
+    "web_brand_mark": "pass: Sidebar BrandMark uses the shared icon asset",
+    "metadata_icon": "pass: layout metadata points to the PNG and Next build emits /icon.png",
+    "readme": "pass: README displays the product icon asset",
+    "lint": "pass: npm run lint",
+    "typecheck": "pass: npm run typecheck",
+    "web_build": "pass: npm run build",
+    "android_debug_build": "pass: assembleDebug with adaptive launcher resources",
+    "adb_device_e2e": "not_run: adb devices -l is empty in the current terminal"
+  },
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "red_line_crossed": false,
+  "artifacts": [
+    "public/brand/nutrition-agent-icon.png",
+    "public/brand/nutrition-agent-mark.png",
+    "src/app/icon.png",
+    "android/app/build/outputs/apk/debug/app-debug.apk"
+  ]
+}

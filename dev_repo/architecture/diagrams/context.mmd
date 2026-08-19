@@ -1,0 +1,17 @@
+flowchart LR
+  user[单个用户] --> browser[Personal Tool UI]
+  user --> shell[Android 薄壳]
+  browser --> gate{{云端交付 8000 共享访问码门}}
+  shell --> gate
+  gate --> next[Next.js 16 Server]
+  browser -. 本地开发 loopback .-> next
+  shell -. 形态A adb reverse .-> next
+  shell --> hc[Health Connect]
+  next --> prisma[Prisma]
+  prisma --> sqlite[(SQLite)]
+  next --> ai[AI Provider Gateway]
+  next --> memory[Agent Memory]
+  next --> mcp[MCP Tool Gateway]
+  mcp --> policy[Action Policy]
+  policy --> external[External Search and Actions]
+  next --> evidence[dev_repo evidence]

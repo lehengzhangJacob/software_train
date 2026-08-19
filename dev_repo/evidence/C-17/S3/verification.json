@@ -1,0 +1,56 @@
+{
+  "contract_id": "C-17",
+  "slice_id": "C-17-S3",
+  "verified_at": "2026-08-18T20:05:00+08:00",
+  "red_line_crossed": false,
+  "scope": "登录、邀请码注册、账户显示与退出入口",
+  "ui": {
+    "route": "/access",
+    "modes": ["login", "register"],
+    "registration_fields": ["username", "login", "password", "confirmPassword", "inviteCode"],
+    "legacy_access_code_ui_removed": true,
+    "visual_language": "meal photography, plum/mint palette, editorial split layout, no AI-style dashboard cards",
+    "screenshots": [
+      "dev_repo/evidence/C-17/S3/access-login-desktop.png",
+      "dev_repo/evidence/C-17/S3/access-login-mobile.png",
+      "dev_repo/evidence/C-17/S3/access-register-mobile.png"
+    ]
+  },
+  "browser_smoke": {
+    "server": "temporary production server on port 3194 with migrated database copy",
+    "auth_required": true,
+    "bootstrap_invite": "server-only test bootstrap; value omitted from evidence",
+    "registration": "browser selected 邀请码注册, submitted a new account, and reached /dashboard",
+    "account_menu": "authenticated username rendered in the account menu",
+    "logout": "browser opened the personal menu, selected 退出登录, and returned to /access",
+    "relogin": "same account logged in again and reached /dashboard",
+    "responsive_layout": {
+      "viewport": "390x844",
+      "client_width": 390,
+      "scroll_width": 390,
+      "horizontal_overflow": false
+    }
+  },
+  "http_smoke": {
+    "register": 201,
+    "session_after_register": 200,
+    "logout": 200,
+    "login": 200,
+    "cookie": "ft_session is HttpOnly and session state is not exposed to the UI"
+  },
+  "quality_gates": {
+    "npm_run_typecheck": "pass",
+    "npm_run_lint": "pass",
+    "npm_run_build": "pass"
+  },
+  "implementation": [
+    "src/app/access/page.tsx now owns login and invite registration states and calls /api/auth/login or /api/auth/register",
+    "src/components/sidebar.tsx loads the current public session identity and exposes logout",
+    "src/components/app-chrome.tsx hides authenticated navigation for /auth and /access",
+    "src/app/auth/page.tsx provides the public route alias expected by the auth gate"
+  ],
+  "architecture_delta": "none",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "return_to": "C-17-S4"
+}

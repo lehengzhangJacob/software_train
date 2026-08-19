@@ -1,0 +1,1143 @@
+{
+  "C-07": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-07/verification.json",
+      "description": "C-07 三片实证：令牌断言、清扫残留 grep、HTTP 渲染证明；双模式截图为环境受阻债务（转 L4）"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/theme-provider.tsx",
+      "description": "next-themes 接线：class 策略、defaultTheme=system、enableSystem"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/globals.css",
+      "description": ".dark 令牌补全 + 10 个双值语义令牌（brand-heading 等）"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/theme-settings-card.tsx",
+      "description": "外观三选卡（浅色/深色/跟随系统），偏好存 localStorage"
+    }
+  ],
+  "C-06-L3": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-L3/verification.json",
+      "description": "L3 三片实证：意图门/编排管线/建单与支付入口，ADR-0004 四边界落实与已知债务"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/ordering-intent.ts",
+      "description": "保守点餐意图门（麦当劳信号+当下指令共现、硬阻断优先）"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/ordering.ts",
+      "description": "分阶段确定性编排：地址→门店→菜单→模型选餐→计价→单次建单；支付链接只进临时响应"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/agent/chat/route.ts",
+      "description": "意图分支接线；点餐轮确定性回复，模型不接触订单与支付面"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-workspace.tsx",
+      "description": "临时支付面板（组件态、不持久化）"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/ordering-contract.test.ts",
+      "description": "编排合同测试 11/11；agent 合同测试 7/7；verify 全链含 build"
+    }
+  ],
+  "C-06-A1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-A1/verification.json",
+      "description": "追认修宪实证：4 个游离 commit 入账、S1/S2 结构绿测、S3 补账复测与已知债务"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/entities.json",
+      "description": "DailyActivity 实体入宪（schema_version 5，字段与 schema.prisma 一致）"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/relationships.json",
+      "description": "UserProfile 1:N DailyActivity CASCADE 关系入宪"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "20260817062220_add_daily_activity 追认说明：零回填、聚合-only、值域上限"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "android.shell 与 external.health_connect 节点及 3 条新边（schema_version 3，20 节点/24 边）"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0005-android-health-shell.md",
+      "description": "Android 薄壳 + Health Connect 聚合同步决策（追认）"
+    },
+    {
+      "type": "implementation",
+      "path": "capacitor.config.ts",
+      "description": "开发回路改 adb reverse loopback（127.0.0.1:3000），归 android.shell 节点"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/health-contract.test.ts",
+      "description": "健康合同测试 13/13（补账复测通过；原始落地于游离 commit 068a4c2）"
+    }
+  ],
+  "C-01-S0": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/ARCHITECTURE.md",
+      "description": "架构总览"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "架构节点依赖图"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/invariants.md",
+      "description": "架构不变项"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/ER.md",
+      "description": "实体关系描述"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/entities.json",
+      "description": "实体定义"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/relationships.json",
+      "description": "关系定义"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/invariants.md",
+      "description": "数据模型不变项"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "迁移计划"
+    }
+  ],
+  "C-02-S0": [
+    {
+      "type": "security",
+      "path": ".env.example",
+      "description": "仅服务端 AI 环境变量契约，无实际密钥"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/ai/recognize/route.ts",
+      "description": "安全失败、请求限制、超时和响应校验"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/exercise/exercise-content.tsx",
+      "description": "移除 NEXT_PUBLIC 密钥引用"
+    },
+    {
+      "type": "git",
+      "path": "git:codex/release-hardening",
+      "description": "基于 672e56b，6d9f0b0 不可达"
+    }
+  ],
+  "C-02-A1": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/README.md",
+      "description": "架构宪法入口与课程项目边界"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "12 个可行动节点、依赖与实现状态"
+    },
+    {
+      "type": "architecture-decision",
+      "path": "dev_repo/architecture/decisions/ADR-0001-private-course-boundary.md",
+      "description": "私有单用户边界修宪决策"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/entities.json",
+      "description": "四实体的身份、所有权、派生与迁移责任"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "S1 迁移、回填、兼容与回滚要求"
+    }
+  ],
+  "C-02-S1": [
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260710130000_baseline/migration.sql",
+      "description": "四表与索引 baseline"
+    },
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260710130100_backfill_profile_bmr/migration.sql",
+      "description": "现有 profile BMR 回填"
+    },
+    {
+      "type": "data-model",
+      "path": "prisma/schema.prisma",
+      "description": "DATABASE_URL 与 ORM updatedAt"
+    },
+    {
+      "type": "seed",
+      "path": "prisma/seed.ts",
+      "description": "25 条运动参考幂等 upsert，不创建 demo 用户"
+    },
+    {
+      "type": "runtime",
+      "path": "scripts/ensure-sqlite-database.mjs",
+      "description": "迁移前安全创建 SQLite 文件"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "全新库与旧库副本的同案验证结果"
+    }
+  ],
+  "C-02-S2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/current-user.ts",
+      "description": "服务端稳定选择 primary profile，客户端 ID 不参与归属"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/validation.ts",
+      "description": "用户与餐食 DTO 白名单、BMR 派生、枚举/数值/日期校验"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/meals/route.ts",
+      "description": "餐食 CRUD 的 primary profile 绑定与更新/删除所有权校验"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/{users,reports,exercise}/route.ts",
+      "description": "统一 data/error 信封、错误脱敏与伪造 userId 忽略"
+    },
+    {
+      "type": "frontend",
+      "path": "src/app/{dashboard,profile,meals,calendar,exercise,reports}/page.tsx",
+      "description": "动态个性页面与无档案 onboarding 跳转"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "临时 SQLite 同案、构建清单、PII 哨兵和静态质量门结果"
+    }
+  ],
+  "C-02-S3": [
+    {
+      "type": "implementation",
+      "path": "src/components/food/photo-upload.tsx",
+      "description": "只负责图片识别和全量候选回传，不直接写入餐食"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/food/meals-content.tsx",
+      "description": "多食物审核草稿、10 项上限、明确确认和失败保留"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/meals/route.ts",
+      "description": "items[] 全量预校验后的 Prisma 事务保存"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/validation.ts",
+      "description": "批量餐食白名单 DTO 与 1-10 项边界"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "临时 SQLite 批量、回滚、所有权和图片隔离同案结果"
+    }
+  ],
+  "C-02-S4": [
+    {
+      "type": "implementation",
+      "path": "src/app/api/exercise/suggest/route.ts",
+      "description": "候选总消耗、采用幂等、取消采用和 primary profile 所有权"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/exercise/exercise-content.tsx",
+      "description": "真实候选与已采用计划、行级保存和失败状态；无伪 AI 文本卡"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/validation.ts",
+      "description": "采用/取消计划 DTO，仅接受引用 ID、时长、日期和布尔状态"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "移除未实现的 AI 文本接口目标，确认图片识别代理边界"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "临时 SQLite 采用、重复采用、取消、越权和输入矩阵结果"
+    }
+  ],
+  "C-02-S5": [
+    {
+      "type": "implementation",
+      "path": "src/lib/date.ts",
+      "description": "本地 YYYY-MM-DD 解析、移日和严格含终点的自然日窗口"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/reports/route.ts",
+      "description": "7/30 天精确查询、连续日期序列和未记录日显式空值"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/dashboard/page.tsx",
+      "description": "近 7 日趋势严格限定窗口并保留断档"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/{calendar,reports,exercise}/",
+      "description": "请求取消、竞态归属、防旧响应回写和可重试错误态"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "隔离 SQLite 加实际 Next HTTP 的 7/30 天边界、空档和连续日期验证"
+    }
+  ],
+  "C-02-S6": [
+    {
+      "type": "implementation",
+      "path": "src/app/layout.tsx",
+      "description": "移动端安全区域与固定导航预留、跳过导航目标"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/sidebar.tsx",
+      "description": "具名导航、当前页语义、高对比焦点与等宽移动端触控目标"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/{profile-form.tsx,food/meals-content.tsx}",
+      "description": "设置和餐食选择器的 Label/Trigger 关联"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/{charts/macro-donut.tsx,ui/*}",
+      "description": "窄屏图表纵排、高对比焦点环和可操作图标对比度"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "375px/desktop 浏览器布局、DOM 语义、lint/typecheck/build 与样式哨兵"
+    }
+  ],
+  "C-02-S7": [
+    {
+      "type": "delivery",
+      "path": "package.json",
+      "description": "typecheck、verify、smoke 与 release:check 的可组合发布命令"
+    },
+    {
+      "type": "delivery",
+      "path": "scripts/release-smoke.mjs",
+      "description": "生产 next start loopback smoke；验证页面、报表 API 信封和无效参数，不调用 AI"
+    },
+    {
+      "type": "delivery",
+      "path": ".github/workflows/ci.yml",
+      "description": "空 STEP_API_KEY 的干净环境迁移、seed、verify 与 smoke CI"
+    },
+    {
+      "type": "documentation",
+      "path": "README.md",
+      "description": "PowerShell 与 macOS/Linux 的本地启动、发布检查和私有课程边界"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "全新 SQLite 的 db:init 到 release:check 实测证据"
+    }
+  ],
+  "C-03-M0": [
+    {
+      "type": "git",
+      "path": "git:codex/local-nutrition-agent",
+      "description": "保留 software_train 与 food-tracker 双方历史的集成分支"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0002-local-nutrition-agent.md",
+      "description": "本地个人营养 Agent 的运行时、凭据、记忆与工具边界"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/graph.json",
+      "description": "新增 Agent、记忆、AI Gateway、MCP 与动作策略规划节点"
+    },
+    {
+      "type": "runtime",
+      "path": "dev_repo/state.json",
+      "description": "激活 C-03 迁移合同并保留 C-01/C-02 历史"
+    },
+    {
+      "type": "verification",
+      "path": "package.json",
+      "description": "npm 11.6.2 依赖基线通过 Prisma generate、lint、typecheck 与 production build"
+    }
+  ],
+  "C-03-M1A": [
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260710130050_retire_legacy_schema_objects/migration.sql",
+      "description": "在 BMR 回填前退休旧视图与触发器，避免 updated_at 被副作用改写"
+    },
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260815191000_normalize_legacy_tables/migration.sql",
+      "description": "无损重建三张旧表并恢复原 sqlite_sequence"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "旧库逐行、主键、序列、关系、BMR、完整性、migration status 与零 schema diff 同案；全新空库迁移同样通过"
+    }
+  ],
+  "C-03-M1": [
+    {
+      "type": "runtime-data",
+      "path": "database/food_tracker.db",
+      "description": "由已验证迁移副本切换的本地运行库；文件被 Git 忽略"
+    },
+    {
+      "type": "backup",
+      "path": "data/backups/",
+      "description": "原始旧库、旧运行库和各轮只读/失败副本；目录被 Git 忽略"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "原始 SHA-256、逐行/主键/序列一致性、零 schema diff、运行库 status 与 production smoke 结果"
+    }
+  ],
+  "C-03-M2": [
+    {
+      "type": "frontend",
+      "path": "src/components/charts/{macro-donut,calorie-trend}.tsx",
+      "description": "以响应式原生 SVG 呈现宏量营养和热量趋势，移除客户端测宽与 Recharts 空白图表风险"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/reports/reports-content.tsx",
+      "description": "7/30 天热量柱状图、目标线、缺失日和可访问日期描述"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/ui/tabs.tsx",
+      "description": "按 Base UI 的 data-orientation 属性修正水平标签页布局"
+    },
+    {
+      "type": "dependency",
+      "path": "package.json",
+      "description": "npm 11.6.2 串行清理 Recharts，升级 Next/eslint-config-next 16.3.1，生产依赖审计为 0"
+    },
+    {
+      "type": "configuration",
+      "path": "next.config.ts",
+      "description": "允许 127.0.0.1 开发来源并关闭 Next 自动生成 agent 文件"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "迁移 API、六个业务页面、桌面/移动图表、周/月报告切换和 release:check 实测证据"
+    }
+  ],
+  "C-03-M3": [
+    {
+      "type": "implementation",
+      "path": "src/lib/ai/**",
+      "description": "十个提供商预设、OpenAI-compatible 调用、错误脱敏、配置校验与本机凭据原子存储"
+    },
+    {
+      "type": "api",
+      "path": "src/app/api/settings/ai/**",
+      "description": "脱敏读取、保存/清除密钥与连接测试；完整凭据不返回浏览器"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/ai-settings-form.tsx",
+      "description": "个人设置页中的提供商、Base URL、模型、密钥状态、保存和测试闭环"
+    },
+    {
+      "type": "security",
+      "path": ".gitignore",
+      "description": "data/credentials.json 与原子写临时文件不进入 Git"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/ai-settings.test.ts",
+      "description": "密钥保留/清除、URL/模型校验、掩码和供应商错误脱敏同案测试"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "桌面/342px UI、缺失密钥 API、客户端静态扫描和 release:check 证据"
+    }
+  ],
+  "C-03-A1": [
+    {
+      "type": "data-model-decision",
+      "path": "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md",
+      "description": "将可删除对话与可独立治理的长期记忆分离，并定义推断/确认语义"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/entities.json",
+      "description": "AgentThread、AgentMessage、MemoryItem 三个 approved_target 实体"
+    },
+    {
+      "type": "data-model",
+      "path": "dev_repo/architecture/data-model/relationships.json",
+      "description": "Profile、Thread、Message、Memory 的级联与 SET NULL 关系"
+    },
+    {
+      "type": "migration-plan",
+      "path": "dev_repo/architecture/data-model/migrations.md",
+      "description": "零回填、旧四表不变、空库与旧库副本同案验证计划"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/architecture/data-model/er.mmd",
+      "description": "ER、JSON 和 Markdown 实体/关系命名一致且机器可读 JSON 解析通过"
+    }
+  ],
+  "C-03-M4A": [
+    {
+      "type": "migration",
+      "path": "prisma/migrations/20260815205500_add_agent_memory/migration.sql",
+      "description": "纯新增 AgentThread、AgentMessage、MemoryItem 表、索引与 CASCADE/SET NULL 外键"
+    },
+    {
+      "type": "data-model",
+      "path": "prisma/schema.prisma",
+      "description": "三实体 Prisma 关系、primary profile 所有权与 updatedAt 语义"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/memory/**",
+      "description": "DTO 白名单、凭据内容拒绝、primary profile repository、active/unexpired 检索"
+    },
+    {
+      "type": "api",
+      "path": "src/app/api/memories/route.ts",
+      "description": "列表、手工创建、修正、停用/恢复和硬删除 API"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/verify-memory-migration.mjs",
+      "description": "旧库副本与空库 migration、零回填、旧表快照和删除语义同案"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/verify-memory-api.mjs",
+      "description": "production HTTP 临时副本的所有权、来源、筛选和删除验证"
+    }
+  ],
+  "C-03-M4B": [
+    {
+      "type": "frontend",
+      "path": "src/components/memory-settings.tsx",
+      "description": "记忆创建、分类/重要度/有效期、来源/确认展示、编辑、停用/恢复和二次确认删除"
+    },
+    {
+      "type": "frontend",
+      "path": "src/app/profile/page.tsx",
+      "description": "服务端绑定 primary profile 并向个人设置传递脱敏长期记忆"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "空状态 DOM、真实 API 契约、desktop 和 342px 无横向溢出浏览器证据"
+    }
+  ],
+  "C-03-S2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/**",
+      "description": "对话合同、线程/消息仓储、档案/近 14 天餐食/长期记忆上下文与提示词编排"
+    },
+    {
+      "type": "api",
+      "path": "src/app/api/agent/**",
+      "description": "线程 CRUD、AI 对话持久化和经用户确认才落库的推断记忆候选"
+    },
+    {
+      "type": "frontend",
+      "path": "src/app/agent/**, src/components/agent/agent-workspace.tsx",
+      "description": "本地 Agent 工作台、历史线程、消息与长期记忆候选确认界面"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/agent-contract.test.ts, scripts/verify-agent-api.mjs",
+      "description": "消息凭据拒绝、候选解析、production fake-provider 对话持久化、确认门、幂等和删线程保留记忆"
+    }
+  ],
+  "C-03-S3": [
+    {
+      "type": "implementation",
+      "path": "src/lib/mcp/**, src/lib/actions/**",
+      "description": "MCP 工具白名单、HTTPS/loopback 连接器、超时/限量/输出隔离与一次性参数绑定确认令牌"
+    },
+    {
+      "type": "api",
+      "path": "src/app/api/mcp/**",
+      "description": "工具发现、附近外卖只读搜索、订单草案与明确确认后的提交端点"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/agent/takeout-tools-panel.tsx",
+      "description": "连接器状态、外卖搜索、餐厅选择、草案审核和最终确认界面"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/mcp-contract.test.ts, scripts/verify-mcp-api.mjs",
+      "description": "输入边界、未确认不提交、恶意输出隔离、参数篡改拒绝与确认令牌防重放"
+    }
+  ],
+  "C-03-S4": [
+    {
+      "type": "delivery",
+      "path": "package.json, scripts/release-smoke.mjs",
+      "description": "5 条 migration、四组合同测试、production build、临时数据库 API、假 AI/MCP 和 Agent/MCP smoke 的完整发布门禁"
+    },
+    {
+      "type": "documentation",
+      "path": "README.md, .env.example",
+      "description": "本地启动、多提供商、外卖 MCP 连接器、动作确认边界和发布命令"
+    },
+    {
+      "type": "frontend",
+      "path": "src/components/sidebar.tsx",
+      "description": "移动端四个高频入口加更多菜单的稳定五列导航"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/journal.jsonl",
+      "description": "1440px 桌面截图、342px DevTools 模拟、clientWidth=scrollWidth、五列底栏和外卖表单边界证据"
+    }
+  ],
+  "C-04-S1": [
+    {
+      "type": "implementation",
+      "path": "src/app/globals.css, src/app/layout.tsx, src/components/sidebar.tsx",
+      "description": "Keep 风格视觉变量、深紫桌面顶栏、移动标题栏和稳定五列底部导航"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S1/dashboard-desktop.png",
+      "description": "1440x900 桌面外壳截图；主导航完整且页面无横向溢出"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S1/dashboard-mobile.png",
+      "description": "375px 移动外壳截图；clientWidth 与 scrollWidth 均为 375，五栏导航完整"
+    }
+  ],
+  "C-04-S2": [
+    {
+      "type": "implementation",
+      "path": "src/app/dashboard/**, src/components/dashboard/**, src/app/meals/**, src/components/food/**, src/app/calendar/**, src/components/calendar/**",
+      "description": "真实数据驱动的今日行动首页、AI 多食物审核记录页和完整月视图日历"
+    },
+    {
+      "type": "asset",
+      "path": "public/images/nutrition/meal-hero.webp",
+      "description": "从已批准原型资产迁入项目的健康餐响应式主图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S2/",
+      "description": "dashboard、meals、calendar 的 1440x900 与 375px 双端截图；图片加载且无横向溢出"
+    },
+    {
+      "type": "verification",
+      "path": "npm run lint; npm run typecheck; npm run build",
+      "description": "ESLint、TypeScript 与 Next.js 16.3.1 production build 全部通过"
+    }
+  ],
+  "C-04-S3": [
+    {
+      "type": "implementation",
+      "path": "src/app/agent/**, src/components/agent/**, src/app/exercise/**, src/components/exercise/**, src/app/reports/**, src/components/reports/**",
+      "description": "Keep 风格 AI 私人教练、真实运动计划和结论优先的 7/30 天营养报告"
+    },
+    {
+      "type": "asset",
+      "path": "public/images/nutrition/movement-hero.png",
+      "description": "从已批准原型资产迁入项目的真实训练场景响应式主图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S3/",
+      "description": "Agent、exercise、reports 的 1440px 与 375px 双端截图，以及月报告切换证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S3/verification.json",
+      "description": "无横向溢出、图片加载、30 天图表、控制台和生产构建的结构化验收记录"
+    }
+  ],
+  "C-04-S4": [
+    {
+      "type": "implementation",
+      "path": "src/app/profile/**, src/app/settings/**, src/components/profile-form.tsx, src/components/ai-settings-form.tsx, src/components/memory-settings.tsx, src/components/sidebar.tsx",
+      "description": "独立个人档案、GUI 多提供商凭据、真实 MCP 工具状态与长期记忆治理界面"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S4/",
+      "description": "profile、settings、settings/memory 的 1440x1000 与 375x812 双端截图及下半屏表单证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S4/verification.json",
+      "description": "无横向溢出、真实 MCP 工具、保存交互、记忆新增与确认删除、控制台和生产构建记录"
+    }
+  ],
+  "C-04-S5": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S5/*-desktop.png, dev_repo/evidence/C-04-S5/*-mobile.png",
+      "description": "九个真实路由的 1440x1000 与 375x812 双端最终视觉回归，共 18 张截图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-04-S5/verification.json",
+      "description": "全路由无横向溢出、零破损图片、移动五栏导航、页面标题、控制台与视觉复核记录"
+    },
+    {
+      "type": "verification",
+      "path": "npm run verify",
+      "description": "AI/Memory/Agent/MCP 合同测试 16/16、ESLint、TypeScript 与 Next.js 生产构建全部通过"
+    }
+  ],
+  "C-05-A1": [
+    {
+      "type": "architecture_amendment",
+      "path": "dev_repo/architecture/ARCHITECTURE.md, dev_repo/architecture/graph.json, dev_repo/architecture/invariants.md, dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md",
+      "description": "自动物化 Agent 推断、用户治理和停用抑制的运行时边界"
+    },
+    {
+      "type": "data_model_amendment",
+      "path": "dev_repo/architecture/data-model/",
+      "description": "is_user_confirmed 审阅来源语义、active 推断检索资格与零 migration/backfill 兼容责任"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-A1/verification.json",
+      "description": "架构 JSON、过期确认门语义和 schema/migration 边界验证"
+    }
+  ],
+  "C-05-S1": [
+    {
+      "type": "implementation",
+      "path": "src/components/sidebar.tsx, src/components/plan-tabs.tsx, src/app/calendar/page.tsx, src/app/exercise/page.tsx",
+      "description": "五个核心移动入口、居中记餐动作、顶部个人菜单与饮食/运动计划切换"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S1/",
+      "description": "导航、个人菜单和计划页的桌面与移动截图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S1/verification.json",
+      "description": "导航标签、More 移除、个人菜单、计划切换、宽度与控制台记录"
+    }
+  ],
+  "C-05-S2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/contracts.ts, src/lib/agent/repository.ts, src/lib/agent/context.ts, src/components/agent/agent-workspace.tsx, src/components/memory-settings.tsx",
+      "description": "助手消息事务内自动物化推断、精确去重与停用抑制，聊天轻提示和管理型长期记忆界面"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/agent-contract.test.ts, scripts/verify-agent-api.mjs, npm run verify:memory-api",
+      "description": "自动落库、下一轮可见、重复复用、停用抑制、兼容确认 API、线程删除脱钩与记忆治理 API"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S2/",
+      "description": "Agent 与长期记忆管理页的桌面、移动、自动记忆提示和编辑态视觉证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S2/verification.json",
+      "description": "S2 合同、生产 API、构建、双端视觉和零迁移边界汇总"
+    }
+  ],
+  "C-05-S3": [
+    {
+      "type": "verification",
+      "path": "npm run release:check",
+      "description": "迁移状态、16 项合同测试、lint、typecheck、生产构建、Memory/Agent/MCP 真实 API 和 release smoke"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S3/*-desktop.png, dev_repo/evidence/C-05-S3/*-mobile.png",
+      "description": "九个真实路由的桌面与移动最终回归，共 18 张截图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-05-S3/verification.json",
+      "description": "全路由宽度、破损图片、聚焦移动导航、控制台和发布检查汇总"
+    }
+  ],
+  "C-06-L1": [
+    {
+      "type": "architecture_amendment",
+      "path": "dev_repo/architecture/decisions/ADR-0004-autonomous-unpaid-mcdonald-order.md",
+      "description": "明确点餐意图、单请求单订单、未支付边界和支付主权决策"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-L1/verification.json",
+      "description": "架构 JSON、数据模型 JSON、diff check 与政策文本验证"
+    }
+  ],
+  "C-06-L2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/mcp/mcdonalds-client.ts",
+      "description": "官方 Streamable HTTP 客户端（Bearer、8s 超时、16KB/64KB 边界）"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/mcp/contracts.ts",
+      "description": "官方 9 工具白名单与 read/draft/external_write 分级"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/mcp/settings.ts, src/lib/mcp/settings-contract.ts",
+      "description": "本机 Token 0600 原子写、掩码回读、env 回退"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/api/settings/mcdonalds/route.ts, src/app/api/settings/mcdonalds/test/route.ts",
+      "description": "Token 保存与连接探测 API"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/mcdonald-settings-form.tsx",
+      "description": "麦当劳设置表单（掩码、测试连接、清除）"
+    },
+    {
+      "type": "verification",
+      "path": "scripts/mcp-contract.test.ts",
+      "description": "MCP 合同测试 7/7，含 4 个新增麦当劳用例"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-L2/verification.json",
+      "description": "L2 断言、验证门与架构/数据模型变更汇总"
+    }
+  ],
+  "C-08": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-08/verification.json",
+      "description": "教练页窄幅重排实证：首图隐藏、聊天优先（inViewport 几何）、滚动模型"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-workspace.tsx",
+      "description": "order 类重排 + hidden lg:block 首图 + lg 限定内滚"
+    }
+  ],
+  "C-09": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-09/verification.json",
+      "description": "教练页模块收敛实证：工具台移除、实机 DOM 验证、网关层未动"
+    }
+  ],
+  "C-06-L4": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-L4/verification.json",
+      "description": "真实麦当劳 Token smoke、1440/375 桌面移动回归、浅色/深色主题回归与最终 release gate"
+    }
+  ],
+  "C-10-S2-S2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/consolidation.ts, src/lib/agent/repository.ts, src/lib/agent/context.ts, src/app/api/agent/chat/route.ts",
+      "description": "会话摘要读取、尾部消息组装、后台整理和 session_digest 记忆物化"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-10-S2/verification.json",
+      "description": "C-10-S2 迁移门禁、Agent API、长期记忆治理、完整验证和生产 smoke 证据"
+    }
+  ],
+  "C-06-L4-A2": [
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-activity-panel.tsx",
+      "description": "无卡片纵向活动时间线：实时展开、状态节点、耗时与安全摘要"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-06-L4-A2/ui-timeline.json",
+      "description": "同一真实 Agent 回合的桌面/375px 时间线、折叠行为、无横向溢出与安全边界证据"
+    },
+    {
+      "type": "verification",
+      "path": "C:/Users/zzy/.codex/visualizations/2026/08/18/agent-timeline-desktop.png",
+      "description": "1440x900 桌面时间线截图"
+    },
+    {
+      "type": "verification",
+      "path": "C:/Users/zzy/.codex/visualizations/2026/08/18/agent-timeline-mobile.png",
+      "description": "375x800 移动时间线截图"
+    }
+  ],
+  "C-12-S1": [
+    {
+      "type": "implementation",
+      "path": "scripts/seed-cloud-demo.mjs, package.json",
+      "description": "通过真实云端 HTTP API 为测试用户生成可重复的餐食、活动、运动和长期记忆演示数据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-12/data-manifest.json",
+      "description": "新增记录 ID、日期范围、回读验证与不调用订单/支付/直接数据库写入的安全断言"
+    }
+  ],
+  "C-12-S2": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-12/e2e/real-core-flows.json",
+      "description": "真实云端照片识别、健康 Agent 时间线、麦当劳 MCP 只读探测与移动视口同源回归证据"
+    }
+  ],
+  "C-12-S3": [
+    {
+      "type": "implementation",
+      "path": "README.md, docs/demo/C-12-E2E.md",
+      "description": "云端演示数据、核心闭环结果、截图使用说明和安全边界文档"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-12/screenshot-index.json, docs/demo/",
+      "description": "真实云端桌面/移动截图、干净裁切图与 Agent/拍照/设置 UI 参考素材索引"
+    }
+  ],
+  "C-14-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-14/S1/verification.json",
+      "description": "访问门产品视觉重做、未认证导航隐藏与安全边界回归"
+    }
+  ],
+  "C-14-S2": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-14/S2/verification.json",
+      "description": "云端静态资源修复、Web/Android 回归、API 401 与模拟器截图"
+    }
+  ],
+  "C-15-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-15/S1/verification.json",
+      "description": "访问门高级入口视觉收口、云端认证边界、Android 构建与真实模拟器截图"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-15/S1/emulator-access-premium.png",
+      "description": "云端 Android 壳的访问门最终移动端视觉证据"
+    }
+  ],
+  "C-16-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-16/S1/verification.json",
+      "description": "餐食摄影背景、精确静态资源白名单、云端认证边界与 Android 模拟器回归"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-16/S1/emulator-access-photo.png",
+      "description": "云端 Android 壳中可见餐食背景的访问门最终截图"
+    }
+  ],
+  "C-17-A1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/A1/verification.json",
+      "description": "账户/会话/邀请码 migration 副本、现有数据行数、完整性与外键核验"
+    }
+  ],
+  "C-17-S1": [
+    {
+      "type": "implementation",
+      "path": "src/lib/auth/**, src/app/api/auth/**, src/lib/access/gate.ts, src/lib/current-user.ts, src/middleware.ts",
+      "description": "邀请码注册、scrypt 密码哈希、数据库会话 cookie、登录/退出/当前会话 API 与账户门"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/S1/verification.json",
+      "description": "认证契约测试、Prisma 迁移、生产构建与临时数据库真实 HTTP 注册/登录/退出回归"
+    }
+  ],
+  "C-17-S2": [
+    {
+      "type": "data_model_amendment",
+      "path": "prisma/schema.prisma, prisma/migrations/20260818193000_add_account_settings, dev_repo/architecture/decisions/ADR-0009-account-scoped-runtime-settings.md",
+      "description": "AccountSettings 一对一账户设置与凭据隔离；首账户兼容导入，后续账户空配置"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/S2/verification.json",
+      "description": "业务数据账户 owner 审计、双账户真实 HTTP 隔离回归、未登录 401 与完整质量门"
+    }
+  ],
+  "C-17-S3": [
+    {
+      "type": "implementation",
+      "path": "src/app/access/page.tsx, src/app/auth/page.tsx, src/components/app-chrome.tsx, src/components/sidebar.tsx",
+      "description": "登录/邀请码注册双态入口、账户身份显示、退出登录与认证路由别名；沿用餐食摄影和梅紫/薄荷绿产品视觉"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/S3/verification.json",
+      "description": "真实浏览器注册、会话、退出、重新登录，移动视口无横向溢出，类型检查、lint 与 production build"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-17/S3/access-login-desktop.png, dev_repo/evidence/C-17/S3/access-login-mobile.png, dev_repo/evidence/C-17/S3/access-register-mobile.png",
+      "description": "认证入口桌面登录、移动登录与移动邀请码注册截图"
+    }
+  ],
+  "C-17-S4": [
+    {
+      "type": "delivery",
+      "path": "scripts/deploy.mjs, scripts/verify-cloud-gate.mjs, scripts/seed-cloud-demo.mjs, scripts/verify-mcp-api.mjs",
+      "description": "账户认证语义的云端部署、验证、seed 与 MCP 发布门禁"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-17/S4/verification.json",
+      "description": "公网账户注册/登录/退出、业务数据回读、真实 Agent/MCP、Android 云壳构建与完整 release gate"
+    }
+  ],
+  "C-13-S3": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-13/S3/verification-final.json",
+      "description": "foodtest AVD 登录红线、Android 相机/Photo Picker、真实 AI 识别、审核与云端保存回归"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-13/S3/emulator-clean-entry.png, dev_repo/evidence/C-13/S3/emulator-login-result-fixed.png, dev_repo/evidence/C-13/S3/emulator-session-persisted.png, dev_repo/evidence/C-13/S3/emulator-chat-result.png, dev_repo/evidence/C-13/S3/emulator-webcam-camera.png, dev_repo/evidence/C-13/S3/emulator-camera-retry-review.png, dev_repo/evidence/C-13/S3/emulator-camera-retry-return.png, dev_repo/evidence/C-13/S3/emulator-food-review-result.png, dev_repo/evidence/C-13/S3/emulator-food-review-bottom.png, dev_repo/evidence/C-13/S3/emulator-food-today-log.png",
+      "description": "模拟器账户入口、相机权限、Photo Picker、识别审核、确认保存与系统相机截图"
+    }
+  ],
+  "C-18-S1": [
+    {
+      "type": "implementation",
+      "path": "src/app/access/page.tsx, src/components/app-chrome.tsx, src/app/layout.tsx",
+      "description": "食刻品牌名与认证入口桌面视口布局收口"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-18/S1/verification.json",
+      "description": "登录/注册入口、桌面无页面级纵向滚动、移动无横向溢出与静态检查证据"
+    }
+  ],
+  "C-18-S2": [
+    {
+      "type": "implementation",
+      "path": "src/app/globals.css",
+      "description": "落地页入场、背景光晕、餐食背景呼吸、焦点/按钮反馈与 reduced-motion 降级"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-18/S2/verification.json",
+      "description": "动效 CSS、减少动画偏好、桌面/移动视觉回归、公网登录/注册首屏与发布检查证据"
+    }
+  ],
+  "C-19-S1": [
+    {
+      "type": "implementation",
+      "path": "src/app/access/page.tsx, src/app/globals.css",
+      "description": "食刻入口页编辑式健康工作室视觉、时间线节点、场景网格、纸张轨道和分层动效"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-19/S1/access-desktop-login.png, dev_repo/evidence/C-19/S1/access-desktop-register.png, dev_repo/evidence/C-19/S1/access-mobile-login.png, dev_repo/evidence/C-19/S1/access-mobile-register.png",
+      "description": "生产构建桌面/移动登录与注册视觉证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-19/S1/verification.json",
+      "description": "lint、typecheck、build、双尺寸布局、登录/注册字段和动效计算值"
+    }
+  ],
+  "C-19-S2": [
+    {
+      "type": "delivery",
+      "path": "scripts/deploy.mjs, cloud http smoke",
+      "description": "编辑式入口动效版本的公网发布、迁移检查与匿名 API 401 边界"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-19/S2/access-cloud-desktop-login.png, dev_repo/evidence/C-19/S2/access-cloud-desktop-register.png, dev_repo/evidence/C-19/S2/access-cloud-mobile-login.png",
+      "description": "公网桌面登录/注册与移动登录视觉证据"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-19/S2/verification.json",
+      "description": "npm run deploy、云端入口 200、匿名业务 API 401 与 reduced-motion 发布验证"
+    }
+  ],
+  "C-20-S1": [
+    {
+      "type": "documentation",
+      "path": "README.md",
+      "description": "食刻产品、三条核心闭环、架构、配置、部署、安全边界、真实证据与图文演示文档"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-20/S1/verification.json",
+      "description": "README 素材引用、lint、typecheck、production build 通过；远端推送因当前 GitHub 身份仅有 READ 权限而暂停"
+    }
+  ]
+}

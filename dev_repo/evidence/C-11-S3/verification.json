@@ -1,0 +1,18 @@
+{
+  "contract_id": "C-11",
+  "slice_id": "C-11-S3",
+  "timestamp": "2026-08-18T13:20:00+08:00",
+  "summary": "Android 形态 B 激活（FT_CLOUD_URL 构建期注入，默认保持形态 A loopback）+ 双端同源实证收口",
+  "verification": {
+    "apk_baked_url": "pass:app-debug.apk assets/capacitor.config.json 内 server.url=http://8.148.206.131:8000",
+    "form_a_preserved": "pass:capacitor.config.ts 默认 127.0.0.1:3000，npx cap sync android 可复原形态 A",
+    "cloud_turn": "pass:公网 API 创建对话 threadId=4（云端凭据调用真实模型，30s 回合，assistant 回复成功）",
+    "android_gate_journey": "pass:模拟器装 APK → 公网加载 → /access 门页渲染（uiautomator 定位输入框/按钮）→ 键入访问码 → 进入主界面",
+    "dual_end_same_source": "pass:Web 端 12:08 创建的『云端部署回归测试』对话在 Android 教练页原文可见（用户消息 + AI 回复『收到，一切工作正常，随时为你服务。』）；Web /agent 200 且档案同源",
+    "evidence_shots": ".jspace/shot1-gate.png（门页）、shot2-after-code.png（进门主界面）、shot3-agent.png（同源对话）"
+  },
+  "architecture_delta": "android.shell 形态 B known_debt 清偿；cloud.delivery implementation_status → confirmed",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}

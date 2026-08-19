@@ -1,0 +1,62 @@
+{
+  "contract_id": "C-17",
+  "slice_id": "C-17-S2",
+  "verified_at": "2026-08-18T19:22:50+08:00",
+  "red_line_crossed": false,
+  "scope": "业务数据 owner 约束与账户级 AI/MCP 设置",
+  "data_model": {
+    "migration": "20260818193000_add_account_settings",
+    "table": "account_settings",
+    "cardinality": "UserAccount 1:1 AccountSettings",
+    "legacy_policy": "first account may import legacy credentials; later accounts receive empty settings",
+    "account_scoped_environment_fallback": "disabled"
+  },
+  "local_database_after_migration": {
+    "user_profile": 2,
+    "profile_ids": [1, 2],
+    "meal_records": 14,
+    "agent_threads": 2,
+    "agent_messages": 17,
+    "memory_items": 0,
+    "daily_activity": 1,
+    "exercise_suggestions": 2,
+    "user_accounts": 0,
+    "account_settings": 0,
+    "auth_sessions": 0,
+    "migration_status": "up to date",
+    "pragma_integrity_check": "ok",
+    "pragma_foreign_key_check": []
+  },
+  "two_account_http_smoke": {
+    "database": "temporary copy of the migrated local database; removed after verification",
+    "account_a": {"user_id": 1, "login": "account-a@example.com"},
+    "account_b": {"user_id": 2, "login": "account-b@example.com"},
+    "meal_records_visible": {"account_a": 10, "account_b": 4},
+    "profile_update": "A's username update did not change B's profile",
+    "ai_settings": "A stored qwen provider/API key with credentialSource=account; B keyConfigured=false and did not receive A's model",
+    "mcdonalds_settings": "A stored token with credentialSource=account; B tokenConfigured=false",
+    "agent_threads": "A's newly created thread was absent from B's thread list",
+    "unauthenticated": {"api_settings_ai": 401, "api_mcp_tools": 401, "root_redirect": 307}
+  },
+  "policy": {
+    "mcp_contract_tests": "8/8 pass, including account-bound confirmation tokens",
+    "business_owner_rule": "all nutrition, activity, memory, and conversation repositories continue to filter by authenticated profile userId",
+    "fixed_write_gap": "profile PUT now updates the authenticated profile instead of the lowest profile row"
+  },
+  "quality_gates": {
+    "npm_run_test:access": "5/5 pass",
+    "npm_run_test:mcp": "8/8 pass",
+    "npm_run_test:ai": "6/6 pass",
+    "npm_run_test:memory": "4/4 pass",
+    "npm_run_test:agent": "8/8 pass",
+    "npm_run_test:health": "13/13 pass",
+    "npm_run_test:ordering": "12/12 pass",
+    "npm_run_lint": "pass",
+    "npm_run_typecheck": "pass",
+    "npm_run_build": "pass",
+    "architecture_json_parse": "pass"
+  },
+  "architecture_delta": "ADR-0009, account.secret_store graph node, AccountSettings ER/entity/relationship and invariants 28-29",
+  "commit_action": "one independent commit containing the S2 data-model amendment, scoped runtime, tests, docs, and evidence",
+  "return_to": "C-17-S3"
+}

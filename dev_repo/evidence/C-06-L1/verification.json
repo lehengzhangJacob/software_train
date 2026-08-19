@@ -1,0 +1,26 @@
+{
+  "contract_id": "C-06",
+  "slice_id": "C-06-L1",
+  "timestamp": "2026-08-16T20:48:29+08:00",
+  "assertions": {
+    "explicit_order_intent": "用户当前消息明确点餐后才可建单",
+    "single_unpaid_order": "每条用户请求最多创建一笔未支付订单",
+    "payment_sovereignty": "支付和账户变更始终由用户操作",
+    "secret_boundary": "Token、支付链接和支付凭据不得进入消息、记忆、数据库或日志"
+  },
+  "verification": {
+    "architecture_json": "pass",
+    "data_model_json": "pass; unchanged",
+    "git_diff_check": "pass",
+    "architecture_text_scan": "pass"
+  },
+  "architecture_delta": [
+    "agent.runtime",
+    "mcp.gateway",
+    "action.policy",
+    "external.mcp_services"
+  ],
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}

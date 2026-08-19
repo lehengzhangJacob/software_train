@@ -1,0 +1,17 @@
+{
+  "contract_id": "C-11",
+  "slice_id": "C-11-A1",
+  "timestamp": "2026-08-18T13:05:00+08:00",
+  "summary": "cloud.delivery 入宪修宪：新增公网交付节点（21 节点/29 边，schema v5），local_user/delivery/android.shell/database.sqlite/local.secret_store 语义修订，不变量 1/8 修订并新增 21-23，ADR-0007 立档，C-06 关账、C-11 开账",
+  "verification": {
+    "json_parse": "pass:graph v5 / index v4 / state",
+    "no_dangling": "pass:29 边与全部 depends_on 引用完整",
+    "adr_indexed": "pass:ADR-0007 被 index.json 收录且文件存在",
+    "coverage": "pass:cloud.delivery 见于 graph/index；ADR-0007 引于 invariants(2)/ARCHITECTURE(4)；context.mmd 与 ARCHITECTURE 图含云端交付节点",
+    "bookkeeping": "pass:C-06 status=completed，active_contract_id=C-11，tree.md 重绘为剪枝活树"
+  },
+  "architecture_delta": "新增 cloud.delivery 节点与 5 条边；local_user 获门内公网可达语义；android.shell 形态 B 入宪（known_debt 清偿）；database.sqlite/local.secret_store 升级为双实例（本地/云端）语义；delivery 移除公网部署触发条件（由 cloud.delivery 承接）",
+  "data_model_delta": "none（无实体/关系变更；云端 DB 为既有 schema 的服务器侧实例）",
+  "migration_required": false,
+  "backfill_required": false
+}

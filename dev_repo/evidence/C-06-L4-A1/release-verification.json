@@ -1,0 +1,46 @@
+{
+  "contract": "C-06-L4",
+  "verifiedAt": "2026-08-18",
+  "gates": [
+    {
+      "command": "POST /api/settings/mcdonalds/test",
+      "status": "pass",
+      "details": "Real configured-token smoke against the official MCP returned 29 tools and all six required ordering tools in 720ms. No order creation call was made."
+    },
+    {
+      "command": "npm run verify",
+      "status": "pass",
+      "details": "AI, memory, Agent, MCP, ordering, health, lint, typecheck, and production build gates passed; lint retained 16 pre-existing generated Android warnings and 0 errors."
+    },
+    {
+      "command": "npm run verify:memory-api",
+      "status": "pass",
+      "details": "Profile isolation, server-owned provenance, disable/filter, and hard-delete checks passed."
+    },
+    {
+      "command": "npm run verify:agent-api",
+      "status": "pass",
+      "details": "Thread persistence, memory materialization, context reuse, duplicate handling, compatibility, deletion survival, and activityStream passed."
+    },
+    {
+      "command": "npm run verify:mcp-api",
+      "status": "pass",
+      "details": "Official tool discovery, untrusted output isolation, confirmation binding, and replay protection passed."
+    },
+    {
+      "command": "npm run smoke",
+      "status": "pass",
+      "details": "Production home, Agent, report, memory, MCP registry, and invalid-input smoke checks passed."
+    }
+  ],
+  "knownPreexistingBlocker": {
+    "command": "npm run release:check",
+    "status": "blocked",
+    "reason": "The first migration gate reports 'agent_threads was backfilled' from the existing C-10-S1 session-digest migration; all subsequent release gates were executed individually and passed."
+  },
+  "safety": {
+    "mcdonaldsCreateOrder": "not invoked",
+    "paymentConfirmation": "not invoked",
+    "tokenOutput": "not printed"
+  }
+}

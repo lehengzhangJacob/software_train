@@ -1,0 +1,36 @@
+{
+  "contract_id": "C-17",
+  "slice_id": "C-17-S1",
+  "verified_at": "2026-08-18T19:22:50+08:00",
+  "red_line_crossed": false,
+  "scope": "认证核心/API/会话门",
+  "implementation": {
+    "passwords": "scrypt with per-password random salt; verification is timing-safe",
+    "sessions": "random opaque token stored only as SHA-256 digest; HttpOnly SameSite=Lax cookie; 30-day expiry",
+    "registration": "bootstrap invite is hashed and atomically consumed; registration claims the lowest unbound legacy profile or creates a new profile",
+    "compatibility": "AUTH_REQUIRED=false preserves local development fallback; AUTH_REQUIRED=true enables account-session gating"
+  },
+  "verification": {
+    "auth_contract_tests": "5/5 pass",
+    "npm_run_lint": "pass",
+    "npm_run_typecheck": "pass",
+    "npm_run_build": "pass",
+    "prisma_migrate_deploy": "pass; applied 20260818190000_add_account_auth to local database",
+    "http_runtime_smoke": {
+      "database": "temporary copy of migrated database; removed after verification",
+      "register": "201; returned authenticated user and session cookie",
+      "session": "200; returned the registered user",
+      "login": "200; returned the same user and rotated session",
+      "logout": "200; removed the session",
+      "session_after_logout": "401; old session rejected"
+    }
+  },
+  "security_notes": [
+    "Raw passwords and session tokens are not persisted.",
+    "Invalid/expired sessions are rejected and expired rows are deleted.",
+    "Invite usage is bounded by an atomic update inside the registration transaction.",
+    "The existing local database was migrated in place without changing existing business row counts."
+  ],
+  "commit_action": "one independent commit containing the S1 runtime implementation and evidence",
+  "return_to": "C-17-S2"
+}

@@ -1,0 +1,47 @@
+{
+  "contract_id": "C-17",
+  "slice_id": "C-17-A1",
+  "verified_at": "2026-08-18T18:07:00+08:00",
+  "red_line_crossed": false,
+  "architecture_delta": "新增 auth.identity；账户认证与 profile owner 边界写入架构图、索引、不变量和 ADR-0008。",
+  "data_model_delta": "新增 UserAccount、AuthSession、InviteCode；UserProfile 增加可选一对一账户关系。",
+  "migration_required": true,
+  "backfill_required": "兼容性认领在首次注册事务中执行；本次 migration 不批量回填、不改写既有业务行。",
+  "schema_validation": {
+    "prisma_validate": "pass",
+    "json_parse": "pass",
+    "migration": "pass"
+  },
+  "database_copy": {
+    "source": "database/food_tracker.db",
+    "copy": "temporary copy; removed after verification to avoid retaining demo data in evidence",
+    "migration_applied": "20260818190000_add_account_auth",
+    "before": {
+      "user_profile": 2,
+      "meal_records": 14,
+      "agent_threads": 2,
+      "agent_messages": 17,
+      "memory_items": 0,
+      "daily_activity": 1,
+      "exercise_suggestions": 2,
+      "profiles": [1, 2]
+    },
+    "after": {
+      "user_profile": 2,
+      "meal_records": 14,
+      "agent_threads": 2,
+      "agent_messages": 17,
+      "memory_items": 0,
+      "daily_activity": 1,
+      "exercise_suggestions": 2,
+      "user_accounts": 0,
+      "auth_sessions": 0,
+      "invite_codes": 0,
+      "profiles": [1, 2],
+      "integrity_check": "ok",
+      "foreign_key_check": []
+    }
+  },
+  "commit_action": "one independent commit containing the schema, migration, architecture/ER amendment, and evidence",
+  "return_to": "C-13-S3"
+}

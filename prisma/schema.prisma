@@ -1,0 +1,243 @@
+generator client {
+  provider      = "prisma-client-js"
+  // native = Windows dev machine; debian target ships inside the standalone
+  // bundle so the Linux cloud instance can load its query engine (ADR-0007).
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UserProfile {
+  userId             Int      @id @default(autoincrement()) @map("user_id")
+  username           String
+  gender             String
+  age                Int
+  heightCm           Float    @map("height_cm")
+  weightKg           Float    @map("weight_kg")
+  dailyCalorieTarget Int      @default(2000) @map("daily_calorie_target")
+  dailyProteinTarget Float    @default(60.0) @map("daily_protein_target")
+  dailyFatTarget     Float    @default(60.0) @map("daily_fat_target")
+  dailyCarbsTarget   Float    @default(250.0) @map("daily_carbs_target")
+  bmr                Float?
+  activityLevel      String   @default("sedentary") @map("activity_level")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @default(now()) @updatedAt @map("updated_at")
+
+  mealRecords         MealRecord[]
+  exerciseSuggestions ExerciseSuggestion[]
+  agentThreads        AgentThread[]
+  memoryItems         MemoryItem[]
+  dailyActivities     DailyActivity[]
+  account             UserAccount?
+
+  @@map("user_profile")
+}
+
+model UserAccount {
+  accountId    Int      @id @default(autoincrement()) @map("account_id")
+  login        String   @unique
+  passwordHash String   @map("password_hash")
+  status       String   @default("active")
+  profileId    Int      @unique @map("profile_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  profile  UserProfile  @relation(fields: [profileId], references: [userId], onDelete: Cascade)
+  sessions AuthSession[]
+  settings AccountSettings?
+
+  @@index([status], name: "idx_user_account_status")
+  @@map("user_accounts")
+}
+
+model AuthSession {
+  sessionId  Int      @id @default(autoincrement()) @map("session_id")
+  accountId  Int      @map("account_id")
+  tokenDigest String   @unique @map("token_digest")
+  expiresAt  DateTime @map("expires_at")
+  lastSeenAt DateTime @default(now()) @map("last_seen_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  account UserAccount @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@index([accountId, expiresAt], name: "idx_auth_session_account_expiry")
+  @@map("auth_sessions")
+}
+
+model InviteCode {
+  inviteId  Int      @id @default(autoincrement()) @map("invite_id")
+  codeDigest String   @unique @map("code_digest")
+  label     String?
+  maxUses   Int      @default(1) @map("max_uses")
+  usedCount Int      @default(0) @map("used_count")
+  expiresAt DateTime? @map("expires_at")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([active, expiresAt], name: "idx_invite_code_active_expiry")
+  @@map("invite_codes")
+}
+
+model AccountSettings {
+  settingsId        Int       @id @default(autoincrement()) @map("settings_id")
+  accountId         Int       @unique @map("account_id")
+  aiSettingsJson    String?   @map("ai_settings_json")
+  mcdonaldsEndpoint String    @default("https://mcp.mcd.cn") @map("mcdonalds_endpoint")
+  mcdonaldsToken    String?   @map("mcdonalds_token")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  account UserAccount @relation(fields: [accountId], references: [accountId], onDelete: Cascade)
+
+  @@map("account_settings")
+}
+
+model MealRecord {
+  recordId       Int      @id @default(autoincrement()) @map("record_id")
+  userId         Int      @map("user_id")
+  foodName       String   @map("food_name")
+  mealType       String   @map("meal_type")
+  calories       Float
+  proteinG       Float    @default(0) @map("protein_g")
+  fatG           Float    @default(0) @map("fat_g")
+  carbsG         Float    @default(0) @map("carbs_g")
+  portionDesc    String?  @map("portion_desc")
+  photoPath      String?  @map("photo_path")
+  recognitionRaw String?  @map("recognition_raw")
+  recordDate     String   @map("record_date")
+  recordTime     String   @map("record_time")
+  notes          String?
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId, recordDate], name: "idx_meal_user_date")
+  @@index([recordDate], name: "idx_meal_date")
+  @@index([mealType], name: "idx_meal_type")
+  @@index([userId, recordDate, mealType], name: "idx_meal_user_date_type")
+  @@map("meal_records")
+}
+
+model ExerciseSuggestion {
+  suggestionId        Int      @id @default(autoincrement()) @map("suggestion_id")
+  userId              Int      @map("user_id")
+  suggestionDate      String   @map("suggestion_date")
+  calorieSurplus      Float?   @map("calorie_surplus")
+  exerciseType        String   @map("exercise_type")
+  durationMinutes     Int      @map("duration_minutes")
+  calorieBurnEstimate Float    @map("calorie_burn_estimate")
+  intensity           String?
+  suggestionDetail    String?  @map("suggestion_detail")
+  isAdopted           Int      @default(0) @map("is_adopted")
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  user UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId, suggestionDate], name: "idx_exercise_user_date")
+  @@map("exercise_suggestions")
+}
+
+model ExerciseCalorieReference {
+  exerciseId       Int     @id @default(autoincrement()) @map("exercise_id")
+  exerciseName     String  @unique @map("exercise_name")
+  CaloriesPer30min Float   @map("calories_per_30min")
+  category         String?
+  metValue         Float?  @map("met_value")
+  description      String?
+
+  @@map("exercise_calorie_reference")
+}
+
+model AgentThread {
+  threadId  Int      @id @default(autoincrement()) @map("thread_id")
+  userId    Int      @map("user_id")
+  title     String
+  status    String   @default("active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user           UserProfile         @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  messages       AgentMessage[]
+  sessionDigest  AgentSessionDigest?
+
+  @@index([userId, updatedAt], name: "idx_agent_thread_user_updated")
+  @@map("agent_threads")
+}
+
+model AgentSessionDigest {
+  digestId         Int      @id @default(autoincrement()) @map("digest_id")
+  threadId         Int      @unique @map("thread_id")
+  coveredMessageId Int      @map("covered_message_id")
+  summary          String
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at")
+
+  agentThread AgentThread @relation(fields: [threadId], references: [threadId], onDelete: Cascade)
+
+  @@index([threadId, coveredMessageId], name: "idx_digest_thread_covered")
+  @@map("agent_session_digests")
+}
+
+model AgentMessage {
+  messageId    Int      @id @default(autoincrement()) @map("message_id")
+  threadId     Int      @map("thread_id")
+  role         String
+  content      String
+  metadataJson String?  @map("metadata_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  thread          AgentThread  @relation(fields: [threadId], references: [threadId], onDelete: Cascade)
+  sourcedMemories MemoryItem[] @relation("MemorySourceMessage")
+
+  @@index([threadId, createdAt], name: "idx_agent_message_thread_created")
+  @@map("agent_messages")
+}
+
+model MemoryItem {
+  memoryId        Int       @id @default(autoincrement()) @map("memory_id")
+  userId          Int       @map("user_id")
+  sourceMessageId Int?      @map("source_message_id")
+  category        String
+  content         String
+  sourceKind      String    @map("source_kind")
+  sourceRef       String?   @map("source_ref")
+  confidence      Float     @default(1)
+  importance      Float     @default(0.5)
+  status          String    @default("active")
+  isUserConfirmed Boolean   @default(false) @map("is_user_confirmed")
+  userEditedAt    DateTime? @map("user_edited_at")
+  lastUsedAt      DateTime? @map("last_used_at")
+  expiresAt       DateTime? @map("expires_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  user          UserProfile   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  sourceMessage AgentMessage? @relation("MemorySourceMessage", fields: [sourceMessageId], references: [messageId], onDelete: SetNull)
+
+  @@index([userId, status, importance], name: "idx_memory_user_status_importance")
+  @@index([userId, updatedAt], name: "idx_memory_user_updated")
+  @@index([sourceMessageId], name: "idx_memory_source_message")
+  @@map("memory_items")
+}
+
+model DailyActivity {
+  activityId      Int      @id @default(autoincrement()) @map("activity_id")
+  userId          Int      @map("user_id")
+  activityDate    String   @map("activity_date")
+  steps           Int      @default(0)
+  activeCalories  Float    @default(0) @map("active_calories")
+  exerciseMinutes Int      @default(0) @map("exercise_minutes")
+  sourceKind      String   @default("manual") @map("source_kind")
+  syncedAt        DateTime @default(now()) @map("synced_at")
+  updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user UserProfile @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([userId, activityDate], name: "uq_activity_user_date")
+  @@index([userId, activityDate], name: "idx_activity_user_date")
+  @@map("daily_activity")
+}

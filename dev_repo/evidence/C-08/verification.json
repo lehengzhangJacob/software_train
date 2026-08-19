@@ -1,0 +1,21 @@
+{
+  "contract": "C-08",
+  "type": "fix",
+  "date": "2026-08-17",
+  "goal": "教练页（/agent）窄幅排版：对话优先 + 消除嵌套滚动",
+  "slice": {
+    "C-08-S1": {
+      "commit": "280374c",
+      "files": [
+        "src/components/agent/agent-workspace.tsx"
+      ]
+    }
+  },
+  "verification": {
+    "gates": "pass: lint 0 errors / typecheck / build",
+    "hero_hidden_narrow": "pass: 494px 视口 DOM 中首图节点消失（hidden lg:block）",
+    "visual_order": "pass: 滚回顶部后聊天 h2 inViewport=true，品牌问候/历史 inViewport=false（dom_cua 几何取证）",
+    "scroll_model": "narrow 消息区自然增长（lg:flex-1 lg:overflow-y-auto），页面单层滚动；lg 两栏与内滚保持不变"
+  },
+  "note": "截图表面持续超时（IAB 管线），以 inViewport 几何标志为视觉证据；a11y 树仍为 DOM 序（CSS order 的已知特性），读屏顺序优化留待后续"
+}

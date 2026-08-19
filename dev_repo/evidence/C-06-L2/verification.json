@@ -1,0 +1,25 @@
+{
+  "contract_id": "C-06",
+  "slice_id": "C-06-L2",
+  "timestamp": "2026-08-17T11:39:40+08:00",
+  "assertions": {
+    "official_mcp_client": "官方 Streamable HTTP 客户端：Bearer Token、8s 超时、输入 16KB/输出 64KB 边界",
+    "official_tool_whitelist": "官方 9 工具白名单与 read/draft/external_write 分级，连接探测校验 6 必要工具",
+    "local_token_config": "本机 Token 0600 原子写、掩码回读、env 回退、写队列串行",
+    "secret_boundary": "Token 仅服务端持有且掩码回显，不进入消息、记忆、数据库或日志"
+  },
+  "verification": {
+    "architecture_json": "pass",
+    "data_model_json": "pass; unchanged",
+    "git_diff_check": "pass",
+    "contract_tests": "pass: test:mcp 7/7（含 4 个新增麦当劳用例），test:ai 4/4，test:memory 4/4，test:agent 4/4",
+    "full_gate": "pass: lint clean, typecheck clean, next build success (27 routes)"
+  },
+  "architecture_delta": [
+    "mcp.gateway",
+    "external.mcp_services"
+  ],
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}

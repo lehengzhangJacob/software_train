@@ -1,0 +1,88 @@
+{
+  "contract_id": "C-13",
+  "slice_id": "C-13-S3",
+  "verified_at": "2026-08-19T02:34:00+08:00",
+  "status": "pass",
+  "red_line_crossed": true,
+  "scope": "foodtest AVD 上的云端 Android APK：干净登录、会话持久化、健康 Agent、原生相机、真实餐图识别/审核/保存与发布门禁。",
+  "environment": {
+    "avd": "foodtest",
+    "device": "emulator-5554",
+    "adb_state": "device",
+    "camera_backend": "HD Webcam via emulator -camera-back webcam0",
+    "apk": "android/app/build/outputs/apk/debug/app-debug.apk",
+    "cloud_url": "http://8.148.206.131:8000"
+  },
+  "checks": {
+    "clean_login": {
+      "status": "pass",
+      "details": "清除应用数据后真实填写 demo account 登录，WebView 进入测试用户张三的云端首页。",
+      "evidence": [
+        "emulator-clean-entry.png",
+        "emulator-login-form.png",
+        "emulator-login-filled.png",
+        "emulator-login-result-fixed.png"
+      ]
+    },
+    "session_persistence": {
+      "status": "pass",
+      "details": "强制停止并重新启动 Android 壳后仍停留在已登录首页；未注入会话 Cookie。",
+      "evidence": ["emulator-session-persisted.png"]
+    },
+    "health_agent": {
+      "status": "pass",
+      "details": "真实云端对话返回中文健康建议，当前回合展示 2 个步骤、2 个已完成的时间线。",
+      "evidence": ["emulator-coach.png", "emulator-chat-result.png"]
+    },
+    "native_camera": {
+      "status": "pass",
+      "details": "点击立即拍照后焦点进入 com.android.camera2/.CaptureActivity；真实 HD Webcam 取景、快门、系统确认勾选均完成，回到应用后进入 AI 正在识别。logcat 确认 Camera.getPhoto 返回真实 JPEG DataUrl。",
+      "evidence": [
+        "emulator-webcam-camera.png",
+        "emulator-camera-retry-preview.png",
+        "emulator-camera-retry-review.png",
+        "emulator-camera-retry-return.png"
+      ]
+    },
+    "food_recognition_review_save": {
+      "status": "pass",
+      "details": "真实餐图经 Android Photo Picker 选择后，云端识别返回 2 项；审核页显示 2/2 项将保存，确认后今日记录读回 2 项：羽衣甘蓝（绿叶蔬菜）与烟熏三文鱼。",
+      "evidence": [
+        "emulator-photo-picker-food.png",
+        "emulator-food-recognition-start.png",
+        "emulator-food-review-result.png",
+        "emulator-food-review-scrolled.png",
+        "emulator-food-review-bottom.png",
+        "emulator-food-save-result.png",
+        "emulator-food-today-log.png"
+      ]
+    },
+    "release_gates": {
+      "status": "pass",
+      "details": "云端 deploy smoke 通过；android:cloud 烘焙公网 URL；assembleDebug 通过；本轮 test:access 6/6、lint、typecheck、git diff --check 全部通过。",
+      "commits": ["81cc9df", "3dc6f52"]
+    }
+  },
+  "conclusion": {
+    "green": [
+      "Android 真实登录与会话持久化",
+      "健康 Agent 真实对话与多步时间线",
+      "立即拍照直达系统相机并回流应用",
+      "真实餐图识别、审核、云端保存与今日记录读回",
+      "Web/Android 云端发布门禁"
+    ],
+    "notes": [
+      "第一次相机复试停留在系统相机预览页未点确认勾，属于测试操作取消；按完整确认协议重跑后通过。",
+      "原生相机本轮用 host HD Webcam 产生真实帧；识别/保存闭环用同一 AVD 的真实餐图进行验证，未把人像帧伪称为食物识别成功。"
+    ],
+    "safety": [
+      "未执行下单或支付",
+      "未写入图片到饮食记录",
+      "未在证据中记录访问码、密码、API key 或 MCP token"
+    ]
+  },
+  "architecture_delta": "C-13-S3-A1 的 Android 原生相机适配已在 ADR-0010 中登记；本轮无新增边界。",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}

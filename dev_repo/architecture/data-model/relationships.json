@@ -1,0 +1,159 @@
+{
+  "schema_version": 8,
+  "relationships": [
+    {
+      "name": "UserAccount_binds_UserProfile",
+      "source": "UserAccount",
+      "target": "UserProfile",
+      "cardinality": "1:1",
+      "via": "UserAccount.profile_id",
+      "owner": "UserAccount",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818190000_add_account_auth"],
+      "invariant": "Only the authenticated account session selects the profile owner",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserAccount_has_AuthSessions",
+      "source": "UserAccount",
+      "target": "AuthSession",
+      "cardinality": "1:N",
+      "via": "AuthSession.account_id",
+      "owner": "UserAccount",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818190000_add_account_auth"],
+      "invariant": "A session belongs to one account and can be revoked independently",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserAccount_has_AccountSettings",
+      "source": "UserAccount",
+      "target": "AccountSettings",
+      "cardinality": "1:1",
+      "via": "AccountSettings.account_id",
+      "owner": "UserAccount",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260818193000_add_account_settings"],
+      "invariant": "AI and McDonald's credentials are readable only through the authenticated account",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "InviteCode_admits_UserAccount",
+      "source": "InviteCode",
+      "target": "UserAccount",
+      "cardinality": "N:N",
+      "via": "registration transaction consumption",
+      "owner": "InviteCode",
+      "on_delete": "NO ACTION",
+      "source_artifacts": ["prisma/schema.prisma", "src/app/api/auth/register/route.ts"],
+      "invariant": "Invite codes admit registrations but never own nutrition records",
+      "confidence": "approved_target"
+    },
+    {
+      "name": "UserProfile_has_MealRecords",
+      "source": "UserProfile",
+      "target": "MealRecord",
+      "cardinality": "1:N",
+      "via": "MealRecord.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma"],
+      "invariant": "API 只能读写 primary profile 的记录",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserProfile_has_ExerciseSuggestions",
+      "source": "UserProfile",
+      "target": "ExerciseSuggestion",
+      "cardinality": "1:N",
+      "via": "ExerciseSuggestion.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma"],
+      "invariant": "采纳状态属于建议所有者",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserProfile_has_AgentThreads",
+      "source": "UserProfile",
+      "target": "AgentThread",
+      "cardinality": "1:N",
+      "via": "AgentThread.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
+      "invariant": "API 只能访问 primary profile 的对话",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "AgentThread_has_AgentMessages",
+      "source": "AgentThread",
+      "target": "AgentMessage",
+      "cardinality": "1:N",
+      "via": "AgentMessage.thread_id",
+      "owner": "AgentThread",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
+      "invariant": "删除对话必须删除其消息",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserProfile_has_MemoryItems",
+      "source": "UserProfile",
+      "target": "MemoryItem",
+      "cardinality": "1:N",
+      "via": "MemoryItem.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
+      "invariant": "记忆只属于 primary profile；Agent 可自动生成，但所有行都必须可由用户查看、修正、停用和删除",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "AgentMessage_sources_MemoryItems",
+      "source": "AgentMessage",
+      "target": "MemoryItem",
+      "cardinality": "1:N",
+      "target_optionality": "MemoryItem.source_message_id is optional",
+      "via": "MemoryItem.source_message_id",
+      "owner": "MemoryItem",
+      "on_delete": "SET NULL",
+      "source_artifacts": ["dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "prisma/schema.prisma"],
+      "invariant": "assistant 消息可在同一事务中生成长期记忆；删除来源消息不得连带删除长期记忆",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "UserProfile_has_DailyActivities",
+      "source": "UserProfile",
+      "target": "DailyActivity",
+      "cardinality": "1:N",
+      "target_uniqueness": "每 (user_id, activity_date) 至多一行",
+      "via": "DailyActivity.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/20260817062220_add_daily_activity"],
+      "invariant": "活动量行只属于 primary profile；同一自然日唯一，写入走部分字段 upsert 而非重复建行",
+      "confidence": "confirmed"
+    },
+    {
+      "name": "AgentThread_has_SessionDigest",
+      "source": "AgentThread",
+      "target": "AgentSessionDigest",
+      "cardinality": "1:1",
+      "target_optionality": "摘要行可不存在（未整理的短对话）",
+      "via": "AgentSessionDigest.thread_id",
+      "owner": "AgentThread",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "src/lib/agent/consolidation.ts"],
+      "invariant": "每线程至多一行滚动摘要；covered_message_id 单调递增；删除对话必须连带删除摘要",
+      "confidence": "approved_target"
+    }
+  ],
+  "non_relationships": [
+    {
+      "source": "ExerciseCalorieReference",
+      "target": "ExerciseSuggestion",
+      "reason": "建议保存生成时快照，不以外键追随参考值变化"
+    }
+  ]
+}

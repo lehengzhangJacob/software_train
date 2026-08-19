@@ -1,0 +1,44 @@
+{
+  "contract": "C-06",
+  "slice": "C-06-L3",
+  "type": "implementation",
+  "date": "2026-08-17",
+  "goal": "明确点餐意图后 Agent 自主选餐、计价并创建一笔未支付订单，支付主权归用户（ADR-0004）",
+  "slices": {
+    "C-06-L3-S1": {
+      "commit": "7e46433",
+      "files": ["src/lib/agent/ordering-intent.ts (new)", "src/lib/actions/policy.ts", "scripts/agent-contract.test.ts"],
+      "verification": {
+        "test_agent": "pass 7/7（意图门 19 条正反例、授权单次限额、create-order→external_write 分级）",
+        "lint_typecheck": "pass（0 errors / clean）"
+      },
+      "note": "chat route 接线移入 S2，避免无管线的死代码"
+    },
+    "C-06-L3-S2": {
+      "commit": "13bb757",
+      "files": ["src/lib/agent/ordering.ts (new)", "src/app/api/agent/chat/route.ts", "scripts/ordering-contract.test.ts (new)", "package.json (test:ordering 入 verify 链)"],
+      "verification": {
+        "test_ordering": "pass 8/8（全链、Token 缺失、空地址/门店/菜单/计价、菜单外选餐、数量与项数上限、计价复核、标签解析、回复无链接凭据）",
+        "design": "withMcDonaldMcp 8s 会话预算覆盖整个闭包 → 编排按阶段分会话；模型选餐在会话外执行"
+      }
+    },
+    "C-06-L3-S3": {
+      "commit": "9a58964",
+      "files": ["src/lib/agent/ordering.ts", "src/lib/agent/contracts.ts", "src/app/api/agent/chat/route.ts", "src/components/agent/agent-workspace.tsx", "scripts/ordering-contract.test.ts"],
+      "verification": {
+        "test_ordering": "pass 11/11（单次建单+链接剥离、无确认阻塞、URL 形态订单号拒绝、metadata 白名单回读）",
+        "verify": "pass 全链：test:ai/memory/agent/mcp/ordering/health + lint + typecheck + build（27 routes）"
+      }
+    }
+  },
+  "adr4_boundaries": {
+    "intent_gate": "ordering-intent.ts 单点实现；保守偏置（宁漏勿误）；HARD_BLOCK 优先",
+    "one_order_per_request": "issueOrderingGrant + claimCreateOrder 在 executeMcDonaldOrder 建单前扣减",
+    "payment_sovereignty": "无支付类工具调用；paymentLink 只进 HTTP 响应 orderResult；assistant 文本/metadata/模型上下文均无链接（测试断言）",
+    "credentials_out_of_context": "麦当劳 Token 只在 mcdonalds-client 连接层使用；模型只见菜单 code/name"
+  },
+  "known_debt": [
+    "真实麦当劳 MCP 的字段 schema（地址/门店/菜单/计价/建单）以容忍式解析接入，L4 需真实 Token smoke 校准；金额单位未确认故 UI 暂不展示合计",
+    "计价一致性校验默认宽松（verifyPrice 钩子已留），严格比对待真实 schema 校准后收紧"
+  ]
+}

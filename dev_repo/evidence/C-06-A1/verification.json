@@ -1,0 +1,44 @@
+{
+  "contract": "C-06-A1",
+  "type": "ratification_amendment",
+  "date": "2026-08-17",
+  "context": "C-06-L2 关账后 4 个 commit 未经合同落地；本合同以追认制修复架构/ER 真相欠账并补 journal 账。原始 commit 均无存档验证证据，本文件只记录补账期实测，不伪造原始证据。",
+  "retrofitted_commits": [
+    {"hash": "c699d89", "timestamp": "2026-08-17T11:57:57+08:00", "summary": "视觉/聊天模型配置分离", "amendment": "not_required", "journal": "retroactive_commit_recorded"},
+    {"hash": "1294cae", "timestamp": "2026-08-17T12:13:32+08:00", "summary": "聊天气泡 Markdown 渲染", "amendment": "not_required", "journal": "retroactive_commit_recorded"},
+    {"hash": "ed658a0", "timestamp": "2026-08-17T12:34:28+08:00", "summary": "Capacitor Android 薄壳 + Health Connect 插件", "amendment": "C-06-A1-S2", "journal": "retroactive_commit_recorded"},
+    {"hash": "068a4c2", "timestamp": "2026-08-17T14:37:44+08:00", "summary": "DailyActivity 实体 + health API + 壳 UI + agent 上下文", "amendment": "C-06-A1-S1 + C-06-A1-S2", "journal": "retroactive_commit_recorded"}
+  ],
+  "slices": {
+    "C-06-A1-S1": {
+      "commit": "46f2cc6",
+      "verification": {
+        "json_parse": "pass: entities.json / relationships.json schema_version 5",
+        "grep_coverage": "pass: DailyActivity 在 entities.json(1) relationships.json(2) ER.md(3) er.mmd(3) migrations.md(1)",
+        "field_consistency": "pass: 9 字段与 prisma/schema.prisma DailyActivity 逐项一致；relationship 1:N CASCADE 与 migration SQL 外键一致"
+      }
+    },
+    "C-06-A1-S2": {
+      "commit": "4cc7d2f",
+      "verification": {
+        "json_parse": "pass: graph.json / index.json schema_version 3",
+        "graph_shape": "pass: 20 nodes / 24 edges（原 18/21 + android.shell + external.health_connect + 3 边）",
+        "no_dangling_refs": "pass: 边两端与 depends_on/depended_on_by 引用全部存在",
+        "adr_indexed": "pass: ADR-0005 在磁盘且被 index.json files[] 收录",
+        "ownership_unique": "pass: android/**、capacitor.config.ts、capacitor-web/** 归 android.shell；src/app/api/health/** 归 backend.api，无 glob 冲突"
+      }
+    },
+    "C-06-A1-S3": {
+      "commit": "self-referential（本切片提交自身）",
+      "verification": {
+        "retrofit_retest": "pass: test:health 13/13、test:agent 通过（2026-08-17 15:5x 补账实测）",
+        "journal_structure": "pass: 4 条 retroactive 事件均含原始 commit hash 与 retroactive:true",
+        "capacitor_disposition": "committed: server.url 改为 127.0.0.1:3000（adb reverse 回路，ADR-0005）"
+      }
+    }
+  },
+  "known_debt": [
+    "真机 adb reverse 健康同步 smoke 未入 CI",
+    "Android 壳形态 B（部署 URL）未定"
+  ]
+}

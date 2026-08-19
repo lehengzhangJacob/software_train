@@ -1,0 +1,57 @@
+{
+  "contract_id": "C-18",
+  "slice_id": "C-18-S1",
+  "summary": "食刻品牌替换与认证入口视口布局收口",
+  "verification": {
+    "lint": "passed",
+    "typecheck": "passed",
+    "production_build": "passed",
+    "browser_console": "no errors or warnings",
+    "desktop_login_1440x900": {
+      "document_scroll_height": 900,
+      "document_client_height": 900,
+      "document_scroll_width": 1440,
+      "document_client_width": 1440,
+      "auth_panel_scroll_height": 619,
+      "auth_panel_client_height": 619,
+      "product_text": "食刻记录每一餐，照顾每一天",
+      "selected_tab": "登录",
+      "fields": ["auth-login", "auth-password"]
+    },
+    "desktop_register_1440x900": {
+      "document_scroll_height": 900,
+      "document_client_height": 900,
+      "document_scroll_width": 1440,
+      "document_client_width": 1440,
+      "auth_panel_scroll_height": 619,
+      "auth_panel_client_height": 619,
+      "selected_tab": "邀请码注册",
+      "fields": ["auth-username", "auth-login", "auth-password", "auth-confirm-password", "auth-invite-code"]
+    },
+    "mobile_login_375x812": {
+      "document_scroll_width": 360,
+      "document_client_width": 360,
+      "selected_tab": "登录",
+      "horizontal_overflow": false,
+      "vertical_scroll": "allowed for form accessibility"
+    },
+    "mobile_register_375x812": {
+      "document_scroll_width": 360,
+      "document_client_width": 360,
+      "selected_tab": "邀请码注册",
+      "horizontal_overflow": false,
+      "vertical_scroll": "allowed for form accessibility"
+    },
+    "motion": "deferred to C-18-S2; S1 validates static layout and brand only",
+    "architecture_delta": "none",
+    "data_model_delta": "none",
+    "migration_required": false,
+    "backfill_required": false
+  },
+  "artifacts": [
+    "dev_repo/evidence/C-18/S1/access-desktop-login-final.png",
+    "dev_repo/evidence/C-18/S1/access-desktop-register-final.png",
+    "dev_repo/evidence/C-18/S1/access-mobile-login.png",
+    "dev_repo/evidence/C-18/S1/access-mobile-register.png"
+  ]
+}
