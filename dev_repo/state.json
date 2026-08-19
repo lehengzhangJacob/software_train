@@ -2,8 +2,8 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": null,
-  "status": "completed",
+  "active_contract_id": "C-18",
+  "status": "in_progress",
   "contracts": {
     "C-01": {
       "status": "completed",
@@ -346,6 +346,18 @@
       "completed_slices": ["C-17-A1", "C-17-S1", "C-17-S2", "C-17-S3", "C-17-S4"],
       "deferred_slices": [],
       "return_to": "C-13-S3"
+    },
+    "C-18": {
+      "contract_id": "C-18",
+      "parent_contract_id": "C-13",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "食刻落地页视口收口、品牌替换与动效升级",
+      "goal": "让认证入口具备清晰的 App 品牌、无页面级纵向滚动的桌面首屏与克制的可访问动效，同时保持登录注册边界不变",
+      "current_slice": "C-18-S1",
+      "completed_slices": [],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit"
     }
   }
 }

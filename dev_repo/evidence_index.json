@@ -1069,5 +1069,17 @@
       "path": "dev_repo/evidence/C-13/S3/emulator-clean-entry.png, dev_repo/evidence/C-13/S3/emulator-login-result-fixed.png, dev_repo/evidence/C-13/S3/emulator-session-persisted.png, dev_repo/evidence/C-13/S3/emulator-chat-result.png, dev_repo/evidence/C-13/S3/emulator-webcam-camera.png, dev_repo/evidence/C-13/S3/emulator-camera-retry-review.png, dev_repo/evidence/C-13/S3/emulator-camera-retry-return.png, dev_repo/evidence/C-13/S3/emulator-food-review-result.png, dev_repo/evidence/C-13/S3/emulator-food-review-bottom.png, dev_repo/evidence/C-13/S3/emulator-food-today-log.png",
       "description": "模拟器账户入口、相机权限、Photo Picker、识别审核、确认保存与系统相机截图"
     }
+  ],
+  "C-18-S1": [
+    {
+      "type": "implementation",
+      "path": "src/app/access/page.tsx, src/components/app-chrome.tsx, src/app/layout.tsx",
+      "description": "食刻品牌名与认证入口桌面视口布局收口"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-18/S1/verification.json",
+      "description": "登录/注册入口、桌面无页面级纵向滚动、移动无横向溢出与静态检查证据"
+    }
   ]
 }

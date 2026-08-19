@@ -11,19 +11,24 @@ export function AppChrome({ children }: { children: ReactNode }) {
   const isAccessRoute = pathname === "/access" || pathname === "/auth"
 
   return (
-    <div className="min-h-screen bg-[var(--app-canvas)]">
+    <div
+      className={cn(
+        "min-h-screen bg-[var(--app-canvas)]",
+        isAccessRoute && "access-app-shell lg:h-[100dvh] lg:overflow-hidden",
+      )}
+    >
       {!isAccessRoute && <Sidebar />}
       <main
         id="main-content"
         tabIndex={-1}
         className={cn(
-          "min-h-screen px-4 sm:px-5 lg:px-8",
+          "px-4 sm:px-5 lg:px-8",
           isAccessRoute
-            ? "pb-8 pt-6 sm:pb-12 sm:pt-8 lg:pb-14 lg:pt-10"
-            : "pb-[calc(5rem+env(safe-area-inset-bottom))] pt-[4.5rem] lg:pb-10 lg:pt-[6.25rem]",
+            ? "access-main min-h-screen pb-8 pt-6 sm:pb-12 sm:pt-8 lg:flex lg:h-[100dvh] lg:min-h-0 lg:items-center lg:overflow-hidden lg:py-6"
+            : "min-h-screen pb-[calc(5rem+env(safe-area-inset-bottom))] pt-[4.5rem] lg:pb-10 lg:pt-[6.25rem]",
         )}
       >
-        <div className="app-page">{children}</div>
+        <div className={cn("app-page", isAccessRoute && "access-page")}>{children}</div>
       </main>
     </div>
   )

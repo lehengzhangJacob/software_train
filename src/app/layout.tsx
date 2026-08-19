@@ -10,10 +10,10 @@ const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"]
 
 export const metadata: Metadata = {
   title: {
-    default: "营养 Agent",
-    template: "%s | 营养 Agent",
+    default: "食刻",
+    template: "%s | 食刻",
   },
-  description: "本地优先的个人饮食、运动与营养管理工具",
+  description: "记录饮食、运动与营养节奏的个人健康工具",
   icons: {
     icon: [{ url: "/brand/nutrition-agent-icon.png", type: "image/png" }],
     shortcut: ["/brand/nutrition-agent-icon.png"],
