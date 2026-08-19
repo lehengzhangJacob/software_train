@@ -1061,12 +1061,12 @@
   "C-13-S3": [
     {
       "type": "verification",
-      "path": "dev_repo/evidence/C-13/S3/verification.json",
+      "path": "dev_repo/evidence/C-13/S3/verification-final.json",
       "description": "foodtest AVD 登录红线、Android 相机/Photo Picker、真实 AI 识别、审核与云端保存回归"
     },
     {
       "type": "visual",
-      "path": "dev_repo/evidence/C-13/S3/emulator-account-entry.png, dev_repo/evidence/C-13/S3/emulator-camera-permission.png, dev_repo/evidence/C-13/S3/emulator-photo-picker.png, dev_repo/evidence/C-13/S3/emulator-recognition-review-form.png, dev_repo/evidence/C-13/S3/emulator-recognition-save.png, dev_repo/evidence/C-13/S3/emulator-system-camera.png",
+      "path": "dev_repo/evidence/C-13/S3/emulator-clean-entry.png, dev_repo/evidence/C-13/S3/emulator-login-result-fixed.png, dev_repo/evidence/C-13/S3/emulator-session-persisted.png, dev_repo/evidence/C-13/S3/emulator-chat-result.png, dev_repo/evidence/C-13/S3/emulator-webcam-camera.png, dev_repo/evidence/C-13/S3/emulator-camera-retry-review.png, dev_repo/evidence/C-13/S3/emulator-camera-retry-return.png, dev_repo/evidence/C-13/S3/emulator-food-review-result.png, dev_repo/evidence/C-13/S3/emulator-food-review-bottom.png, dev_repo/evidence/C-13/S3/emulator-food-today-log.png",
       "description": "模拟器账户入口、相机权限、Photo Picker、识别审核、确认保存与系统相机截图"
     }
   ]
