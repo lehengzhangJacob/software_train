@@ -1234,6 +1234,18 @@
       "description": "访问门 7/7、lint、typecheck、production build 和 release smoke 通过；版本接口 data/error 与 no-store 已断言"
     }
   ],
+  "C-22-S1": [
+    {
+      "type": "implementation",
+      "path": "src/components/app-update-notice.tsx, src/components/app-chrome.tsx, src/app/layout.tsx, src/lib/app-update-shared.ts",
+      "description": "全局 Web 外壳按 build id 探测新版本，支持初始/focus/visibility/低频周期检查、刷新和按 build 暂不更新"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-22/S1-verification.json, scripts/app-update-contract.test.ts",
+      "description": "版本 payload 与 same-build/new-build 判定 2/2，lint、typecheck、build、release smoke 通过；真实旧页签截图并入 C-22-S2 云端验收"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",

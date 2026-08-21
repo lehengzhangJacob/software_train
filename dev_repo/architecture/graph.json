@@ -169,7 +169,8 @@
       "id": "frontend.components",
       "purpose": "业务组件、图表和 UI primitives",
       "owned_files": [
-        "src/components/**"
+        "src/components/**",
+        "src/lib/app-update-shared.ts"
       ],
       "public_interfaces": [
         "React component props",

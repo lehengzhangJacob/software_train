@@ -175,6 +175,10 @@
       "node": "frontend.components"
     },
     {
+      "glob": "src/lib/app-update-shared.ts",
+      "node": "frontend.components"
+    },
+    {
       "glob": "prisma/**",
       "node": "database.prisma"
     },

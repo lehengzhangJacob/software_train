@@ -1,0 +1,39 @@
+{
+  "contract_id": "C-22",
+  "slice_id": "C-22-S1",
+  "status": "passed",
+  "timestamp": "2026-08-21T13:08:00+08:00",
+  "red_test": {
+    "name": "same build stays quiet and changed build produces one dismissible notice",
+    "assertion": "shouldPromptForUpdate('build-a', 'build-a') == false; shouldPromptForUpdate('build-a', 'build-b') == true",
+    "result": "passed"
+  },
+  "green_tests": [
+    "npx tsx --test scripts/app-update-contract.test.ts: 2 passed",
+    "npm run lint: passed",
+    "npm run typecheck: passed",
+    "npm run build: passed",
+    "npm run smoke: passed"
+  ],
+  "implementation": {
+    "current_build_source": "server layout prop from getAppVersion().build",
+    "probe_triggers": ["initial task", "window focus", "document visibilitychange", "10 minute interval"],
+    "cache_policy": "fetch no-store; sessionStorage stores only the dismissed build id",
+    "access_route": "update notice is not mounted on /access or /auth"
+  },
+  "architecture": {
+    "delta": "Browser UI now consumes the C-22-A1 version contract without changing business data flow",
+    "nodes": ["frontend", "frontend.components", "backend.api"],
+    "amendment": "C-22-A1 / ADR-0012"
+  },
+  "data_model": {
+    "delta": "none",
+    "migration_required": false,
+    "backfill_required": false
+  },
+  "manual_visual": {
+    "status": "scheduled_with_C-22-S2_cloud_acceptance",
+    "reason": "A stale tab must remain open across the v0.1.1 cloud deployment to prove the real update banner path."
+  },
+  "issues": "Issues #3-#8 remain open for external retest"
+}

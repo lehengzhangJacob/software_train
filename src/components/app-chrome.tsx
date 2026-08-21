@@ -3,10 +3,17 @@
 import type { ReactNode } from "react"
 import { usePathname } from "next/navigation"
 
+import { AppUpdateNotice } from "@/components/app-update-notice"
 import { Sidebar } from "@/components/sidebar"
 import { cn } from "@/lib/utils"
 
-export function AppChrome({ children }: { children: ReactNode }) {
+export function AppChrome({
+  children,
+  currentBuild,
+}: {
+  children: ReactNode
+  currentBuild: string
+}) {
   const pathname = usePathname()
   const isAccessRoute = pathname === "/access" || pathname === "/auth"
 
@@ -17,6 +24,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
         isAccessRoute && "access-app-shell lg:h-[100dvh] lg:overflow-hidden",
       )}
     >
+      {!isAccessRoute && <AppUpdateNotice currentBuild={currentBuild} />}
       {!isAccessRoute && <Sidebar />}
       <main
         id="main-content"
