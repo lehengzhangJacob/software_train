@@ -406,7 +406,8 @@
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit",
-      "issue_closure": "Issues #3-#8 remain open until external testers confirm non-reproduction."
+      "issue_closure": "Issues #3-#8 remain open until external testers confirm non-reproduction.",
+      "latest_verification": "C-21-VERIFY passed: local release gate, cloud deploy smoke, and Browser acceptance completed; mobile Agent history is a collapsible side drawer."
     }
   }
 }

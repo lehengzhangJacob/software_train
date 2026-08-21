@@ -1188,6 +1188,18 @@
       "description": "Issue #7 session handoff, one-shot consume, payload safety, and late-response contracts passed"
     }
   ],
+  "C-21-VERIFY": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-21/VERIFY-verification.json",
+      "description": "C-21 full local release gate, cloud deploy smoke, and in-app Browser acceptance for registration, Agent desktop scrolling, and mobile collapsible history panel"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-21/register-validation-mismatch.png, dev_repo/evidence/C-21/register-validation-invite.png, dev_repo/evidence/C-21/agent-workspace-desktop.png, dev_repo/evidence/C-21/agent-workspace-mobile.png, dev_repo/evidence/C-21/agent-mobile-history-panel.png",
+      "description": "Cloud Browser acceptance screenshots for Issue #3 validation and Issue #4/#6 Agent workspace behavior, including the mobile history drawer"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",
