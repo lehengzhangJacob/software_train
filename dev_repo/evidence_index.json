@@ -1176,6 +1176,18 @@
       "description": "Issue #4/#6 fixed-shell and running-activity label contracts passed"
     }
   ],
+  "C-21-S4": [
+    {
+      "type": "implementation",
+      "path": "src/lib/food/recognition-handoff.ts, src/components/food/photo-upload.tsx, src/components/food/meals-content.tsx, package.json",
+      "description": "会话级结构化识别结果交接：跨路由保留 ready 候选、回餐食页一次性恢复，并拒绝旧请求覆盖新请求"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-21/S4-verification.json, scripts/recognition-handoff.test.ts",
+      "description": "Issue #7 session handoff, one-shot consume, payload safety, and late-response contracts passed"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
   Beef,
@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { FoodPhotoUpload, type RecognizedFood } from "@/components/food/photo-upload"
+import { consumeRecognitionHandoff } from "@/lib/food/recognition-handoff"
 import { MEAL_LABELS, formatCalories, formatGrams } from "@/lib/utils"
 
 interface MealItem {
@@ -106,7 +107,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
     setDrafts((current) => current.map((draft) => (draft.id === id ? { ...draft, [key]: value } : draft)))
   }
 
-  const handleRecognizedFoods = (foods: RecognizedFood[]) => {
+  const handleRecognizedFoods = useCallback((foods: RecognizedFood[]) => {
     const remainingSlots = Math.max(0, MAX_BATCH_ITEMS - drafts.length)
     const acceptedFoods = foods.slice(0, remainingSlots)
     const ignoredCount = foods.length - acceptedFoods.length
@@ -131,7 +132,21 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
         confidence: food.confidence,
       })),
     ])
-  }
+  }, [drafts.length])
+
+  useEffect(() => {
+    const foods = consumeRecognitionHandoff()
+    if (!foods) return
+    let cancelled = false
+    queueMicrotask(() => {
+      if (cancelled) return
+      handleRecognizedFoods(foods)
+      toast.success(`已恢复 ${foods.length} 项待审核识别结果`)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [handleRecognizedFoods])
 
   const handleManualSave = async () => {
     if (!form.foodName.trim()) {

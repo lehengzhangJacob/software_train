@@ -1,0 +1,27 @@
+{
+  "contract_id": "C-21",
+  "slice_id": "C-21-S4",
+  "timestamp": "2026-08-21T11:55:00+08:00",
+  "status": "passed",
+  "issues": [7],
+  "assertions": [
+    "Recognition completion is handed off through sessionStorage as a bounded, schema-validated pending/ready payload.",
+    "Returning to the meals route consumes the ready candidates once and sends them through the existing human review form before persistence.",
+    "A late response from an older request cannot overwrite a newer pending or ready request.",
+    "The handoff never stores image data, credentials, provider errors, or raw model response text."
+  ],
+  "red_test": "Start recognition, navigate away before the response finishes, return to meals, and recover the candidates; then verify one-shot consumption and late-response rejection in the contract tests.",
+  "green_test": "npm run test:recognition -> 3 passed, 0 failed; npm run lint, npm run typecheck, and git diff --check passed.",
+  "same_case_requirement": "Issue #7 no longer reports a successful toast with a missing review result after a route change; the issue remains open for external retest.",
+  "architecture_delta": "Implemented the C-21-A1 session-scoped handoff boundary; no API, database entity, migration, offline queue, or image persistence added.",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "physical_evidence": [
+    "src/lib/food/recognition-handoff.ts",
+    "src/components/food/photo-upload.tsx",
+    "src/components/food/meals-content.tsx",
+    "scripts/recognition-handoff.test.ts",
+    "package.json"
+  ]
+}

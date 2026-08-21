@@ -3,11 +3,12 @@
 ## Current execution override
 
 - Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: `C-21-S4 - 会话级识别结果交接修复`
+- Current slice: `C-21-VERIFY - 全量回归、视觉检查与云端同步`
 - Return path: `web_completion_audit`
 - Issue state: #3-#8 remain open until external testers confirm non-reproduction.
 - C-21-S2 completed: disabled/expired memories are isolated from Agent context, suppressed text is redacted from digest/history, and the local date anchor is explicit.
 - C-21-S3 completed: the desktop Agent shell is fixed-height with right-only conversation scrolling, and the waiting copy follows the running activity.
+- C-21-S4 completed: recognition candidates survive route changes in a session-scoped, one-shot handoff and still require the existing review gate.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 - 当前合同：`C-18 - 食刻落地页视口收口、品牌替换与动效升级 [completed]`

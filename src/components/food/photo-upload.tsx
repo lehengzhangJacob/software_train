@@ -1,22 +1,21 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Image from "next/image"
 import { Capacitor } from "@capacitor/core"
 import { Camera as CapacitorCamera, CameraResultType, CameraSource } from "@capacitor/camera"
 import { Camera as CameraIcon, ImagePlus, Loader2, ShieldCheck, Sparkles, Upload } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import {
+  beginRecognitionHandoff,
+  clearRecognitionHandoff,
+  createRecognitionRequestId,
+  publishRecognitionHandoff,
+  type RecognizedFood,
+} from "@/lib/food/recognition-handoff"
 
-export interface RecognizedFood {
-  name: string
-  calories: number
-  protein: number
-  fat: number
-  carbs: number
-  portion: string
-  confidence: number
-}
+export type { RecognizedFood } from "@/lib/food/recognition-handoff"
 
 interface FoodPhotoUploadProps {
   onRecognized: (foods: RecognizedFood[]) => void
@@ -44,6 +43,12 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
   const [preview, setPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
+  const mountedRef = useRef(true)
+  const latestRequestIdRef = useRef<string | null>(null)
+
+  useEffect(() => () => {
+    mountedRef.current = false
+  }, [])
 
   const openManualEntry = useCallback(() => {
     setPreview(null)
@@ -62,21 +67,29 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
       return
     }
 
+    const requestId = createRecognitionRequestId()
+    latestRequestIdRef.current = requestId
+    beginRecognitionHandoff(requestId)
+
     const reader = new FileReader()
     reader.onerror = () => {
+      clearRecognitionHandoff(requestId)
       toast.error("图片读取失败，请手动录入")
       openManualEntry()
     }
     reader.onload = async (event) => {
       const image = event.target?.result
       if (typeof image !== "string") {
+        clearRecognitionHandoff(requestId)
         toast.error("图片读取失败，请手动录入")
         openManualEntry()
         return
       }
 
-      setPreview(image)
-      setAnalyzing(true)
+      if (mountedRef.current) {
+        setPreview(image)
+        setAnalyzing(true)
+      }
 
       try {
         const response = await fetch("/api/ai/recognize", {
@@ -92,19 +105,25 @@ export function FoodPhotoUpload({ onRecognized, onManualEntryRequested, disabled
 
         const foods = json.data?.foods ?? []
         if (foods.length === 0) {
+          clearRecognitionHandoff(requestId)
           toast.error("未识别出食物，已打开手动录入")
           openManualEntry()
           return
         }
 
-        onRecognized(foods)
-        setPreview(null)
+        if (!publishRecognitionHandoff(requestId, foods)) return
+        if (mountedRef.current) {
+          onRecognized(foods)
+          clearRecognitionHandoff(requestId)
+          setPreview(null)
+        }
         toast.success(`已加入 ${foods.length} 项待审核食物`)
       } catch (error) {
+        clearRecognitionHandoff(requestId)
         toast.error(error instanceof Error ? `识别失败：${error.message}` : "识别失败，已打开手动录入")
         openManualEntry()
       } finally {
-        setAnalyzing(false)
+        if (mountedRef.current && latestRequestIdRef.current === requestId) setAnalyzing(false)
       }
     }
     reader.readAsDataURL(file)
