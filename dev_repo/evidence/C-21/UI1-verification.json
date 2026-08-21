@@ -1,0 +1,55 @@
+{
+  "contract_id": "C-21",
+  "slice_id": "C-21-UI1",
+  "timestamp": "2026-08-21T12:18:55+08:00",
+  "status": "passed",
+  "objective": "将 Agent 最近对话列表从侧栏底部移到顶部，并让会话区独立纵向滚动。",
+  "assertions": [
+    "Agent workspace 只调整展示层顺序；线程 API、消息 canonical projection、路由身份和持久化语义未改变。",
+    "云端 1440x900 桌面视口中，最近对话区是侧栏第一块，顶部坐标 100px，教练介绍从 232.1px 开始。",
+    "云端 471x695 移动视口打开抽屉后，最近对话区先于教练介绍，且会话列表使用独立 overflow-y 滚动。",
+    "移动端关闭会话面板后回到聊天视图，原有新建、打开和删除操作仍可见。",
+    "Issues #3-#8 remain open for external retest."
+  ],
+  "red_test": "移动抽屉先展示教练介绍、最近对话被压在底部，或列表滚动导致整个抽屉/聊天区一起滚动。",
+  "green_test": "npm run lint、npm run typecheck、npm run build、npm run test:agent 均通过；云端部署 Smoke 通过；Browser 同案桌面/移动验收通过。",
+  "same_case_requirement": "使用同一云端测试账户与同一既有会话，分别复测 1440x900 桌面和 471x695 移动抽屉。",
+  "browser_metrics": {
+    "desktop": {
+      "viewport": "1440x900",
+      "aside_display": "flex",
+      "first_child": "最近对话",
+      "first_child_top": 100,
+      "coach_child_top": 232.1,
+      "conversation_list_overflow_y": "auto"
+    },
+    "mobile": {
+      "viewport": "471x695",
+      "first_child": "最近对话",
+      "coach_child_top": 124.1,
+      "conversation_list_overflow_y": "auto",
+      "close_action": "returned to chat-only view"
+    }
+  },
+  "cloud_deploy": {
+    "release_timestamp": "20260821121524",
+    "base_url": "http://8.148.206.131:8000",
+    "smoke": [
+      "/access -> 200",
+      "anonymous /api/users -> 401"
+    ]
+  },
+  "browser_visual_evidence": [
+    "dev_repo/evidence/C-21/agent-workspace-desktop-top.png",
+    "dev_repo/evidence/C-21/agent-mobile-history-panel-top.png"
+  ],
+  "physical_evidence": [
+    "src/components/agent/agent-workspace.tsx",
+    "scripts/agent-contract.test.ts",
+    "package.json"
+  ],
+  "architecture_delta": "none; Browser UI order and responsive overflow only.",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}
