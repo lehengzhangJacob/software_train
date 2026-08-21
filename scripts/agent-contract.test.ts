@@ -8,7 +8,7 @@ import {
 } from "../src/lib/agent/contracts"
 import { hasExplicitOrderingIntent } from "../src/lib/agent/ordering-intent"
 import { classifyAction, issueOrderingGrant } from "../src/lib/actions/policy"
-import { createAgentActivityRecorder } from "../src/lib/agent/activity"
+import { createAgentActivityRecorder, getRunningActivityLabel } from "../src/lib/agent/activity"
 import {
   buildAgentDateInstruction,
   filterEligibleMemories,
@@ -149,5 +149,15 @@ test("agent context excludes disabled or expired memories and redacts suppressed
   assert.equal(
     buildAgentDateInstruction("2026-08-21"),
     "应用今天的本地日期：2026-08-21。所有“今天/昨天/明天”等相对日期都以此为基准。",
+  )
+})
+
+test("agent waiting copy follows the currently running activity", () => {
+  assert.equal(
+    getRunningActivityLabel([
+      { activityId: "context", kind: "context", label: "整理上下文", status: "completed", startedAt: "2026-08-21T12:00:00.000Z" },
+      { activityId: "model", kind: "model", label: "生成建议", status: "running", startedAt: "2026-08-21T12:00:01.000Z" },
+    ]),
+    "生成建议",
   )
 })

@@ -1,0 +1,24 @@
+{
+  "contract_id": "C-21",
+  "slice_id": "C-21-S3",
+  "timestamp": "2026-08-21T11:35:00+08:00",
+  "status": "passed",
+  "issues": [4, 6],
+  "assertions": [
+    "The desktop Agent workspace uses a fixed-height shell so the left history/image column does not grow with the conversation.",
+    "The right-hand conversation viewport owns vertical scrolling while the composer and left column stay in place.",
+    "The waiting copy derives from the same running activity object rendered by the execution timeline, so model progress cannot display the context-step copy."
+  ],
+  "red_test": "A long conversation must keep the left column bounded, and a running model activity must not leave the bottom status text on the context step.",
+  "green_test": "npm run test:agent -> 10 passed, 0 failed; npm run lint, npm run typecheck, and git diff --check passed.",
+  "same_case_requirement": "Issue #4 sidebar growth and Issue #6 progress/copy mismatch are addressed without closing either issue before external retest.",
+  "architecture_delta": "none beyond C-21-A1",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "physical_evidence": [
+    "src/components/agent/agent-workspace.tsx",
+    "src/lib/agent/activity.ts",
+    "scripts/agent-contract.test.ts"
+  ]
+}

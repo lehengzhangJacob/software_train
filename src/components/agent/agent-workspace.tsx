@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils"
 import { AssistantText } from "@/components/agent/assistant-text"
 import { AgentActivityPanel } from "@/components/agent/agent-activity-panel"
 import type { AgentActivity } from "@/lib/agent/contracts"
+import { getRunningActivityLabel } from "@/lib/agent/activity"
 
 interface ThreadSummary {
   threadId: number
@@ -260,8 +261,8 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   return (
     <div className="space-y-5">
       <section className="surface-card overflow-hidden border-0">
-        <div className="grid grid-cols-[minmax(0,1fr)] lg:min-h-[680px] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
-          <aside className="order-2 flex min-h-0 flex-col bg-[var(--brand-plum)] text-white lg:order-1">
+        <div className="grid grid-cols-[minmax(0,1fr)] lg:h-[680px] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
+          <aside className="order-2 flex min-h-0 flex-col overflow-hidden bg-[var(--brand-plum)] text-white lg:order-1 lg:h-full">
             <div className="relative flex-1 lg:min-h-[430px]">
               <div className="absolute inset-0 hidden lg:block">
                 <Image
@@ -345,7 +346,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
             </div>
           </aside>
 
-          <div className="order-1 flex min-h-0 min-w-0 flex-col bg-[var(--brand-paper)] lg:order-2 lg:min-h-[620px]">
+          <div className="order-1 flex min-h-0 min-w-0 flex-col overflow-hidden bg-[var(--brand-paper)] lg:order-2 lg:h-full">
             <header className="flex items-center justify-between gap-4 border-b border-border/70 px-5 py-4 sm:px-7">
               <div className="min-w-0">
                 <p className="page-eyebrow">Tonight&apos;s plan</p>
@@ -448,7 +449,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
               {sending ? (
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <div className="grid size-8 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]"><Bot className="size-4" /></div>
-                  <LoaderCircle className="size-4 animate-spin" />正在整理你的饮食上下文…
+                  <LoaderCircle className="size-4 animate-spin" />正在{getRunningActivityLabel(turnActivity)}…
                 </div>
               ) : null}
             </div>

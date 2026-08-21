@@ -30,6 +30,10 @@ export interface AgentActivityRecorder {
   snapshot(): AgentActivity[]
 }
 
+export function getRunningActivityLabel(activities: readonly AgentActivity[], fallback = "处理本轮请求") {
+  return [...activities].reverse().find((activity) => activity.status === "running")?.label ?? fallback
+}
+
 export function createAgentActivityRecorder(onActivity?: AgentActivityReporter): AgentActivityRecorder {
   const steps = new Map<string, AgentActivity>()
 

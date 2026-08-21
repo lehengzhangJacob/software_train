@@ -1164,6 +1164,18 @@
       "description": "Issue #5/#8 Agent memory boundary, suppression, and date-anchor contracts passed"
     }
   ],
+  "C-21-S3": [
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-workspace.tsx, src/lib/agent/activity.ts",
+      "description": "Agent 工作台固定桌面高度、左栏边界与右侧消息滚动，并让等待文案复用当前 running 活动"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-21/S3-verification.json, scripts/agent-contract.test.ts",
+      "description": "Issue #4/#6 fixed-shell and running-activity label contracts passed"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",
