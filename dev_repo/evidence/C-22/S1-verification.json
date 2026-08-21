@@ -32,8 +32,8 @@
     "backfill_required": false
   },
   "manual_visual": {
-    "status": "scheduled_with_C-22-S2_cloud_acceptance",
-    "reason": "A stale tab must remain open across the v0.1.1 cloud deployment to prove the real update banner path."
+    "status": "passed_with_C-22-S2_local_proxy_acceptance",
+    "reason": "A same-code old-build/new-build proxy proved the real notice path; the notice now participates in main content flow so desktop and 375px mobile content are not occluded."
   },
   "issues": "Issues #3-#8 remain open for external retest"
 }

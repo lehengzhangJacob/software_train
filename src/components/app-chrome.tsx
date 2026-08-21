@@ -24,7 +24,6 @@ export function AppChrome({
         isAccessRoute && "access-app-shell lg:h-[100dvh] lg:overflow-hidden",
       )}
     >
-      {!isAccessRoute && <AppUpdateNotice currentBuild={currentBuild} />}
       {!isAccessRoute && <Sidebar />}
       <main
         id="main-content"
@@ -36,6 +35,7 @@ export function AppChrome({
             : "min-h-screen pb-[calc(5rem+env(safe-area-inset-bottom))] pt-[4.5rem] lg:pb-10 lg:pt-[6.25rem]",
         )}
       >
+        {!isAccessRoute && <AppUpdateNotice currentBuild={currentBuild} />}
         <div className={cn("app-page", isAccessRoute && "access-page")}>{children}</div>
       </main>
     </div>

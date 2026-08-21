@@ -1,0 +1,59 @@
+{
+  "contract_id": "C-22",
+  "slice_id": "C-22-S2",
+  "status": "passed",
+  "timestamp": "2026-08-21T15:44:00+08:00",
+  "red_test": {
+    "name": "Android entry stays visible on narrow screens and the notice never occludes page content",
+    "assertion": "375px Browser DOM contains the update status before main content; Android action uses inline-flex on the native platform",
+    "result": "passed"
+  },
+  "green_tests": [
+    "npx tsx --test scripts/app-update-contract.test.ts scripts/android-update-contract.test.ts: 3 passed",
+    "npm run release:check: passed (database, all contract suites, lint, typecheck, build, API checks, smoke)",
+    "FT_CLOUD_URL=http://8.148.206.131:8000 npm run android:cloud: passed",
+    "android/gradlew.bat :app:assembleDebug: BUILD SUCCESSFUL",
+    "apkanalyzer: applicationId com.csptr.foodtracker; versionCode 2; versionName 0.1.1",
+    "local old-build/new-build proxy Browser acceptance: desktop and 375px mobile notice rendered; dismiss removed the status"
+  ],
+  "android_artifact": {
+    "path": "android/app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 10472331,
+    "cloud_url": "http://8.148.206.131:8000"
+  },
+  "browser_visuals": [
+    "dev_repo/evidence/C-22/update-notice-desktop.png",
+    "dev_repo/evidence/C-22/update-notice-mobile.png"
+  ],
+  "architecture": {
+    "delta": "Android WebView reuses the shared version contract and user-confirmed Release entry; no native business authority",
+    "nodes": ["android.shell", "frontend.components", "cloud.delivery", "delivery"],
+    "amendment": "C-22-A1 / ADR-0012"
+  },
+  "data_model": {
+    "delta": "none",
+    "migration_required": false,
+    "backfill_required": false
+  },
+  "cloud_release": {
+    "status": "cloud_verified_release_ready",
+    "deploy": "20260821153703",
+    "version_endpoint": {
+      "status": 200,
+      "body": {
+        "version": "0.1.1",
+        "build": "bAT12306RPKGzJ1dnjUwW",
+        "releaseUrl": "https://github.com/lehengzhangJacob/software_train/releases/latest",
+        "androidReleaseUrl": "https://github.com/lehengzhangJacob/software_train/releases/latest"
+      },
+      "cache_control": "no-store, max-age=0"
+    },
+    "anonymous_business_api_status": 401,
+    "release_target": {
+      "tag": "v0.1.1",
+      "url": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.1",
+      "asset": "app-debug.apk"
+    }
+  },
+  "issues": "Issues #3-#8 remain open for external retest"
+}

@@ -9,6 +9,7 @@ import {
   shouldPromptForUpdate,
   type AppVersionPayload,
 } from "@/lib/app-update-shared"
+import { cn } from "@/lib/utils"
 
 const CHECK_INTERVAL_MS = 10 * 60 * 1000
 const DISMISSED_BUILD_KEY = "foodmoment-dismissed-update-build"
@@ -91,7 +92,7 @@ export function AppUpdateNotice({ currentBuild }: { currentBuild: string }) {
     <div
       role="status"
       aria-live="polite"
-      className="fixed inset-x-3 top-[4.5rem] z-50 mx-auto flex max-w-3xl items-center gap-3 rounded-lg border border-[var(--brand-mint)]/40 bg-[var(--brand-plum)] px-4 py-3 text-white shadow-[0_16px_50px_rgba(45,39,53,0.24)] lg:inset-x-auto lg:right-8 lg:top-20"
+      className="relative z-10 mx-auto mb-4 flex w-full max-w-3xl items-center gap-3 rounded-lg border border-[var(--brand-mint)]/40 bg-[var(--brand-plum)] px-4 py-3 text-white shadow-[0_16px_50px_rgba(45,39,53,0.24)]"
     >
       <span className="grid size-8 shrink-0 place-items-center rounded-md bg-[var(--brand-mint)] text-[var(--brand-plum)]">
         <RefreshCw aria-hidden="true" className="size-4" />
@@ -111,9 +112,12 @@ export function AppUpdateNotice({ currentBuild }: { currentBuild: string }) {
       {isAndroid && (
         <a
           href={nextVersion.androidReleaseUrl}
-          target="_blank"
+          target={isAndroid ? undefined : "_blank"}
           rel="noreferrer"
-          className="hidden shrink-0 items-center gap-1.5 rounded-md border border-white/30 px-3 py-2 text-xs font-semibold text-white transition hover:border-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white sm:inline-flex"
+          className={cn(
+            "shrink-0 items-center gap-1.5 rounded-md border border-white/30 px-3 py-2 text-xs font-semibold text-white transition hover:border-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white",
+            isAndroid ? "inline-flex" : "hidden sm:inline-flex",
+          )}
         >
           <Download aria-hidden="true" className="size-3.5" />
           下载 Android

@@ -1246,6 +1246,23 @@
       "description": "版本 payload 与 same-build/new-build 判定 2/2，lint、typecheck、build、release smoke 通过；真实旧页签截图并入 C-22-S2 云端验收"
     }
   ],
+  "C-22-S2": [
+    {
+      "type": "implementation",
+      "path": "src/components/app-update-notice.tsx, android/app/build.gradle, package.json, package-lock.json",
+      "description": "Android 平台 Release 入口在窄屏保持可见；提示改为主内容流避免遮挡；Web/Android 版本升至 0.1.1"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-22/S2-verification.json, scripts/android-update-contract.test.ts, android/app/build/outputs/apk/debug/app-debug.apk",
+      "description": "完整 release gate、Android Gradle 构建、版本元数据断言与云端 v0.1.1 版本接口通过；Release 目标为 v0.1.1"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-22/update-notice-desktop.png, dev_repo/evidence/C-22/update-notice-mobile.png",
+      "description": "旧 build 页面从新版本接口探测到 v0.1.1；桌面与 375px 移动提示均不遮挡主内容"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",

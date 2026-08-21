@@ -2,10 +2,10 @@
 
 ## Current execution override
 
-- Current contract: `C-22 - 为 Web 与 Android 薄壳补上同源版本探测、增量刷新提示和可验收发布入口` [in_progress]
-- Current slice: `C-22-S2 - Android 提示与 v0.1.1 发布`
-- Parent contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Return path: `C-21`
+- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
+- Current slice: none; waiting for external Issue retest
+- Completed child: `C-22 - Web/Android 版本探测与增量刷新` [completed]
+- Return path: `web_completion_audit`
 - Issue state: #3-#8 remain open until external testers confirm non-reproduction.
 - C-21-S2 completed: disabled/expired memories are isolated from Agent context, suppressed text is redacted from digest/history, and the local date anchor is explicit.
 - C-21-S3 completed: the desktop Agent shell is fixed-height with right-only conversation scrolling, and the waiting copy follows the running activity.
@@ -14,15 +14,15 @@
 - C-21-UI1 completed in the cloud: desktop and mobile Browser acceptance confirm 最近对话 is the first sidebar section, with an independent vertical scroll boundary and no message/data contract change.
 - C-22-A1 completed: the version-aware delivery amendment adds a public no-store build metadata endpoint while keeping all business APIs behind the account session gate.
 - C-22-S1 completed: the shared Web shell compares the server-provided build id with the no-store version endpoint and offers an explicit refresh; stale-tab visual proof is scheduled with the cloud deployment.
-- C-22-S2 active: Android platform wording, v0.1.1 metadata, cloud deployment, Release asset, and Browser acceptance remain.
+- C-22-S2 completed: cloud v0.1.1 is live, `/api/app/version` is public no-store, Android 0.1.1 APK built, and Browser desktop/375px screenshots prove the notice stays in content flow. The GitHub Release target is v0.1.1; Issues #3-#8 remain open.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 ```text
 C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
-└── C-22 - Web/Android 版本探测与增量刷新 [in_progress]
+└── C-22 - Web/Android 版本探测与增量刷新 [completed]
     ├── C-22-A1 版本契约与架构修宪 [completed]
     ├── C-22-S1 Web 更新提示 [completed]
-    └── C-22-S2 Android 提示与 v0.1.1 发布 [in_progress]
+    └── C-22-S2 Android 提示与 v0.1.1 发布 [completed]
 ```
 
 - 当前合同：`C-18 - 食刻落地页视口收口、品牌替换与动效升级 [completed]`
