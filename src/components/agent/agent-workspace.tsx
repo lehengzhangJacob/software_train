@@ -279,28 +279,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
             "order-2 min-h-0 flex-col overflow-hidden bg-[var(--brand-plum)] text-white lg:order-1 lg:flex lg:h-full",
             mobileHistoryOpen ? "fixed inset-y-0 left-0 z-50 flex w-[min(22rem,88vw)] shadow-2xl lg:static lg:z-auto lg:w-auto lg:shadow-none" : "hidden",
           )}>
-            <div className="relative flex-1 lg:min-h-[430px]">
-              <div className="absolute inset-0 hidden lg:block">
-                <Image
-                  src="/images/nutrition/movement-hero.png"
-                  alt="在明亮健身房中拉伸的训练者"
-                  fill
-                  priority
-                  sizes="34vw"
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(45,39,53,.96)_0%,rgba(45,39,53,.14)_58%,transparent_100%)]" />
-              </div>
-              <div className="relative p-5 sm:p-7 lg:absolute lg:inset-x-0 lg:bottom-0">
-                <p className="text-[11px] font-semibold uppercase text-[var(--brand-mint)]">Your AI coach</p>
-                <h1 className="mt-2 break-words text-2xl font-semibold leading-tight sm:text-3xl">你好，{username}。</h1>
-                <p className="mt-2 max-w-sm text-sm leading-6 text-white/72">
-                  我会结合你的饮食档案、真实记录和长期记忆，陪你做出更轻松的下一步。
-                </p>
-              </div>
-            </div>
-
-            <div className="border-t border-white/10 p-3 sm:p-4">
+            <div className="shrink-0 border-b border-white/10 p-3 sm:p-4">
               <div className="mb-2 flex items-center justify-between gap-3 px-1">
                 <span className="flex items-center gap-2 text-xs font-semibold text-white/65">
                   <History className="size-3.5" />最近对话
@@ -333,7 +312,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
               {threads.length === 0 ? (
                 <p className="px-1 py-3 text-xs text-white/45">还没有历史对话，从右侧开始第一次交流。</p>
               ) : (
-                <div className="flex gap-2 overflow-x-auto pb-1 lg:block lg:max-h-44 lg:space-y-1 lg:overflow-y-auto">
+                <div className="max-h-64 space-y-1 overflow-y-auto pb-1">
                   {threads.map((thread) => {
                     const active = thread.threadId === activeThreadId
                     const busy = deletingThreadId === thread.threadId
@@ -341,7 +320,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                       <div
                         key={thread.threadId}
                         className={cn(
-                          "flex min-w-56 items-center gap-1 rounded-md border border-white/8 lg:min-w-0",
+                          "flex min-w-0 items-center gap-1 rounded-md border border-white/8",
                           active ? "bg-card text-[var(--brand-heading)]" : "bg-white/5 text-white hover:bg-white/9"
                         )}
                       >
@@ -372,6 +351,27 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                   })}
                 </div>
               )}
+            </div>
+
+            <div className="relative min-h-0 flex-1 lg:min-h-[430px]">
+              <div className="absolute inset-0 hidden lg:block">
+                <Image
+                  src="/images/nutrition/movement-hero.png"
+                  alt="在明亮健身房中拉伸的训练者"
+                  fill
+                  priority
+                  sizes="34vw"
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(45,39,53,.96)_0%,rgba(45,39,53,.14)_58%,transparent_100%)]" />
+              </div>
+              <div className="relative p-5 sm:p-7 lg:absolute lg:inset-x-0 lg:bottom-0">
+                <p className="text-[11px] font-semibold uppercase text-[var(--brand-mint)]">Your AI coach</p>
+                <h1 className="mt-2 break-words text-2xl font-semibold leading-tight sm:text-3xl">你好，{username}。</h1>
+                <p className="mt-2 max-w-sm text-sm leading-6 text-white/72">
+                  我会结合你的饮食档案、真实记录和长期记忆，陪你做出更轻松的下一步。
+                </p>
+              </div>
             </div>
           </aside>
 

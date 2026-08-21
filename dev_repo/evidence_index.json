@@ -1200,6 +1200,23 @@
       "description": "Cloud Browser acceptance screenshots for Issue #3 validation and Issue #4/#6 Agent workspace behavior, including the mobile history drawer"
     }
   ],
+  "C-21-UI1": [
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-workspace.tsx",
+      "description": "将最近对话区移到 Agent 侧栏顶部，改为独立纵向滚动，并保留移动抽屉的关闭/新建/删除行为"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-21/UI1-verification.json, scripts/agent-contract.test.ts",
+      "description": "桌面 1440x900、移动 471x695 云端 Browser 验收与 lint/typecheck/build/Agent 合同测试通过"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-21/agent-workspace-desktop-top.png, dev_repo/evidence/C-21/agent-mobile-history-panel-top.png",
+      "description": "最近对话位于顶部的云端桌面与移动抽屉截图"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",
