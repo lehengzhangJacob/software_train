@@ -1140,6 +1140,18 @@
       "description": "ADR、图、索引、不变量与运行账本的结构化校验"
     }
   ],
+  "C-21-S1": [
+    {
+      "type": "implementation",
+      "path": "src/app/access/page.tsx, src/lib/auth/validation.ts, src/lib/auth/service.ts, src/app/api/auth/register/route.ts, src/app/api/auth/login/route.ts",
+      "description": "注册页自定义错误提示、服务端可读认证文案与认证输入边界"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-21/S1-verification.json, scripts/auth-contract.test.ts",
+      "description": "Issue #3 三组输入回归与认证合同测试 7/7"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",

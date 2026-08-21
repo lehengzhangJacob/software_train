@@ -396,9 +396,10 @@
       "status": "in_progress",
       "summary": "集中修复 GitHub Issue #3 至 #8",
       "goal": "修复注册反馈、长期记忆与日期上下文、Agent 工作台状态、跨路由识别结果交接，并保持 Issue 开放供人工复测。",
-      "current_slice": "C-21-S1",
+      "current_slice": "C-21-S2",
       "completed_slices": [
-        "C-21-A1"
+        "C-21-A1",
+        "C-21-S1"
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit",

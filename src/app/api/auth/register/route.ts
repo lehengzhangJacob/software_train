@@ -16,9 +16,9 @@ function clientKey(request: Request) {
 export async function POST(request: Request) {
   const key = clientKey(request)
   const attempt = takeAttempt(key)
-  if (!attempt.allowed) return apiError(`灏濊瘯杩囧锛岃 ${Math.max(1, Math.ceil(attempt.retryAfterSeconds / 60))} 鍒嗛挓鍚庡啀璇�`, 429)
+  if (!attempt.allowed) return apiError(`尝试次数过多，请 ${Math.max(1, Math.ceil(attempt.retryAfterSeconds / 60))} 分钟后再试`, 429)
 
-  if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) return apiError("璇锋眰杩囧ぇ", 413)
+  if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) return apiError("请求过大", 413)
 
   try {
     const input = parseRegisterInput(await request.json())
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   } catch (error) {
     if (error instanceof AuthValidationError) return apiError(error.message, 422)
     if (error instanceof AuthFailure) return apiError(error.message, error.status)
-    if (error instanceof SyntaxError) return apiError("璇锋眰 JSON 鏍煎紡鏃犳晥", 400)
-    return apiError("娉ㄥ唽澶辫触锛岃绋嶅悗閲嶈瘯", 500)
+    if (error instanceof SyntaxError) return apiError("请求 JSON 格式无效", 400)
+    return apiError("注册失败，请稍后重试", 500)
   }
 }

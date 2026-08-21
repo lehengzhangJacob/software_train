@@ -57,3 +57,14 @@ test("auth input: weak passwords are rejected", () => {
     (error) => error instanceof AuthValidationError,
   )
 })
+
+test("auth validation: registration errors are actionable Chinese messages", () => {
+  assert.throws(
+    () => parseRegisterInput({ login: "alice", password: "short", inviteCode: "invite", username: "Alice" }),
+    (error) => error instanceof AuthValidationError && error.message.includes("密码长度必须在 8-128 个字符之间"),
+  )
+  assert.throws(
+    () => parseRegisterInput({ login: "alice", password: "password123", inviteCode: "", username: "Alice" }),
+    (error) => error instanceof AuthValidationError && error.message.includes("注册邀请码长度必须在 4-128 个字符之间"),
+  )
+})

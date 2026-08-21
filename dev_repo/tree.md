@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: `C-21-S1 - 注册反馈与认证文案修复`
+- Current slice: `C-21-S2 - Agent 记忆边界与日期上下文修复`
 - Return path: `web_completion_audit`
 - Issue state: #3-#8 remain open until external testers confirm non-reproduction.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.

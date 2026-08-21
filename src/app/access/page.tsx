@@ -34,6 +34,20 @@ function getErrorMessage(payload: ApiResponse | null, fallback: string) {
   return payload?.error?.trim() || fallback
 }
 
+function validateAuthForm(mode: AuthMode, form: AuthForm) {
+  if (mode === "register") {
+    if (!form.username.trim()) return "请输入显示名称"
+    if (form.login.trim().length < 3) return "账号长度必须在 3-80 个字符之间"
+    if (form.password.length < 8) return "密码长度必须在 8-128 个字符之间"
+    if (form.password !== form.confirmPassword) return "两次输入的密码不一致"
+    if (!form.inviteCode.trim()) return "请输入注册邀请码"
+  } else {
+    if (form.login.trim().length < 3) return "账号长度必须在 3-80 个字符之间"
+    if (!form.password) return "请输入密码"
+  }
+  return null
+}
+
 export default function AccessPage() {
   const router = useRouter()
   const [mode, setMode] = useState<AuthMode>("login")
@@ -56,8 +70,9 @@ export default function AccessPage() {
     event.preventDefault()
     if (pending) return
 
-    if (mode === "register" && form.password !== form.confirmPassword) {
-      setError("两次输入的密码不一致")
+    const validationError = validateAuthForm(mode, form)
+    if (validationError) {
+      setError(validationError)
       return
     }
 
@@ -210,7 +225,7 @@ export default function AccessPage() {
               : "登录后继续记录饮食、运动，也可以直接和营养教练聊天。"}
           </p>
 
-          <form className="access-auth-form mt-7 space-y-4 lg:mt-5 lg:grid lg:grid-cols-2 lg:gap-x-5 lg:gap-y-3 lg:space-y-0" onSubmit={onSubmit}>
+          <form noValidate className="access-auth-form mt-7 space-y-4 lg:mt-5 lg:grid lg:grid-cols-2 lg:gap-x-5 lg:gap-y-3 lg:space-y-0" onSubmit={onSubmit}>
             {isRegister ? (
               <div className="access-form-field space-y-2">
                 <Label htmlFor="auth-username" className="text-[var(--brand-heading)]">显示名称</Label>
@@ -304,7 +319,7 @@ export default function AccessPage() {
             <Button
               type="submit"
               className="access-submit-button relative mt-2 h-12 w-full overflow-hidden bg-[var(--brand-plum)] text-white hover:bg-[var(--brand-plum-soft)] lg:col-span-2 lg:mt-0 lg:h-11"
-              disabled={pending || form.login.trim().length < 3 || form.password.length === 0 || (isRegister && (!form.username.trim() || !form.inviteCode.trim()))}
+              disabled={pending}
             >
               <span className="access-submit-label relative z-10">
                 {pending ? "正在处理…" : isRegister ? "创建我的空间" : "登录并继续"}

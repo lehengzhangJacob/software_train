@@ -43,11 +43,11 @@ export async function registerAccount(input: RegisterInput): Promise<AuthResult>
   const result = await prisma.$transaction(async (tx) => {
     const invite = await tx.inviteCode.findUnique({ where: { codeDigest } })
     if (!invite || !inviteIsUsable(invite)) {
-      throw new AuthFailure("娉ㄥ唽閭€璇风爜鏃犳晥鎴栧凡鐢ㄥ敖", 422)
+      throw new AuthFailure("注册邀请码无效或已用尽", 422)
     }
 
     const existing = await tx.userAccount.findUnique({ where: { login } })
-    if (existing) throw new AuthFailure("璇ヨ处鎴峰凡瀛樺湪", 409)
+    if (existing) throw new AuthFailure("该账号已存在", 409)
 
     const unboundProfile = await tx.userProfile.findFirst({
       where: { account: null },
@@ -78,7 +78,7 @@ export async function registerAccount(input: RegisterInput): Promise<AuthResult>
       where: { inviteId: invite.inviteId, active: true, usedCount: { lt: invite.maxUses } },
       data: { usedCount: { increment: 1 } },
     })
-    if (consumed.count !== 1) throw new AuthFailure("娉ㄥ唽閭€璇风爜鏃犳晥鎴栧凡鐢ㄥ敖", 422)
+    if (consumed.count !== 1) throw new AuthFailure("注册邀请码无效或已用尽", 422)
 
     const account = await tx.userAccount.create({
       data: {
@@ -102,7 +102,7 @@ export async function loginAccount(input: LoginInput): Promise<AuthResult> {
   })
 
   if (!account || account.status !== "active" || !verifyPassword(input.password, account.passwordHash)) {
-    throw new AuthFailure("璐︽埛鎴栧瘑鐮佷笉姝ｇ‘", 401)
+    throw new AuthFailure("账号或密码不正确", 401)
   }
 
   const session = await createSessionRecord(prisma, account.accountId)
