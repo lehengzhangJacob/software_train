@@ -1,13 +1,20 @@
 import "server-only"
 
-import { getLocalDateRange } from "@/lib/date"
-import { getRelevantMemories } from "@/lib/memory/repository"
+import { getLocalDateRange, toLocalDateString } from "@/lib/date"
+import { getDisabledMemoryContents, getRelevantMemories } from "@/lib/memory/repository"
+import {
+  buildAgentDateInstruction,
+  filterEligibleMemories,
+  redactSuppressedMemoryContent,
+} from "@/lib/agent/context-safety"
 import { prisma } from "@/lib/prisma"
 
 export async function getAgentContext(userId: number) {
-  const dates = getLocalDateRange(14)
-  const activityDates = getLocalDateRange(7)
-  const [profile, meals, memories, activities] = await Promise.all([
+  const now = new Date()
+  const today = toLocalDateString(now)
+  const dates = getLocalDateRange(14, now)
+  const activityDates = getLocalDateRange(7, now)
+  const [profile, meals, memories, suppressedMemoryContents, activities] = await Promise.all([
     prisma.userProfile.findUnique({
       where: { userId },
       select: {
@@ -40,6 +47,7 @@ export async function getAgentContext(userId: number) {
       take: 40,
     }),
     getRelevantMemories(userId, 20),
+    getDisabledMemoryContents(userId),
     prisma.dailyActivity.findMany({
       where: { userId, activityDate: { gte: activityDates[0], lte: activityDates[activityDates.length - 1] } },
       select: {
@@ -53,7 +61,14 @@ export async function getAgentContext(userId: number) {
     }),
   ])
 
-  return { profile, meals, memories, activities }
+  return {
+    profile,
+    meals,
+    memories: filterEligibleMemories(memories, now),
+    suppressedMemoryContents,
+    activities,
+    today,
+  }
 }
 
 function safeText(value: string | null | undefined, maxLength: number) {
@@ -105,7 +120,12 @@ export function buildAgentSystemPrompt(context: Awaited<ReturnType<typeof getAge
     exerciseMinutes: activity.exerciseMinutes,
     source: activity.sourceKind,
   })))
-  const digestText = sessionDigest?.trim() ? JSON.stringify(safeText(sessionDigest, 4_000)) : ""
+  const digestText = sessionDigest?.trim()
+    ? JSON.stringify(redactSuppressedMemoryContent(
+        safeText(sessionDigest, 4_000),
+        context.suppressedMemoryContents,
+      ))
+    : ""
 
   return `你是本地个人营养 Agent。你服务的是一个单用户饮食记录工具，不要把自己描述成云端客服。
 
@@ -119,6 +139,7 @@ export function buildAgentSystemPrompt(context: Awaited<ReturnType<typeof getAge
 - 当上下文里有活动量数据时，可以在核算热量缺口、给出加餐或运动建议时参考当天步数与活动消耗，但不要虚构未提供的数据。
 
 当前上下文：
+${buildAgentDateInstruction(context.today)}
 个人档案：${profileText}
 近 14 天饮食记录（最多 40 条）：${mealsText}
 近 7 天活动量（来源 health_connect 为手机 Health Connect 自动同步，manual 为手动填写）：${activitiesText}

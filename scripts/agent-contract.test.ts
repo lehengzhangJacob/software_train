@@ -9,6 +9,11 @@ import {
 import { hasExplicitOrderingIntent } from "../src/lib/agent/ordering-intent"
 import { classifyAction, issueOrderingGrant } from "../src/lib/actions/policy"
 import { createAgentActivityRecorder } from "../src/lib/agent/activity"
+import {
+  buildAgentDateInstruction,
+  filterEligibleMemories,
+  redactSuppressedMemoryContent,
+} from "../src/lib/agent/context-safety"
 
 test("agent chat input rejects credentials and normalizes a message", () => {
   assert.deepEqual(parseAgentChatInput({ message: "  今天晚餐怎么吃？  " }), {
@@ -127,4 +132,22 @@ test("agent activity recorder merges updates and redacts credentials", async () 
       detail: "[credential redacted]",
     },
   ])
+})
+
+test("agent context excludes disabled or expired memories and redacts suppressed history", () => {
+  const now = new Date("2026-08-21T12:00:00.000Z")
+  const eligible = filterEligibleMemories([
+    { status: "active", expiresAt: null, content: "keep" },
+    { status: "disabled", expiresAt: null, content: "disabled" },
+    { status: "active", expiresAt: new Date("2026-08-21T11:59:59.000Z"), content: "expired" },
+  ], now)
+  assert.deepEqual(eligible.map((memory) => memory.content), ["keep"])
+  assert.equal(
+    redactSuppressedMemoryContent("用户说过 disabled，摘要里也有 disabled。", ["disabled"]),
+    "用户说过 [已停用记忆已移除]，摘要里也有 [已停用记忆已移除]。",
+  )
+  assert.equal(
+    buildAgentDateInstruction("2026-08-21"),
+    "应用今天的本地日期：2026-08-21。所有“今天/昨天/明天”等相对日期都以此为基准。",
+  )
 })

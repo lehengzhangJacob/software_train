@@ -3,9 +3,10 @@
 ## Current execution override
 
 - Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: `C-21-S2 - Agent 记忆边界与日期上下文修复`
+- Current slice: `C-21-S3 - Agent 工作台布局与识别状态一致性修复`
 - Return path: `web_completion_audit`
 - Issue state: #3-#8 remain open until external testers confirm non-reproduction.
+- C-21-S2 completed: disabled/expired memories are isolated from Agent context, suppressed text is redacted from digest/history, and the local date anchor is explicit.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 - 当前合同：`C-18 - 食刻落地页视口收口、品牌替换与动效升级 [completed]`

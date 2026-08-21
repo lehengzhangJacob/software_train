@@ -1152,6 +1152,18 @@
       "description": "Issue #3 三组输入回归与认证合同测试 7/7"
     }
   ],
+  "C-21-S2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/context-safety.ts, src/lib/agent/context.ts, src/app/api/agent/chat/route.ts, src/lib/memory/repository.ts",
+      "description": "Agent 记忆与日期上下文隔离：停用、过期记忆不进入模型上下文，摘要与历史消息脱敏，并提供本地日期锚点"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-21/S2-verification.json, scripts/agent-contract.test.ts, scripts/memory-contract.test.ts, scripts/consolidation-contract.test.ts",
+      "description": "Issue #5/#8 Agent memory boundary, suppression, and date-anchor contracts passed"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",

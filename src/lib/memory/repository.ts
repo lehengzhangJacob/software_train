@@ -2,6 +2,7 @@ import "server-only"
 
 import type { Prisma } from "@prisma/client"
 import type { MemoryCreateInput, MemoryQueryStatus, MemoryUpdateInput } from "@/lib/memory/contracts"
+import { isMemoryEligible } from "@/lib/memory/contracts"
 import { prisma } from "@/lib/prisma"
 
 export class MemoryNotFoundError extends Error {
@@ -92,7 +93,7 @@ export async function deleteUserMemory(userId: number, memoryId: number) {
 }
 
 export async function getRelevantMemories(userId: number, limit = 20, now = new Date()) {
-  return prisma.memoryItem.findMany({
+  const memories = await prisma.memoryItem.findMany({
     where: {
       userId,
       status: "active",
@@ -106,6 +107,17 @@ export async function getRelevantMemories(userId: number, limit = 20, now = new 
     ],
     take: Math.max(1, Math.min(limit, 50)),
   })
+  return memories.filter((memory) => isMemoryEligible(memory, now))
+}
+
+export async function getDisabledMemoryContents(userId: number, limit = 100) {
+  const memories = await prisma.memoryItem.findMany({
+    where: { userId, status: "disabled" },
+    select: { content: true },
+    orderBy: { updatedAt: "desc" },
+    take: Math.max(1, Math.min(limit, 200)),
+  })
+  return memories.map((memory) => memory.content)
 }
 
 export async function markMemoriesUsed(userId: number, memoryIds: number[], usedAt = new Date()) {

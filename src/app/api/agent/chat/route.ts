@@ -31,6 +31,7 @@ import { hasExplicitOrderingIntent } from "@/lib/agent/ordering-intent"
 import { issueOrderingGrant } from "@/lib/actions/policy"
 import { getCurrentAccountId, getCurrentUser } from "@/lib/current-user"
 import { getAssistantText, requestAiChatCompletion } from "@/lib/ai/client"
+import { redactSuppressedMemoryContent } from "@/lib/agent/context-safety"
 import { getPublicAiError } from "@/lib/ai/errors"
 import { getActiveAiProviderConfig, type ResolvedAiProviderConfig } from "@/lib/ai/settings"
 import { markMemoriesUsed } from "@/lib/memory/repository"
@@ -253,7 +254,10 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
       requestAiChatCompletion(config, {
         messages: [
           { role: "system", content: buildAgentSystemPrompt(context, sessionDigest?.summary) },
-          ...history.map((message) => ({ role: message.role, content: message.content })),
+          ...history.map((message) => ({
+            role: message.role,
+            content: redactSuppressedMemoryContent(message.content, context.suppressedMemoryContents),
+          })),
         ],
         temperature: 0.4,
         max_tokens: 1_500,

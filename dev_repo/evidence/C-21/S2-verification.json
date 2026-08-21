@@ -1,0 +1,27 @@
+{
+  "contract_id": "C-21",
+  "slice_id": "C-21-S2",
+  "timestamp": "2026-08-21T11:20:00+08:00",
+  "status": "passed",
+  "issues": [5, 8],
+  "assertions": [
+    "Relevant-memory retrieval applies the active and unexpired eligibility rule both in the database query and in the returned collection.",
+    "Disabled memory contents are collected only for suppression and are redacted from session digests and model-visible history.",
+    "The Agent system prompt contains one local-date anchor used for today, yesterday, and tomorrow references.",
+    "The suppression and date-anchor helpers have deterministic contract coverage."
+  ],
+  "red_test": "A disabled memory and an expired memory must not enter the eligible context, and disabled text must not survive in history or digest text.",
+  "green_test": "npm run test:agent -> 9 passed, 0 failed; npm run test:memory -> 4 passed, 0 failed; npx tsx --test scripts/consolidation-contract.test.ts -> 4 passed, 0 failed; npm run test:ordering -> 12 passed, 0 failed; npm run lint, npm run typecheck, and git diff --check passed.",
+  "same_case_requirement": "Issue #5 disabled-memory suppression and Issue #8 relative-date interpretation now use an explicit, testable boundary while Issues #3-#8 remain open.",
+  "architecture_delta": "none beyond C-21-A1",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "physical_evidence": [
+    "src/lib/agent/context-safety.ts",
+    "src/lib/agent/context.ts",
+    "src/app/api/agent/chat/route.ts",
+    "src/lib/memory/repository.ts",
+    "scripts/agent-contract.test.ts"
+  ]
+}
