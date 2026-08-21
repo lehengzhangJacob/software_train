@@ -9,6 +9,7 @@
 - C-21-S2 completed: disabled/expired memories are isolated from Agent context, suppressed text is redacted from digest/history, and the local date anchor is explicit.
 - C-21-S3 completed: the desktop Agent shell is fixed-height with right-only conversation scrolling, and the waiting copy follows the running activity.
 - C-21-S4 completed: recognition candidates survive route changes in a session-scoped, one-shot handoff and still require the existing review gate.
+- C-21-VERIFY completed locally and in the cloud: desktop history remains bounded, while mobile history is a collapsible side drawer instead of a panel below the chat. Issues #3-#8 remain open for external retest.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 - 当前合同：`C-18 - 食刻落地页视口收口、品牌替换与动效升级 [completed]`

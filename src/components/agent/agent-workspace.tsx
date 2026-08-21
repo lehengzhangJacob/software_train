@@ -9,9 +9,11 @@ import {
   History,
   LoaderCircle,
   MessageSquarePlus,
+  PanelLeft,
   Send,
   Sparkles,
   Trash2,
+  X,
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -177,6 +179,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   const [loadingThread, setLoadingThread] = useState(false)
   const [sending, setSending] = useState(false)
   const [deletingThreadId, setDeletingThreadId] = useState<number | null>(null)
+  const [mobileHistoryOpen, setMobileHistoryOpen] = useState(false)
   // Ephemeral by design (ADR-0004): the payment link lives only in this
   // component state for the current reply and disappears on reload.
   const [lastOrder, setLastOrder] = useState<OrderResult | null>(null)
@@ -203,6 +206,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
       setLastOrder(null)
       setTurnActivity([])
       setThreads((current) => mergeThread(current, thread))
+      setMobileHistoryOpen(false)
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "读取对话失败")
     } finally {
@@ -217,6 +221,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
     setDraft("")
     setLastOrder(null)
     setTurnActivity([])
+    setMobileHistoryOpen(false)
   }
 
   const deleteThread = async (threadId: number) => {
@@ -260,9 +265,20 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
 
   return (
     <div className="space-y-5">
+      {mobileHistoryOpen ? (
+        <button
+          type="button"
+          aria-label="关闭会话面板"
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+          onClick={() => setMobileHistoryOpen(false)}
+        />
+      ) : null}
       <section className="surface-card overflow-hidden border-0">
         <div className="grid grid-cols-[minmax(0,1fr)] lg:h-[680px] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
-          <aside className="order-2 flex min-h-0 flex-col overflow-hidden bg-[var(--brand-plum)] text-white lg:order-1 lg:h-full">
+          <aside className={cn(
+            "order-2 min-h-0 flex-col overflow-hidden bg-[var(--brand-plum)] text-white lg:order-1 lg:flex lg:h-full",
+            mobileHistoryOpen ? "fixed inset-y-0 left-0 z-50 flex w-[min(22rem,88vw)] shadow-2xl lg:static lg:z-auto lg:w-auto lg:shadow-none" : "hidden",
+          )}>
             <div className="relative flex-1 lg:min-h-[430px]">
               <div className="absolute inset-0 hidden lg:block">
                 <Image
@@ -289,17 +305,30 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                 <span className="flex items-center gap-2 text-xs font-semibold text-white/65">
                   <History className="size-3.5" />最近对话
                 </span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-sm"
-                  className="text-white hover:bg-white/10 hover:text-white"
-                  aria-label="新建对话"
-                  title="新建对话"
-                  onClick={startNewThread}
-                >
-                  <MessageSquarePlus />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-white hover:bg-white/10 hover:text-white"
+                    aria-label="新建对话"
+                    title="新建对话"
+                    onClick={startNewThread}
+                  >
+                    <MessageSquarePlus />
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-white hover:bg-white/10 hover:text-white lg:hidden"
+                    aria-label="关闭会话面板"
+                    title="关闭会话面板"
+                    onClick={() => setMobileHistoryOpen(false)}
+                  >
+                    <X />
+                  </Button>
+                </div>
               </div>
               {threads.length === 0 ? (
                 <p className="px-1 py-3 text-xs text-white/45">还没有历史对话，从右侧开始第一次交流。</p>
@@ -354,9 +383,22 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                   {activeThread?.title ?? "今晚怎么吃，我陪你定。"}
                 </h2>
               </div>
-              <div className="hidden shrink-0 items-center gap-2 text-xs text-muted-foreground sm:flex">
-                <span className="size-2 rounded-full bg-[var(--brand-mint)]" />
-                档案与记忆已接入
+              <div className="flex shrink-0 items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon-sm"
+                  className="lg:hidden"
+                  aria-label="打开会话面板"
+                  title="打开会话面板"
+                  onClick={() => setMobileHistoryOpen(true)}
+                >
+                  <PanelLeft />
+                </Button>
+                <div className="hidden items-center gap-2 text-xs text-muted-foreground sm:flex">
+                  <span className="size-2 rounded-full bg-[var(--brand-mint)]" />
+                  档案与记忆已接入
+                </div>
               </div>
             </header>
 

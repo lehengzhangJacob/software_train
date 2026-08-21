@@ -1,0 +1,45 @@
+{
+  "contract_id": "C-21",
+  "slice_id": "C-21-VERIFY",
+  "timestamp": "2026-08-21T11:40:54+08:00",
+  "status": "passed",
+  "issues": [3, 4, 5, 6, 7, 8],
+  "assertions": [
+    "The complete local release gate passed after the mobile Agent history-panel change: all contract suites, lint, typecheck, production build, and release smoke are green.",
+    "Cloud browser acceptance confirmed actionable registration validation for weak, mismatched, and missing-invite inputs.",
+    "Cloud desktop acceptance confirmed a 680px Agent shell with a bounded history column and a right-only scroll viewport (465px client height, 640px scroll height, overflow-y auto).",
+    "Cloud mobile acceptance confirmed the conversation list is hidden below the chat by default, opens from the header as a side drawer, and closes back to the chat view.",
+    "The deployed cloud release served /access with HTTP 200 and rejected anonymous /api/users requests with HTTP 401.",
+    "The recognition handoff contract suite remains green; the browser route attempt reached the existing review flow but the external AI provider returned a rate-limit or balance error, so no successful cloud recognition result is claimed here."
+  ],
+  "red_test": "Keep Issues #3-#8 open for external testers; the mobile history panel must not occupy the chat flow below the conversation, and recognition must not be reported as successful when the provider returns an error.",
+  "green_test": "npm run verify -> all suites passed; npm run smoke -> passed; cloud deploy -> completed; Browser acceptance -> registration validation, desktop fixed shell, mobile drawer open/close, and cloud auth boundary passed.",
+  "same_case_requirement": "Issues #3-#8 remain open until external testers confirm non-reproduction.",
+  "cloud_deploy": {
+    "release_timestamp": "20260821113701",
+    "base_url": "http://8.148.206.131:8000",
+    "smoke": [
+      "/access -> 200",
+      "anonymous /api/users -> 401"
+    ]
+  },
+  "browser_visual_evidence": [
+    "dev_repo/evidence/C-21/register-validation-mismatch.png",
+    "dev_repo/evidence/C-21/register-validation-invite.png",
+    "dev_repo/evidence/C-21/agent-workspace-desktop.png",
+    "dev_repo/evidence/C-21/agent-workspace-mobile.png",
+    "dev_repo/evidence/C-21/agent-mobile-history-panel.png"
+  ],
+  "physical_evidence": [
+    "src/components/agent/agent-workspace.tsx",
+    "src/lib/agent/context-safety.ts",
+    "src/lib/food/recognition-handoff.ts",
+    "scripts/agent-contract.test.ts",
+    "scripts/recognition-handoff.test.ts",
+    "package.json"
+  ],
+  "architecture_delta": "none beyond C-21-A1; mobile history presentation is a UI-only responsive boundary.",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}
