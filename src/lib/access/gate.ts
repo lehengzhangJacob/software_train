@@ -22,7 +22,12 @@ export type AccessDecision = "allow" | "gate-page" | "unauthorized-api"
 
 export function decideAccess(pathname: string, hasSession: boolean, enabled: boolean): AccessDecision {
   if (!enabled || hasSession) return "allow"
-  if (pathname === "/auth" || pathname === "/access" || pathname.startsWith("/api/auth/")) return "allow"
+  if (
+    pathname === "/auth" ||
+    pathname === "/access" ||
+    pathname.startsWith("/api/auth/") ||
+    pathname === "/api/app/version"
+  ) return "allow"
   if (pathname.startsWith("/api/")) return "unauthorized-api"
   return "gate-page"
 }

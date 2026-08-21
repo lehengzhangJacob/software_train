@@ -84,6 +84,26 @@ async function main() {
     const home = await waitForResponse(`${baseUrl}/`)
     assert(home.headers.get("content-type")?.includes("text/html"), "Home page did not return HTML")
 
+    const version = await fetch(`${baseUrl}/api/app/version`, {
+      headers: { "Cache-Control": "no-cache" },
+    })
+    const versionBody = await version.json()
+    assert(version.status === 200, "App version endpoint should be public and return 200")
+    assert(
+      versionBody?.error === null &&
+        typeof versionBody?.data?.version === "string" &&
+        versionBody.data.version.length > 0 &&
+        typeof versionBody.data.build === "string" &&
+        versionBody.data.build.length > 0 &&
+        typeof versionBody.data.releaseUrl === "string" &&
+        typeof versionBody.data.androidReleaseUrl === "string",
+      "App version envelope is invalid",
+    )
+    assert(
+      version.headers.get("cache-control")?.includes("no-store"),
+      "App version endpoint must not be cached",
+    )
+
     const agent = await fetch(`${baseUrl}/agent`)
     assert(agent.ok && agent.headers.get("content-type")?.includes("text/html"), "Agent page did not return HTML")
 

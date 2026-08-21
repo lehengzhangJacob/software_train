@@ -117,6 +117,19 @@ MCP Gateway 只暴露白名单工具，并限制输入、超时和输出体积�
 
 云端实例以本仓 standalone 构建产物部署（服务器上不构建），systemd 常驻 8000 端口，SQLite 与账户级设置位于服务侧。AUTH_REQUIRED=true 时，middleware 对未认证页面请求重定向 /access、业务 API（含 SSE）返回 401；登录和邀请码注册由 Node 运行时校验数据库会话，认证后持有 httpOnly ft_session cookie。旧 APP_ACCESS_TOKEN 只允许作为迁移期 bootstrap invite，不再授权业务页面或 API。云端 SQLite 是生产真相源，Web 与 Android 双端同源读取同一对话、记录、记忆和账户设置，不引入离线同步引擎。
 
+### 版本感知交付与增量刷新（C-22 / ADR-0012）
+
+每个构建从 standalone 产物的 `.next/BUILD_ID` 读取不可变 build id，并由只读
+`/api/app/version` 以 `{ data, error }` 契约公开版本、构建和 Release 链接。该接口是唯一
+公开的版本探测入口，响应 `Cache-Control: no-store`，不读取账户或业务数据；middleware
+只为此元数据接口保留匿名例外。Browser 外壳把构建 id 作为当前页面的 server prop，按首屏、
+focus、visibility 和低频定时器探测远端 build，发现差异后提示用户刷新。Next 的 hash 静态
+资源继续由浏览器缓存，只下载发生变化的 chunk，不引入 Service Worker 或离线业务缓存。
+
+Android 仍是指向 live 服务的 Capacitor WebView 薄壳；它复用同一版本探测流并在发现新构建
+时提供用户确认的 Release/Android 包入口。壳不静默安装 APK、不持有第二个版本真相，原生
+包的安装和升级仍由用户或后续应用商店能力完成。
+
 ### 数据与发布
 
 Prisma migration 是生产 schema 唯一真相；database/schema.sql 降级为原始设计参考。SQLite 仅支持单进程/单实例写入。本地开发以 loopback 启动；云端实例经 deploy 管道发布（migrate deploy + 产物替换 + systemd 重启）。

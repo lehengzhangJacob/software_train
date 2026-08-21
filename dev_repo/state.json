@@ -396,7 +396,7 @@
       "status": "in_progress",
       "summary": "集中修复 GitHub Issue #3 至 #8",
       "goal": "修复注册反馈、长期记忆与日期上下文、Agent 工作台状态、跨路由识别结果交接，并保持 Issue 开放供人工复测。",
-      "current_slice": "C-21-UI1",
+      "current_slice": null,
       "completed_slices": [
         "C-21-A1",
         "C-21-S1",
@@ -421,6 +421,21 @@
         "C-21-UI1"
       ],
       "return_to": "C-21"
+    },
+    "C-22": {
+      "contract_id": "C-22",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "为 Web 与 Android 薄壳补上同源版本探测、增量刷新提示和可验收发布入口",
+      "goal": "以 standalone build id 作为发布真相，新增公开版本接口、Web 更新提示、Android Release 入口，并完成 v0.1.1 云端与双端交付回归。",
+      "current_slice": null,
+      "completed_slices": ["C-22-A1", "C-22-S1", "C-22-S2"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "C-22-A1 / ADR-0012",
+      "issue_closure": "Issues #3-#8 remain open until external testers confirm non-reproduction.",
+      "latest_verification": "C-22-S2 passed: cloud v0.1.1 deployed at 20260821153703, public version API/no-store and anonymous business 401 passed; Android 0.1.1 debug APK built; Browser desktop/mobile update notice evidence captured."
     }
   }
 }

@@ -52,3 +52,7 @@ The earlier single-user statement is superseded by this amendment:
 21. 云端实例未设置 `AUTH_REQUIRED=true` 和有效 bootstrap invite 前不得开放账户注册；旧 `APP_ACCESS_TOKEN` 只允许作为迁移期邀请码输入，不是业务授权凭据。
 22. 公网未认证请求不得触达任何业务 API（含 SSE）或个性化页面；认证使用 httpOnly `ft_session` cookie，原始密码、会话值和邀请码不得出现在响应体、日志或前端可见面。
 23. 云端部署只接收本仓构建产物，不在服务器上构建；.env.production 权限 0600 且不入 Git；本地开发回路（localhost / adb reverse）始终保持可用。
+32. `/api/app/version` 只公开版本、build id 和 Release 链接等非敏感元数据，响应为 `data/error` 且 `Cache-Control: no-store`；它是 `AUTH_REQUIRED=true` 下唯一为版本探测保留的匿名 API 例外。
+33. Browser 当前页面与 `/api/app/version` 必须比较同一构建的 build id；同 build 不提示，发现新 build 才提示刷新；更新检测不得持久化账户或营养数据。
+34. Next hash 静态资源可按变化 chunk 增量下载，但不得用 Service Worker、离线数据库或 stale personalized HTML 形成第二份业务真相。
+35. Android 薄壳只消费云端版本契约并提供用户确认的 Release/下载入口；不得静默安装 APK、建立独立版本源或改变 Health Connect/相机边界。

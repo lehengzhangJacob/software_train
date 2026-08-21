@@ -4,6 +4,7 @@ import "./globals.css"
 import { AppChrome } from "@/components/app-chrome"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
+import { getAppVersion } from "@/lib/app-version"
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] })
@@ -22,6 +23,8 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const appVersion = getAppVersion()
+
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
@@ -32,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             跳至主要内容
           </a>
-          <AppChrome>{children}</AppChrome>
+          <AppChrome currentBuild={appVersion.build}>{children}</AppChrome>
           <Toaster richColors position="top-center" />
         </ThemeProvider>
       </body>

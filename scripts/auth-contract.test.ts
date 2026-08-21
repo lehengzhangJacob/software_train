@@ -12,6 +12,7 @@ test("account gate: local compatibility and cloud session boundary", () => {
   assert.equal(decideAccess("/dashboard", false, true), "gate-page")
   assert.equal(decideAccess("/auth", false, true), "allow")
   assert.equal(decideAccess("/api/auth/login", false, true), "allow")
+  assert.equal(decideAccess("/api/app/version", false, true), "allow")
   assert.equal(decideAccess("/api/users", true, true), "allow")
 })
 

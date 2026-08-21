@@ -3,10 +3,17 @@
 import type { ReactNode } from "react"
 import { usePathname } from "next/navigation"
 
+import { AppUpdateNotice } from "@/components/app-update-notice"
 import { Sidebar } from "@/components/sidebar"
 import { cn } from "@/lib/utils"
 
-export function AppChrome({ children }: { children: ReactNode }) {
+export function AppChrome({
+  children,
+  currentBuild,
+}: {
+  children: ReactNode
+  currentBuild: string
+}) {
   const pathname = usePathname()
   const isAccessRoute = pathname === "/access" || pathname === "/auth"
 
@@ -28,6 +35,7 @@ export function AppChrome({ children }: { children: ReactNode }) {
             : "min-h-screen pb-[calc(5rem+env(safe-area-inset-bottom))] pt-[4.5rem] lg:pb-10 lg:pt-[6.25rem]",
         )}
       >
+        {!isAccessRoute && <AppUpdateNotice currentBuild={currentBuild} />}
         <div className={cn("app-page", isAccessRoute && "access-page")}>{children}</div>
       </main>
     </div>

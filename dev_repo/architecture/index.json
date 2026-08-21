@@ -23,6 +23,11 @@
       "description": "Session-scoped structured recognition result handoff across client routes"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0012-version-aware-delivery.md",
+      "node": "cloud.delivery",
+      "description": "Version-aware delivery and shared Web/Android incremental refresh flow"
+    },
+    {
       "path": "dev_repo/architecture/README.md",
       "node": "dev_repo",
       "description": "架构宪法入口"
@@ -142,6 +147,14 @@
       "node": "backend.api"
     },
     {
+      "glob": "src/app/api/app/version/**",
+      "node": "backend.api"
+    },
+    {
+      "glob": "src/lib/app-version.ts",
+      "node": "backend.api"
+    },
+    {
       "glob": "android/**",
       "node": "android.shell"
     },
@@ -159,6 +172,10 @@
     },
     {
       "glob": "src/components/**",
+      "node": "frontend.components"
+    },
+    {
+      "glob": "src/lib/app-update-shared.ts",
       "node": "frontend.components"
     },
     {
