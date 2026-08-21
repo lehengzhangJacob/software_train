@@ -18,6 +18,11 @@
       "description": "Native Android camera capture re-enters the shared food review pipeline"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0011-session-scoped-recognition-handoff.md",
+      "node": "frontend.components",
+      "description": "Session-scoped structured recognition result handoff across client routes"
+    },
+    {
       "path": "dev_repo/architecture/README.md",
       "node": "dev_repo",
       "description": "架构宪法入口"

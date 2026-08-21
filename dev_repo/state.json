@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-20",
+  "active_contract_id": "C-21",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -378,7 +378,7 @@
       "contract_id": "C-20",
       "parent_contract_id": "C-19",
       "root_campaign": "nutrition-agent",
-      "status": "in_progress",
+      "status": "blocked",
       "summary": "食刻专业化图文 README 已完成，远端推送等待写权限",
       "goal": "把食刻的产品闭环、架构、配置、安全边界、真实回归证据与部署方式整理为可对外阅读的 README，并推送当前 main 历史到 origin。",
       "current_slice": "C-20-S2",
@@ -388,6 +388,21 @@
       "deferred_slices": [],
       "return_to": "web_completion_audit",
       "blocked_reason": "origin/lehengzhangJacob/software_train grants READ only to the active GitHub identity; git push returned HTTP 403"
+    },
+    "C-21": {
+      "contract_id": "C-21",
+      "parent_contract_id": "C-03",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "集中修复 GitHub Issue #3 至 #8",
+      "goal": "修复注册反馈、长期记忆与日期上下文、Agent 工作台状态、跨路由识别结果交接，并保持 Issue 开放供人工复测。",
+      "current_slice": "C-21-S1",
+      "completed_slices": [
+        "C-21-A1"
+      ],
+      "deferred_slices": [],
+      "return_to": "web_completion_audit",
+      "issue_closure": "Issues #3-#8 remain open until external testers confirm non-reproduction."
     }
   }
 }

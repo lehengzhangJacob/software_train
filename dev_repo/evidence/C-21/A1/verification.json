@@ -1,0 +1,28 @@
+{
+  "contract_id": "C-21",
+  "slice_id": "C-21-A1",
+  "timestamp": "2026-08-21T10:57:12.8956221+08:00",
+  "status": "passed",
+  "architecture_delta": "Added a browser-session structured recognition handoff boundary; no API, persistence entity, or image store was added.",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "assertions": [
+    "Architecture JSON files parse successfully.",
+    "frontend.components declares a recognition handoff with four prohibited payload classes.",
+    "ADR, architecture narrative, invariant, runtime diagram, runtime state, and evidence index agree on the same boundary.",
+    "The handoff is limited to schema-validated food candidates in the current browser session."
+  ],
+  "commands": [
+    "node JSON.parse dev_repo/architecture/graph.json dev_repo/architecture/index.json dev_repo/state.json dev_repo/evidence_index.json",
+    "node architecture amendment presence check",
+    "node graph handoff shape check",
+    "git diff --check"
+  ],
+  "result": {
+    "json": "passed",
+    "architecture_amendment": "passed",
+    "graph_shape": "passed",
+    "diff_check": "passed with existing CRLF conversion warnings only"
+  }
+}

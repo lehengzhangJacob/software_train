@@ -1128,6 +1128,18 @@
       "description": "npm run deploy、云端入口 200、匿名业务 API 401 与 reduced-motion 发布验证"
     }
   ],
+  "C-21-A1": [
+    {
+      "type": "architecture_amendment",
+      "path": "dev_repo/architecture/decisions/ADR-0011-session-scoped-recognition-handoff.md, dev_repo/architecture/graph.json, dev_repo/architecture/ARCHITECTURE.md, dev_repo/architecture/invariants.md, dev_repo/architecture/diagrams/runtime-flow.mmd",
+      "description": "会话级结构化识别结果交接修正：无新 API、无数据库实体、无图片或敏感原文持久化"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-21/A1/verification.json",
+      "description": "ADR、图、索引、不变量与运行账本的结构化校验"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",

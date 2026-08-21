@@ -10,6 +10,9 @@ sequenceDiagram
   API->>AI: 服务端凭据调用
   AI-->>API: 结构化食物候选
   API-->>UI: data/error
+  alt 客户端路由在识别完成前切换
+    UI->>UI: 会话级交接结构化候选（不含图片）
+  end
   User->>UI: 发起营养对话或附近外卖请求
   UI->>API: POST /api/agent
   API->>DB: 读取档案、餐食与可用记忆

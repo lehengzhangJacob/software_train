@@ -24,6 +24,10 @@ The earlier single-user statement is superseded by this amendment:
     existing recognition/review/save path; the shell does not create a second
     photo API or durable image store. Browser capture keeps its file-input
     fallback, and cancellation/errors cannot be reported as recognition success.
+31. A client-route change may hand off only a bounded, schema-validated food
+    recognition result within the same browser session. The handoff must never
+    contain image data, provider error bodies, credentials, raw model output,
+    or a durable meal record; the existing human review gate remains mandatory.
 
 1. 产品边界是私密、账户化的个人营养 Agent；本地开发与云端交付实例共享同一代码与单实例 SQLite 模型，云端公网可达性由数据库账户会话约束（ADR-0007/0008）。引入多租户、角色权限或离线双写同步引擎必须另开架构与 ER 修宪合同。
 2. 个性化页面必须动态渲染，构建产物不得包含用户档案或餐食 PII。

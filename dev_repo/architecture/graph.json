@@ -183,7 +183,8 @@
       ],
       "invariants": [
         "AI 先审核后保存",
-        "状态可被键盘和读屏理解"
+        "状态可被键盘和读屏理解",
+        "跨路由识别交接只允许会话级、经模式校验的食物候选，禁止图片与敏感原文"
       ],
       "allowed_change_types": [
         "component behavior",
@@ -206,6 +207,17 @@
         "owner": "current Agent turn presentation",
         "source": "server activity events only",
         "keyboard_accessible": true
+      },
+      "recognition_handoff": {
+        "owner": "food recognition review workflow",
+        "storage": "browser session only",
+        "payload": "request id, lifecycle status, bounded structured food candidates",
+        "prohibited": [
+          "image payloads",
+          "provider error bodies",
+          "credentials",
+          "raw model responses"
+        ]
       }
     },
     {
