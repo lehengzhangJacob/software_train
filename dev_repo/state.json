@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-21",
+  "active_contract_id": "C-22",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -421,6 +421,20 @@
         "C-21-UI1"
       ],
       "return_to": "C-21"
+    },
+    "C-22": {
+      "contract_id": "C-22",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "为 Web 与 Android 薄壳补上同源版本探测、增量刷新提示和可验收发布入口",
+      "goal": "以 standalone build id 作为发布真相，新增公开版本接口、Web 更新提示、Android Release 入口，并完成 v0.1.1 云端与双端交付回归。",
+      "current_slice": "C-22-S1",
+      "completed_slices": ["C-22-A1"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "C-22-A1 / ADR-0012",
+      "issue_closure": "Issues #3-#8 remain open until external testers confirm non-reproduction."
     }
   }
 }

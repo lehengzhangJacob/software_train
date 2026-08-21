@@ -1217,6 +1217,23 @@
       "description": "最近对话位于顶部的云端桌面与移动抽屉截图"
     }
   ],
+  "C-22-A1": [
+    {
+      "type": "implementation",
+      "path": "src/lib/app-version.ts, src/app/api/app/version/route.ts, src/lib/access/gate.ts",
+      "description": "公开版本元数据接口：读取 standalone BUILD_ID，返回版本/构建/Release 链接，并在认证门开启时保留匿名版本探测例外"
+    },
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0012-version-aware-delivery.md, dev_repo/architecture/ARCHITECTURE.md, dev_repo/architecture/graph.json, dev_repo/architecture/index.json, dev_repo/architecture/invariants.md",
+      "description": "版本感知交付与 Web/Android 共用云端 build 真相的架构 amendment"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-22/A1-verification.json, scripts/auth-contract.test.ts, scripts/release-smoke.mjs",
+      "description": "访问门 7/7、lint、typecheck、production build 和 release smoke 通过；版本接口 data/error 与 no-store 已断言"
+    }
+  ],
   "C-20-S1": [
     {
       "type": "documentation",

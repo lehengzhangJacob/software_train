@@ -172,7 +172,8 @@
         "src/components/**"
       ],
       "public_interfaces": [
-        "React component props"
+        "React component props",
+        "version-aware update notice"
       ],
       "depends_on": [
         "backend.api",
@@ -184,7 +185,8 @@
       "invariants": [
         "AI 先审核后保存",
         "状态可被键盘和读屏理解",
-        "跨路由识别交接只允许会话级、经模式校验的食物候选，禁止图片与敏感原文"
+        "跨路由识别交接只允许会话级、经模式校验的食物候选，禁止图片与敏感原文",
+        "更新提示只比较构建 id，不缓存账户或营养数据"
       ],
       "allowed_change_types": [
         "component behavior",
@@ -229,6 +231,8 @@
         "src/app/api/reports/**",
         "src/app/api/exercise/**",
         "src/app/api/health/**",
+        "src/app/api/app/version/**",
+        "src/lib/app-version.ts",
         "src/lib/api*.ts",
         "src/lib/validation*.ts"
       ],
@@ -239,7 +243,8 @@
         "/api/reports GET continuous-day series (approved target)",
         "/api/exercise/suggest GET/POST/PATCH (approved target)",
         "/api/health/sync POST daily-aggregate upsert (approved target)",
-        "/api/health/recent GET local-date window (approved target)"
+        "/api/health/recent GET local-date window (approved target)",
+        "/api/app/version GET public build metadata"
       ],
       "depends_on": [
         "database.prisma"
@@ -252,7 +257,8 @@
       "invariants": [
         "不信任客户端 userId",
         "响应为 data/error",
-        "错误脱敏"
+        "错误脱敏",
+        "版本接口只公开非敏感元数据并禁止缓存"
       ],
       "allowed_change_types": [
         "DTO validation",
@@ -486,7 +492,8 @@
       "invariants": [
         "CI 不调用真实 AI",
         "本地回路默认只监听 loopback",
-        "绿测后才称 RC"
+        "绿测后才称 RC",
+        "发布 smoke 必须验证公开版本契约和 no-store 响应"
       ],
       "allowed_change_types": [
         "scripts",
@@ -804,7 +811,8 @@
       ],
       "public_interfaces": [
         "Capacitor WebView shell",
-        "Health Connect aggregated sync (via capgo-capacitor-health)"
+        "Health Connect aggregated sync (via capgo-capacitor-health)",
+        "version-aware release prompt via shared WebView"
       ],
       "depends_on": [
         "backend.api",
@@ -819,7 +827,8 @@
         "开发回路走 adb reverse loopback（形态 A）",
         "形态 B 直连云端 URL，同样经过账户会话门",
         "Native camera capture uses the Capacitor bridge and returns to the shared recognition/review/save path",
-        "Camera cancellation or permission failure is never reported as recognition success"
+        "Camera cancellation or permission failure is never reported as recognition success",
+        "版本探测复用云端 Web 真相，更新入口由用户确认，不静默安装 APK"
       ],
       "allowed_change_types": [
         "shell config",
