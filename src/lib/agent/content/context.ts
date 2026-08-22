@@ -92,6 +92,18 @@ export async function getDailyArticleContext(userId: number) {
 
 export type DailyArticleContext = Awaited<ReturnType<typeof getDailyArticleContext>>
 
+export function buildEmptyDailyArticleContext(contentDate = getContentDate()): DailyArticleContext {
+  return {
+    contentDate,
+    profile: null,
+    meals: [],
+    activities: [],
+    memories: [],
+    exercisePlan: null,
+    sessionDigest: null,
+  }
+}
+
 export function contextForPrompt(context: DailyArticleContext) {
   return JSON.stringify(context)
 }

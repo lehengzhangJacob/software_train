@@ -4,7 +4,7 @@ import { getAssistantText, requestAiChatCompletion } from "@/lib/ai/client"
 import { getActiveAiProviderConfig } from "@/lib/ai/settings"
 import { prisma } from "@/lib/prisma"
 import { DAILY_ARTICLE_COUNT, extractJsonPayload, parseArticleSet, serializeArticleContent, serializeArticleVisual, type ArticlePayload } from "@/lib/agent/content/contracts"
-import { getDailyArticleContext, contextForPrompt } from "@/lib/agent/content/context"
+import { buildEmptyDailyArticleContext, getDailyArticleContext, contextForPrompt } from "@/lib/agent/content/context"
 import { buildFallbackArticles } from "@/lib/agent/content/fallback"
 import { dashscopeImageAvailable, generateDashScopeImage } from "@/lib/agent/content/dashscope-image"
 import { getContentDate } from "@/lib/agent/content/time"
@@ -199,7 +199,7 @@ export async function ensureDailyArticleBatch(
 ): Promise<DailyArticleFeed | null> {
   const prepared = await prepareBatch(userId, contentDate)
   if (prepared.shouldGenerate) {
-    const context = await getDailyArticleContext(userId)
+    const context = await getDailyArticleContext(userId).catch(() => buildEmptyDailyArticleContext(contentDate))
     let articles: ArticlePayload[]
     let sourceKind: "agent" | "fallback" = "agent"
     try {
@@ -226,13 +226,29 @@ export async function runDailyArticleJob(contentDate = getContentDate()) {
     : (await prisma.userProfile.findMany({ select: { userId: true }, orderBy: { userId: "asc" } })).map((profile) => ({ accountId: undefined, profileId: profile.userId }))
   const results: Array<{ userId: number; status: string; readyCount: number; imagePendingCount: number }> = []
   for (const profile of profiles) {
-    const feed = await ensureDailyArticleBatch(profile.profileId, profile.accountId, contentDate)
-    results.push({
-      userId: profile.profileId,
-      status: feed?.status ?? "missing",
-      readyCount: feed?.readyCount ?? 0,
-      imagePendingCount: feed?.imagePendingCount ?? 0,
-    })
+    try {
+      const feed = await ensureDailyArticleBatch(profile.profileId, profile.accountId, contentDate)
+      results.push({
+        userId: profile.profileId,
+        status: feed?.status ?? "missing",
+        readyCount: feed?.readyCount ?? 0,
+        imagePendingCount: feed?.imagePendingCount ?? 0,
+      })
+    } catch {
+      const failed = await findBatch(profile.profileId, contentDate).catch(() => null)
+      if (failed?.status === "generating") {
+        await prisma.agentDailyArticleBatch.update({
+          where: { batchId: failed.batchId },
+          data: { status: "failed", generationError: "job_failed", startedAt: null },
+        }).catch(() => undefined)
+      }
+      results.push({
+        userId: profile.profileId,
+        status: "failed",
+        readyCount: failed?.readyCount ?? 0,
+        imagePendingCount: failed?.imagePendingCount ?? 0,
+      })
+    }
   }
   return { contentDate, accounts: results }
 }
