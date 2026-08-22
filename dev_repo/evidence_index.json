@@ -1429,6 +1429,11 @@
       "type": "implementation",
       "path": "src/components/food/meals-content.tsx, src/lib/nutrition.ts, src/lib/utils.ts, scripts/meal-ui-contract.test.ts",
       "description": "原始输入延迟解析、统一 min/max、明确保存提示与 bounded display helper"
+    },
+    {
+      "type": "cloud_acceptance",
+      "path": "dev_repo/evidence/C-26/S2/cloud-acceptance.json",
+      "description": "云端 20260822202323：300 位输入拒绝且不落库、100000 边界可保存并清理、375px 无溢出、控制台无错误"
     }
   ]
 }

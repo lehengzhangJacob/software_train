@@ -1,0 +1,31 @@
+{
+  "deployment": "20260822202323",
+  "url": "http://8.148.206.131:8000/meals",
+  "account": "foodmoment-team-a",
+  "invalid_input": {
+    "field": "manual-calories",
+    "digits": 300,
+    "raw_value_preserved_until_save": true,
+    "toast": "热量应在 0 到 100000 之间",
+    "meal_count_before": 1,
+    "meal_count_after": 1
+  },
+  "inclusive_boundary": {
+    "values": [100000, 100000, 100000, 100000],
+    "saved": true,
+    "display": "100,000 千卡 / 100000.0g",
+    "deleted_afterward": true,
+    "meal_count_after_cleanup": 1
+  },
+  "mobile": {
+    "viewport": "375x812",
+    "scroll_width": 375,
+    "body_width": 375,
+    "horizontal_overflow": false
+  },
+  "console": {
+    "errors": [],
+    "warnings": []
+  },
+  "issue_state": "Issue #10 remains open for external retest"
+}

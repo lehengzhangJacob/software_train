@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-26",
+  "active_contract_id": "C-21",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -407,8 +407,8 @@
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit",
-      "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-24-S4 complete: cloud structured exercise-plan generation, persistence, coach return link, active revision and legacy history passed 2026-08-22; #6/#7/#8 remain closed as completed after external confirmations; #3/#4/#5 remain open for external retest."
+      "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5 and #10 remain open until external testers confirm non-reproduction.",
+      "latest_verification": "C-26-S2 complete: cloud Issue #10 nutrition-boundary acceptance passed on deploy 20260822202323; #10 remains open for external retest alongside #3/#4/#5, while #6/#7/#8 remain closed after confirmation."
     },
     "C-21-UI1": {
       "contract_id": "C-21-UI1",
@@ -494,11 +494,11 @@
       "contract_id": "C-26",
       "parent_contract_id": "C-21",
       "root_campaign": "nutrition-agent",
-      "status": "in_progress",
+      "status": "completed",
       "summary": "修复 Issue #10 餐食超规模营养数字的值域、输入和展示防护",
       "goal": "将 MealRecord 四个营养字段统一收紧到 0–100000，拒绝非有限和超长数字，保护历史异常值展示，不迁移或改写旧数据。",
-      "current_slice": "C-26-S2",
-      "completed_slices": ["C-26-A1", "C-26-S1"],
+      "current_slice": null,
+      "completed_slices": ["C-26-A1", "C-26-S1", "C-26-S2"],
       "deferred_slices": [],
       "return_to": "C-21",
       "architecture_amendment": "C-26-A1 / ADR-0016",
@@ -506,7 +506,7 @@
       "migration_required": false,
       "backfill_required": false,
       "issue_state": "Issue #10 remains open until external retest; Issues #3/#4/#5 remain open for external retest.",
-      "latest_verification": "C-26-S1 passed: meal create/batch/update bounds, 4 contract tests, lint, typecheck and architecture JSON; next C-26-S2 UI guard"
+      "latest_verification": "C-26-S2 passed locally and in cloud deploy 20260822202323: 300-digit input rejected without write, 100000 boundary saved/cleaned, 375px no-overflow and console clean; Issue #10 remains open for external retest"
     }
   }
 }

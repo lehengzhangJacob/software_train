@@ -17,6 +17,8 @@
     "typecheck": "pass",
     "build": "pass"
   },
+  "cloud_acceptance": "dev_repo/evidence/C-26/S2/cloud-acceptance.json",
+  "deployment": "20260822202323",
   "migration_required": false,
   "backfill_required": false,
   "issue_state": "Issue #10 remains open for external retest"
