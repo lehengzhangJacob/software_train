@@ -1,0 +1,1 @@
+In-app Browser screenshot() and CDP Page.captureScreenshot both returned "Unable to capture screenshot" during the cloud /insights acceptance session. DOM and 375px overflow evidence were saved instead; no binary screenshot is represented as successful evidence.

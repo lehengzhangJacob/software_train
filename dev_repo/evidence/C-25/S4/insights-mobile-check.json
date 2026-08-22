@@ -1,0 +1,7 @@
+{
+  "articleCards": 10,
+  "mobileNavItems": 6,
+  "noHorizontalOverflow": true,
+  "scrollWidth": 375,
+  "viewport": 375
+}

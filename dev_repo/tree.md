@@ -2,8 +2,8 @@
 
 ## Current execution override
 
-- Current contract: `C-25 - Agent 日更图文与 DashScope 生图` [in_progress]
-- Current slice: `C-25-S3`；C-21 的 Issues #3/#4/#5 仍保持开放等待外部复测
+- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
+- Current slice: 无；C-25 已完成，Issues #3/#4/#5 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
@@ -36,23 +36,23 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-23-S2 成熟 Trace UI 与即时对话流 [completed]
     ├── C-23-S3 浏览器/云端回归与截图交付 [completed]
     └── C-23-S4 用户态 Trace 信息密度收敛 [completed]
-└── C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移 [in_progress]
+└── C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移 [completed]
     ├── C-24-A1 架构/ER 修宪与 legacy 镜像迁移语义 [completed]
     ├── C-24-S1 结构化计划模型、迁移、仓储与读取 API [completed]
     ├── C-24-S2 Agent 计划输出、持久化与调整上下文 [completed]
     ├── C-24-S3 计划页与教练调整深链 UI [completed]
     └── C-24-S4 云端迁移、生成回归与截图验收 [completed]
-└── C-25 - Agent 日更图文与 DashScope 生图 [in_progress]
+└── C-25 - Agent 日更图文与 DashScope 生图 [completed]
     ├── C-25-A1 日更内容架构、ER 修宪与 DashScope 边界 [completed]
     ├── C-25-S1 批次/文章迁移、仓储与账户隔离 API [completed]
     ├── C-25-S2 Agent 生成、DashScope 图片适配器与每日 job [completed]
-    ├── C-25-S3 每日阅读流 UI [in_progress]
-    └── C-25-S4 云端部署、三账号验收与截图 [pending]
+    ├── C-25-S3 每日阅读流 UI [completed]
+    └── C-25-S4 云端部署、五账号验收与截图 [completed：截图二进制不可用，DOM 证据已保存]
 ```
 
-- 当前合同：`C-25 - Agent 日更图文与 DashScope 生图 [in_progress]`
-- 当前切片：`C-25-S3`：接入首页摘要、导航入口与每日文章阅读/收藏/隐藏流
-- 下一步：完成 C-25-S3 后进入云端部署、三账号 Browser 验收与截图；Issues #3/#4/#5 仍等待外部复测
+- 当前合同：`C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]`
+- 当前切片：无；C-25 日更图文已回归主合同
+- 下一步：等待 Issues #3/#4/#5 外部复测；不关闭未确认的 Issue
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

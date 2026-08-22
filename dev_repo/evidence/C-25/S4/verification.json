@@ -1,0 +1,31 @@
+{
+  "contract_id": "C-25",
+  "slice_id": "C-25-S4",
+  "summary": "云端迁移、protected daily job、五个 active 测试账号的 10 篇文章批次和阅读流 Browser DOM 验收完成。",
+  "cloud_deploy": {
+    "release": "20260822175441",
+    "migration": "No pending migrations after 20260822210000_add_agent_daily_articles",
+    "health": "/access=200; anonymous /api/users=401",
+    "content_timer": "user-level foodtracker-content.timer enabled and active",
+    "job_auth": "missing bearer returned 401; configured bearer returned 200"
+  },
+  "daily_job": {
+    "content_date": "2026-08-22",
+    "active_accounts": 5,
+    "batches": "5/5 ready",
+    "articles": "50/50 ready; every account has slots 1-10",
+    "image_state": "50/50 imagePendingCount=0; DashScope attempts safely ended in local structured-visual fallback, no temporary URL persisted",
+    "legacy_preservation": "Existing profile/meal/activity/agent data was not modified; only C-25 rows were regenerated during rollout recovery"
+  },
+  "browser_acceptance": {
+    "desktop": "In-app Browser at /insights showed Team A, 10/10 ready, 10 article cards, unread count and all three structured visual kinds; browser error/warn logs were empty",
+    "mobile": "CDP temporary 375x812 override showed 10 article cards, six mobile-nav items including 阅读, scrollWidth=375 and no horizontal overflow; override was cleared afterward",
+    "evidence": [
+      "dev_repo/evidence/C-25/S4/insights-desktop-dom.txt",
+      "dev_repo/evidence/C-25/S4/insights-mobile-check.json"
+    ]
+  },
+  "screenshot_gap": "In-app Browser screenshot() and CDP Page.captureScreenshot both returned Unable to capture screenshot in this session; no binary screenshot is claimed or attached.",
+  "issue_state": "Issues #3/#4/#5 remain open for external retest; this feature did not close or alter them.",
+  "return_to": "C-21"
+}

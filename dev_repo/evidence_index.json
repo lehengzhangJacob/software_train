@@ -1351,5 +1351,53 @@
       "path": "dev_repo/evidence/C-23/trace-friendly-mid-desktop.png, dev_repo/evidence/C-23/trace-friendly-desktop.png, dev_repo/evidence/C-23/trace-friendly-expanded-desktop.png, dev_repo/evidence/C-23/trace-friendly-technical-desktop.png, dev_repo/evidence/C-23/trace-friendly-mobile.png, dev_repo/evidence/C-23/trace-friendly-mobile-expanded.png",
       "description": "用户态 Trace 桌面/移动截图：默认少技术细节，展开后可读，技术详情仍可按需查看"
     }
+  ],
+  "C-25-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-25/S1/verification.json",
+      "description": "additive 日更文章迁移、严格 10 篇合同、账户隔离仓储/API 与旧数据行数保持不变"
+    },
+    {
+      "type": "implementation",
+      "path": "prisma/schema.prisma, prisma/migrations/20260822210000_add_agent_daily_articles/migration.sql, src/lib/agent/content/contracts.ts, src/lib/agent/content/repository.ts, src/app/api/agent/articles/",
+      "description": "AgentDailyArticleBatch/AgentDailyArticle 模型、合同解析、读取/状态/图片 API"
+    }
+  ],
+  "C-25-S2": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-25/S2/verification.json",
+      "description": "DashScope 异步适配、逐跳图片域名校验、protected job 与 user-level systemd timer 部署"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/content/dashscope-image.ts, ops/foodtracker-content.service, ops/foodtracker-content.timer, scripts/deploy.mjs",
+      "description": "Qwen-Image async task adapter、持久化资源边界和每日任务调度"
+    }
+  ],
+  "C-25-S3": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-25/S3/verification.json",
+      "description": "每日阅读流、首页摘要、桌面/移动导航与已读/收藏/稍后再看状态"
+    },
+    {
+      "type": "implementation",
+      "path": "src/app/insights/page.tsx, src/components/insights/, src/app/dashboard/page.tsx, src/components/dashboard/dashboard-content.tsx, src/components/sidebar.tsx",
+      "description": "十篇文章卡片、结构化视觉 fallback、详情阅读和入口接线"
+    }
+  ],
+  "C-25-S4": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-25/S4/verification.json",
+      "description": "云端 20260822175441、5/5 账号 10 篇 ready、job 200/401、timer enabled/active、Browser DOM/375px 无溢出"
+    },
+    {
+      "type": "visual_gap",
+      "path": "dev_repo/evidence/C-25/S4/screenshot-gap.txt",
+      "description": "in-app Browser screenshot 二进制接口不可用；DOM 与 mobile-check 证据已保存，未虚报截图"
+    }
   ]
 }
