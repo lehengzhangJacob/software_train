@@ -26,13 +26,15 @@ model UserProfile {
   createdAt          DateTime @default(now()) @map("created_at")
   updatedAt          DateTime @default(now()) @updatedAt @map("updated_at")
 
-  mealRecords         MealRecord[]
-  exerciseSuggestions ExerciseSuggestion[]
-  exercisePlans       AgentExercisePlan[]
-  agentThreads        AgentThread[]
-  memoryItems         MemoryItem[]
-  dailyActivities     DailyActivity[]
-  account             UserAccount?
+  mealRecords              MealRecord[]
+  exerciseSuggestions      ExerciseSuggestion[]
+  exercisePlans            AgentExercisePlan[]
+  agentThreads             AgentThread[]
+  agentDailyArticleBatches AgentDailyArticleBatch[]
+  agentDailyArticles       AgentDailyArticle[]
+  memoryItems              MemoryItem[]
+  dailyActivities          DailyActivity[]
+  account                  UserAccount?
 
   @@map("user_profile")
 }
@@ -170,6 +172,62 @@ model AgentExercisePlan {
   @@index([threadId], name: "idx_agent_plan_thread")
   @@index([sourceMessageId], name: "idx_agent_plan_source_message")
   @@map("agent_exercise_plans")
+}
+
+model AgentDailyArticleBatch {
+  batchId           Int       @id @default(autoincrement()) @map("batch_id")
+  userId            Int       @map("user_id")
+  contentDate       String    @map("content_date")
+  status            String    @default("pending")
+  sourceKind        String    @default("agent") @map("source_kind")
+  requestedCount    Int       @default(10) @map("requested_count")
+  readyCount        Int       @default(0) @map("ready_count")
+  imagePendingCount Int       @default(0) @map("image_pending_count")
+  generationError   String?   @map("generation_error")
+  startedAt         DateTime? @map("started_at")
+  publishedAt       DateTime? @map("published_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  user     UserProfile         @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  articles AgentDailyArticle[]
+
+  @@unique([userId, contentDate], name: "uq_daily_article_batch_user_date")
+  @@index([userId, contentDate, status], name: "idx_daily_article_batch_user_date_status")
+  @@map("agent_daily_article_batches")
+}
+
+model AgentDailyArticle {
+  articleId     Int       @id @default(autoincrement()) @map("article_id")
+  batchId       Int       @map("batch_id")
+  userId        Int       @map("user_id")
+  slot          Int
+  topic         String
+  title         String
+  summary       String
+  contentJson   String    @map("content_json")
+  visualJson    String    @map("visual_json")
+  status        String    @default("ready")
+  imageStatus   String    @default("fallback") @map("image_status")
+  imageProvider String?   @map("image_provider")
+  imageTaskId   String?   @map("image_task_id")
+  imageAssetKey String?   @map("image_asset_key")
+  imageMimeType String?   @map("image_mime_type")
+  imageAlt      String    @map("image_alt")
+  publishedAt   DateTime  @map("published_at")
+  readAt        DateTime? @map("read_at")
+  savedAt       DateTime? @map("saved_at")
+  hiddenAt      DateTime? @map("hidden_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  batch AgentDailyArticleBatch @relation(fields: [batchId], references: [batchId], onDelete: Cascade)
+  user  UserProfile            @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([batchId, slot], name: "uq_daily_article_batch_slot")
+  @@index([userId, status, publishedAt], name: "idx_daily_article_user_status_published")
+  @@index([batchId, imageStatus], name: "idx_daily_article_batch_image_status")
+  @@map("agent_daily_articles")
 }
 
 model ExerciseCalorieReference {

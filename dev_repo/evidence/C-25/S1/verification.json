@@ -1,0 +1,23 @@
+{
+  "contract_id": "C-25",
+  "slice_id": "C-25-S1",
+  "summary": "新增账户隔离的日更文章批次/文章持久化、结构化合同与只读/状态 API；迁移为空起点且不改写旧数据。",
+  "green_test": {
+    "migration": "npm run db:migrate:deploy passed locally; 11 migrations applied/no pending",
+    "preservation": "Prisma count check after migration: user profiles=2, meal records=14, daily batches=0, daily articles=0",
+    "article_contract": "npm run test:article passed 5/5",
+    "typecheck": "npx tsc --noEmit passed",
+    "lint": "npm run lint passed"
+  },
+  "implementation": [
+    "prisma/schema.prisma",
+    "prisma/migrations/20260822210000_add_agent_daily_articles/migration.sql",
+    "src/lib/agent/content/contracts.ts",
+    "src/lib/agent/content/repository.ts",
+    "src/app/api/agent/articles/"
+  ],
+  "data_model_delta": "AgentDailyArticleBatch and AgentDailyArticle are additive; unique (user_id, content_date) and (batch_id, slot); no backfill",
+  "backfill_required": false,
+  "unchanged": "MealRecord, AgentMessage/Trace, MemoryItem, DailyActivity, AgentExercisePlan and all existing rows remain untouched",
+  "return_to": "C-25-S2"
+}

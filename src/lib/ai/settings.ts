@@ -202,12 +202,15 @@ export async function saveAiSettings(rawUpdate: unknown, accountId?: number): Pr
   return result
 }
 
-export async function getActiveAiProviderConfig(accountId?: number): Promise<ResolvedAiProviderConfig> {
+export async function getAiProviderConfig(
+  providerId: AiProviderId,
+  accountId?: number,
+): Promise<ResolvedAiProviderConfig> {
   const settings = await readAiSettings(accountId)
-  const provider = getAiProviderPreset(settings.activeProvider)
+  const provider = getAiProviderPreset(providerId)
   const record = settings.providers[provider.id]
   const endpoint = resolveEndpointValue(record, provider)
-  const credential = resolveCredential(record, provider.id)
+  const credential = resolveCredential(record, provider.id, accountId !== undefined)
 
   if (provider.requiresApiKey && !credential.apiKey) throw new MissingAiCredentialError()
 
@@ -217,6 +220,11 @@ export async function getActiveAiProviderConfig(accountId?: number): Promise<Res
     ...(credential.apiKey ? { apiKey: credential.apiKey } : {}),
     visionCapability: provider.visionCapability,
   }
+}
+
+export async function getActiveAiProviderConfig(accountId?: number): Promise<ResolvedAiProviderConfig> {
+  const settings = await readAiSettings(accountId)
+  return getAiProviderConfig(settings.activeProvider, accountId)
 }
 
 export function isAiSettingsValidationError(error: unknown): error is AiSettingsValidationError {
