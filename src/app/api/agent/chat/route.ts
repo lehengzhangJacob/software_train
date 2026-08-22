@@ -255,7 +255,7 @@ async function runAgentChatInternal(
         const history = await runAgentTraceStep(
           trace,
           { kind: "context", parentId: parent.eventId, label: "读取当前线程尾部消息" },
-          () => getAgentMessageHistory(user.userId, threadId, 24, sessionDigest?.coveredMessageId),
+          () => getAgentMessageHistory(user.userId, threadId, exerciseMode ? 10 : 24, sessionDigest?.coveredMessageId),
         )
         await trace.emit({
           eventType: "step.completed",
@@ -391,37 +391,45 @@ async function runAgentChatInternal(
         await options.onAnswerDelta?.(delta)
       })
       try {
-        const streamed = await requestAiChatCompletionStream(
+        const modelRequest = {
+          messages: [
+            {
+              role: "system" as const,
+              content: buildAgentSystemPrompt(context, sessionDigest?.summary, {
+                exerciseMode,
+                exercisePlan: currentExercisePlan?.plan ?? null,
+              }),
+            },
+            ...history.map((message) => ({
+              role: message.role,
+              content: redactSuppressedMemoryContent(message.content, context.suppressedMemoryContents),
+            })),
+          ],
+          temperature: 0.4,
+          max_tokens: 1_500,
+        }
+        let modelResponse = await requestAiChatCompletionStream(
           config,
-          {
-            messages: [
-              {
-                role: "system",
-                content: buildAgentSystemPrompt(context, sessionDigest?.summary, {
-                  exerciseMode,
-                  exercisePlan: currentExercisePlan?.plan ?? null,
-                }),
-              },
-              ...history.map((message) => ({
-                role: message.role,
-                content: redactSuppressedMemoryContent(message.content, context.suppressedMemoryContents),
-              })),
-            ],
-            temperature: 0.4,
-            max_tokens: 1_500,
-          },
+          modelRequest,
           projector.push,
         )
-        if (!streamed.streamed) await projector.push(streamed.text)
+        if (modelResponse.streamed && !modelResponse.text.trim()) {
+          const fallbackRaw = await requestAiChatCompletion(config, modelRequest)
+          const fallbackText = getAssistantText(fallbackRaw)
+          if (fallbackText) {
+            modelResponse = { raw: fallbackRaw, text: fallbackText, streamed: false }
+          }
+        }
+        if (!modelResponse.streamed) await projector.push(modelResponse.text)
         await trace.emit({
           eventType: "step.completed",
-          status: streamed.streamed ? "completed" : "fallback",
+          status: modelResponse.streamed ? "completed" : "fallback",
           label: "健康 Agent 生成建议",
           parentId: modelStarted.eventId,
           durationMs: Date.now() - modelStartedAt,
-          safeSummary: streamed.streamed ? "模型以 SSE 增量返回" : "提供商未提供 SSE，已按完整响应回退",
+          safeSummary: modelResponse.streamed ? "模型以 SSE 增量返回" : "提供商未提供 SSE，已按完整响应回退",
         })
-        return streamed.text
+        return modelResponse.text
       } catch (error) {
         await trace.emit({
           eventType: "step.completed",
