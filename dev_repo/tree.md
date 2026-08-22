@@ -6,15 +6,15 @@
 - Current slice: none; waiting for external Issue retest
 - Completed child: `C-22 - Web/Android 版本探测与增量刷新` [completed]
 - Return path: `web_completion_audit`
-- Issue state: #3-#8 remain open until external testers confirm non-reproduction.
+- Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
 - C-21-S2 completed: disabled/expired memories are isolated from Agent context, suppressed text is redacted from digest/history, and the local date anchor is explicit.
 - C-21-S3 completed: the desktop Agent shell is fixed-height with right-only conversation scrolling, and the waiting copy follows the running activity.
 - C-21-S4 completed: recognition candidates survive route changes in a session-scoped, one-shot handoff and still require the existing review gate.
-- C-21-VERIFY completed locally and in the cloud: desktop history remains bounded, while mobile history is a collapsible side drawer instead of a panel below the chat. Issues #3-#8 remain open for external retest.
+- C-21-VERIFY completed locally and in the cloud: desktop history remains bounded, while mobile history is a collapsible side drawer instead of a panel below the chat. Issues #6-#8 were later closed after external confirmation; #3-#5 remain open for external retest.
 - C-21-UI1 completed in the cloud: desktop and mobile Browser acceptance confirm 最近对话 is the first sidebar section, with an independent vertical scroll boundary and no message/data contract change.
 - C-22-A1 completed: the version-aware delivery amendment adds a public no-store build metadata endpoint while keeping all business APIs behind the account session gate.
 - C-22-S1 completed: the shared Web shell compares the server-provided build id with the no-store version endpoint and offers an explicit refresh; stale-tab visual proof is scheduled with the cloud deployment.
-- C-22-S2 completed: cloud v0.1.1 is live, `/api/app/version` is public no-store, Android 0.1.1 APK built, and Browser desktop/375px screenshots prove the notice stays in content flow. The GitHub Release target is v0.1.1; Issues #3-#8 remain open.
+- C-22-S2 completed: cloud v0.1.1 is live, `/api/app/version` is public no-store, Android 0.1.1 APK built, and Browser desktop/375px screenshots prove the notice stays in content flow. The GitHub Release target is v0.1.1; Issues #6-#8 are closed after external confirmation and #3-#5 remain open.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 ```text

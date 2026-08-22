@@ -1217,6 +1217,13 @@
       "description": "最近对话位于顶部的云端桌面与移动抽屉截图"
     }
   ],
+  "C-21-ISSUE-CLOSE": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-21/issue-closure-20260822.json",
+      "description": "GitHub 外部确认后关闭 Issue #6/#7/#8；Issue #3/#4/#5 继续保持开放等待复测"
+    }
+  ],
   "C-22-A1": [
     {
       "type": "implementation",
