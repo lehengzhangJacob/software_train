@@ -1,0 +1,13 @@
+[Unit]
+Description=FoodTracker daily personalized content job
+After=network-online.target foodtracker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=soft
+WorkingDirectory=/home/soft/final/app/current/app
+EnvironmentFile=/home/soft/final/app/shared/.env.production
+ExecStart=/usr/bin/curl --fail --silent --show-error --max-time 900 -X POST -H "Authorization: Bearer ${CONTENT_JOB_TOKEN}" -H "Content-Type: application/json" http://127.0.0.1:8000/api/internal/content/daily
+StandardOutput=journal
+StandardError=journal

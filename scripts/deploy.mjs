@@ -96,6 +96,9 @@ function main() {
   mkdirSync(path.join(stage, "prisma"), { recursive: true })
   copyFileSync(path.join(root, "prisma", "schema.prisma"), path.join(stage, "prisma", "schema.prisma"))
   copyDir(path.join(root, "prisma", "migrations"), path.join(stage, "prisma", "migrations"))
+  if (existsSync(path.join(root, "ops"))) {
+    copyDir(path.join(root, "ops"), path.join(stage, "ops"))
+  }
   const prismaVersion = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8")).dependencies.prisma
   writeFileSync(
     path.join(stage, "package.json"),
@@ -103,7 +106,7 @@ function main() {
   )
 
   console.log("[deploy] packing...")
-  run("tar", ["-czf", ".deploy-stage/bundle.tgz", "-C", ".deploy-stage", "app", "prisma", "package.json"], { cwd: root })
+  run("tar", ["-czf", ".deploy-stage/bundle.tgz", "-C", ".deploy-stage", "app", "prisma", "ops", "package.json"], { cwd: root })
 
   console.log("[deploy] uploading...")
   run("scp", [
@@ -122,6 +125,15 @@ tar -xzf bundle.tgz -C releases/$TS
 ln -sfn ${APP_DIR}/releases/$TS/app/database releases/$TS/app/database
 ln -sfn ${APP_DIR}/shared/data releases/$TS/app/data
 ln -sfn ${APP_DIR}/releases/$TS current
+if ! grep -Eq '^CONTENT_JOB_TOKEN=.{32,}$' shared/.env.production 2>/dev/null; then
+  CONTENT_JOB_TOKEN=$(PATH=${NODE_BIN}:$PATH node -e "process.stdout.write(require('crypto').randomBytes(32).toString('hex'))")
+  printf '\\nCONTENT_JOB_TOKEN=%s\\n' "$CONTENT_JOB_TOKEN" >> shared/.env.production
+  chmod 600 shared/.env.production
+fi
+sudo -n install -m 0644 releases/$TS/ops/foodtracker-content.service /etc/systemd/system/foodtracker-content.service
+sudo -n install -m 0644 releases/$TS/ops/foodtracker-content.timer /etc/systemd/system/foodtracker-content.timer
+sudo -n systemctl daemon-reload
+sudo -n systemctl enable foodtracker-content.timer
 if [ ! -d shared/deploy-tools/node_modules/prisma ]; then
   cp releases/$TS/package.json shared/deploy-tools/package.json
   export PATH=${NODE_BIN}:$PATH
@@ -134,6 +146,7 @@ cd shared/deploy-tools
 DATABASE_URL='${DB_URL}' ./node_modules/.bin/prisma migrate deploy
 cd ${APP_DIR}
 sudo -n systemctl restart foodtracker
+sudo -n systemctl start foodtracker-content.timer
 sleep 2
 CODE=$(curl -s -o /tmp/ft-smoke.html -w '%{http_code}' http://127.0.0.1:${PORT}/access || true)
 echo "smoke /access -> $CODE"
@@ -145,6 +158,13 @@ API_CODE=$(curl -s -o /tmp/ft-smoke-api.json -w '%{http_code}' http://127.0.0.1:
 echo "smoke anonymous /api/users -> $API_CODE"
 if [ "$API_CODE" != "401" ] && [ "$API_CODE" != "200" ]; then
   sudo -n systemctl status foodtracker --no-pager -l | tail -20
+  exit 1
+fi
+TIMER_CODE=$(sudo -n systemctl is-enabled foodtracker-content.timer || true)
+TIMER_ACTIVE=$(sudo -n systemctl is-active foodtracker-content.timer || true)
+echo "content timer -> enabled=$TIMER_CODE active=$TIMER_ACTIVE"
+if [ "$TIMER_CODE" != "enabled" ] || [ "$TIMER_ACTIVE" != "active" ]; then
+  sudo -n systemctl status foodtracker-content.timer --no-pager -l | tail -20
   exit 1
 fi
 echo "deploy $TS complete"

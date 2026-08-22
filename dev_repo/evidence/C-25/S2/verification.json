@@ -1,0 +1,19 @@
+{
+  "contract_id": "C-25",
+  "slice_id": "C-25-S2",
+  "summary": "日更 job 具备 token 保护和云端 timer 发布配置；DashScope 临时图片只允许逐跳阿里云 HTTPS 重定向并落盘为受限 asset key。",
+  "green_test": {
+    "adapter": "DashScope Qwen-Image 3.0 async endpoint uses X-DashScope-Async and task polling; download redirects are manually validated per hop",
+    "deployment_script": "node --check scripts/deploy.mjs passed",
+    "local_regression": "npm run test:article, npm run lint and npx tsc --noEmit passed after adapter hardening"
+  },
+  "implementation": [
+    "src/lib/agent/content/dashscope-image.ts",
+    "ops/foodtracker-content.service",
+    "ops/foodtracker-content.timer",
+    "scripts/deploy.mjs"
+  ],
+  "runtime": "The deploy pipeline creates CONTENT_JOB_TOKEN remotely when absent, installs/enables foodtracker-content.timer, and checks timer enabled/active after restart.",
+  "red_line": "No provider key is exposed to the client; no temporary provider URL is stored in the database; job route rejects missing or mismatched bearer tokens.",
+  "return_to": "C-25-S3"
+}

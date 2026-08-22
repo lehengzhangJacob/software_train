@@ -1,0 +1,11 @@
+[Unit]
+Description=Run FoodTracker daily personalized content job
+
+[Timer]
+OnCalendar=*-*-* 08:00:00
+Persistent=true
+RandomizedDelaySec=5m
+Unit=foodtracker-content.service
+
+[Install]
+WantedBy=timers.target

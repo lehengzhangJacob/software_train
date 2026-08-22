@@ -181,15 +181,28 @@ async function downloadImage(imageUrl: string, taskHint: string) {
   } catch {
     throw new DashScopeImageError("DashScope 图片地址无效")
   }
-  const allowedHost = parsed.protocol === "https:" && (parsed.hostname.endsWith(".aliyuncs.com") || parsed.hostname.endsWith(".aliyun.com"))
-  if (!allowedHost) throw new DashScopeImageError("DashScope 图片地址不在允许范围")
+  const isAllowedUrl = (value: URL) =>
+    value.protocol === "https:" && (value.hostname.endsWith(".aliyuncs.com") || value.hostname.endsWith(".aliyun.com"))
+  if (!isAllowedUrl(parsed)) throw new DashScopeImageError("DashScope 图片地址不在允许范围")
 
-  let response: Response
-  try {
-    response = await fetch(parsed, { signal: AbortSignal.timeout(30_000), redirect: "follow" })
-  } catch {
-    throw new DashScopeImageError("下载 DashScope 图片失败")
+  let response: Response | null = null
+  for (let redirect = 0; redirect <= 2; redirect += 1) {
+    try {
+      response = await fetch(parsed, { signal: AbortSignal.timeout(30_000), redirect: "manual" })
+    } catch {
+      throw new DashScopeImageError("下载 DashScope 图片失败")
+    }
+    if (response.status < 300 || response.status >= 400) break
+    const location = response.headers.get("location")
+    if (!location || redirect === 2) throw new DashScopeImageError("DashScope 图片重定向无效")
+    try {
+      parsed = new URL(location, parsed)
+    } catch {
+      throw new DashScopeImageError("DashScope 图片重定向无效")
+    }
+    if (!isAllowedUrl(parsed)) throw new DashScopeImageError("DashScope 图片地址不在允许范围")
   }
+  if (!response || !response.ok) throw new DashScopeImageError("下载 DashScope 图片失败")
   if (!response.ok) throw new DashScopeImageError("下载 DashScope 图片失败")
   const mime = (response.headers.get("content-type") || "").split(";", 1)[0].toLowerCase()
   const extension = mimeExtensions[mime]
