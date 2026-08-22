@@ -27,7 +27,7 @@
 5. **安全上下文**：生成 prompt 只允许档案、餐食/活动聚合、active 且未过期记忆、active
    运动计划和会话摘要；不传输或持久化 system prompt、隐藏推理、凭据、支付链接、原始
    provider 响应或图片 data URL。文章输出必须通过字段、长度和安全词边界校验。
-6. **每日触发**：云端以 systemd timer 调用受 token 保护的内部 job route；job 对所有 active
+6. **每日触发**：云端以 user-level systemd timer 调用受 token 保护的内部 job route；job 对所有 active
    账户执行当天批次，重复触发安全。应用内列表 API 只读/更新当前账户，不承担跨账户批处理。
 7. **通知范围**：C-25 第一版的“推送”是每日批次 + 未读数 + 首页提醒。浏览器/Android
    系统通知需要独立的 VAPID/FCM 凭据与权限链，不在没有探针证据时宣称已交付。
@@ -43,6 +43,8 @@
   任务结果成功后立即下载，下载大小、MIME type、重定向次数和 URL scheme 均受限。
 - `image_task_id` 只用于重试/观测，不是用户可见内容；provider 错误原文不进入文章、API
   响应或日志。
+- 部署用户的 systemd user manager 负责 content timer；主应用仍由既有 systemd system unit 常驻，
+  不扩大 `/etc/systemd/system` 写入权限。
 
 ## 不变的边界
 

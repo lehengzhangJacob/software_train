@@ -125,15 +125,16 @@ tar -xzf bundle.tgz -C releases/$TS
 ln -sfn ${APP_DIR}/releases/$TS/app/database releases/$TS/app/database
 ln -sfn ${APP_DIR}/shared/data releases/$TS/app/data
 ln -sfn ${APP_DIR}/releases/$TS current
+mkdir -p "$HOME/.config/systemd/user"
 if ! grep -Eq '^CONTENT_JOB_TOKEN=.{32,}$' shared/.env.production 2>/dev/null; then
   CONTENT_JOB_TOKEN=$(PATH=${NODE_BIN}:$PATH node -e "process.stdout.write(require('crypto').randomBytes(32).toString('hex'))")
   printf '\\nCONTENT_JOB_TOKEN=%s\\n' "$CONTENT_JOB_TOKEN" >> shared/.env.production
   chmod 600 shared/.env.production
 fi
-sudo -n install -m 0644 releases/$TS/ops/foodtracker-content.service /etc/systemd/system/foodtracker-content.service
-sudo -n install -m 0644 releases/$TS/ops/foodtracker-content.timer /etc/systemd/system/foodtracker-content.timer
-sudo -n systemctl daemon-reload
-sudo -n systemctl enable foodtracker-content.timer
+install -m 0644 releases/$TS/ops/foodtracker-content.service "$HOME/.config/systemd/user/foodtracker-content.service"
+install -m 0644 releases/$TS/ops/foodtracker-content.timer "$HOME/.config/systemd/user/foodtracker-content.timer"
+systemctl --user daemon-reload
+systemctl --user enable foodtracker-content.timer
 if [ ! -d shared/deploy-tools/node_modules/prisma ]; then
   cp releases/$TS/package.json shared/deploy-tools/package.json
   export PATH=${NODE_BIN}:$PATH
@@ -146,7 +147,7 @@ cd shared/deploy-tools
 DATABASE_URL='${DB_URL}' ./node_modules/.bin/prisma migrate deploy
 cd ${APP_DIR}
 sudo -n systemctl restart foodtracker
-sudo -n systemctl start foodtracker-content.timer
+systemctl --user start foodtracker-content.timer
 sleep 2
 CODE=$(curl -s -o /tmp/ft-smoke.html -w '%{http_code}' http://127.0.0.1:${PORT}/access || true)
 echo "smoke /access -> $CODE"
@@ -160,11 +161,11 @@ if [ "$API_CODE" != "401" ] && [ "$API_CODE" != "200" ]; then
   sudo -n systemctl status foodtracker --no-pager -l | tail -20
   exit 1
 fi
-TIMER_CODE=$(sudo -n systemctl is-enabled foodtracker-content.timer || true)
-TIMER_ACTIVE=$(sudo -n systemctl is-active foodtracker-content.timer || true)
+TIMER_CODE=$(systemctl --user is-enabled foodtracker-content.timer || true)
+TIMER_ACTIVE=$(systemctl --user is-active foodtracker-content.timer || true)
 echo "content timer -> enabled=$TIMER_CODE active=$TIMER_ACTIVE"
 if [ "$TIMER_CODE" != "enabled" ] || [ "$TIMER_ACTIVE" != "active" ]; then
-  sudo -n systemctl status foodtracker-content.timer --no-pager -l | tail -20
+  systemctl --user status foodtracker-content.timer --no-pager -l | tail -20
   exit 1
 fi
 echo "deploy $TS complete"

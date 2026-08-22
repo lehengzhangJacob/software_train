@@ -13,7 +13,7 @@
     "ops/foodtracker-content.timer",
     "scripts/deploy.mjs"
   ],
-  "runtime": "The deploy pipeline creates CONTENT_JOB_TOKEN remotely when absent, installs/enables foodtracker-content.timer, and checks timer enabled/active after restart.",
+  "runtime": "The deploy pipeline creates CONTENT_JOB_TOKEN remotely when absent, installs/enables a user-level foodtracker-content.timer, and checks timer enabled/active after restart; the existing system foodtracker unit is only restarted through its approved sudo rule.",
   "red_line": "No provider key is exposed to the client; no temporary provider URL is stored in the database; job route rejects missing or mismatched bearer tokens.",
   "return_to": "C-25-S3"
 }

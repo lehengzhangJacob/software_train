@@ -28,6 +28,6 @@ DashScope 只在服务端异步调用。成功 URL 立即下载到 `data/article
 
 ## 触发与重试
 
-云端 systemd timer 触发受 token 保护的内部 job。job 先确保文字批次，再处理待补图文章；
+云端 systemd user timer 触发受 token 保护的内部 job。job 先确保文字批次，再处理待补图文章；
 重复执行使用批次唯一键和文章 slot 唯一键。provider 临时失败只留下安全 fallback 和
 可重试状态，不覆盖已经 ready 的内容。
