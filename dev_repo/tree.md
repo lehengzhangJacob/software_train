@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移` [in_progress]
-- Current slice: `C-24-S2 - Agent 结构化计划输出、持久化与调整上下文`
+- Current slice: `C-24-S3 - 计划页与教练调整深链 UI`
 - Parent contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
@@ -18,7 +18,8 @@
 - C-23-S4 completed: Trace 默认展示用户语言进度并在回合完成后收起，技术字段通过“查看技术详情”按需展开；云端桌面/375px 移动 Browser 验收通过。
 - C-24-A1 completed: AgentExercisePlan becomes the structured plan source; legacy ExerciseSuggestion rows will be mirrored idempotently without deleting or rewriting the old table.
 - C-24-S1 completed: schema/migration/repository/API persist validated AgentExercisePlan revisions and preserve every legacy suggestion row as a legacy mirror; local SQLite migration check passed.
-- C-24-S2 in progress: Agent exercise-plan mode emits a validated marker, persists it with the assistant message, and carries an owned plan into adjustment prompts without leaking marker JSON during SSE.
+- C-24-S2 completed: Agent exercise-plan mode emits a validated marker, persists it with the assistant message, and carries an owned plan into adjustment prompts without leaking marker JSON during SSE.
+- C-24-S3 in progress: the exercise page consumes the active Agent plan projection, keeps legacy/history visible, and links into a return-aware coach adjustment workspace.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 ```text
@@ -36,12 +37,13 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
 └── C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移 [in_progress]
     ├── C-24-A1 架构/ER 修宪与 legacy 镜像迁移语义 [completed]
     ├── C-24-S1 结构化计划模型、迁移、仓储与读取 API [completed]
-    └── C-24-S2 Agent 计划输出、持久化与调整上下文 [in_progress]
+    ├── C-24-S2 Agent 计划输出、持久化与调整上下文 [completed]
+    └── C-24-S3 计划页与教练调整深链 UI [in_progress]
 ```
 
-- 当前合同：`C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]`
-- 当前切片：无（C-23 已完成，等待 #3/#4/#5 外部复测）
-- 下一步：等待外部复测；不关闭未确认的 Issue
+- 当前合同：`C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移 [in_progress]`
+- 当前切片：`C-24-S3 - 计划页与教练调整深链 UI`
+- 下一步：完成云端迁移与浏览器回归；不关闭未确认的 Issue
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text
