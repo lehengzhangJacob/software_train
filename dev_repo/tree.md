@@ -2,9 +2,9 @@
 
 ## Current execution override
 
-- Current contract: `C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移` [in_progress]
-- Current slice: `C-24-S4 - 云端迁移、生成回归与截图验收`
-- Parent contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
+- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
+- Current slice: 无；等待 Issues #3/#4/#5 外部复测
+- Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
 - C-21-S2 completed: disabled/expired memories are isolated from Agent context, suppressed text is redacted from digest/history, and the local date anchor is explicit.

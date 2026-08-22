@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-24",
+  "active_contract_id": "C-21",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -408,7 +408,7 @@
       "deferred_slices": [],
       "return_to": "web_completion_audit",
       "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-23 complete: cloud Browser Trace/streaming acceptance and full local release gate passed 2026-08-22; #6/#7/#8 remain closed as completed after external confirmations; #3/#4/#5 remain open for external retest."
+      "latest_verification": "C-24-S4 complete: cloud structured exercise-plan generation, persistence, coach return link, active revision and legacy history passed 2026-08-22; #6/#7/#8 remain closed as completed after external confirmations; #3/#4/#5 remain open for external retest."
     },
     "C-21-UI1": {
       "contract_id": "C-21-UI1",
