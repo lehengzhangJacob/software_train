@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/current-user"
 import { getLocalDateRange, toLocalDateString } from "@/lib/date"
 import { DashboardContent } from "@/components/dashboard/dashboard-content"
+import { getDailyArticleSummary } from "@/lib/agent/content/repository"
+import { getContentDate } from "@/lib/agent/content/time"
 import { redirect } from "next/navigation"
 
 export const dynamic = "force-dynamic"
@@ -25,6 +27,8 @@ export default async function DashboardPage() {
   const totalProtein = dailySummary.reduce((s, r) => s + (r._sum.proteinG ?? 0), 0)
   const totalFat = dailySummary.reduce((s, r) => s + (r._sum.fatG ?? 0), 0)
   const totalCarbs = dailySummary.reduce((s, r) => s + (r._sum.carbsG ?? 0), 0)
+
+  const dailyArticles = await getDailyArticleSummary(user.userId, getContentDate())
 
   const recentDateRange = getLocalDateRange(7)
   const recentDays = await prisma.mealRecord.findMany({
@@ -67,6 +71,7 @@ export default async function DashboardPage() {
         carbsG: r._sum.carbsG ?? 0,
         count: r._count,
       }))}
+      dailyArticles={dailyArticles}
     />
   )
 }

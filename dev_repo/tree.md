@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-25 - Agent 日更图文与 DashScope 生图` [in_progress]
-- Current slice: `C-25-S2`；C-21 的 Issues #3/#4/#5 仍保持开放等待外部复测
+- Current slice: `C-25-S3`；C-21 的 Issues #3/#4/#5 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
@@ -45,14 +45,14 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
 └── C-25 - Agent 日更图文与 DashScope 生图 [in_progress]
     ├── C-25-A1 日更内容架构、ER 修宪与 DashScope 边界 [completed]
     ├── C-25-S1 批次/文章迁移、仓储与账户隔离 API [completed]
-    ├── C-25-S2 Agent 生成、DashScope 图片适配器与每日 job [in_progress]
-    ├── C-25-S3 每日阅读流 UI [pending]
+    ├── C-25-S2 Agent 生成、DashScope 图片适配器与每日 job [completed]
+    ├── C-25-S3 每日阅读流 UI [in_progress]
     └── C-25-S4 云端部署、三账号验收与截图 [pending]
 ```
 
 - 当前合同：`C-25 - Agent 日更图文与 DashScope 生图 [in_progress]`
-- 当前切片：`C-25-S2`：补齐云端每日任务调度与图片资源安全边界
-- 下一步：完成 C-25-S2 后进入每日阅读流 UI；Issues #3/#4/#5 仍等待外部复测
+- 当前切片：`C-25-S3`：接入首页摘要、导航入口与每日文章阅读/收藏/隐藏流
+- 下一步：完成 C-25-S3 后进入云端部署、三账号 Browser 验收与截图；Issues #3/#4/#5 仍等待外部复测
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

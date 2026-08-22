@@ -1,0 +1,21 @@
+{
+  "contract_id": "C-25",
+  "slice_id": "C-25-S3",
+  "summary": "每日阅读流以文章卡片和结构化视觉 fallback 为首屏，支持详情、已读、收藏、稍后再看、手动生成/刷新，并从首页和响应式导航可达。",
+  "green_test": {
+    "typecheck": "npx tsc --noEmit passed",
+    "lint": "npm run lint passed",
+    "state": "article state updates are account-owned through PATCH API; hidden articles leave the visible feed",
+    "responsive": "mobile navigation uses six stable columns; article cards collapse to one column below md"
+  },
+  "implementation": [
+    "src/app/insights/page.tsx",
+    "src/components/insights/insights-content.tsx",
+    "src/components/insights/article-visual.tsx",
+    "src/app/dashboard/page.tsx",
+    "src/components/dashboard/dashboard-content.tsx",
+    "src/components/sidebar.tsx"
+  ],
+  "unchanged": "Agent Trace/coach workspace remains the conversation authority; this page only consumes daily article APIs.",
+  "return_to": "C-25-S4"
+}

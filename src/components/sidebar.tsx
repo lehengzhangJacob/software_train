@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import {
   BarChart3,
+  BookOpen,
   Bot,
   Brain,
   CalendarDays,
@@ -34,6 +35,7 @@ type SessionUser = {
 const desktopNav = [
   { href: "/dashboard", label: "今天", matches: ["/dashboard"] },
   { href: "/agent", label: "AI 教练", matches: ["/agent"] },
+  { href: "/insights", label: "每日阅读", matches: ["/insights"] },
   { href: "/meals", label: "记一餐", matches: ["/meals"] },
   { href: "/calendar", label: "计划", matches: ["/calendar", "/exercise"] },
   { href: "/reports", label: "报告", matches: ["/reports"] },
@@ -42,6 +44,7 @@ const desktopNav = [
 const mobileNav = [
   { href: "/dashboard", label: "今天", icon: House, matches: ["/dashboard"] },
   { href: "/agent", label: "教练", icon: Bot, matches: ["/agent"] },
+  { href: "/insights", label: "阅读", icon: BookOpen, matches: ["/insights"] },
   { href: "/meals", label: "记一餐", icon: Camera, matches: ["/meals"], action: true },
   { href: "/calendar", label: "计划", icon: CalendarDays, matches: ["/calendar", "/exercise"] },
   { href: "/reports", label: "报告", icon: BarChart3, matches: ["/reports"] },
@@ -50,6 +53,7 @@ const mobileNav = [
 const pageTitles: Record<string, string> = {
   "/dashboard": "今天",
   "/agent": "AI 私人教练",
+  "/insights": "每日阅读",
   "/meals": "记一餐",
   "/calendar": "饮食日历",
   "/exercise": "运动建议",
@@ -225,7 +229,7 @@ export function Sidebar() {
 
       <nav
         aria-label="移动端主导航"
-        className="fixed inset-x-0 bottom-0 z-40 grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-5 border-t border-border/80 bg-white/98 dark:bg-card/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-6 border-t border-border/80 bg-white/98 dark:bg-card/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur lg:hidden"
       >
         {mobileNav.map((item) => {
           const active = isRouteActive(pathname, item.matches)

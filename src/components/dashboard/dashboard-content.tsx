@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Camera, Flame, Sparkles } from "lucide-react"
+import { ArrowRight, BookOpen, Camera, Flame, Sparkles } from "lucide-react"
 import { NutrientProgress } from "@/components/dashboard/nutrient-progress"
 import { formatCalories, formatGrams, calcCaloriePercent } from "@/lib/utils"
 import { CalorieTrendChart } from "@/components/charts/calorie-trend"
@@ -30,6 +30,13 @@ interface DashboardContentProps {
     carbsG: number
     count: number
   }[]
+  dailyArticles: {
+    batchId: number | null
+    status: string
+    readyCount: number
+    unreadCount: number
+    imagePendingCount: number
+  }
 }
 
 export function DashboardContent({
@@ -40,6 +47,7 @@ export function DashboardContent({
   totalCarbs,
   trends,
   dailySummary,
+  dailyArticles,
 }: DashboardContentProps) {
   const remainingCalories = Math.max(0, user.dailyCalorieTarget - totalCalories)
   const caloriePercent = calcCaloriePercent(totalCalories, user.dailyCalorieTarget)
@@ -138,6 +146,37 @@ export function DashboardContent({
               当前完成 {Math.round(Math.min(caloriePercent, 100))}%，优先补足蛋白质和蔬菜。
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="surface-card flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="flex min-w-0 items-start gap-4">
+          <span className="grid size-11 shrink-0 place-items-center rounded-md bg-[var(--brand-mint-soft)] text-[var(--brand-mint-deep)]">
+            <BookOpen className="size-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="page-eyebrow">Daily reading</p>
+            <h2 className="mt-1 text-xl font-semibold text-[var(--brand-heading)]">今天的专属阅读</h2>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">
+              Agent 根据你的记录生成 10 篇短文，边读边把建议落到今天的饮食上。
+            </p>
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center justify-between gap-4 sm:justify-end">
+          <div className="text-left sm:text-right">
+            <p className="text-2xl font-semibold text-[var(--brand-heading)]">{dailyArticles.unreadCount}<span className="ml-1 text-sm font-medium text-muted-foreground">篇未读</span></p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {dailyArticles.readyCount > 0 ? `${dailyArticles.readyCount}/10 已准备` : "今日内容尚未生成"}
+              {dailyArticles.imagePendingCount > 0 ? ` · ${dailyArticles.imagePendingCount} 张图处理中` : ""}
+            </p>
+          </div>
+          <Link
+            href="/insights"
+            className="inline-flex h-10 items-center gap-2 rounded-md bg-[var(--brand-plum)] px-3.5 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint)] focus-visible:ring-offset-2"
+          >
+            打开阅读
+            <ArrowRight className="size-4" />
+          </Link>
         </div>
       </section>
 
