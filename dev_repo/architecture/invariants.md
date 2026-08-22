@@ -72,3 +72,13 @@ The earlier single-user statement is superseded by this amendment:
     在用户接近底部时启用，不能抢夺用户正在查看的历史位置。
 42. 当前回合 Trace 是临时投影，不新增 Prisma 实体、迁移、回填或历史回放语义；任何跨回合留存
     需求必须另开 ER/data-model amendment。
+
+43. `AgentDailyArticleBatch` 必须按 `(user_id, content_date)` 唯一；ready 批次必须恰好有
+    slot 1–10 的十篇 `AgentDailyArticle`，重复 daily job 不得复制批次或 slot。
+44. 日更文章只使用允许的账户上下文。文章 `content_json`/`visual_json` 是经过服务端校验的
+    派生内容，不得包含凭据、支付信息、原始 provider 响应、隐藏推理或图片 data URL。
+45. DashScope 生图任务只能由服务端调用；临时 image URL 必须在有效期内下载为受限 asset key，
+    数据库不得保存临时 URL 或图片字节。图片读取必须再次校验当前 AuthSession、profile 所有权、
+    asset 路径和 image MIME；失败时必须提供结构化视觉 fallback。
+46. 日更 job 只能通过 token 保护的内部接口触发，运行日志只记录 batch/slot、状态和脱敏错误码；
+    未配置 token、DashScope key 或模型权限时不得宣称自动系统通知已启用。

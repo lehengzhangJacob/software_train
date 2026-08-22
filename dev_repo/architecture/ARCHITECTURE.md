@@ -101,6 +101,23 @@ flowchart LR
 
 旧 `ExerciseSuggestion` 不删除、不重写。新增 migration 会以 `legacy_suggestion_id` 幂等镜像旧建议为 `source_kind=legacy_suggestion` 的计划历史，旧表继续保存完整原始记录；迁移前后必须通过行数、主键、integrity 和 foreign-key 检查。
 
+### Agent 日更图文与 DashScope 生图（C-25 / ADR-0015）
+
+日更内容是 Agent Runtime 的独立派生流：服务端从允许的档案、餐食/活动聚合、active
+记忆、运动计划和会话摘要组装受限 prompt，生成一个按 `(user_id, content_date)` 幂等的
+`AgentDailyArticleBatch`，批次内固定 10 个 slot 的 `AgentDailyArticle`。正文与视觉 JSON
+先经过字段、长度和安全边界校验；不合规的 provider 输出不会进入 ready 批次。
+
+DashScope 只作为 server-owned 的异步图片适配器。创建图像任务、轮询 `task_id`、下载结果
+和落盘都发生在 Node 服务或受保护的 daily job 中；客户端不接触 API key 或 provider URL。
+图片 URL 是临时下载源，成功后写入 `data/article-images`（云端通过 `shared/data` 共享），
+数据库只存受限 asset key/MIME 和状态，图片 API 再按当前账户和文章所有权返回。图片任务
+失败时保留结构化视觉 fallback，不阻塞当天十篇正文。
+
+云端 systemd timer 调用 token 保护的内部内容 job；重复执行不产生第二个日期批次，job 可
+从 `pending/running/fallback` 图片状态恢复。应用内 `/insights` 阅读流显示每日批次、未读数、
+收藏/隐藏状态和图片生成进度；系统级浏览器/Android 通知不在 C-25 伪称已交付。
+
 ### 健康活动同步
 
 Android 薄壳经用户授权读取 Health Connect 自然日聚合（步数、活动消耗、运动分钟数），按天 POST /api/health/sync 部分字段 upsert；GET /api/health/recent 按本地自然日窗口读取。服务端只持久化聚合值（daily_activity，(user_id, activity_date) 唯一），Health Connect 原始明细留在设备端；Web 端提供手动回填表单。壳不持有业务数据唯一真相，开发回路走 adb reverse loopback（ADR-0005）。

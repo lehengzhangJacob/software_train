@@ -1,5 +1,5 @@
 {
-  "schema_version": 5,
+  "schema_version": 6,
   "architecture_entry": "dev_repo/architecture/README.md",
   "files": [
     {
@@ -36,6 +36,16 @@
       "path": "dev_repo/architecture/decisions/ADR-0014-agent-exercise-plans.md",
       "node": "agent.runtime",
       "description": "Agent structured exercise plans, coach adjustment deep-links, and legacy suggestion migration"
+    },
+    {
+      "path": "dev_repo/architecture/decisions/ADR-0015-agent-daily-articles-and-dashscope-images.md",
+      "node": "agent.runtime",
+      "description": "Per-account daily article batches, DashScope async image adapter, durable asset keys and protected scheduler"
+    },
+    {
+      "path": "dev_repo/architecture/content-generation.md",
+      "node": "agent.runtime",
+      "description": "C-25 daily article context, content, image, trigger and retry contract"
     },
     {
       "path": "dev_repo/architecture/README.md",
@@ -221,6 +231,22 @@
       "node": "agent.runtime"
     },
     {
+      "glob": "src/app/api/internal/content/**",
+      "node": "agent.runtime"
+    },
+    {
+      "glob": "src/app/insights/**",
+      "node": "frontend.pages"
+    },
+    {
+      "glob": "src/components/insights/**",
+      "node": "frontend.components"
+    },
+    {
+      "glob": "src/lib/agent/content/**",
+      "node": "agent.runtime"
+    },
+    {
       "glob": "src/lib/{agent,memory}/**",
       "node": "agent.runtime"
     },
@@ -242,6 +268,10 @@
     },
     {
       "glob": "scripts/{deploy.mjs,verify-cloud-gate.mjs}",
+      "node": "cloud.delivery"
+    },
+    {
+      "glob": "ops/foodtracker-content.*",
       "node": "cloud.delivery"
     },
     {

@@ -677,17 +677,23 @@
         "上下文 = 滚动摘要 + 水位后尾部，历史只压缩不丢弃",
         "后台整理非阻塞且失败静默，不影响对话主流程",
         "运动计划是安全的结构化 artifact；原始模型响应和隐藏推理不得持久化",
-        "同一用户同一天的调整创建新 revision，旧 active 版本只标记 superseded"
+        "同一用户同一天的调整创建新 revision，旧 active 版本只标记 superseded",
+        "日更批次按 user_id+content_date 幂等且 ready 恰好十篇",
+        "文章只使用允许的账户上下文；DashScope task/临时 URL 不进入消息或 SQLite",
+        "图片由 server-owned adapter 下载到 shared data，失败时保留结构化视觉 fallback"
       ],
       "allowed_change_types": [
         "prompt orchestration",
         "context selection",
         "tool loop",
-        "structured exercise plan projection"
+        "structured exercise plan projection",
+        "daily article generation",
+        "DashScope async image adapter"
       ],
       "requires_amendment_when": [
         "扩大自主建单授权范围或新增支付能力",
         "改变 AgentMessage 与结构化计划的持久化边界"
+        ,"新增跨回合内容持久化或图片资产真相"
       ],
       "verification": [
         "context tests",
@@ -884,7 +890,9 @@
       ],
       "public_interfaces": [
         "http://<server>:8000（访问门后）",
-        "systemd unit foodtracker.service"
+        "systemd unit foodtracker.service",
+        "systemd unit foodtracker-content.service + timer",
+        "token-protected internal daily content job"
       ],
       "depends_on": [
         "delivery",
@@ -898,12 +906,15 @@
         "APP_ACCESS_TOKEN 仅作为迁移期 InviteCode 输入，不是业务授权凭据",
         "未认证请求不得触达业务 API（含 SSE）或个性化页面",
         "服务器上不执行构建，只接收本仓构建产物",
-        ".env.production 权限 0600 且不入 Git"
+        ".env.production 权限 0600 且不入 Git",
+        "daily content job is loopback/token protected and idempotent",
+        "article image assets live under shared/data, never in SQLite"
       ],
       "allowed_change_types": [
         "deploy pipeline",
         "access gate policy",
         "server provisioning"
+        ,"scheduled content job"
       ],
       "requires_amendment_when": [
         "引入多租户、角色权限或跨账户共享",
@@ -1113,6 +1124,21 @@
       "source": "cloud.delivery",
       "target": "backend.api",
       "label": "401 gate on business APIs (incl. SSE)"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "database.prisma",
+      "label": "validated daily article batch/article persistence"
+    },
+    {
+      "source": "agent.runtime",
+      "target": "cloud.delivery",
+      "label": "protected daily job and durable article image assets"
+    },
+    {
+      "source": "cloud.delivery",
+      "target": "agent.runtime",
+      "label": "systemd timer invokes token-protected content job"
     }
   ]
 }

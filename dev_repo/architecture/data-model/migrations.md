@@ -135,6 +135,23 @@
 4. 迁移前必须复制 SQLite 文件。迁移副本验证旧运动表行数/主键集合不变，legacy 镜像数量等于旧建议行数，重复迁移不新增镜像，`PRAGMA integrity_check` 为 ok 且 `foreign_key_check` 为空。
 5. 全新空库不生成 legacy 行；已有 AgentExercisePlan 的数据库升级不得重排 revision 或覆盖 active 计划。任何镜像失败都停止部署并保留失败副本。
 
+## C-25 AgentDailyArticle 迁移与图片兼容
+
+1. 新增 `agent_daily_article_batches` 与 `agent_daily_articles` 两张表；不修改或重建既有
+   user_profile、餐食、对话、记忆、活动或运动计划表。
+2. `AgentDailyArticleBatch` 以 `(user_id, content_date)` 唯一；`AgentDailyArticle` 以
+   `(batch_id, slot)` 唯一。迁移创建空表，不回填历史文章，不为既有账号补跑过去日期。
+3. 文章内容、视觉 JSON、图片状态和阅读状态只属于其 UserProfile；删除 profile 级联删除
+   batch/article，删除 batch 级联删除文章。API scope 必须同时检查 article.user_id 和 batch.user_id。
+4. DashScope 的 task id/临时 URL 不参与数据库外键或图片真相；URL 成功后立即下载到运行时
+   `data/article-images`（云端 `shared/data/article-images`），数据库只保留相对 asset key、
+   MIME type 和状态。没有图片或下载失败时不回填图片字节，而使用 visual fallback。
+5. 迁移验证必须在副本上比较所有旧表的行数、主键集合、sqlite_sequence、integrity_check、
+   foreign_key_check 和 Prisma migration status；新表应为零行。重复 migrate/job 不得增建
+   日期批次或 slot。
+6. 回滚只恢复迁移前 SQLite 副本并移除新表/共享图片目录，不触碰历史业务表；任何跨 profile
+   文章或破坏性 backfill 都是 red-line delta contract。
+
 ## 验证
 
 - prisma validate

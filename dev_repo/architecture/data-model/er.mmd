@@ -19,6 +19,9 @@ erDiagram
   AgentMessage o|--o{ MemoryItem : sources
   UserProfile ||--o{ DailyActivity : owns
   AgentThread ||--o| AgentSessionDigest : compacts
+  UserProfile ||--o{ AgentDailyArticleBatch : owns
+  AgentDailyArticleBatch ||--o{ AgentDailyArticle : contains
+  UserProfile ||--o{ AgentDailyArticle : owns
   ExerciseCalorieReference {
     int exercise_id PK
     string exercise_name UK
@@ -156,6 +159,45 @@ erDiagram
     int thread_id FK UK
     int covered_message_id
     string summary
+    datetime created_at
+    datetime updated_at
+  }
+  AgentDailyArticleBatch {
+    int batch_id PK
+    int user_id FK
+    string content_date
+    string status
+    string source_kind
+    int requested_count
+    int ready_count
+    int image_pending_count
+    string generation_error
+    datetime started_at
+    datetime published_at
+    datetime created_at
+    datetime updated_at
+  }
+  AgentDailyArticle {
+    int article_id PK
+    int batch_id FK
+    int user_id FK
+    int slot
+    string topic
+    string title
+    string summary
+    string content_json
+    string visual_json
+    string status
+    string image_status
+    string image_provider
+    string image_task_id
+    string image_asset_key
+    string image_mime_type
+    string image_alt
+    datetime published_at
+    datetime read_at
+    datetime saved_at
+    datetime hidden_at
     datetime created_at
     datetime updated_at
   }

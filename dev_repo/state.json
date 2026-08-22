@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-21",
+  "active_contract_id": "C-25",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -470,6 +470,25 @@
       "backfill_required": true,
       "legacy_compatibility": "旧 exercise_suggestions 表、字段、主键与采纳状态保持完整；新表仅增加幂等 legacy 镜像",
       "latest_verification": "C-24-S4 passed: cloud deploy 20260822163348 reported no pending migrations; Team A real exercise-plan generation completed with immediate user message, running Trace, persisted AgentExercisePlan, coach result link, plan-page active revision and 3 preserved legacy suggestions; Browser console error/warn list empty. In-app Browser screenshot binary capture was unavailable in this session, so DOM acceptance is recorded and no post-generation screenshot is claimed."
+    },
+    "C-25": {
+      "contract_id": "C-25",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "每个账号每天生成 10 篇独立个性化图文文章，并在应用内每日阅读流中推送",
+      "goal": "新增账户隔离的 Agent 日更文章批次、DashScope 异步生图持久化、每日 job/timer 和阅读流 UI；保留旧数据与现有 Agent Trace/运动计划边界。",
+      "current_slice": "C-25-S1",
+      "completed_slices": ["C-25-A1"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "C-25-A1 / ADR-0015",
+      "data_model_delta": "新增 AgentDailyArticleBatch 与 AgentDailyArticle；每日批次和 slot 幂等；图片只保存 asset key/MIME/状态，不存临时 URL 或图片字节",
+      "migration_required": true,
+      "backfill_required": false,
+      "dashscope_image_strategy": "Qwen-Image async task adapter with local shared/data fallback",
+      "issue_state": "Issues #6-#8 closed; Issues #3-#5 open for external retest; this feature does not change issue status.",
+      "latest_verification": "C-25-A1 architecture/ER amendment committed; C-25-S1 schema/migration/API implementation in progress."
     }
   }
 }

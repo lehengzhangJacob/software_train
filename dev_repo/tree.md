@@ -2,8 +2,8 @@
 
 ## Current execution override
 
-- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: 无；等待 Issues #3/#4/#5 外部复测
+- Current contract: `C-25 - Agent 日更图文与 DashScope 生图` [in_progress]
+- Current slice: `C-25-S1`；C-21 的 Issues #3/#4/#5 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
@@ -21,6 +21,7 @@
 - C-24-S2 completed: Agent exercise-plan mode emits a validated marker, persists it with the assistant message, and carries an owned plan into adjustment prompts without leaking marker JSON during SSE.
 - C-24-S3 completed: the exercise page consumes the active Agent plan projection, keeps legacy/history visible, and links into a return-aware coach adjustment workspace.
 - C-24-S4 completed: StepFun exercise turns request low reasoning effort so hidden reasoning cannot consume the answer budget; cloud generation, persistence, coach return link, active plan projection, legacy history and Browser console checks passed. Existing pre-generation desktop/375px visual evidence remains; the current In-app Browser session could not export screenshot bytes, so no post-generation screenshot is claimed.
+- C-25-A1 completed: ADR-0015 defines per-account ten-article batches, safe context, DashScope async image tasks, durable shared assets, protected daily job and visual fallback; ER/data-model and architecture invariants are amended. C-25-S1 is implementing additive empty-start tables and account-scoped APIs.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 ```text
@@ -41,6 +42,12 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-24-S2 Agent 计划输出、持久化与调整上下文 [completed]
     ├── C-24-S3 计划页与教练调整深链 UI [completed]
     └── C-24-S4 云端迁移、生成回归与截图验收 [completed]
+└── C-25 - Agent 日更图文与 DashScope 生图 [in_progress]
+    ├── C-25-A1 日更内容架构、ER 修宪与 DashScope 边界 [completed]
+    ├── C-25-S1 批次/文章迁移、仓储与账户隔离 API [in_progress]
+    ├── C-25-S2 Agent 生成、DashScope 图片适配器与每日 job [pending]
+    ├── C-25-S3 每日阅读流 UI [pending]
+    └── C-25-S4 云端部署、三账号验收与截图 [pending]
 ```
 
 - 当前合同：`C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移 [completed]`

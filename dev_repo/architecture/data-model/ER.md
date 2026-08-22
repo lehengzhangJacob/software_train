@@ -33,6 +33,8 @@
 | MemoryItem | memory_items | 用户输入、档案、餐食模式或 Agent 推断 | memory_id | UserProfile |
 | DailyActivity | daily_activity | 设备 Health Connect 同步或用户手填的每日活动聚合 | activity_id | UserProfile |
 | AgentSessionDigest | agent_session_digests | AI 对水位线前旧消息的滚动会话摘要 | digest_id | AgentThread（每线程至多一行） |
+| AgentDailyArticleBatch | agent_daily_article_batches | Agent 每个账号每个自然日的十篇文章生成批次 | batch_id | UserProfile |
+| AgentDailyArticle | agent_daily_articles | 批次内经过校验的个性化文章、视觉和阅读状态 | article_id | UserProfile + AgentDailyArticleBatch |
 
 ## 关系
 
@@ -48,6 +50,9 @@
 - AgentMessage 1:N MemoryItem 为可选来源关系；删除来源消息时 source_message_id 置空，长期记忆不被连带删除。
 - UserProfile 1:N DailyActivity，通过 user_id，删除档案时级联删除；(user_id, activity_date) 唯一，同步按自然日部分字段 upsert。
 - AgentThread 1:1 AgentSessionDigest（可选），删除对话时级联删除摘要；covered_message_id 水位线单调递增。
+- UserProfile 1:N AgentDailyArticleBatch，通过 user_id，删除档案时级联删除；(user_id, content_date) 唯一。
+- AgentDailyArticleBatch 1:N AgentDailyArticle，通过 batch_id，删除批次时级联删除；(batch_id, slot) 唯一，slot 固定为 1–10。
+- AgentDailyArticle 也保存 user_id 作为账户隔离索引；服务端创建/读取时必须验证 article.user_id 与 batch.user_id 一致。
 - ExerciseCalorieReference 不与建议建立持久外键；建议保存生成时的名称和估算，避免 reference 更新改变历史。
 
 ## Primary profile
@@ -77,3 +82,6 @@
 - active 且未过期的推断记忆可以参与后续建议；精确重复候选复用现有 active 行，精确匹配 disabled 行时不得新增或恢复。
 - AgentSessionDigest 是运行时派生的压缩摘要，不是对话副本：每线程一行，覆盖水位线之前的消息，按 ≥6h 空闲间隔切分会话段；来源为 session_digest 的记忆与推断记忆在治理界面同权。
 - DailyActivity 只存步数、活动消耗与运动分钟数的自然日聚合；Health Connect 原始明细留在设备端，不落库。source_kind 区分 health_connect 自动同步与 manual 手填。
+- AgentDailyArticleBatch 是按本地自然日生成的派生容器；`status` 只允许 pending/generating/ready/failed，ready 批次恰好十篇文章，失败可重试且不删除历史 ready 批次。
+- AgentDailyArticle 的 `content_json`/`visual_json` 只允许受限字段与长度；`image_task_id` 仅用于 DashScope 异步任务观测，`image_asset_key` 是服务器共享数据目录下的相对 key，`image_mime_type` 只允许 image/png、image/jpeg、image/webp。
+- `read_at`、`saved_at`、`hidden_at` 是用户阅读状态；不把未读状态放在客户端或跨账号共享缓存中。DashScope 临时 URL 和原始图片字节不进入 SQLite。

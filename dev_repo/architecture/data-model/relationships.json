@@ -198,6 +198,44 @@
       "source_artifacts": ["prisma/schema.prisma", "src/lib/agent/consolidation.ts"],
       "invariant": "每线程至多一行滚动摘要；covered_message_id 单调递增；删除对话必须连带删除摘要",
       "confidence": "approved_target"
+    },
+    {
+      "name": "UserProfile_has_AgentDailyArticleBatches",
+      "source": "UserProfile",
+      "target": "AgentDailyArticleBatch",
+      "cardinality": "1:N",
+      "target_uniqueness": "每 (user_id, content_date) 至多一批",
+      "via": "AgentDailyArticleBatch.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/**", "dev_repo/architecture/decisions/ADR-0015-agent-daily-articles-and-dashscope-images.md"],
+      "invariant": "日更批次只属于当前 profile；不回填历史日期；重复 job 不增批次",
+      "confidence": "approved_target"
+    },
+    {
+      "name": "AgentDailyArticleBatch_contains_AgentDailyArticles",
+      "source": "AgentDailyArticleBatch",
+      "target": "AgentDailyArticle",
+      "cardinality": "1:N",
+      "target_uniqueness": "每 batch 的 slot 1–10 各至多一篇，ready 批次恰好十篇",
+      "via": "AgentDailyArticle.batch_id",
+      "owner": "AgentDailyArticleBatch",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/**", "src/lib/agent/content/**"],
+      "invariant": "文章 slot、状态、阅读状态只在拥有批次与 profile 范围内解释",
+      "confidence": "approved_target"
+    },
+    {
+      "name": "UserProfile_owns_AgentDailyArticles",
+      "source": "UserProfile",
+      "target": "AgentDailyArticle",
+      "cardinality": "1:N",
+      "via": "AgentDailyArticle.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "src/app/api/agent/articles/**"],
+      "invariant": "API 必须同时校验 article.user_id 与 batch.user_id，图片读取禁止跨账号",
+      "confidence": "approved_target"
     }
   ],
   "non_relationships": [
