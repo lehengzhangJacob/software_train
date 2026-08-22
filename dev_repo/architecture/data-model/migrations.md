@@ -127,6 +127,14 @@
 4. 写入语义：`POST /api/health/sync` 按 `(user_id, activity_date)` 部分字段 upsert；值域上限 steps ≤ 200000、exercise_minutes ≤ 1440、active_calories 非负保留一位小数；source_kind 仅 manual / health_connect。
 5. 数据来源边界：服务端只存自然日聚合值；Health Connect 原始明细留在设备端，不进入 SQLite。
 
+## C-24 AgentExercisePlan 迁移与 legacy 回填
+
+1. 新增 `agent_exercise_plans`，保存 Agent 校验后的结构化计划、revision、来源线程/消息和可选的 `legacy_suggestion_id`；不重建或删除 `exercise_suggestions`。
+2. migration 以 `legacy_suggestion_id` 为幂等键，将每条旧 `ExerciseSuggestion` 镜像为 `source_kind=legacy_suggestion`、`status=legacy` 的计划历史；原 `exercise_suggestions` 行、主键、采纳状态和估算字段保持不变。
+3. legacy 镜像的 `plan_json` 只包含旧运动名称、时长、强度、原建议描述和旧采纳标记，不声称这是 Agent 生成的训练步骤；新 Agent 计划使用 `source_kind=agent`。
+4. 迁移前必须复制 SQLite 文件。迁移副本验证旧运动表行数/主键集合不变，legacy 镜像数量等于旧建议行数，重复迁移不新增镜像，`PRAGMA integrity_check` 为 ok 且 `foreign_key_check` 为空。
+5. 全新空库不生成 legacy 行；已有 AgentExercisePlan 的数据库升级不得重排 revision 或覆盖 active 计划。任何镜像失败都停止部署并保留失败副本。
+
 ## 验证
 
 - prisma validate

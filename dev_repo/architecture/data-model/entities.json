@@ -191,6 +191,42 @@
       "confidence": "confirmed"
     },
     {
+      "name": "AgentExercisePlan",
+      "table": "agent_exercise_plans",
+      "purpose": "Agent 输出经服务端校验后的结构化运动计划、修订版本和旧建议 legacy 镜像",
+      "owning_architecture_node": "agent.runtime",
+      "source_or_derived": "validated_generated_source",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/**", "src/lib/exercise/**", "src/app/api/agent/chat/route.ts"],
+      "identity": {"field": "plan_id", "strategy": "autoincrement", "legacy_business_key": "legacy_suggestion_id"},
+      "ownership": {"field": "user_id", "entity": "UserProfile"},
+      "state_fields": ["plan_date", "revision", "source_kind", "status", "title", "goal", "total_minutes", "intensity", "plan_json"],
+      "derived_from": {
+        "agent": "validated ExercisePlanPayload from an Agent assistant turn",
+        "legacy_suggestion": "one-to-one idempotent mirror of ExerciseSuggestion"
+      },
+      "fields": [
+        {"name": "plan_id", "type": "INTEGER", "pk": true, "nullable": false},
+        {"name": "user_id", "type": "INTEGER", "fk": "UserProfile.user_id", "nullable": false},
+        {"name": "thread_id", "type": "INTEGER", "fk": "AgentThread.thread_id", "nullable": true, "on_delete": "SET NULL"},
+        {"name": "source_message_id", "type": "INTEGER", "fk": "AgentMessage.message_id", "nullable": true, "on_delete": "SET NULL"},
+        {"name": "legacy_suggestion_id", "type": "INTEGER", "fk": "ExerciseSuggestion.suggestion_id", "unique": true, "nullable": true, "on_delete": "SET NULL"},
+        {"name": "plan_date", "type": "TEXT_DATE", "nullable": false, "format": "YYYY-MM-DD"},
+        {"name": "revision", "type": "INTEGER", "nullable": false, "default": 1, "min": 1},
+        {"name": "source_kind", "type": "TEXT", "nullable": false, "default": "agent", "allowed": ["agent", "legacy_suggestion"]},
+        {"name": "status", "type": "TEXT", "nullable": false, "default": "active", "allowed": ["active", "superseded", "legacy", "archived"]},
+        {"name": "title", "type": "TEXT", "nullable": false, "max_length": 160},
+        {"name": "goal", "type": "TEXT", "nullable": false, "max_length": 500},
+        {"name": "total_minutes", "type": "INTEGER", "nullable": false, "min": 5, "max": 180},
+        {"name": "intensity", "type": "TEXT", "nullable": false, "allowed": ["low", "moderate", "high"]},
+        {"name": "plan_json", "type": "TEXT_JSON", "nullable": false, "max_length": 12000, "must_not_contain": ["secret", "payment credential", "image data URL", "raw provider response", "hidden reasoning"]},
+        {"name": "created_at", "type": "DATETIME", "nullable": false},
+        {"name": "updated_at", "type": "DATETIME", "nullable": false}
+      ],
+      "migration_notes": "C-24-A1 新增表；新 Agent 计划由 assistant 回合校验后写入；旧 ExerciseSuggestion 逐行以 legacy_suggestion_id 幂等镜像，不删除旧表或执行破坏性回填",
+      "requires_amendment_when": ["改变 revision/status 状态机", "允许跨 profile 共享计划", "保存原始模型响应", "改变 legacy 镜像幂等键"],
+      "confidence": "approved_target"
+    },
+    {
       "name": "ExerciseCalorieReference",
       "table": "exercise_calorie_reference",
       "purpose": "课程演示的运动消耗参考目录",

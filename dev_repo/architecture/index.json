@@ -33,6 +33,11 @@
       "description": "Versioned current-turn Agent Trace events, streaming answer projection and mature Trace UI"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0014-agent-exercise-plans.md",
+      "node": "agent.runtime",
+      "description": "Agent structured exercise plans, coach adjustment deep-links, and legacy suggestion migration"
+    },
+    {
       "path": "dev_repo/architecture/README.md",
       "node": "dev_repo",
       "description": "架构宪法入口"
@@ -218,6 +223,10 @@
     {
       "glob": "src/lib/{agent,memory}/**",
       "node": "agent.runtime"
+    },
+    {
+      "glob": "src/lib/exercise/**",
+      "node": "backend.api"
     },
     {
       "glob": "src/app/api/mcp/**",

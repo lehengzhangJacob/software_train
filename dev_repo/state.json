@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-21",
+  "active_contract_id": "C-24",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -452,6 +452,24 @@
       "data_model_delta": "none; ephemeral current-turn trace only; no migration or backfill",
       "issue_state": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5 remain open until external testers confirm non-reproduction.",
       "latest_verification": "C-23-S4 passed: cloud Browser confirmed a user-facing default progress summary, automatic collapse after completion, on-demand technical details, 375px no-overflow and no browser console errors."
+    },
+    "C-24": {
+      "contract_id": "C-24",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "Agent 结构化运动计划、教练调整与旧建议无损迁移",
+      "goal": "让 Agent 生成受限结构化运动计划，运动页展示 active revision，教练页调整并返回，同时将旧 ExerciseSuggestion 逐行幂等镜像为 legacy 计划历史。",
+      "current_slice": "C-24-A1",
+      "completed_slices": [],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "C-24-A1 / ADR-0014",
+      "data_model_delta": "新增 AgentExercisePlan；legacy_suggestion_id 逐行镜像旧 ExerciseSuggestion；migration required，backfill required，no destructive rewrite",
+      "migration_required": true,
+      "backfill_required": true,
+      "legacy_compatibility": "旧 exercise_suggestions 表、字段、主键与采纳状态保持完整；新表仅增加幂等 legacy 镜像",
+      "latest_verification": null
     }
   }
 }

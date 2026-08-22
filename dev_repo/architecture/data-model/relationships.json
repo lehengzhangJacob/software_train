@@ -74,6 +74,57 @@
       "confidence": "confirmed"
     },
     {
+      "name": "UserProfile_has_AgentExercisePlans",
+      "source": "UserProfile",
+      "target": "AgentExercisePlan",
+      "cardinality": "1:N",
+      "via": "AgentExercisePlan.user_id",
+      "owner": "UserProfile",
+      "on_delete": "CASCADE",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/**", "src/lib/exercise/**"],
+      "invariant": "计划只属于当前 profile；同日 active Agent 计划最多一条，legacy 镜像按旧 suggestion 唯一",
+      "confidence": "approved_target"
+    },
+    {
+      "name": "AgentThread_contextualizes_AgentExercisePlans",
+      "source": "AgentThread",
+      "target": "AgentExercisePlan",
+      "cardinality": "1:N",
+      "target_optionality": "AgentExercisePlan.thread_id 可为空",
+      "via": "AgentExercisePlan.thread_id",
+      "owner": "AgentExercisePlan",
+      "on_delete": "SET NULL",
+      "source_artifacts": ["prisma/schema.prisma", "src/app/api/agent/chat/route.ts"],
+      "invariant": "删除对话不删除已生成的运动计划或其 revision 历史",
+      "confidence": "approved_target"
+    },
+    {
+      "name": "AgentMessage_sources_AgentExercisePlans",
+      "source": "AgentMessage",
+      "target": "AgentExercisePlan",
+      "cardinality": "1:0..N",
+      "target_optionality": "AgentExercisePlan.source_message_id 可为空",
+      "via": "AgentExercisePlan.source_message_id",
+      "owner": "AgentExercisePlan",
+      "on_delete": "SET NULL",
+      "source_artifacts": ["prisma/schema.prisma", "src/lib/agent/repository.ts"],
+      "invariant": "计划可追溯到 assistant 消息；删除消息只置空来源，不删除计划",
+      "confidence": "approved_target"
+    },
+    {
+      "name": "ExerciseSuggestion_mirrors_AgentExercisePlan",
+      "source": "ExerciseSuggestion",
+      "target": "AgentExercisePlan",
+      "cardinality": "1:0..1",
+      "target_optionality": "AgentExercisePlan.legacy_suggestion_id 可为空且唯一",
+      "via": "AgentExercisePlan.legacy_suggestion_id",
+      "owner": "AgentExercisePlan",
+      "on_delete": "SET NULL",
+      "source_artifacts": ["prisma/schema.prisma", "prisma/migrations/**", "dev_repo/architecture/decisions/ADR-0014-agent-exercise-plans.md"],
+      "invariant": "旧建议只镜像一次；保留旧表完整历史，迁移可安全重复执行",
+      "confidence": "approved_target"
+    },
+    {
       "name": "UserProfile_has_AgentThreads",
       "source": "UserProfile",
       "target": "AgentThread",

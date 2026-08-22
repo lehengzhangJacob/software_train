@@ -2,10 +2,10 @@
 
 ## Current execution override
 
-- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: 无（C-23 已完成，等待 #3/#4/#5 外部复测）
-- Parent contract: `C-03 - 本地个人营养 Agent` [completed]
-- Return path: `web_completion_audit`
+- Current contract: `C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移` [in_progress]
+- Current slice: `C-24-A1 - 架构/ER 修宪与 legacy 镜像迁移语义`
+- Parent contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
+- Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
 - C-21-S2 completed: disabled/expired memories are isolated from Agent context, suppressed text is redacted from digest/history, and the local date anchor is explicit.
 - C-21-S3 completed: the desktop Agent shell is fixed-height with right-only conversation scrolling, and the waiting copy follows the running activity.
@@ -16,6 +16,7 @@
 - C-22-S1 completed: the shared Web shell compares the server-provided build id with the no-store version endpoint and offers an explicit refresh; stale-tab visual proof is scheduled with the cloud deployment.
 - C-22-S2 completed: cloud v0.1.1 is live, `/api/app/version` is public no-store, Android 0.1.1 APK built, and Browser desktop/375px screenshots prove the notice stays in content flow. The GitHub Release target is v0.1.1; Issues #6-#8 are closed after external confirmation and #3-#5 remain open.
 - C-23-S4 completed: Trace 默认展示用户语言进度并在回合完成后收起，技术字段通过“查看技术详情”按需展开；云端桌面/375px 移动 Browser 验收通过。
+- C-24-A1 approved and started: AgentExercisePlan becomes the structured plan source; legacy ExerciseSuggestion rows will be mirrored idempotently without deleting or rewriting the old table.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 ```text
@@ -30,6 +31,8 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-23-S2 成熟 Trace UI 与即时对话流 [completed]
     ├── C-23-S3 浏览器/云端回归与截图交付 [completed]
     └── C-23-S4 用户态 Trace 信息密度收敛 [completed]
+└── C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移 [in_progress]
+    └── C-24-A1 架构/ER 修宪与 legacy 镜像迁移语义 [in_progress]
 ```
 
 - 当前合同：`C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]`

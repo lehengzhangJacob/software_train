@@ -7,10 +7,10 @@
     "return_to": "web_completion_audit"
   },
   "active_amendment": {
-    "contract_id": "C-13-S3-A1",
-    "decision": "android_native_camera_capture_adapter",
+    "contract_id": "C-24-A1",
+    "decision": "agent_structured_exercise_plan_and_legacy_migration",
     "status": "accepted",
-    "return_to": "C-13-S3"
+    "return_to": "C-21"
   },
   "nodes": [
     {
@@ -245,7 +245,8 @@
         "/api/meals GET/PUT/DELETE",
         "/api/meals POST items[] (approved target)",
         "/api/reports GET continuous-day series (approved target)",
-        "/api/exercise/suggest GET/POST/PATCH (approved target)",
+        "/api/exercise/suggest GET/POST/PATCH (legacy compatibility)",
+        "/api/exercise/plans GET current Agent/legacy plan projection",
         "/api/health/sync POST daily-aggregate upsert (approved target)",
         "/api/health/recent GET local-date window (approved target)",
         "/api/app/version GET public build metadata"
@@ -262,7 +263,9 @@
         "不信任客户端 userId",
         "响应为 data/error",
         "错误脱敏",
-        "版本接口只公开非敏感元数据并禁止缓存"
+        "版本接口只公开非敏感元数据并禁止缓存",
+        "运动计划 payload 必须由服务端校验后才能持久化",
+        "planId 按当前账户所有权校验，returnTo 只允许站内白名单"
       ],
       "allowed_change_types": [
         "DTO validation",
@@ -672,15 +675,19 @@
         "工具调用经过策略层",
         "只有当前消息的明确点餐意图可授权创建一笔未支付订单",
         "上下文 = 滚动摘要 + 水位后尾部，历史只压缩不丢弃",
-        "后台整理非阻塞且失败静默，不影响对话主流程"
+        "后台整理非阻塞且失败静默，不影响对话主流程",
+        "运动计划是安全的结构化 artifact；原始模型响应和隐藏推理不得持久化",
+        "同一用户同一天的调整创建新 revision，旧 active 版本只标记 superseded"
       ],
       "allowed_change_types": [
         "prompt orchestration",
         "context selection",
-        "tool loop"
+        "tool loop",
+        "structured exercise plan projection"
       ],
       "requires_amendment_when": [
-        "扩大自主建单授权范围或新增支付能力"
+        "扩大自主建单授权范围或新增支付能力",
+        "改变 AgentMessage 与结构化计划的持久化边界"
       ],
       "verification": [
         "context tests",
