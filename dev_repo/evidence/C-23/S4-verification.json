@@ -1,0 +1,53 @@
+{
+  "contract_id": "C-23",
+  "slice_id": "C-23-S4",
+  "status": "passed",
+  "timestamp": "2026-08-22T12:30:00+08:00",
+  "objective": "把完整 Agent Trace 从默认开发者面板收敛为用户可读的渐进式进度，同时保留按需技术详情。",
+  "implementation": {
+    "default_surface": "本回合进度、用户语言步骤、处理中/已完成/需要处理；完成后默认收起",
+    "technical_details": "序号、工具名、毫秒耗时、事件类型和 SSE 等字段仅在查看技术详情后出现",
+    "activity_copy": "等待文案从健康 Agent 生成建议收敛为生成个性化建议",
+    "trace_boundary": "后端 AgentTraceEvent、SSE、真实调用和安全脱敏边界未改变"
+  },
+  "browser_acceptance": {
+    "tool": "in-app Browser",
+    "url": "http://8.148.206.131:8000/agent",
+    "account": "foodmoment-team-a",
+    "cloud_build": "sNGsEG6KksPWSJJtL-SKm",
+    "optimistic_user_message": "通过：发送后即时出现用户消息，同时显示本回合进度",
+    "default_active": "通过：显示本回合进度、准备这次回答、结合你的饮食记录；不显示 Agent Trace、SSE 或健康 Agent",
+    "default_completed": "通过：完成后自动收起为本回合进度 / 本回合已完成，不显示事件序号或技术详情按钮",
+    "friendly_expanded": "通过：展开后显示用户语言步骤，并提供查看技术详情入口",
+    "technical_expanded": "通过：点击查看技术详情后恢复序号、耗时、SSE 与原始事件标签，完整 Trace 仍可审计",
+    "mobile_375": "通过：375x800 默认态和展开态均可用，document.documentElement.scrollWidth=375以内，无横向溢出",
+    "desktop_layout": "通过：默认态与展开态在桌面视口不溢出",
+    "console_errors": [],
+    "screenshots": [
+      "dev_repo/evidence/C-23/trace-friendly-mid-desktop.png",
+      "dev_repo/evidence/C-23/trace-friendly-desktop.png",
+      "dev_repo/evidence/C-23/trace-friendly-expanded-desktop.png",
+      "dev_repo/evidence/C-23/trace-friendly-technical-desktop.png",
+      "dev_repo/evidence/C-23/trace-friendly-mobile.png",
+      "dev_repo/evidence/C-23/trace-friendly-mobile-expanded.png"
+    ]
+  },
+  "contract_checks": {
+    "npm run lint": "passed",
+    "npm run typecheck": "passed",
+    "npm run build": "passed",
+    "npm run verify": "passed",
+    "npm run smoke": "passed",
+    "cloud_deploy": "20260822123418 passed; /access=200; anonymous /api/users=401"
+  },
+  "boundaries": {
+    "architecture_delta": "none",
+    "data_model_delta": "none",
+    "migration_required": false,
+    "backfill_required": false,
+    "raw_chain_of_thought": "not exposed",
+    "raw_tool_payloads": "not exposed",
+    "payment_links": "not exposed"
+  },
+  "issues": "Issues #6-#8 remain closed after external confirmation; Issues #3-#5 remain open until external retest."
+}

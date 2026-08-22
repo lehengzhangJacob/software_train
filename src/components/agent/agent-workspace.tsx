@@ -190,6 +190,18 @@ function automaticMemoryCount(candidates: MemoryCandidate[]) {
   return new Set(candidates.flatMap((candidate) => candidate.memoryId === null ? [] : [candidate.memoryId])).size
 }
 
+function friendlyActivityLabel(label: string) {
+  const labels: Record<string, string> = {
+    "健康 Agent 生成建议": "生成个性化建议",
+    "整理饮食档案与对话上下文": "整理你的饮食记录",
+    "校验点餐意图与一次性建单权限": "确认点餐请求",
+    "读取麦当劳工具配置": "准备点餐服务",
+    "保存 Agent 回复": "保存回答",
+    "更新记忆使用状态": "更新记忆",
+  }
+  return labels[label] ?? label.replace(/\bAgent\b/g, "").replace(/\s{2,}/g, " ").trim()
+}
+
 export function AgentWorkspace({ username, initialThreads, initialThread }: AgentWorkspaceProps) {
   const [threads, setThreads] = useState(initialThreads)
   const [activeThreadId, setActiveThreadId] = useState<number | null>(initialThread?.threadId ?? null)
@@ -525,7 +537,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                   </div>
                 ))
               )}
-              <AgentTracePanel events={turnTrace} active={sending} />
+              <AgentTracePanel key={turnTrace[0]?.traceId ?? "empty"} events={turnTrace} active={sending} />
               {streamingAnswer ? (
                 <div className="flex gap-3" data-testid="agent-streaming-answer">
                   <div className="mt-1 grid size-8 shrink-0 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
@@ -570,7 +582,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
               {sending ? (
                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
                   <div className="grid size-8 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]"><Bot className="size-4" /></div>
-                  <LoaderCircle className="size-4 animate-spin" />正在{getRunningActivityLabel(turnActivity)}…
+                  <LoaderCircle className="size-4 animate-spin" />正在{friendlyActivityLabel(getRunningActivityLabel(turnActivity))}…
                 </div>
               ) : null}
             </div>
