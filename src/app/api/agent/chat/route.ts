@@ -407,6 +407,11 @@ async function runAgentChatInternal(
           ],
           temperature: 0.4,
           max_tokens: 1_500,
+          // StepFun's reasoning model can spend the entire small output
+          // budget on hidden reasoning before it emits the structured plan.
+          // Keep that reasoning private while asking the provider to leave
+          // room for the user-facing answer and <exercise-plan> payload.
+          ...(exerciseMode && config.providerId === "stepfun" ? { reasoning_effort: "low" } : {}),
         }
         let modelResponse = await requestAiChatCompletionStream(
           config,

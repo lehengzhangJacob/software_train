@@ -20,7 +20,7 @@
 - C-24-S1 completed: schema/migration/repository/API persist validated AgentExercisePlan revisions and preserve every legacy suggestion row as a legacy mirror; local SQLite migration check passed.
 - C-24-S2 completed: Agent exercise-plan mode emits a validated marker, persists it with the assistant message, and carries an owned plan into adjustment prompts without leaking marker JSON during SSE.
 - C-24-S3 completed: the exercise page consumes the active Agent plan projection, keeps legacy/history visible, and links into a return-aware coach adjustment workspace.
-- C-24-S4 in progress: cloud migration is live; a first real generation attempt exposed an empty provider stream, so exercise turns now cap history and retry once through the explicit non-stream fallback before final validation.
+- C-24-S4 completed: StepFun exercise turns request low reasoning effort so hidden reasoning cannot consume the answer budget; cloud generation, persistence, coach return link, active plan projection, legacy history and Browser console checks passed. Existing pre-generation desktop/375px visual evidence remains; the current In-app Browser session could not export screenshot bytes, so no post-generation screenshot is claimed.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 ```text
@@ -40,12 +40,12 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-24-S1 结构化计划模型、迁移、仓储与读取 API [completed]
     ├── C-24-S2 Agent 计划输出、持久化与调整上下文 [completed]
     ├── C-24-S3 计划页与教练调整深链 UI [completed]
-    └── C-24-S4 云端迁移、生成回归与截图验收 [in_progress]
+    └── C-24-S4 云端迁移、生成回归与截图验收 [completed]
 ```
 
-- 当前合同：`C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移 [in_progress]`
-- 当前切片：`C-24-S4 - 云端迁移、生成回归与截图验收`
-- 下一步：重跑云端生成、回计划页截图并完成发布记录；不关闭未确认的 Issue
+- 当前合同：`C-24 - Agent 结构化运动计划、教练调整与旧建议无损迁移 [completed]`
+- 当前切片：无（C-24 已完成）
+- 下一步：回到 C-21，等待 Issues #3/#4/#5 外部复测；不关闭未确认的 Issue
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

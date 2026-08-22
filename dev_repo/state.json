@@ -457,11 +457,11 @@
       "contract_id": "C-24",
       "parent_contract_id": "C-21",
       "root_campaign": "nutrition-agent",
-      "status": "in_progress",
+      "status": "completed",
       "summary": "Agent 结构化运动计划、教练调整与旧建议无损迁移",
       "goal": "让 Agent 生成受限结构化运动计划，运动页展示 active revision，教练页调整并返回，同时将旧 ExerciseSuggestion 逐行幂等镜像为 legacy 计划历史。",
-      "current_slice": "C-24-S4",
-      "completed_slices": ["C-24-A1", "C-24-S1", "C-24-S2", "C-24-S3"],
+      "current_slice": null,
+      "completed_slices": ["C-24-A1", "C-24-S1", "C-24-S2", "C-24-S3", "C-24-S4"],
       "deferred_slices": [],
       "return_to": "C-21",
       "architecture_amendment": "C-24-A1 / ADR-0014",
@@ -469,7 +469,7 @@
       "migration_required": true,
       "backfill_required": true,
       "legacy_compatibility": "旧 exercise_suggestions 表、字段、主键与采纳状态保持完整；新表仅增加幂等 legacy 镜像",
-      "latest_verification": null
+      "latest_verification": "C-24-S4 passed: cloud deploy 20260822163348 reported no pending migrations; Team A real exercise-plan generation completed with immediate user message, running Trace, persisted AgentExercisePlan, coach result link, plan-page active revision and 3 preserved legacy suggestions; Browser console error/warn list empty. In-app Browser screenshot binary capture was unavailable in this session, so DOM acceptance is recorded and no post-generation screenshot is claimed."
     }
   }
 }

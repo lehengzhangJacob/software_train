@@ -50,6 +50,39 @@ test("OpenAI-compatible SSE parser forwards actual answer deltas in order", asyn
   }
 })
 
+test("reasoning deltas stay private while answer content still streams", async () => {
+  const originalFetch = globalThis.fetch
+  const encoder = new TextEncoder()
+  globalThis.fetch = async (_input, init) => {
+    const body = JSON.parse(String(init?.body)) as Record<string, unknown>
+    assert.equal(body.reasoning_effort, "low")
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        controller.enqueue(encoder.encode('data: {"choices":[{"delta":{"reasoning":"不可展示的推理"}}]}\n\n'))
+        controller.enqueue(encoder.encode('data: {"choices":[{"delta":{"content":"<exercise-plan>"}}]}\n\n'))
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"))
+        controller.close()
+      },
+    })
+    return new Response(stream, { headers: { "content-type": "text/event-stream" } })
+  }
+
+  try {
+    const deltas: string[] = []
+    const result = await requestAiChatCompletionStream(
+      config,
+      { messages: [], reasoning_effort: "low" },
+      (delta) => {
+        deltas.push(delta)
+      },
+    )
+    assert.equal(result.text, "<exercise-plan>")
+    assert.deepEqual(deltas, ["<exercise-plan>"])
+  } finally {
+    globalThis.fetch = originalFetch
+  }
+})
+
 test("non-streaming providers are explicit fallback responses", async () => {
   const originalFetch = globalThis.fetch
   globalThis.fetch = async (_input, init) => {
