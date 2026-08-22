@@ -1406,5 +1406,17 @@
       "path": "dev_repo/architecture/decisions/ADR-0016-meal-nutrition-value-bounds.md, dev_repo/architecture/data-model/invariants.md, dev_repo/architecture/data-model/entities.json, dev_repo/architecture/index.json",
       "description": "MealRecord 四个营养字段统一 0–100000 值域；不新增 schema、migration 或 backfill"
     }
+  ],
+  "C-26-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-26/S1/verification.json",
+      "description": "创建、批量创建、更新共用营养值域；4 个边界测试、lint、typecheck 和架构 JSON 通过"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/nutrition.ts, src/lib/validation.ts, scripts/meal-validation-contract.test.ts, package.json",
+      "description": "共享 0–100000 helper、API DTO 校验与 verify 契约测试"
+    }
   ]
 }

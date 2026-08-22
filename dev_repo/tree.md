@@ -49,9 +49,9 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-25-S3 每日阅读流 UI [completed]
     └── C-25-S4 云端部署、五账号验收与截图 [completed：截图二进制不可用，DOM 证据已保存]
 └── C-26 - Issue #10 餐食超规模营养数字防护 [in_progress]
-    ├── C-26-A1 营养值域与数据模型修宪 [in_progress]
-    ├── C-26-S1 后端创建/批量/更新校验 [pending]
-    └── C-26-S2 前端输入、提示与历史展示保护 [pending]
+    ├── C-26-A1 营养值域与数据模型修宪 [completed]
+    ├── C-26-S1 后端创建/批量/更新校验 [completed]
+    └── C-26-S2 前端输入、提示与历史展示保护 [in_progress]
 ```
 
 - 当前合同：`C-26 - Issue #10 餐食超规模营养数字防护 [in_progress]`

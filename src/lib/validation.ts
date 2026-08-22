@@ -1,3 +1,5 @@
+import { MEAL_NUTRITION_MAX, MEAL_NUTRITION_MIN } from "@/lib/nutrition"
+
 const GENDERS = new Set(["male", "female", "other"])
 const ACTIVITY_LEVELS = new Set([
   "sedentary",
@@ -102,6 +104,14 @@ function positiveNumber(value: unknown, label: string) {
 function nonNegativeNumber(value: unknown, label: string) {
   const result = finiteNumber(value, label)
   if (result < 0) throw new ValidationError(`${label}不能为负数`)
+  return result
+}
+
+function mealNutritionNumber(value: unknown, label: string) {
+  const result = finiteNumber(value, label)
+  if (result < MEAL_NUTRITION_MIN || result > MEAL_NUTRITION_MAX) {
+    throw new ValidationError(`${label}必须在 ${MEAL_NUTRITION_MIN} 到 ${MEAL_NUTRITION_MAX} 之间`)
+  }
   return result
 }
 
@@ -221,10 +231,10 @@ export function parseMealCreateInput(value: unknown, defaults: { date: string; t
   return {
     foodName: requiredString(body.foodName, "食物名称", 120),
     mealType: parseMealType(body.mealType),
-    calories: nonNegativeNumber(body.calories, "热量"),
-    proteinG: body.proteinG === undefined ? 0 : nonNegativeNumber(body.proteinG, "蛋白质"),
-    fatG: body.fatG === undefined ? 0 : nonNegativeNumber(body.fatG, "脂肪"),
-    carbsG: body.carbsG === undefined ? 0 : nonNegativeNumber(body.carbsG, "碳水"),
+    calories: mealNutritionNumber(body.calories, "热量"),
+    proteinG: body.proteinG === undefined ? 0 : mealNutritionNumber(body.proteinG, "蛋白质"),
+    fatG: body.fatG === undefined ? 0 : mealNutritionNumber(body.fatG, "脂肪"),
+    carbsG: body.carbsG === undefined ? 0 : mealNutritionNumber(body.carbsG, "碳水"),
     portionDesc: optionalString(body.portionDesc, "份量描述", 200),
     recognitionRaw: sanitizeRecognitionRaw(body.recognitionRaw),
     recordDate: parseDate(body.recordDate ?? defaults.date, "记录日期"),
@@ -267,10 +277,10 @@ export function parseMealUpdateInput(value: unknown) {
 
   if (Object.hasOwn(body, "foodName")) data.foodName = requiredString(body.foodName, "食物名称", 120)
   if (Object.hasOwn(body, "mealType")) data.mealType = parseMealType(body.mealType)
-  if (Object.hasOwn(body, "calories")) data.calories = nonNegativeNumber(body.calories, "热量")
-  if (Object.hasOwn(body, "proteinG")) data.proteinG = nonNegativeNumber(body.proteinG, "蛋白质")
-  if (Object.hasOwn(body, "fatG")) data.fatG = nonNegativeNumber(body.fatG, "脂肪")
-  if (Object.hasOwn(body, "carbsG")) data.carbsG = nonNegativeNumber(body.carbsG, "碳水")
+  if (Object.hasOwn(body, "calories")) data.calories = mealNutritionNumber(body.calories, "热量")
+  if (Object.hasOwn(body, "proteinG")) data.proteinG = mealNutritionNumber(body.proteinG, "蛋白质")
+  if (Object.hasOwn(body, "fatG")) data.fatG = mealNutritionNumber(body.fatG, "脂肪")
+  if (Object.hasOwn(body, "carbsG")) data.carbsG = mealNutritionNumber(body.carbsG, "碳水")
   if (Object.hasOwn(body, "portionDesc")) data.portionDesc = optionalString(body.portionDesc, "份量描述", 200)
   if (Object.hasOwn(body, "recognitionRaw")) data.recognitionRaw = sanitizeRecognitionRaw(body.recognitionRaw)
   if (Object.hasOwn(body, "recordDate")) data.recordDate = parseDate(body.recordDate, "记录日期")
