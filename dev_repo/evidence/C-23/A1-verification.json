@@ -1,0 +1,34 @@
+{
+  "contract_id": "C-23",
+  "slice_id": "C-23-A1",
+  "status": "passed",
+  "timestamp": "2026-08-22T12:20:00+08:00",
+  "red_test": {
+    "name": "Trace contract rejects malformed sequencing and unsafe fields",
+    "assertion": "trace envelope, strict sequence, safe summary redaction and prohibited-field checks",
+    "result": "passed"
+  },
+  "green_tests": [
+    "npx tsx --test scripts/agent-trace-contract.test.ts: 4 passed",
+    "npm run lint: passed",
+    "npm run typecheck: passed",
+    "architecture/state/evidence/journal JSON parse: passed",
+    "git diff --check: passed"
+  ],
+  "architecture": {
+    "delta": "ADR-0013 defines versioned current-turn AgentTraceEvent SSE, real execution boundaries, optimistic transcript reconciliation and safe Trace UI rules",
+    "nodes": ["agent.runtime", "ai.gateway", "mcp.gateway", "frontend.components", "delivery"],
+    "amendment": "C-23-A1 / ADR-0013"
+  },
+  "data_model": {
+    "delta": "none; Agent Trace is ephemeral current-turn state",
+    "migration_required": false,
+    "backfill_required": false
+  },
+  "artifacts": [
+    "src/lib/agent/trace-contract.ts",
+    "scripts/agent-trace-contract.test.ts",
+    "dev_repo/architecture/decisions/ADR-0013-agent-trace-and-trace-ui.md"
+  ],
+  "issues": "Issues #6-#8 remain closed after external confirmation; Issues #3-#5 remain open until external retest."
+}

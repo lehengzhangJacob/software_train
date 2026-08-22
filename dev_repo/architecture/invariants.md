@@ -56,3 +56,19 @@ The earlier single-user statement is superseded by this amendment:
 33. Browser 当前页面与 `/api/app/version` 必须比较同一构建的 build id；同 build 不提示，发现新 build 才提示刷新；更新检测不得持久化账户或营养数据。
 34. Next hash 静态资源可按变化 chunk 增量下载，但不得用 Service Worker、离线数据库或 stale personalized HTML 形成第二份业务真相。
 35. Android 薄壳只消费云端版本契约并提供用户确认的 Release/下载入口；不得静默安装 APK、建立独立版本源或改变 Health Connect/相机边界。
+
+36. 每个 Agent 回合的 Trace 事件必须属于同一 `traceId`/`runId`，拥有唯一事件 id、严格递增的
+    `sequence` 和 ISO 时间戳；父子步骤只能通过 `parentId` 表达，不能用 UI 猜测调用关系。
+37. Trace 事件只能由真实执行边界产生。上下文读取、模型请求/增量、MCP `callTool`、重试、答案
+    增量、最终保存和终态必须可追踪；没有实际执行的工具调用和人工打字机效果始终禁止。
+38. Trace 对外投影只允许版本化字段、白名单工具名、有限状态、耗时、脱敏摘要和答案增量；原始
+    工具参数/结果、隐藏思维链、system prompt、凭据、供应商错误原文、URL 和支付链接不得进入
+    SSE、AgentMessage、MemoryItem 或日志。
+39. `/api/agent` 的 JSON 完成合同保持兼容；SSE 断线不能改变服务端业务结果、触发重复持久化或
+    重复创建未支付订单。非流式模型必须以 `fallback` 语义呈现，不能伪装为流式。
+40. Browser 必须在发送瞬间显示本次 user bubble；最终 thread 对账按稳定消息身份只保留一份 user
+    和 assistant。流中断保留输入并给出可重试错误，不能静默清空草稿。
+41. Trace UI 在 375px–1440px 可读、可键盘/读屏理解，摘要必须换行且不产生横向溢出；自动跟随仅
+    在用户接近底部时启用，不能抢夺用户正在查看的历史位置。
+42. 当前回合 Trace 是临时投影，不新增 Prisma 实体、迁移、回填或历史回放语义；任何跨回合留存
+    需求必须另开 ER/data-model amendment。

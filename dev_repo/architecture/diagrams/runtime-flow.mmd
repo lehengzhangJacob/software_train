@@ -15,8 +15,13 @@ sequenceDiagram
   end
   User->>UI: 发起营养对话或附近外卖请求
   UI->>API: POST /api/agent
+  API-->>UI: SSE run.started / trace events (current turn only)
   API->>DB: 读取档案、餐食与可用记忆
-  API->>AI: 受控上下文调用
+  DB-->>API: safe context summaries
+  API-->>UI: SSE step/tool/model started events
+  API->>AI: 受控上下文调用 (stream when supported)
+  AI-->>API: model deltas
+  API-->>UI: SSE answer.delta + model.delta
   AI-->>API: 建议或工具意图
   API-->>UI: 建议、搜索结果或订单草案
   alt 当前消息明确要求点麦当劳
@@ -30,6 +35,7 @@ sequenceDiagram
   else 普通营养咨询或意图不明确
     API-->>UI: 只返回建议，不创建订单
   end
+  API-->>UI: SSE run.completed / run.failed + done
   User->>UI: 确认保存
   UI->>API: POST /api/meals
   API->>DB: 绑定 primary profile 后写入

@@ -28,6 +28,11 @@
       "description": "Version-aware delivery and shared Web/Android incremental refresh flow"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0013-agent-trace-and-trace-ui.md",
+      "node": "agent.runtime",
+      "description": "Versioned current-turn Agent Trace events, streaming answer projection and mature Trace UI"
+    },
+    {
       "path": "dev_repo/architecture/README.md",
       "node": "dev_repo",
       "description": "架构宪法入口"

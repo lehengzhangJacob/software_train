@@ -1281,5 +1281,22 @@
       "path": "dev_repo/evidence/C-20/S1/verification.json",
       "description": "README 素材引用、lint、typecheck、production build 通过；远端推送因当前 GitHub 身份仅有 READ 权限而暂停"
     }
+  ],
+  "C-23-A1": [
+    {
+      "type": "architecture_amendment",
+      "path": "dev_repo/architecture/decisions/ADR-0013-agent-trace-and-trace-ui.md, dev_repo/architecture/ARCHITECTURE.md, dev_repo/architecture/graph.json, dev_repo/architecture/index.json, dev_repo/architecture/invariants.md, dev_repo/architecture/diagrams/runtime-flow.mmd",
+      "description": "完整 Agent Trace 事件边界、SSE/JSON 兼容、optimistic transcript、脱敏和当前回合临时性架构修宪"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/trace-contract.ts, scripts/agent-trace-contract.test.ts",
+      "description": "版本化 Trace 信封、事件类型、严格序列、摘要脱敏和禁止字段合同"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-23/A1-verification.json",
+      "description": "C-23-A1 架构、数据模型边界和 Trace 合同验证"
+    }
   ]
 }
