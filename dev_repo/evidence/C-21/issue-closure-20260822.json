@@ -1,0 +1,46 @@
+{
+  "contract_id": "C-21",
+  "event": "issue_status_updated",
+  "timestamp": "2026-08-22T11:13:36+08:00",
+  "repository": "lehengzhangJacob/software_train",
+  "closed": [
+    {
+      "number": 6,
+      "title": "进度与提示不符",
+      "state": "closed",
+      "state_reason": "completed",
+      "external_confirmation": {
+        "login": "fuhongchen",
+        "comment_id": 5369436710,
+        "text": "已修复"
+      }
+    },
+    {
+      "number": 7,
+      "title": "识别中途切换导致提示与实际不符",
+      "state": "closed",
+      "state_reason": "completed",
+      "external_confirmation": {
+        "login": "fuhongchen",
+        "comment_id": 5372178774,
+        "text": "已确认修复"
+      }
+    },
+    {
+      "number": 8,
+      "title": "未给模型提供日期上下文",
+      "state": "closed",
+      "state_reason": "completed",
+      "external_confirmation": {
+        "login": "fuhongchen",
+        "comment_id": 5369348043,
+        "text": "已确认修复"
+      }
+    }
+  ],
+  "still_open": [
+    {"number": 3, "title": "创建账号页面前端无错误提示", "reason": "仅有内部验收记录，等待外部复测"},
+    {"number": 4, "title": "AI 教练前端可优化", "reason": "仅有内部验收记录，等待外部复测"},
+    {"number": 5, "title": "长期记忆问题", "reason": "仅有内部验收记录，等待外部复测"}
+  ]
+}

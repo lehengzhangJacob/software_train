@@ -395,7 +395,7 @@
       "root_campaign": "nutrition-agent",
       "status": "in_progress",
       "summary": "集中修复 GitHub Issue #3 至 #8",
-      "goal": "修复注册反馈、长期记忆与日期上下文、Agent 工作台状态、跨路由识别结果交接，并保持 Issue 开放供人工复测。",
+      "goal": "修复注册反馈、长期记忆与日期上下文、Agent 工作台状态、跨路由识别结果交接，并依据外部确认关闭已复现修复的 Issue，保留未复测项开放。",
       "current_slice": null,
       "completed_slices": [
         "C-21-A1",
@@ -407,8 +407,8 @@
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit",
-      "issue_closure": "Issues #3-#8 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-21-UI1 passed: cloud Agent desktop/mobile Browser acceptance confirms 最近对话 is the first sidebar section with an independent scroll boundary; Issues #3-#8 remain open."
+      "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5 remain open until external testers confirm non-reproduction.",
+      "latest_verification": "C-21 issue status rechecked 2026-08-22: #6/#7/#8 closed as completed after external confirmations; #3/#4/#5 remain open."
     },
     "C-21-UI1": {
       "contract_id": "C-21-UI1",
@@ -434,8 +434,8 @@
       "deferred_slices": [],
       "return_to": "C-21",
       "architecture_amendment": "C-22-A1 / ADR-0012",
-      "issue_closure": "Issues #3-#8 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-22-S2 passed: cloud v0.1.1 deployed at 20260821153703, public version API/no-store and anonymous business 401 passed; Android 0.1.1 debug APK built; Browser desktop/mobile update notice evidence captured."
+      "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5 remain open until external testers confirm non-reproduction.",
+      "latest_verification": "C-22-S2 passed: cloud v0.1.1 deployed at 20260821153703, public version API/no-store and anonymous business 401 passed; Android 0.1.1 debug APK built; Browser desktop/mobile update notice evidence captured. Current Issue status: #6/#7/#8 closed, #3/#4/#5 open."
     }
   }
 }
