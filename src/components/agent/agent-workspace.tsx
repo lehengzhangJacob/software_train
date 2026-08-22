@@ -5,6 +5,8 @@ import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
 import {
   Bot,
+  ArrowLeft,
+  Dumbbell,
   ExternalLink,
   History,
   LoaderCircle,
@@ -48,6 +50,7 @@ interface AgentMessage {
   content: string
   createdAt: string
   memoryCandidates: MemoryCandidate[]
+  exercisePlanId: number | null
 }
 
 interface AgentThread extends ThreadSummary {
@@ -58,6 +61,9 @@ interface AgentWorkspaceProps {
   username: string
   initialThreads: ThreadSummary[]
   initialThread: AgentThread | null
+  exerciseMode?: boolean
+  initialExercisePlanId?: number | null
+  returnTo?: string
 }
 
 interface ApiEnvelope<T> {
@@ -71,10 +77,21 @@ interface OrderResult {
   itemsTotalCents: number | null
 }
 
+interface ExercisePlanResult {
+  planId: number
+  planDate: string
+  revision: number
+  title: string
+  goal: string
+  totalMinutes: number
+  intensity: string
+}
+
 interface ChatResult {
   thread: AgentThread
   userMessage: AgentMessage
   assistantMessage: AgentMessage
+  exercisePlan: ExercisePlanResult | null
   orderResult?: OrderResult | null
   activity: AgentActivity[]
   trace: AgentTraceEvent[]
@@ -122,6 +139,8 @@ function parseActivityEvent(block: string) {
 async function streamAgentChat(
   threadId: number | null,
   message: string,
+  mode: "general" | "exercise-plan",
+  exercisePlanId: number | null,
   onActivity: (activity: AgentActivity) => void,
   onTrace: (event: AgentTraceEvent) => void,
   onAnswerDelta: (delta: string) => void,
@@ -129,7 +148,7 @@ async function streamAgentChat(
   const response = await fetch("/api/agent/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
-    body: JSON.stringify({ threadId, message }),
+    body: JSON.stringify({ threadId, message, mode, exercisePlanId }),
   })
   if (!response.ok) {
     const payload = (await response.json()) as ApiEnvelope<never>
@@ -202,10 +221,18 @@ function friendlyActivityLabel(label: string) {
   return labels[label] ?? label.replace(/\bAgent\b/g, "").replace(/\s{2,}/g, " ").trim()
 }
 
-export function AgentWorkspace({ username, initialThreads, initialThread }: AgentWorkspaceProps) {
+export function AgentWorkspace({
+  username,
+  initialThreads,
+  initialThread,
+  exerciseMode = false,
+  initialExercisePlanId = null,
+  returnTo = "/exercise",
+}: AgentWorkspaceProps) {
   const [threads, setThreads] = useState(initialThreads)
   const [activeThreadId, setActiveThreadId] = useState<number | null>(initialThread?.threadId ?? null)
   const [messages, setMessages] = useState<AgentMessage[]>(initialThread?.messages ?? [])
+  const [exercisePlanId, setExercisePlanId] = useState<number | null>(initialExercisePlanId)
   const [draft, setDraft] = useState("")
   const [loadingThread, setLoadingThread] = useState(false)
   const [sending, setSending] = useState(false)
@@ -262,6 +289,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
     if (sending) return
     setActiveThreadId(null)
     setMessages([])
+    if (exerciseMode) setExercisePlanId(null)
     setDraft("")
     setLastOrder(null)
     setTurnActivity([])
@@ -297,6 +325,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
       content: message,
       createdAt: new Date().toISOString(),
       memoryCandidates: [],
+      exercisePlanId: null,
     }
     followViewportRef.current = true
     setMessages((current) => [...current, optimisticMessage])
@@ -311,6 +340,8 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
       const result = await streamAgentChat(
         activeThreadId,
         message,
+        exerciseMode ? "exercise-plan" : "general",
+        exercisePlanId,
         (activity) => setTurnActivity((current) => mergeActivity(current, activity)),
         (event) => setTurnTrace((current) => [...current, event]),
         (delta) => setStreamingAnswer((current) => current + delta),
@@ -318,6 +349,7 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
       setActiveThreadId(result.thread.threadId)
       setMessages(result.thread.messages)
       setThreads((current) => mergeThread(current, result.thread))
+      if (exerciseMode && result.exercisePlan) setExercisePlanId(result.exercisePlan.planId)
       setLastOrder(result.orderResult ?? null)
       setTurnActivity(result.activity)
       setTurnTrace(result.trace ?? [])
@@ -334,6 +366,27 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
 
   return (
     <div className="space-y-5">
+      {exerciseMode ? (
+        <section className="flex flex-wrap items-center justify-between gap-4 border border-[var(--brand-plum)]/15 bg-[var(--brand-paper)] px-4 py-3 sm:px-5" aria-label="运动计划调整模式">
+          <div className="flex min-w-0 items-center gap-3">
+            <span className="grid size-9 shrink-0 place-items-center rounded-md bg-[var(--brand-mint-soft)] text-[var(--brand-mint-deep)]">
+              <Dumbbell className="size-4" />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-[var(--brand-heading)]">正在和教练调整运动计划</p>
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                {exercisePlanId ? "当前对话会在这份计划上继续调整" : "这次对话会生成一份新的训练计划"}
+              </p>
+            </div>
+          </div>
+          <Link
+            href={returnTo}
+            className="inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold text-[var(--brand-plum)] underline-offset-4 hover:underline"
+          >
+            <ArrowLeft className="size-3.5" />返回计划页
+          </Link>
+        </section>
+      ) : null}
       {mobileHistoryOpen ? (
         <button
           type="button"
@@ -531,6 +584,13 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                           <Sparkles className="size-3.5" />
                           <span>已自动整理 {automaticMemoryCount(message.memoryCandidates)} 条长期记忆</span>
                           <Link className="font-semibold underline-offset-2 hover:underline" href="/settings/memory">查看与管理</Link>
+                        </div>
+                      ) : null}
+                      {message.role === "assistant" && exerciseMode && message.exercisePlanId !== null ? (
+                        <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-l-2 border-[var(--brand-mint)] bg-[var(--brand-mint-soft)] px-3 py-2 text-xs text-[var(--brand-heading)]">
+                          <Dumbbell className="size-3.5 text-[var(--brand-mint-deep)]" />
+                          <span>运动计划已更新</span>
+                          <Link className="font-semibold underline-offset-2 hover:underline" href={returnTo}>返回计划页查看</Link>
                         </div>
                       ) : null}
                     </div>

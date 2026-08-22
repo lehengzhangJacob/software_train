@@ -9,6 +9,8 @@ import {
   type MemoryCandidate,
   parseAgentMessageMetadata,
 } from "@/lib/agent/contracts"
+import { saveAgentExercisePlanInTransaction } from "@/lib/exercise/plan-repository"
+import type { ExercisePlanPayload } from "@/lib/exercise/plan-contracts"
 import { prisma } from "@/lib/prisma"
 
 const publicMessageSelect = {
@@ -40,6 +42,7 @@ export interface AgentMessageView {
   content: string
   createdAt: string
   memoryCandidates: AgentMemoryCandidateView[]
+  exercisePlanId: number | null
 }
 
 export interface AgentThreadSummary {
@@ -67,6 +70,7 @@ function toMessageView(message: Prisma.AgentMessageGetPayload<{ select: typeof p
       ...candidate,
       memoryId: metadata.memoryIds?.[String(index)] ?? null,
     })),
+    exercisePlanId: metadata.exercisePlanId ?? null,
   }
 }
 
@@ -133,7 +137,8 @@ export async function appendAgentMessage(
   threadId: number,
   role: AgentMessageRole,
   content: string,
-  metadata: AgentMessageMetadata = {}
+  metadata: AgentMessageMetadata = {},
+  artifacts: { exercisePlan?: ExercisePlanPayload } = {},
 ): Promise<AgentMessageView> {
   const message = await prisma.$transaction(async (tx) => {
     const owned = await tx.agentThread.findFirst({ where: { threadId, userId }, select: { threadId: true } })
@@ -156,7 +161,18 @@ export async function appendAgentMessage(
         sourceMessageId: created.messageId,
         sourceRef: `thread:${threadId}/message:${created.messageId}`,
       })
-      persistedMetadata = { ...metadata, memoryIds }
+      persistedMetadata = { ...persistedMetadata, memoryIds }
+    }
+    if (role === "assistant" && artifacts.exercisePlan) {
+      const plan = await saveAgentExercisePlanInTransaction(tx, {
+        userId,
+        threadId,
+        sourceMessageId: created.messageId,
+        payload: artifacts.exercisePlan,
+      })
+      persistedMetadata = { ...persistedMetadata, exercisePlanId: plan.planId }
+    }
+    if (Object.keys(persistedMetadata).length > 0) {
       await tx.agentMessage.update({
         where: { messageId: created.messageId },
         data: { metadataJson: JSON.stringify(persistedMetadata) },

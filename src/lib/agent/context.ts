@@ -2,6 +2,7 @@ import "server-only"
 
 import { getLocalDateRange, toLocalDateString } from "@/lib/date"
 import { getDisabledMemoryContents, getRelevantMemories } from "@/lib/memory/repository"
+import type { ExercisePlanPayload } from "@/lib/exercise/plan-contracts"
 import {
   buildAgentDateInstruction,
   filterEligibleMemories,
@@ -75,7 +76,39 @@ function safeText(value: string | null | undefined, maxLength: number) {
   return (value ?? "").replace(/[\r\n]+/g, " ").trim().slice(0, maxLength)
 }
 
-export function buildAgentSystemPrompt(context: Awaited<ReturnType<typeof getAgentContext>>, sessionDigest?: string | null) {
+export type AgentSystemPromptOptions = {
+  exerciseMode?: boolean
+  exercisePlan?: ExercisePlanPayload | null
+}
+
+function exercisePlanForPrompt(plan: ExercisePlanPayload | null | undefined) {
+  if (!plan) return null
+  return {
+    planDate: plan.planDate,
+    title: safeText(plan.title, 160),
+    goal: safeText(plan.goal, 500),
+    totalMinutes: plan.totalMinutes,
+    intensity: plan.intensity,
+    steps: plan.steps.map((step) => ({
+      order: step.order,
+      kind: step.kind,
+      name: safeText(step.name, 160),
+      minutes: step.minutes,
+      instructions: safeText(step.instructions, 500),
+      ...(step.sets === undefined ? {} : { sets: step.sets }),
+      ...(step.reps === undefined ? {} : { reps: step.reps }),
+      ...(step.restSeconds === undefined ? {} : { restSeconds: step.restSeconds }),
+    })),
+    safetyNote: safeText(plan.safetyNote, 500),
+    equipment: plan.equipment.map((item) => safeText(item, 80)),
+  }
+}
+
+export function buildAgentSystemPrompt(
+  context: Awaited<ReturnType<typeof getAgentContext>>,
+  sessionDigest?: string | null,
+  options: AgentSystemPromptOptions = {},
+) {
   const profile = context.profile
   const profileText = profile
     ? JSON.stringify({
@@ -126,6 +159,18 @@ export function buildAgentSystemPrompt(context: Awaited<ReturnType<typeof getAge
         context.suppressedMemoryContents,
       ))
     : ""
+  const currentExercisePlanText = JSON.stringify(exercisePlanForPrompt(options.exercisePlan))
+  const exercisePlanInstructions = options.exerciseMode
+    ? `
+本回合是“运动计划”模式：
+- 请根据个人档案、饮食、活动量和用户这次要求，生成或调整一份可执行的结构化运动计划。
+- 计划日期默认使用当前本地日期；只有用户明确指定日期时才改用指定日期。
+- 必须在回复末尾输出一个 <exercise-plan> 标签，标签内只能放合法 JSON，不要使用 Markdown 代码围栏。
+- JSON 必须包含 planDate、title、goal、totalMinutes、intensity、steps、safetyNote、equipment；intensity 只能是 low、moderate、high；steps 为 1 到 8 项，每项包含 order、kind、name、minutes、instructions，kind 只能是 warmup、cardio、strength、mobility、cooldown，步骤序号从 1 连续递增，步骤总时长不能超过 totalMinutes，总时长为 5 到 180 分钟。
+- 运动建议要考虑循序渐进和安全边界；不编造用户没有提供的伤病或器械条件。没有器械时使用 equipment=[]，并提供替代动作。
+- 如果提供了当前计划，输出一份完整的替换计划，而不是局部补丁。当前计划如下：${currentExercisePlanText}
+<exercise-plan>{"planDate":"${context.today}","title":"今天的训练","goal":"改善活动量","totalMinutes":30,"intensity":"moderate","steps":[{"order":1,"kind":"warmup","name":"动态热身","minutes":5,"instructions":"轻松活动关节并逐步提高心率"},{"order":2,"kind":"strength","name":"自重训练","minutes":20,"instructions":"保持动作可控，按舒适强度完成"},{"order":3,"kind":"cooldown","name":"放松拉伸","minutes":5,"instructions":"缓慢呼吸并放松主要肌群"}],"safetyNote":"出现疼痛、头晕或呼吸异常立即停止","equipment":[]}</exercise-plan>`
+    : "\n当前为普通咨询模式，不要输出 <exercise-plan> 标签；如果用户只是询问运动，请用普通中文建议回答。"
 
   return `你是本地个人营养 Agent。你服务的是一个单用户饮食记录工具，不要把自己描述成云端客服。
 
@@ -137,6 +182,7 @@ export function buildAgentSystemPrompt(context: Awaited<ReturnType<typeof getAge
 - 如果用户在本轮表达了稳定的偏好、限制、目标、习惯或生活情境，可以最多整理 3 条长期记忆候选。候选会在回复保存时自动写入本地记忆，用户之后可在管理页修正、停用或删除。
 - 不要整理与“已启用长期记忆”内容相同或语义等价的候选，也不要把一次性安排、寒暄或不确定猜测写成长期记忆。候选必须是 JSON 数组，并放在回复末尾的 <memory-candidates> 标签中；没有候选时使用空数组。标签之外是给用户看的正文。
 - 当上下文里有活动量数据时，可以在核算热量缺口、给出加餐或运动建议时参考当天步数与活动消耗，但不要虚构未提供的数据。
+${exercisePlanInstructions}
 
 当前上下文：
 ${buildAgentDateInstruction(context.today)}

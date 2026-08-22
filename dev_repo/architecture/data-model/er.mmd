@@ -9,8 +9,12 @@ erDiagram
   %% exercise minutes); raw Health Connect samples stay on-device and never persist here.
   UserProfile ||--o{ MealRecord : owns
   UserProfile ||--o{ ExerciseSuggestion : owns
+  UserProfile ||--o{ AgentExercisePlan : owns
   UserProfile ||--o{ AgentThread : owns
   AgentThread ||--o{ AgentMessage : contains
+  AgentThread o|--o{ AgentExercisePlan : contextualizes
+  AgentMessage o|--o{ AgentExercisePlan : sources
+  ExerciseSuggestion o|--o| AgentExercisePlan : legacy_mirrors
   UserProfile ||--o{ MemoryItem : owns
   AgentMessage o|--o{ MemoryItem : sources
   UserProfile ||--o{ DailyActivity : owns
@@ -86,6 +90,24 @@ erDiagram
     int duration_minutes
     float calorie_burn_estimate
     int is_adopted
+  }
+  AgentExercisePlan {
+    int plan_id PK
+    int user_id FK
+    int thread_id FK
+    int source_message_id FK
+    int legacy_suggestion_id FK UK
+    string plan_date
+    int revision
+    string source_kind
+    string status
+    string title
+    string goal
+    int total_minutes
+    string intensity
+    string plan_json
+    datetime created_at
+    datetime updated_at
   }
   AgentThread {
     int thread_id PK

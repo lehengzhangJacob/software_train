@@ -93,6 +93,14 @@ flowchart LR
 
 /api/exercise/suggest 的 GET 返回候选和已采用计划，POST 采用计划，PATCH 取消采用；所有热量值由服务端依据 reference 和体重重新计算。报告返回包含今天的连续自然日序列，并显式标记未记录日期。
 
+### Agent 结构化运动计划（C-24 / ADR-0014）
+
+运动页的主展示源是按用户、日期和 revision 管理的 `AgentExercisePlan`。Agent 在教练回合中输出受限 `ExercisePlanPayload`，服务端先校验步骤、时长、强度、日期和文本边界，再与 assistant 消息在同一持久化流中保存。计划只保存安全的结构化字段，不保存原始模型响应、隐藏推理、凭据或工具原文。
+
+运动页读取当天最高 revision 的 active 计划；没有计划时提供站内“让教练安排”入口，不在 GET 请求中静默调用模型。调整计划时，页面把拥有权已校验的 `planId` 和白名单内的 `returnTo=/exercise` 交给 Agent 工作台，Agent 生成新 revision 并将上一版标记为 superseded；回复卡片提供“回到运动计划”链接，运动页重新读取最新版本。
+
+旧 `ExerciseSuggestion` 不删除、不重写。新增 migration 会以 `legacy_suggestion_id` 幂等镜像旧建议为 `source_kind=legacy_suggestion` 的计划历史，旧表继续保存完整原始记录；迁移前后必须通过行数、主键、integrity 和 foreign-key 检查。
+
 ### 健康活动同步
 
 Android 薄壳经用户授权读取 Health Connect 自然日聚合（步数、活动消耗、运动分钟数），按天 POST /api/health/sync 部分字段 upsert；GET /api/health/recent 按本地自然日窗口读取。服务端只持久化聚合值（daily_activity，(user_id, activity_date) 唯一），Health Connect 原始明细留在设备端；Web 端提供手动回填表单。壳不持有业务数据唯一真相，开发回路走 adb reverse loopback（ADR-0005）。

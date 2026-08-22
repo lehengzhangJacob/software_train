@@ -29,3 +29,7 @@
 27. AgentSessionDigest 每线程至多一行；covered_message_id 单调递减禁止；删除对话必须级联删除摘要。
 28. 摘要为 AI 派生的压缩整理，不是对话副本；摘要与 session_digest 来源记忆不得包含密钥、令牌、支付链接或图片原文。
 29. source_kind=session_digest 的记忆与 agent_inference 记忆在用户治理（查看/编辑/停用/删除）上完全同权，物化必须复用既有去重/复用/抑制规则。
+30. AgentExercisePlan 必须属于 primary profile；source_kind 仅为 agent 或 legacy_suggestion，status 仅为 active、superseded、legacy、archived。
+31. 同一用户同一天最多一条 active AgentExercisePlan；调整必须创建更高 revision 并将旧 active 标记为 superseded，不得覆盖历史 revision。
+32. AgentExercisePlan.plan_json 只能保存经服务端校验的受限计划结构，禁止原始模型响应、隐藏推理、凭据、支付信息、图片原文和供应商错误正文。
+33. legacy_suggestion_id 作为唯一幂等键将旧 ExerciseSuggestion 镜像到 AgentExercisePlan；迁移不得删除、覆盖或重复创建旧建议数据。

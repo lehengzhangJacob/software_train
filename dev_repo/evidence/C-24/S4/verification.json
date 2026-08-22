@@ -1,0 +1,51 @@
+{
+  "contract_id": "C-24",
+  "slice_id": "C-24-S4",
+  "status": "passed_with_visual_capture_gap",
+  "timestamp": "2026-08-22T16:40:00+08:00",
+  "cloud": {
+    "base_url": "http://8.148.206.131:8000",
+    "deploy_id": "20260822163348",
+    "migration": "No pending migrations to apply.",
+    "smoke": {
+      "/access": 200,
+      "/api/users_anonymous": 401
+    }
+  },
+  "local_verification": {
+    "tests": [
+      "npm run test:agent-trace",
+      "npm run typecheck",
+      "npm run lint",
+      "npm run build"
+    ],
+    "result": "passed"
+  },
+  "browser_acceptance": {
+    "account": "foodmoment-team-a",
+    "mode": "exercise-plan",
+    "request": "请生成一份今天 20 分钟的轻量训练，重点是拉伸和核心，不用器械。",
+    "mid_turn": [
+      "用户消息在 Agent 完成前立即显示",
+      "本回合进度展示上下文子步骤和模型生成阶段",
+      "输入框在回合期间禁用"
+    ],
+    "completed_turn": [
+      "真实回答完成，没有空响应提示",
+      "回答包含 20 分钟、低强度、4 个训练步骤和安全提示",
+      "显示‘运动计划已更新’与‘返回计划页查看’"
+    ],
+    "plan_page": [
+      "显示 Agent active revision 第 1 版",
+      "显示‘让教练调整’深链并携带 exercisePlanId=12",
+      "展开历史显示 3 条‘原有运动建议，已保留’"
+    ],
+    "console": "no error/warn entries",
+    "mobile_layout": "375px viewport probe was attempted; current browser backend reported its desktop CSS viewport, so no mobile screenshot/geometry claim is made for this run"
+  },
+  "visual_evidence": [
+    "dev_repo/evidence/C-24/S4/exercise-cloud-empty-plan-desktop.png",
+    "dev_repo/evidence/C-24/S4/exercise-cloud-empty-plan-mobile.png"
+  ],
+  "visual_gap": "In-app Browser screenshot() and CDP Page.captureScreenshot were unavailable in this session after the successful run; the live plan page was left open as a deliverable tab, and no post-generation image is represented as captured."
+}

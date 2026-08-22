@@ -1,14 +1,19 @@
 import { MEMORY_CATEGORIES, assertMemoryContent, type MemoryCategory } from "@/lib/memory/contracts"
+import { parseExercisePlanPayload, type ExercisePlanPayload } from "@/lib/exercise/plan-contracts"
 
 export const AGENT_MESSAGE_ROLES = ["user", "assistant"] as const
 export type AgentMessageRole = (typeof AGENT_MESSAGE_ROLES)[number]
 
 export const MAX_AGENT_USER_MESSAGE_LENGTH = 4_000
 export const MAX_AGENT_TITLE_LENGTH = 80
+export const AGENT_CHAT_MODES = ["general", "exercise-plan"] as const
+export type AgentChatMode = (typeof AGENT_CHAT_MODES)[number]
 
 export interface AgentChatInput {
   threadId: number | null
   message: string
+  mode: AgentChatMode
+  exercisePlanId: number | null
 }
 
 export const AGENT_ACTIVITY_KINDS = ["context", "model", "tool", "policy"] as const
@@ -54,6 +59,7 @@ export interface AgentMessageMetadata {
   memoryIds?: Record<string, number>
   usedMemoryIds?: number[]
   order?: OrderDigest
+  exercisePlanId?: number
 }
 
 export interface AgentMemoryConfirmationInput {
@@ -137,7 +143,14 @@ export function parseAgentChatInput(value: unknown): AgentChatInput {
     threadId = positiveInteger(value.threadId, "对话 ID")
   }
 
-  return { threadId, message }
+  const mode = value.mode === undefined || value.mode === null
+    ? "general"
+    : enumValue(value.mode, "Agent 模式", AGENT_CHAT_MODES)
+  const exercisePlanId = value.exercisePlanId === undefined || value.exercisePlanId === null
+    ? null
+    : positiveInteger(value.exercisePlanId, "运动计划 ID")
+
+  return { threadId, message, mode, exercisePlanId }
 }
 
 export function parseAgentThreadCreateInput(value: unknown): AgentThreadCreateInput {
@@ -183,23 +196,64 @@ export function parseMemoryCandidates(value: unknown, maxCandidates = 3): Memory
     .slice(0, Math.max(0, Math.min(maxCandidates, 5)))
 }
 
+export function projectAssistantVisibleText(content: string) {
+  const markerNames = ["<memory-candidates>", "<exercise-plan>"] as const
+  const lowerContent = content.toLowerCase()
+  const markerStarts = markerNames
+    .map((marker) => lowerContent.indexOf(marker))
+    .filter((index) => index >= 0)
+  const markerStart = markerStarts.length > 0 ? Math.min(...markerStarts) : -1
+  if (markerStart >= 0) return content.slice(0, markerStart)
+
+  const partialMarkerLength = markerNames.reduce((longest, marker) => {
+    for (let length = 1; length < marker.length; length += 1) {
+      if (lowerContent.endsWith(marker.slice(0, length))) return Math.max(longest, length)
+    }
+    return longest
+  }, 0)
+  return partialMarkerLength > 0 ? content.slice(0, -partialMarkerLength) : content
+}
+
 export function extractAssistantResponse(content: string) {
-  const marker = /<memory-candidates>\s*([\s\S]*?)\s*<\/memory-candidates>/i.exec(content)
-  if (!marker) {
-    return { visibleText: content.trim(), candidates: [] as MemoryCandidate[] }
-  }
-
   let candidates: MemoryCandidate[] = []
-  try {
-    candidates = parseMemoryCandidates(JSON.parse(marker[1]))
-  } catch {
-    candidates = []
+  const memoryMarker = /<memory-candidates>\s*([\s\S]*?)\s*<\/memory-candidates>/i.exec(content)
+  if (memoryMarker) {
+    try {
+      candidates = parseMemoryCandidates(JSON.parse(memoryMarker[1]))
+    } catch {
+      candidates = []
+    }
   }
 
-  const visibleText = content.replace(marker[0], "").trim()
+  let exercisePlan: ExercisePlanPayload | undefined
+  const exerciseMarker = /<exercise-plan>\s*([\s\S]*?)\s*<\/exercise-plan>/i.exec(content)
+  if (exerciseMarker) {
+    try {
+      const parsed = parseExercisePlanPayload(JSON.parse(exerciseMarker[1]))
+      for (const text of [
+        parsed.title,
+        parsed.goal,
+        parsed.safetyNote,
+        ...parsed.equipment,
+        ...parsed.steps.flatMap((step) => [step.name, step.instructions]),
+      ]) {
+        assertNoCredentialOrImage(text)
+      }
+      exercisePlan = parsed
+    } catch {
+      // Invalid model output is removed from the user-facing answer and is
+      // ignored for persistence; the readable answer still completes.
+    }
+  }
+
+  const visibleText = content
+    .replace(/<memory-candidates>\s*[\s\S]*?\s*<\/memory-candidates>/gi, "")
+    .replace(/<exercise-plan>\s*[\s\S]*?\s*<\/exercise-plan>/gi, "")
+    .trim()
   return {
     visibleText: visibleText || "我暂时没有生成可读建议，请换个说法再试。",
     candidates,
+    ...(exercisePlan ? { exercisePlan } : {}),
   }
 }
 
@@ -251,6 +305,9 @@ export function parseAgentMessageMetadata(value: string | null): AgentMessageMet
         ? parsed.usedMemoryIds.filter((id): id is number => typeof id === "number" && Number.isInteger(id) && id > 0).slice(0, 50)
         : [],
       ...(order ? { order } : {}),
+      ...(typeof parsed.exercisePlanId === "number" && Number.isInteger(parsed.exercisePlanId) && parsed.exercisePlanId > 0
+        ? { exercisePlanId: parsed.exercisePlanId }
+        : {}),
     }
   } catch {
     return {}

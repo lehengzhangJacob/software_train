@@ -28,6 +28,7 @@ authorization boundary.
 - 数据位置：SQLite 文件位于运行应用的本机或单实例容器持久卷，不在浏览器设备中。
 - AI 边界：用户可在 GUI 配置提供商，但完整密钥只允许由本机服务端持有，不能进入浏览器构建、业务记忆或 Git。
 - Agent 边界：长期记忆必须可查看、修正和遗忘；MCP 输出视为不可信输入；外部写操作必须经过动作策略和最终确认。
+- C-24 边界：Agent 运动计划以受限结构化 artifact 持久化；运动页展示 active revision，教练页负责生成/调整，旧 ExerciseSuggestion 通过 legacy 镜像迁移且原表不变。
 - 当前合同：C-03 先迁移成熟系统与现有 SQLite 数据，再实现个人工具外壳、记忆、Agent 和 MCP。graph.json 的 implementation_status 区分已实现与待实现。
 
 ## 入口

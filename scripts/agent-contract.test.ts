@@ -19,7 +19,17 @@ test("agent chat input rejects credentials and normalizes a message", () => {
   assert.deepEqual(parseAgentChatInput({ message: "  今天晚餐怎么吃？  " }), {
     threadId: null,
     message: "今天晚餐怎么吃？",
+    mode: "general",
+    exercisePlanId: null,
   })
+  assert.deepEqual(parseAgentChatInput({ message: "调整训练", mode: "exercise-plan", exercisePlanId: 12 }), {
+    threadId: null,
+    message: "调整训练",
+    mode: "exercise-plan",
+    exercisePlanId: 12,
+  })
+  assert.throws(() => parseAgentChatInput({ message: "调整训练", mode: "unknown" }), /模式取值无效/)
+  assert.throws(() => parseAgentChatInput({ message: "调整训练", exercisePlanId: 0 }), /必须是正整数/)
   assert.throws(() => parseAgentChatInput({ message: "API Key = local-secret-value" }), /不能包含/)
 })
 
@@ -30,6 +40,30 @@ test("assistant response separates safe memory candidates from visible text", ()
   assert.equal(parsed.visibleText, "建议晚餐增加一份蔬菜。")
   assert.equal(parsed.candidates.length, 1)
   assert.equal(parsed.candidates[0].category, "preference")
+})
+
+test("assistant response extracts a validated exercise plan and hides invalid markers", () => {
+  const plan = {
+    planDate: "2026-08-22",
+    title: "下班后轻训练",
+    goal: "恢复活动量",
+    totalMinutes: 20,
+    intensity: "low",
+    steps: [
+      { order: 1, kind: "warmup", name: "热身", minutes: 5, instructions: "轻松活动关节" },
+      { order: 2, kind: "mobility", name: "活动度", minutes: 10, instructions: "按舒适范围完成" },
+      { order: 3, kind: "cooldown", name: "放松", minutes: 5, instructions: "缓慢呼吸" },
+    ],
+    safetyNote: "出现不适立即停止",
+    equipment: [],
+  }
+  const parsed = extractAssistantResponse(`先做轻量训练。<exercise-plan>${JSON.stringify(plan)}</exercise-plan>`)
+  assert.equal(parsed.visibleText, "先做轻量训练。")
+  assert.equal(parsed.exercisePlan?.title, "下班后轻训练")
+
+  const invalid = extractAssistantResponse("普通答复<exercise-plan>{\"totalMinutes\":999}</exercise-plan>")
+  assert.equal(invalid.visibleText, "普通答复")
+  assert.equal("exercisePlan" in invalid, false)
 })
 
 test("metadata memory ids round-trip and accept legacy confirmation ids", () => {
@@ -43,6 +77,7 @@ test("metadata memory ids round-trip and accept legacy confirmation ids", () => 
   assert.deepEqual(parsed.memoryIds, { "0": 4, "1": 5 })
   assert.deepEqual(parsed.usedMemoryIds, [1, 2])
   assert.equal(parsed.memoryCandidates?.[0].content, "本周想规律吃早餐")
+  assert.equal(parsed.exercisePlanId, undefined)
   assert.equal("apiKey" in parsed, false)
 })
 

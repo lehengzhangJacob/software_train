@@ -1,9 +1,10 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Activity, Check, Clock, Dumbbell, Flame, HeartPulse, Loader2, RotateCcw, Sparkles, X } from "lucide-react"
+import { Activity, ArrowRight, Check, Clock, Dumbbell, Flame, HeartPulse, Loader2, MessageCircle, RotateCcw, Sparkles, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn, formatCalories } from "@/lib/utils"
 
@@ -35,6 +36,43 @@ interface ExerciseData {
   adopted: AdoptedPlan[]
 }
 
+interface ExercisePlanStep {
+  order: number
+  kind: "warmup" | "cardio" | "strength" | "mobility" | "cooldown"
+  name: string
+  minutes: number
+  instructions: string
+  sets?: number
+  reps?: number
+  restSeconds?: number
+}
+
+interface ExercisePlanView {
+  planId: number
+  planDate: string
+  revision: number
+  sourceKind: string
+  status: string
+  title: string
+  goal: string
+  totalMinutes: number
+  intensity: "low" | "moderate" | "high"
+  plan: {
+    steps: ExercisePlanStep[]
+    safetyNote: string
+    equipment: string[]
+  }
+  createdAt: string
+  updatedAt: string
+}
+
+interface ExercisePlanProjection {
+  date: string
+  current: ExercisePlanView | null
+  history: ExercisePlanView[]
+  legacy: ExercisePlanView[]
+}
+
 interface ApiEnvelope<T> {
   data?: T
   error?: string
@@ -48,6 +86,20 @@ function categoryLabel(category: string | null) {
   if (category === "aerobic") return "有氧"
   if (category === "strength") return "力量"
   return category || "日常活动"
+}
+
+function intensityLabel(intensity: ExercisePlanView["intensity"]) {
+  if (intensity === "low") return "轻松"
+  if (intensity === "high") return "较高"
+  return "适中"
+}
+
+function stepKindLabel(kind: ExercisePlanStep["kind"]) {
+  if (kind === "warmup") return "热身"
+  if (kind === "cardio") return "有氧"
+  if (kind === "strength") return "力量"
+  if (kind === "mobility") return "活动度"
+  return "放松"
 }
 
 async function readApiEnvelope<T>(response: Response): Promise<ApiEnvelope<T>> {
@@ -79,9 +131,91 @@ function MovementMedia() {
   )
 }
 
+function AgentPlanSection({ projection }: { projection: ExercisePlanProjection }) {
+  const current = projection.current
+  const coachHref = current
+    ? `/agent?mode=exercise-plan&exercisePlanId=${current.planId}&returnTo=${encodeURIComponent("/exercise")}`
+    : `/agent?mode=exercise-plan&returnTo=${encodeURIComponent("/exercise")}`
+
+  return (
+    <section className="border border-[var(--brand-plum)]/15 bg-[var(--brand-paper)] p-5 sm:p-7" aria-labelledby="agent-exercise-plan-title">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="page-eyebrow">Agent movement plan</p>
+          <h2 id="agent-exercise-plan-title" className="mt-2 text-2xl font-semibold leading-tight text-[var(--brand-heading)]">
+            {current ? current.title : "让教练先替你安排一版"}
+          </h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+            {current ? current.goal : "教练会结合今天的饮食、活动量和你的要求，生成一份可以直接照做的训练。"}
+          </p>
+        </div>
+        <Link
+          href={coachHref}
+          className="inline-flex shrink-0 items-center gap-2 rounded-md bg-[var(--brand-plum)] px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint-deep)]"
+        >
+          <MessageCircle className="size-4" />
+          {current ? "让教练调整" : "让教练生成"}
+          <ArrowRight className="size-4" />
+        </Link>
+      </div>
+
+      {current ? (
+        <>
+          <div className="mt-5 flex flex-wrap gap-2 text-xs text-muted-foreground">
+            <span className="rounded-full bg-[var(--brand-lavender-soft)] px-3 py-1.5">{current.totalMinutes} 分钟</span>
+            <span className="rounded-full bg-[var(--brand-lavender-soft)] px-3 py-1.5">强度 {intensityLabel(current.intensity)}</span>
+            <span className="rounded-full bg-[var(--brand-lavender-soft)] px-3 py-1.5">第 {current.revision} 版</span>
+          </div>
+          <ol className="mt-6 grid gap-3 md:grid-cols-3" aria-label="训练步骤">
+            {current.plan.steps.map((step) => (
+              <li key={`${current.planId}-${step.order}`} className="relative border-l-2 border-[var(--brand-mint)] bg-card px-4 py-3">
+                <div className="flex items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-wide text-[var(--brand-mint-deep)]">
+                  <span>{stepKindLabel(step.kind)}</span>
+                  <span>{step.minutes} 分钟</span>
+                </div>
+                <h3 className="mt-1 font-semibold text-[var(--brand-heading)]">{step.name}</h3>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{step.instructions}</p>
+                {step.sets || step.reps ? (
+                  <p className="mt-2 text-[11px] text-muted-foreground">
+                    {step.sets ? `${step.sets} 组` : ""}{step.sets && step.reps ? " · " : ""}{step.reps ? `${step.reps} 次` : ""}
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ol>
+          <p className="mt-4 text-xs leading-5 text-muted-foreground">
+            {current.plan.safetyNote}{current.plan.equipment.length > 0 ? ` · 需要：${current.plan.equipment.join("、")}` : " · 无需器械"}
+          </p>
+        </>
+      ) : null}
+
+      {projection.history.length > 0 || projection.legacy.length > 0 ? (
+        <details className="mt-5 border-t border-border/70 pt-4">
+          <summary className="cursor-pointer text-xs font-semibold text-muted-foreground">
+            查看保留的历史建议（{projection.history.length + projection.legacy.length}）
+          </summary>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {[...projection.history, ...projection.legacy].slice(0, 6).map((plan) => (
+              <div key={`${plan.sourceKind}-${plan.planId}`} className="border border-border/70 bg-card px-3 py-2.5 text-xs">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-[var(--brand-heading)]">{plan.title}</span>
+                  <span className="text-muted-foreground">{plan.totalMinutes} 分钟</span>
+                </div>
+                <p className="mt-1 text-muted-foreground">{plan.sourceKind === "legacy_suggestion" ? "原有运动建议，已保留" : `第 ${plan.revision} 版`}</p>
+              </div>
+            ))}
+          </div>
+        </details>
+      ) : null}
+    </section>
+  )
+}
+
 export function ExerciseContent({ today }: ExerciseContentProps) {
   const router = useRouter()
   const [data, setData] = useState<ExerciseData | null>(null)
+  const [planProjection, setPlanProjection] = useState<ExercisePlanProjection | null>(null)
+  const [planError, setPlanError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loadedDate, setLoadedDate] = useState<string | null>(null)
@@ -94,6 +228,8 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
   const reloadSuggestions = useCallback(() => {
     setLoading(true)
     setData(null)
+    setPlanProjection(null)
+    setPlanError(null)
     setLoadedDate(null)
     setLoadError(null)
     setErrorDate(null)
@@ -106,16 +242,25 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
     const loadSuggestions = async () => {
       setLoading(true)
       setData(null)
+      setPlanProjection(null)
+      setPlanError(null)
       setLoadedDate(null)
       setLoadError(null)
       setErrorDate(null)
 
       try {
-        const response = await fetch(`/api/exercise/suggest?date=${today}`, {
-          cache: "no-store",
-          signal: controller.signal,
-        })
+        const [response, planResponse] = await Promise.all([
+          fetch(`/api/exercise/suggest?date=${today}`, {
+            cache: "no-store",
+            signal: controller.signal,
+          }),
+          fetch(`/api/exercise/plans?date=${today}`, {
+            cache: "no-store",
+            signal: controller.signal,
+          }),
+        ])
         const result = await readApiEnvelope<ExerciseData>(response)
+        const planResult = await readApiEnvelope<ExercisePlanProjection>(planResponse)
 
         if (controller.signal.aborted) return
 
@@ -127,6 +272,11 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
 
         setData(result.data)
         setLoadedDate(today)
+        if (planResponse.ok && planResult.data) {
+          setPlanProjection(planResult.data)
+        } else {
+          setPlanError(planResult.error || "暂时无法读取教练计划")
+        }
       } catch {
         if (!controller.signal.aborted) {
           setLoadError("暂时无法读取活动建议，请稍后重试")
@@ -256,6 +406,9 @@ export function ExerciseContent({ today }: ExerciseContentProps) {
 
   return (
     <div className="space-y-4">
+      {planProjection ? <AgentPlanSection projection={planProjection} /> : planError ? (
+        <p className="px-1 text-xs text-muted-foreground" role="status">教练计划暂时无法读取：{planError}</p>
+      ) : null}
       <section className="surface-card grid overflow-hidden border-0 lg:grid-cols-[.92fr_1.08fr]">
         <MovementMedia />
 
