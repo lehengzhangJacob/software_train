@@ -43,6 +43,11 @@
       "description": "Per-account daily article batches, DashScope async image adapter, durable asset keys and protected scheduler"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0016-meal-nutrition-value-bounds.md",
+      "node": "database.prisma",
+      "description": "MealRecord nutrition value-domain bounds shared by API validation and UI display"
+    },
+    {
       "path": "dev_repo/architecture/content-generation.md",
       "node": "agent.runtime",
       "description": "C-25 daily article context, content, image, trigger and retry contract"

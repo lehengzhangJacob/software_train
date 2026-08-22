@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-21",
+  "active_contract_id": "C-26",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -489,6 +489,24 @@
       "dashscope_image_strategy": "Qwen-Image async task adapter with local shared/data fallback",
       "issue_state": "Issues #6-#8 closed; Issues #3-#5 open for external retest; this feature does not change issue status.",
       "latest_verification": "C-25-S4 passed: cloud deploy 20260822175441, five active accounts each have 10 ready articles, protected job 200/401 boundary, timer enabled/active, Browser desktop DOM and temporary 375px no-overflow checks passed; screenshot binary unavailable and not claimed."
+    },
+    "C-26": {
+      "contract_id": "C-26",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "修复 Issue #10 餐食超规模营养数字的值域、输入和展示防护",
+      "goal": "将 MealRecord 四个营养字段统一收紧到 0–100000，拒绝非有限和超长数字，保护历史异常值展示，不迁移或改写旧数据。",
+      "current_slice": "C-26-A1",
+      "completed_slices": [],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "C-26-A1 / ADR-0016",
+      "data_model_delta": "MealRecord nutrition value-domain invariant only; no entity, relation, schema, migration or backfill change",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "Issue #10 remains open until external retest; Issues #3/#4/#5 remain open for external retest.",
+      "latest_verification": "C-26-A1 pending verification"
     }
   }
 }

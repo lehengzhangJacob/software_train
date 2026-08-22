@@ -1399,5 +1399,12 @@
       "path": "dev_repo/evidence/C-25/S4/screenshot-gap.txt",
       "description": "in-app Browser screenshot 二进制接口不可用；DOM 与 mobile-check 证据已保存，未虚报截图"
     }
+  ],
+  "C-26-A1": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0016-meal-nutrition-value-bounds.md, dev_repo/architecture/data-model/invariants.md, dev_repo/architecture/data-model/entities.json, dev_repo/architecture/index.json",
+      "description": "MealRecord 四个营养字段统一 0–100000 值域；不新增 schema、migration 或 backfill"
+    }
   ]
 }

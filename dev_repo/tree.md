@@ -2,11 +2,11 @@
 
 ## Current execution override
 
-- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: 无；C-25 已完成，Issues #3/#4/#5 仍保持开放等待外部复测
-- Parent contract: `C-03 - 本地个人营养 Agent` [completed]
+- Current contract: `C-26 - Issue #10 餐食超规模营养数字防护` [in_progress]
+- Current slice: `C-26-A1`；父合同 C-21 保持暂停，Issues #3/#4/#5/#10 仍保持开放等待外部复测
+- Parent contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
 - Return path: `C-21`
-- Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
+- Issue state: #6-#8 closed as completed after external confirmation; #3-#5 and #10 remain open until external testers confirm non-reproduction.
 - C-21-S2 completed: disabled/expired memories are isolated from Agent context, suppressed text is redacted from digest/history, and the local date anchor is explicit.
 - C-21-S3 completed: the desktop Agent shell is fixed-height with right-only conversation scrolling, and the waiting copy follows the running activity.
 - C-21-S4 completed: recognition candidates survive route changes in a session-scoped, one-shot handoff and still require the existing review gate.
@@ -48,11 +48,15 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-25-S2 Agent 生成、DashScope 图片适配器与每日 job [completed]
     ├── C-25-S3 每日阅读流 UI [completed]
     └── C-25-S4 云端部署、五账号验收与截图 [completed：截图二进制不可用，DOM 证据已保存]
+└── C-26 - Issue #10 餐食超规模营养数字防护 [in_progress]
+    ├── C-26-A1 营养值域与数据模型修宪 [in_progress]
+    ├── C-26-S1 后端创建/批量/更新校验 [pending]
+    └── C-26-S2 前端输入、提示与历史展示保护 [pending]
 ```
 
-- 当前合同：`C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]`
-- 当前切片：无；C-25 日更图文已回归主合同
-- 下一步：等待 Issues #3/#4/#5 外部复测；不关闭未确认的 Issue
+- 当前合同：`C-26 - Issue #10 餐食超规模营养数字防护 [in_progress]`
+- 当前切片：`C-26-A1`；C-26 完成后返回 C-21
+- 下一步：完成营养值域修宪后执行后端与前端两刀；Issue #10 在外部复测前不关闭
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

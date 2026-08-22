@@ -4,7 +4,7 @@
 2. 旧数据库存在多档案时稳定选择最小 user_id，不自动删除或合并历史数据。
 3. gender 仅为 male/female/other；age 为 1–149；身高、体重和每日热量目标必须为正数。
 4. activity_level 仅为 sedentary、lightly_active、moderately_active、very_active、extra_active。
-5. meal_type 仅为 breakfast、lunch、dinner、snack；所有营养数值不得为负数。
+5. meal_type 仅为 breakfast、lunch、dinner、snack；MealRecord 的 calories、protein_g、fat_g、carbs_g 必须为有限数且在 0–100000（含边界）之间。
 6. MealRecord 与 ExerciseSuggestion 必须属于 primary profile；客户端 userId 不构成所有权证据。
 7. record_date 和 suggestion_date 使用 YYYY-MM-DD；record_time 使用 HH:MM:SS。
 8. bmr 由身体参数派生并持久化，旧空值在 S1 迁移副本中回填。
