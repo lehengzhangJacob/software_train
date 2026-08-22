@@ -64,6 +64,20 @@ test("fallback always produces ten renderable articles", () => {
   }
 })
 
+test("fallback clamps extreme numeric context before persisting visuals", () => {
+  const context = {
+    contentDate: "2026-08-22",
+    profile: null,
+    meals: [{ date: "2026-08-22", mealType: "lunch", food: "测试餐", portion: "1 份", calories: 400, proteinG: 1e200, fatG: 15, carbsG: 40 }],
+    activities: [],
+    memories: [],
+    exercisePlan: null,
+    sessionDigest: null,
+  }
+  const articles = buildFallbackArticles(context)
+  assert.ok(articles.every((item) => item.visual.values.every((value) => Number.isFinite(value) && value <= 100_000)))
+})
+
 test("daily article migration is additive and has both idempotency keys", () => {
   const migration = readFileSync(path.join(process.cwd(), "prisma", "migrations", "20260822210000_add_agent_daily_articles", "migration.sql"), "utf8")
   assert.match(migration, /CREATE TABLE "agent_daily_article_batches"/)

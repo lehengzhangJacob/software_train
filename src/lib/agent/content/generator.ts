@@ -62,7 +62,17 @@ function isFreshlyGenerating(batch: NonNullable<ExistingBatch>) {
 
 async function prepareBatch(userId: number, contentDate: string) {
   const existing = await findBatch(userId, contentDate)
-  if (existing?.status === "ready" && existing.articles.length === DAILY_ARTICLE_COUNT) return { batch: existing, shouldGenerate: false }
+  if (existing?.status === "ready" && existing.articles.length === DAILY_ARTICLE_COUNT) {
+    try {
+      await getDailyArticleFeed(userId, contentDate)
+      return { batch: existing, shouldGenerate: false }
+    } catch {
+      await prisma.agentDailyArticleBatch.update({
+        where: { batchId: existing.batchId },
+        data: { status: "failed", generationError: "invalid_content", startedAt: null },
+      })
+    }
+  }
   if (existing && isFreshlyGenerating(existing)) return { batch: existing, shouldGenerate: false }
 
   const batch = await prisma.agentDailyArticleBatch.upsert({

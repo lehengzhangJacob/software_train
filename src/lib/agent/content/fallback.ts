@@ -26,12 +26,21 @@ function totalSteps(context: DailyArticleContext) {
   return context.activities.reduce((sum, activity) => sum + activity.steps, 0)
 }
 
+function boundedValue(value: number, minimum: number, fallback: number) {
+  if (!Number.isFinite(value)) return fallback
+  return Math.min(100_000, Math.max(minimum, Math.round(value)))
+}
+
 function visual(kind: ArticleVisualKind, index: number, context: DailyArticleContext) {
   const calories = totalCalories(context)
   const target = context.profile?.dailyTargets.calories ?? 2_000
   const steps = totalSteps(context)
   const values = kind === "bars"
-    ? [Math.max(10, Math.round((context.meals[0]?.proteinG ?? 0) * 2)), Math.max(12, Math.round((context.meals[1]?.proteinG ?? 0) * 2)), Math.max(14, Math.round((context.meals[2]?.proteinG ?? 0) * 2))]
+    ? [
+        boundedValue((context.meals[0]?.proteinG ?? 0) * 2, 10, 10),
+        boundedValue((context.meals[1]?.proteinG ?? 0) * 2, 12, 12),
+        boundedValue((context.meals[2]?.proteinG ?? 0) * 2, 14, 14),
+      ]
     : kind === "donut"
       ? [Math.min(100, Math.round((calories / Math.max(target, 1)) * 100)), Math.min(100, Math.round((steps / 8_000) * 100)), Math.max(8, 100 - index * 5)]
       : [5 + (index % 4), 10 + (index % 5), 15 + (index % 6)]
