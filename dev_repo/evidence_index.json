@@ -1418,5 +1418,17 @@
       "path": "src/lib/nutrition.ts, src/lib/validation.ts, scripts/meal-validation-contract.test.ts, package.json",
       "description": "共享 0–100000 helper、API DTO 校验与 verify 契约测试"
     }
+  ],
+  "C-26-S2": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-26/S2/verification.json",
+      "description": "前端手动/识别输入共用边界，保存前拒绝非法值，历史异常展示不撑破布局；UI 测试、lint、typecheck、build 通过"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/food/meals-content.tsx, src/lib/nutrition.ts, src/lib/utils.ts, scripts/meal-ui-contract.test.ts",
+      "description": "原始输入延迟解析、统一 min/max、明确保存提示与 bounded display helper"
+    }
   ]
 }

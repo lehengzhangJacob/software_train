@@ -21,6 +21,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { FoodPhotoUpload, type RecognizedFood } from "@/components/food/photo-upload"
 import { consumeRecognitionHandoff } from "@/lib/food/recognition-handoff"
 import { MEAL_LABELS, formatCalories, formatGrams } from "@/lib/utils"
+import {
+  MEAL_NUTRITION_LABELS,
+  MEAL_NUTRITION_MAX,
+  MEAL_NUTRITION_MIN,
+  parseMealNutritionInput,
+  type MealNutritionInputValue,
+  type MealNutritionKey,
+} from "@/lib/nutrition"
 
 interface MealItem {
   recordId: number
@@ -39,10 +47,10 @@ interface MealDraft {
   selected: boolean
   foodName: string
   mealType: string
-  calories: number
-  proteinG: number
-  fatG: number
-  carbsG: number
+  calories: MealNutritionInputValue
+  proteinG: MealNutritionInputValue
+  fatG: MealNutritionInputValue
+  carbsG: MealNutritionInputValue
   portionDesc: string
   confidence: number
 }
@@ -80,13 +88,40 @@ function inferMealType(date = new Date()) {
   return "snack"
 }
 
-function toNumber(value: string) {
-  const number = Number(value)
-  return Number.isFinite(number) ? number : 0
-}
-
 function errorMessage(value: unknown, fallback: string) {
   return value instanceof Error && value.message ? value.message : fallback
+}
+
+const NUTRITION_FIELDS = [
+  { key: "calories", label: MEAL_NUTRITION_LABELS.calories },
+  { key: "proteinG", label: MEAL_NUTRITION_LABELS.proteinG },
+  { key: "fatG", label: MEAL_NUTRITION_LABELS.fatG },
+  { key: "carbsG", label: MEAL_NUTRITION_LABELS.carbsG },
+] as const satisfies ReadonlyArray<{ key: MealNutritionKey; label: string }>
+
+type ParsedNutritionValues = Pick<MealItem, MealNutritionKey>
+
+type NutritionValidation =
+  | { error: string; values: null }
+  | { error: null; values: ParsedNutritionValues }
+
+function parseNutritionValues(values: Pick<MealDraft, MealNutritionKey>): NutritionValidation {
+  const parsed = {} as ParsedNutritionValues
+  for (const { key, label } of NUTRITION_FIELDS) {
+    const number = parseMealNutritionInput(values[key])
+    if (number === null) {
+      return {
+        error: `${label}应在 ${MEAL_NUTRITION_MIN} 到 ${MEAL_NUTRITION_MAX} 之间`,
+        values: null,
+      }
+    }
+    parsed[key] = number
+  }
+  return { error: null, values: parsed }
+}
+
+function toNutritionInputValue(value: number): MealNutritionInputValue {
+  return Number.isFinite(value) ? value : ""
 }
 
 export function MealsContent({ today, initialMeals }: MealsContentProps) {
@@ -124,10 +159,10 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
         selected: true,
         foodName: food.name,
         mealType: inferredMealType,
-        calories: Math.round(food.calories),
-        proteinG: food.protein,
-        fatG: food.fat,
-        carbsG: food.carbs,
+        calories: toNutritionInputValue(Math.round(food.calories)),
+        proteinG: toNutritionInputValue(food.protein),
+        fatG: toNutritionInputValue(food.fat),
+        carbsG: toNutritionInputValue(food.carbs),
         portionDesc: food.portion,
         confidence: food.confidence,
       })),
@@ -154,12 +189,18 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
       return
     }
 
+    const nutrition = parseNutritionValues(form)
+    if (nutrition.error !== null) {
+      toast.error(nutrition.error)
+      return
+    }
+
     setSavingManual(true)
     try {
       const response = await fetch("/api/meals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, recordDate: today }),
+        body: JSON.stringify({ ...form, ...nutrition.values, recordDate: today }),
       })
       const json: { data?: MealItem | null; error?: string | null } = await response.json()
       if (!response.ok || json.error || !json.data) {
@@ -192,6 +233,16 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
       return
     }
 
+    const normalizedDrafts: Array<{ draft: MealDraft; nutrition: ParsedNutritionValues }> = []
+    for (const [index, draft] of selectedDrafts.entries()) {
+      const nutrition = parseNutritionValues(draft)
+      if (nutrition.error !== null) {
+        toast.error(`第 ${index + 1} 项${nutrition.error}`)
+        return
+      }
+      normalizedDrafts.push({ draft, nutrition: nutrition.values })
+    }
+
     setSavingDrafts(true)
     try {
       const response = await fetch("/api/meals", {
@@ -199,13 +250,10 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           recordDate: today,
-          items: selectedDrafts.map((draft) => ({
+          items: normalizedDrafts.map(({ draft, nutrition }) => ({
             foodName: draft.foodName,
             mealType: draft.mealType,
-            calories: draft.calories,
-            proteinG: draft.proteinG,
-            fatG: draft.fatG,
-            carbsG: draft.carbsG,
+            ...nutrition,
             portionDesc: draft.portionDesc,
             recognitionRaw: {
               source: "ai-photo-recognition",
@@ -354,10 +402,13 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                       <Input
                         id={`draft-calories-${draft.id}`}
                         type="number"
-                        min="0"
+                        min={MEAL_NUTRITION_MIN}
+                        max={MEAL_NUTRITION_MAX}
+                        inputMode="decimal"
+                        maxLength={12}
                         value={draft.calories}
                         disabled={savingDrafts}
-                        onChange={(event) => updateDraft(draft.id, "calories", toNumber(event.target.value))}
+                        onChange={(event) => updateDraft(draft.id, "calories", event.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
@@ -365,11 +416,14 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                       <Input
                         id={`draft-protein-${draft.id}`}
                         type="number"
-                        min="0"
+                        min={MEAL_NUTRITION_MIN}
+                        max={MEAL_NUTRITION_MAX}
                         step="0.1"
+                        inputMode="decimal"
+                        maxLength={12}
                         value={draft.proteinG}
                         disabled={savingDrafts}
-                        onChange={(event) => updateDraft(draft.id, "proteinG", toNumber(event.target.value))}
+                        onChange={(event) => updateDraft(draft.id, "proteinG", event.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
@@ -377,11 +431,14 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                       <Input
                         id={`draft-fat-${draft.id}`}
                         type="number"
-                        min="0"
+                        min={MEAL_NUTRITION_MIN}
+                        max={MEAL_NUTRITION_MAX}
                         step="0.1"
+                        inputMode="decimal"
+                        maxLength={12}
                         value={draft.fatG}
                         disabled={savingDrafts}
-                        onChange={(event) => updateDraft(draft.id, "fatG", toNumber(event.target.value))}
+                        onChange={(event) => updateDraft(draft.id, "fatG", event.target.value)}
                       />
                     </div>
                     <div className="space-y-2">
@@ -389,11 +446,14 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
                       <Input
                         id={`draft-carbs-${draft.id}`}
                         type="number"
-                        min="0"
+                        min={MEAL_NUTRITION_MIN}
+                        max={MEAL_NUTRITION_MAX}
                         step="0.1"
+                        inputMode="decimal"
+                        maxLength={12}
                         value={draft.carbsG}
                         disabled={savingDrafts}
-                        onChange={(event) => updateDraft(draft.id, "carbsG", toNumber(event.target.value))}
+                        onChange={(event) => updateDraft(draft.id, "carbsG", event.target.value)}
                       />
                     </div>
                   </div>
@@ -453,7 +513,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="manual-calories">热量（千卡）</Label>
-                <Input id="manual-calories" type="number" min="0" value={form.calories} onChange={(event) => setForm((current) => ({ ...current, calories: toNumber(event.target.value) }))} />
+                <Input id="manual-calories" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} inputMode="decimal" maxLength={12} value={form.calories} onChange={(event) => setForm((current) => ({ ...current, calories: event.target.value }))} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="manual-portion">份量描述</Label>
@@ -461,15 +521,15 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="manual-protein">蛋白质（克）</Label>
-                <Input id="manual-protein" type="number" min="0" step="0.1" value={form.proteinG} onChange={(event) => setForm((current) => ({ ...current, proteinG: toNumber(event.target.value) }))} />
+                <Input id="manual-protein" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} step="0.1" inputMode="decimal" maxLength={12} value={form.proteinG} onChange={(event) => setForm((current) => ({ ...current, proteinG: event.target.value }))} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="manual-fat">脂肪（克）</Label>
-                <Input id="manual-fat" type="number" min="0" step="0.1" value={form.fatG} onChange={(event) => setForm((current) => ({ ...current, fatG: toNumber(event.target.value) }))} />
+                <Input id="manual-fat" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} step="0.1" inputMode="decimal" maxLength={12} value={form.fatG} onChange={(event) => setForm((current) => ({ ...current, fatG: event.target.value }))} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="manual-carbs">碳水（克）</Label>
-                <Input id="manual-carbs" type="number" min="0" step="0.1" value={form.carbsG} onChange={(event) => setForm((current) => ({ ...current, carbsG: toNumber(event.target.value) }))} />
+                <Input id="manual-carbs" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} step="0.1" inputMode="decimal" maxLength={12} value={form.carbsG} onChange={(event) => setForm((current) => ({ ...current, carbsG: event.target.value }))} />
               </div>
             </div>
             <Button type="button" onClick={handleManualSave} disabled={savingManual} className="w-full">

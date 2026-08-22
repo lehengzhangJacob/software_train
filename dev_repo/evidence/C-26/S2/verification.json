@@ -1,0 +1,23 @@
+{
+  "slice": "C-26-S2",
+  "summary": "前端保留原始输入到保存边界，统一提示营养值域，并保护历史异常展示",
+  "ui_contract": {
+    "manual_inputs": "pass: four inputs expose min=0 and max=100000",
+    "recognition_inputs": "pass: four review fields expose the same bounds",
+    "raw_value_preservation": "pass: long values remain strings until parseNutritionValues at save",
+    "invalid_save_feedback": "pass: manual and batch review show Chinese validation toast",
+    "historical_display": "pass: 100001 renders 100,000+; non-finite values render —"
+  },
+  "green_test": {
+    "command": "npm run test:meal-ui",
+    "result": "pass: 3 tests, 0 failures"
+  },
+  "quality": {
+    "lint": "pass",
+    "typecheck": "pass",
+    "build": "pass"
+  },
+  "migration_required": false,
+  "backfill_required": false,
+  "issue_state": "Issue #10 remains open for external retest"
+}

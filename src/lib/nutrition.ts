@@ -9,6 +9,7 @@ export const MEAL_NUTRITION_LABELS = {
 } as const
 
 export type MealNutritionKey = keyof typeof MEAL_NUTRITION_LABELS
+export type MealNutritionInputValue = number | string
 
 export function isValidMealNutritionValue(value: unknown): value is number {
   return (
@@ -17,4 +18,9 @@ export function isValidMealNutritionValue(value: unknown): value is number {
     value >= MEAL_NUTRITION_MIN &&
     value <= MEAL_NUTRITION_MAX
   )
+}
+
+export function parseMealNutritionInput(value: MealNutritionInputValue): number | null {
+  const parsed = typeof value === "number" ? value : value.trim() === "" ? Number.NaN : Number(value)
+  return isValidMealNutritionValue(parsed) ? parsed : null
 }
