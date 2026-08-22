@@ -21,8 +21,8 @@
     "failure": "stream errors keep the optimistic bubble, restore the draft and show an alert without hiding the run.failed Trace"
   },
   "browser": {
-    "status": "pending cloud deployment",
-    "local_note": "localhost:3001 compiled and rendered /access; local SQLite has no cloud test account, so authenticated acceptance is scheduled after deploy"
+    "status": "passed via C-23-S3 cloud acceptance",
+    "local_note": "localhost:3001 compiled and rendered /access; authenticated cloud acceptance, optimistic transcript, streaming answer and Trace UI are recorded in C-23-S3-verification.json"
   },
   "data_model": {
     "delta": "none",

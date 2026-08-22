@@ -1,0 +1,59 @@
+{
+  "contract_id": "C-23",
+  "slice_id": "C-23-S3",
+  "status": "passed",
+  "timestamp": "2026-08-22T11:58:17+08:00",
+  "cloud": {
+    "url": "http://8.148.206.131:8000/agent",
+    "account": "foodmoment-team-a",
+    "access_status": 200,
+    "version_endpoint_status": 200,
+    "version": "0.1.1",
+    "build": "TQ7zFRFhx0KzZijVsMlDs",
+    "deployed_local_build": "TQ7zFRFhx0KzZijVsMlDs",
+    "post_verify_local_build": "3dSUZ7N1-zuAxq6QMQQKq",
+    "build_match_at_cloud_acceptance": true,
+    "build_note": "完整回归重新生成本地 Next.js BUILD_ID；仅账本/证据文件仍有工作区变更，云端已运行已验收源码。"
+  },
+  "browser_acceptance": {
+    "tool": "in-app Browser",
+    "desktop_viewport": "1440x900",
+    "mobile_viewport": "375x800",
+    "optimistic_transcript": "通过：点击发送后约 220ms 的 DOM 快照已出现用户消息，未等待 Agent 完成",
+    "real_stream": "通过：Trace 显示模型以 SSE 增量返回，答案增量事件聚合为 23 段",
+    "trace_terminal": "通过：上下文父子步骤、模型步骤、答案增量、保存回复、记忆状态和 Agent 回合完成均可见",
+    "mobile_layout": "通过：375px 下 Trace 可滚动、输入区可用，document.documentElement.scrollWidth=360 <= innerWidth=375",
+    "console_errors": [],
+    "screenshots": [
+      "dev_repo/evidence/C-23/trace-cloud-mid-desktop.png",
+      "dev_repo/evidence/C-23/trace-cloud-desktop.png",
+      "dev_repo/evidence/C-23/trace-cloud-desktop-detail.png",
+      "dev_repo/evidence/C-23/trace-cloud-mobile.png",
+      "dev_repo/evidence/C-23/trace-cloud-mobile-detail.png"
+    ]
+  },
+  "contract_checks": {
+    "npm run lint": "passed",
+    "npm run typecheck": "passed",
+    "npm run build": "passed",
+    "npm run test:agent-trace": "7/7 passed",
+    "npm run test:agent": "10/10 passed",
+    "npm run test:ordering": "12/12 passed",
+    "scripts/agent-stream-contract.test.ts": "2/2 passed",
+    "scripts/agent-trace-contract.test.ts": "7/7 passed",
+    "npm run verify": "passed (all contract suites, lint, typecheck, production build)",
+    "npm run smoke": "passed (production server on an isolated loopback port)",
+    "git diff --check": "passed"
+  },
+  "boundaries": {
+    "trace_persistence": "current-turn ephemeral only",
+    "agent_message_persistence": "unchanged canonical transcript",
+    "data_model_delta": "none",
+    "migration_required": false,
+    "backfill_required": false,
+    "raw_chain_of_thought": "not exposed",
+    "raw_tool_payloads": "not exposed",
+    "payment_links": "not exposed"
+  },
+  "issues": "Issues #6-#8 remain closed after external confirmation; Issues #3-#5 remain open until external retest."
+}

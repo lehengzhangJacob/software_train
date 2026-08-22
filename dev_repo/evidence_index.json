@@ -1320,7 +1320,19 @@
     {
       "type": "verification",
       "path": "dev_repo/evidence/C-23/S2-verification.json",
-      "description": "前端 Trace UI 静态质量门通过；云端真实账户验收与截图待 C-23-S3"
+      "description": "前端 Trace UI 静态质量门通过；云端真实账户验收与截图已在 C-23-S3 通过并归档"
+    }
+  ],
+  "C-23-S3": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-23/S3-verification.json",
+      "description": "云端真实账户 Browser 验收：optimistic 用户消息、真实 SSE 答案增量、完整父子 Trace、375px 无横向溢出与无浏览器错误"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-23/trace-cloud-mid-desktop.png, dev_repo/evidence/C-23/trace-cloud-desktop.png, dev_repo/evidence/C-23/trace-cloud-desktop-detail.png, dev_repo/evidence/C-23/trace-cloud-mobile.png, dev_repo/evidence/C-23/trace-cloud-mobile-detail.png",
+      "description": "云端 Agent Trace 桌面/移动验收截图：用户消息即时出现、时间线实时拼装、终态可读、移动端输入区与时间线不重叠"
     }
   ]
 }

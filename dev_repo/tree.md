@@ -2,10 +2,10 @@
 
 ## Current execution override
 
-- Current contract: `C-23 - 真实 Agent Trace 流与成熟 Trace UI` [in_progress]
-- Current slice: `C-23-S3 - 浏览器/云端回归与截图交付` [in_progress]
-- Parent contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Return path: `C-21`
+- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
+- Current slice: 无（C-23 已完成，等待 #3/#4/#5 外部复测）
+- Parent contract: `C-03 - 本地个人营养 Agent` [completed]
+- Return path: `web_completion_audit`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
 - C-21-S2 completed: disabled/expired memories are isolated from Agent context, suppressed text is redacted from digest/history, and the local date anchor is explicit.
 - C-21-S3 completed: the desktop Agent shell is fixed-height with right-only conversation scrolling, and the waiting copy follows the running activity.
@@ -23,16 +23,16 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-22-A1 版本契约与架构修宪 [completed]
     ├── C-22-S1 Web 更新提示 [completed]
     └── C-22-S2 Android 提示与 v0.1.1 发布 [completed]
-└── C-23 - 真实 Agent Trace 流与成熟 Trace UI [in_progress]
+└── C-23 - 真实 Agent Trace 流与成熟 Trace UI [completed]
     ├── C-23-A1 Trace 事件契约与架构修宪 [completed]
     ├── C-23-S1 后端真实 Trace 与模型流 [completed]
     ├── C-23-S2 成熟 Trace UI 与即时对话流 [completed]
-    └── C-23-S3 浏览器/云端回归与截图交付 [in_progress]
+    └── C-23-S3 浏览器/云端回归与截图交付 [completed]
 ```
 
-- 当前合同：`C-18 - 食刻落地页视口收口、品牌替换与动效升级 [completed]`
-- 当前切片：无
-- 下一步：返回 `web_completion_audit`
+- 当前合同：`C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]`
+- 当前切片：无（C-23 已完成，等待 #3/#4/#5 外部复测）
+- 下一步：等待外部复测；不关闭未确认的 Issue
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text
