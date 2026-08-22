@@ -1334,5 +1334,22 @@
       "path": "dev_repo/evidence/C-23/trace-cloud-mid-desktop.png, dev_repo/evidence/C-23/trace-cloud-desktop.png, dev_repo/evidence/C-23/trace-cloud-desktop-detail.png, dev_repo/evidence/C-23/trace-cloud-mobile.png, dev_repo/evidence/C-23/trace-cloud-mobile-detail.png",
       "description": "云端 Agent Trace 桌面/移动验收截图：用户消息即时出现、时间线实时拼装、终态可读、移动端输入区与时间线不重叠"
     }
+  ],
+  "C-23-S4": [
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-trace-panel.tsx, src/components/agent/agent-workspace.tsx",
+      "description": "Trace 默认改为用户语言的本回合进度并在完成后收起；技术字段通过查看技术详情渐进披露，等待文案同步去除 Agent 术语"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-23/S4-verification.json",
+      "description": "云端 Browser 验收默认活跃态、默认完成态、用户语言展开态、技术详情态和 375px 移动布局"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-23/trace-friendly-mid-desktop.png, dev_repo/evidence/C-23/trace-friendly-desktop.png, dev_repo/evidence/C-23/trace-friendly-expanded-desktop.png, dev_repo/evidence/C-23/trace-friendly-technical-desktop.png, dev_repo/evidence/C-23/trace-friendly-mobile.png, dev_repo/evidence/C-23/trace-friendly-mobile-expanded.png",
+      "description": "用户态 Trace 桌面/移动截图：默认少技术细节，展开后可读，技术详情仍可按需查看"
+    }
   ]
 }

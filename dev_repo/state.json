@@ -445,13 +445,13 @@
       "summary": "把 Agent 回合升级为真实 Trace 流与成熟 Trace UI",
       "goal": "在不改变账户、工具策略和 AgentMessage 持久化边界的前提下，实时投影当前回合完整的上下文、模型、工具、答案增量、重试和终态，并在 Web/Android 共用的 Agent 工作台中呈现。",
       "current_slice": null,
-      "completed_slices": ["C-23-A1", "C-23-S1", "C-23-S2", "C-23-S3"],
+      "completed_slices": ["C-23-A1", "C-23-S1", "C-23-S2", "C-23-S3", "C-23-S4"],
       "deferred_slices": [],
       "return_to": "C-21",
       "architecture_amendment": "C-23-A1 / ADR-0013",
       "data_model_delta": "none; ephemeral current-turn trace only; no migration or backfill",
       "issue_state": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-23-S3 passed: cloud Browser showed optimistic transcript, real SSE answer deltas, nested Trace terminal states, 1440x900 and 375x800 screenshots, and no browser console errors."
+      "latest_verification": "C-23-S4 passed: cloud Browser confirmed a user-facing default progress summary, automatic collapse after completion, on-demand technical details, 375px no-overflow and no browser console errors."
     }
   }
 }

@@ -15,6 +15,7 @@
 - C-22-A1 completed: the version-aware delivery amendment adds a public no-store build metadata endpoint while keeping all business APIs behind the account session gate.
 - C-22-S1 completed: the shared Web shell compares the server-provided build id with the no-store version endpoint and offers an explicit refresh; stale-tab visual proof is scheduled with the cloud deployment.
 - C-22-S2 completed: cloud v0.1.1 is live, `/api/app/version` is public no-store, Android 0.1.1 APK built, and Browser desktop/375px screenshots prove the notice stays in content flow. The GitHub Release target is v0.1.1; Issues #6-#8 are closed after external confirmation and #3-#5 remain open.
+- C-23-S4 completed: Trace 默认展示用户语言进度并在回合完成后收起，技术字段通过“查看技术详情”按需展开；云端桌面/375px 移动 Browser 验收通过。
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 
 ```text
@@ -27,7 +28,8 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-23-A1 Trace 事件契约与架构修宪 [completed]
     ├── C-23-S1 后端真实 Trace 与模型流 [completed]
     ├── C-23-S2 成熟 Trace UI 与即时对话流 [completed]
-    └── C-23-S3 浏览器/云端回归与截图交付 [completed]
+    ├── C-23-S3 浏览器/云端回归与截图交付 [completed]
+    └── C-23-S4 用户态 Trace 信息密度收敛 [completed]
 ```
 
 - 当前合同：`C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]`
