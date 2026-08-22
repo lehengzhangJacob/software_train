@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-23 - 真实 Agent Trace 流与成熟 Trace UI` [in_progress]
-- Current slice: `C-23-S2 - 成熟 Trace UI 与即时对话流` [in_progress]
+- Current slice: `C-23-S3 - 浏览器/云端回归与截图交付` [in_progress]
 - Parent contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 remain open until external testers confirm non-reproduction.
@@ -26,7 +26,8 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
 └── C-23 - 真实 Agent Trace 流与成熟 Trace UI [in_progress]
     ├── C-23-A1 Trace 事件契约与架构修宪 [completed]
     ├── C-23-S1 后端真实 Trace 与模型流 [completed]
-    └── C-23-S2 成熟 Trace UI 与即时对话流 [in_progress]
+    ├── C-23-S2 成熟 Trace UI 与即时对话流 [completed]
+    └── C-23-S3 浏览器/云端回归与截图交付 [in_progress]
 ```
 
 - 当前合同：`C-18 - 食刻落地页视口收口、品牌替换与动效升级 [completed]`

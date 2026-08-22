@@ -1310,5 +1310,17 @@
       "path": "dev_repo/evidence/C-23/S1-verification.json, scripts/agent-stream-contract.test.ts, scripts/agent-trace-contract.test.ts",
       "description": "Agent Trace、SSE parser、原有 Agent/ordering 合同、lint、typecheck 和 production build 通过"
     }
+  ],
+  "C-23-S2": [
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-workspace.tsx, src/components/agent/agent-trace-panel.tsx",
+      "description": "optimistic user transcript、流式答案气泡、错误保留、滚动跟随和嵌套 Trace workspace"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-23/S2-verification.json",
+      "description": "前端 Trace UI 静态质量门通过；云端真实账户验收与截图待 C-23-S3"
+    }
   ]
 }
