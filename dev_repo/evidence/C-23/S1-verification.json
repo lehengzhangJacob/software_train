@@ -1,0 +1,38 @@
+{
+  "contract_id": "C-23",
+  "slice_id": "C-23-S1",
+  "status": "passed",
+  "timestamp": "2026-08-22T13:05:00+08:00",
+  "red_tests": [
+    "OpenAI-compatible SSE parser forwards two provider deltas in order",
+    "non-streaming provider is marked streamed=false fallback",
+    "Trace answer deltas redact URLs and credentials",
+    "MCP callTool trace boundary emits tool.started/tool.result without raw input/output"
+  ],
+  "green_tests": [
+    "npm run test:agent-trace: 7 passed",
+    "npm run test:agent: 10 passed",
+    "npm run test:ordering: 12 passed",
+    "npm run lint: passed",
+    "npm run typecheck: passed",
+    "npm run build: passed; /api/agent/chat remains dynamic"
+  ],
+  "implementation": {
+    "api": "SSE trace/delta/done events plus existing activity and JSON completion contract",
+    "model": "OpenAI-compatible stream parser with explicit non-stream fallback",
+    "context": "parent/child Trace steps for profile, digest and tail history reads",
+    "mcp": "actual McDonald callTool network boundary emits safe tool events",
+    "persistence": "AgentMessage remains final user/assistant source; no trace migration"
+  },
+  "architecture": {
+    "delta": "agent.runtime now projects real context/model/tool/answer/terminal events through ADR-0013",
+    "nodes": ["agent.runtime", "ai.gateway", "mcp.gateway", "delivery"],
+    "amendment": "C-23-A1 / ADR-0013"
+  },
+  "data_model": {
+    "delta": "none",
+    "migration_required": false,
+    "backfill_required": false
+  },
+  "issues": "Issues #6-#8 remain closed after external confirmation; Issues #3-#5 remain open until external retest."
+}

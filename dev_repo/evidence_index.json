@@ -1298,5 +1298,17 @@
       "path": "dev_repo/evidence/C-23/A1-verification.json",
       "description": "C-23-A1 架构、数据模型边界和 Trace 合同验证"
     }
+  ],
+  "C-23-S1": [
+    {
+      "type": "implementation",
+      "path": "src/app/api/agent/chat/route.ts, src/lib/ai/client.ts, src/lib/agent/trace.ts, src/lib/mcp/mcdonalds-client.ts, src/lib/agent/ordering.ts, package.json",
+      "description": "真实上下文/模型/MCP Trace 埋点、OpenAI-compatible SSE 答案流、fallback 标记与 JSON/SSE 兼容"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-23/S1-verification.json, scripts/agent-stream-contract.test.ts, scripts/agent-trace-contract.test.ts",
+      "description": "Agent Trace、SSE parser、原有 Agent/ordering 合同、lint、typecheck 和 production build 通过"
+    }
   ]
 }

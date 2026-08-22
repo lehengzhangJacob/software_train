@@ -45,7 +45,7 @@ export type AgentTraceEvent = {
   retryOf?: string
 }
 
-export type AgentTraceEventInput = Omit<AgentTraceEvent, "version" | "eventId" | "sequence" | "occurredAt"> & {
+export type AgentTraceEventInput = Omit<AgentTraceEvent, "version" | "traceId" | "runId" | "eventId" | "sequence" | "occurredAt"> & {
   eventId?: string
   sequence?: number
   occurredAt?: string
@@ -68,6 +68,17 @@ export function sanitizeTraceSummary(value: unknown, maxLength = 180): string | 
 
   if (!cleaned) return undefined
   return cleaned.length > maxLength ? `${cleaned.slice(0, maxLength - 1).trimEnd()}…` : cleaned
+}
+
+export function sanitizeTraceText(value: unknown, maxLength = 1_200): string | undefined {
+  if (typeof value !== "string") return undefined
+  const cleaned = SECRET_PATTERNS.reduce(
+    (result, pattern) => result.replace(pattern, "[redacted]"),
+    value.replace(/[\r\n\t]+/g, " "),
+  )
+  const trimmed = cleaned.trim()
+  if (!trimmed) return undefined
+  return trimmed.length > maxLength ? `${trimmed.slice(0, maxLength - 1).trimEnd()}…` : trimmed
 }
 
 export function isAgentTraceEvent(value: unknown): value is AgentTraceEvent {

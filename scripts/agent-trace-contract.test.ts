@@ -6,6 +6,7 @@ import {
   assertTraceSequence,
   isAgentTraceEvent,
   sanitizeTraceSummary,
+  sanitizeTraceText,
   type AgentTraceEvent,
 } from "../src/lib/agent/trace-contract"
 
@@ -55,4 +56,8 @@ test("Trace events do not expose raw input/output fields", () => {
   assert.equal("input" in safe, false)
   assert.equal("output" in safe, false)
   assert.equal("reasoning" in safe, false)
+})
+
+test("answer deltas redact URLs and credentials before leaving the trace boundary", () => {
+  assert.equal(sanitizeTraceText("参考 https://example.com；token=secret"), "参考 [redacted]")
 })
