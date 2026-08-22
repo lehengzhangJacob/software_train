@@ -2,6 +2,7 @@ import assert from "node:assert/strict"
 import test from "node:test"
 
 import { requestAiChatCompletionStream } from "../src/lib/ai/client"
+import { projectAssistantVisibleText } from "../src/lib/agent/contracts"
 import type { ResolvedAiProviderConfig } from "../src/lib/ai/settings"
 
 const config = {
@@ -11,6 +12,13 @@ const config = {
   visionModel: "trace-test-vision",
   visionCapability: "none",
 } as unknown as ResolvedAiProviderConfig
+
+test("streaming answer projection holds complete and partial internal markers", () => {
+  assert.equal(projectAssistantVisibleText("建议先做热身<exercise-"), "建议先做热身")
+  assert.equal(projectAssistantVisibleText("建议先做热身<exercise-plan>"), "建议先做热身")
+  assert.equal(projectAssistantVisibleText("先记录偏好<memory-candidates>["), "先记录偏好")
+  assert.equal(projectAssistantVisibleText("普通回答"), "普通回答")
+})
 
 test("OpenAI-compatible SSE parser forwards actual answer deltas in order", async () => {
   const originalFetch = globalThis.fetch

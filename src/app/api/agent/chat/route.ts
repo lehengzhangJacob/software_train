@@ -4,6 +4,7 @@ import {
   AgentValidationError,
   extractAssistantResponse,
   parseAgentChatInput,
+  projectAssistantVisibleText,
   sanitizeAssistantText,
   type AgentChatInput,
   type AgentActivity,
@@ -16,6 +17,7 @@ import {
   getSessionDigest,
   getAgentThread,
 } from "@/lib/agent/repository"
+import { getOwnedExercisePlan } from "@/lib/exercise/plan-repository"
 import { consolidateAgentSession } from "@/lib/agent/consolidation"
 import { getAgentContext, buildAgentSystemPrompt } from "@/lib/agent/context"
 import {
@@ -60,8 +62,7 @@ function createVisibleAnswerProjector(onDelta?: (delta: string) => void | Promis
   const push = async (delta: string) => {
     if (!delta) return
     raw += delta
-    const markerStart = raw.search(/<memory-candidates>/i)
-    const candidate = markerStart >= 0 ? raw.slice(0, markerStart) : raw
+    const candidate = projectAssistantVisibleText(raw)
     const next = sanitizeTraceText(sanitizeAssistantText(candidate), 12_000) ?? ""
     if (!next || !next.startsWith(visible) || next.length <= visible.length) return
     const visibleDelta = next.slice(visible.length)
@@ -71,7 +72,7 @@ function createVisibleAnswerProjector(onDelta?: (delta: string) => void | Promis
 
   return {
     push,
-    value: () => sanitizeAssistantText(raw),
+    value: () => raw,
   }
 }
 
@@ -169,6 +170,7 @@ type AgentChatResult = {
   thread: Awaited<ReturnType<typeof getAgentThread>>
   userMessage: Awaited<ReturnType<typeof appendAgentMessage>>
   assistantMessage: Awaited<ReturnType<typeof appendAgentMessage>>
+  exercisePlan: Awaited<ReturnType<typeof getOwnedExercisePlan>>
   orderResult?: {
     orderId: string | null
     paymentLink: string | null
@@ -204,6 +206,19 @@ async function runAgentChatInternal(
     { kind: "context", label: "定位当前对话线程", safeSummary: "已确认账户拥有该线程" },
     () => ensureAgentThread(user.userId, input.threadId, titleFromMessage(input.message)),
   )
+  const exerciseMode = input.mode === "exercise-plan" || input.exercisePlanId !== null
+  const exercisePlanId = input.exercisePlanId
+  const currentExercisePlan = exercisePlanId === null
+    ? null
+    : await runAgentTraceStep(
+        trace,
+        { kind: "context", label: "读取当前运动计划", safeSummary: "已确认运动计划归属当前账户" },
+        async () => {
+          const plan = await getOwnedExercisePlan(user.userId, exercisePlanId)
+          if (!plan) throw new AgentNotFoundError("运动计划不存在")
+          return plan
+        },
+      )
   const userMessage = await runAgentTraceStep(
     trace,
     { kind: "step", label: "接收用户消息", safeSummary: "消息已写入当前线程" },
@@ -322,6 +337,7 @@ async function runAgentChatInternal(
         thread: await getAgentThread(user.userId, threadId),
         userMessage,
         assistantMessage,
+        exercisePlan: null,
         orderResult:
           execution.status === "created"
             ? {
@@ -343,6 +359,7 @@ async function runAgentChatInternal(
       thread: await getAgentThread(user.userId, threadId),
       userMessage,
       assistantMessage,
+      exercisePlan: null,
       orderResult: null,
       activity: recorder.snapshot(),
     }
@@ -378,7 +395,13 @@ async function runAgentChatInternal(
           config,
           {
             messages: [
-              { role: "system", content: buildAgentSystemPrompt(context, sessionDigest?.summary) },
+              {
+                role: "system",
+                content: buildAgentSystemPrompt(context, sessionDigest?.summary, {
+                  exerciseMode,
+                  exercisePlan: currentExercisePlan?.plan ?? null,
+                }),
+              },
               ...history.map((message) => ({
                 role: message.role,
                 content: redactSuppressedMemoryContent(message.content, context.suppressedMemoryContents),
@@ -416,13 +439,22 @@ async function runAgentChatInternal(
   if (!rawText) throw new AgentResponseError("AI 没有返回可读内容", 502)
 
   const parsed = extractAssistantResponse(sanitizeAssistantText(rawText))
+  const generatedExercisePlan = exerciseMode ? parsed.exercisePlan : undefined
   const assistantMessage = await runAgentTraceStep(
     trace,
-    { kind: "step", label: "保存 Agent 回复", safeSummary: "最终回复和合法记忆候选写入消息历史" },
+    {
+      kind: "step",
+      label: generatedExercisePlan ? "保存运动计划与 Agent 回复" : "保存 Agent 回复",
+      safeSummary: generatedExercisePlan
+        ? "最终回复和合法运动计划写入消息历史"
+        : "最终回复和合法记忆候选写入消息历史",
+    },
     () =>
       appendAgentMessage(user.userId, threadId, "assistant", parsed.visibleText, {
         memoryCandidates: parsed.candidates,
         usedMemoryIds: context.memories.map((memory) => memory.memoryId),
+      }, {
+        ...(generatedExercisePlan ? { exercisePlan: generatedExercisePlan } : {}),
       }),
   )
   await runAgentTraceStep(
@@ -431,11 +463,15 @@ async function runAgentChatInternal(
     () => markMemoriesUsed(user.userId, context.memories.map((memory) => memory.memoryId)),
   )
   scheduleSessionConsolidation(user.userId, threadId)
+  const persistedExercisePlan = assistantMessage.exercisePlanId === null
+    ? null
+    : await getOwnedExercisePlan(user.userId, assistantMessage.exercisePlanId)
 
   return {
     thread: await getAgentThread(user.userId, threadId),
     userMessage,
     assistantMessage,
+    exercisePlan: persistedExercisePlan,
     activity: recorder.snapshot(),
   }
 }
