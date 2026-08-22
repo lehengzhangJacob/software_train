@@ -19,9 +19,10 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { AssistantText } from "@/components/agent/assistant-text"
-import { AgentActivityPanel } from "@/components/agent/agent-activity-panel"
+import { AgentTracePanel } from "@/components/agent/agent-trace-panel"
 import type { AgentActivity } from "@/lib/agent/contracts"
 import { getRunningActivityLabel } from "@/lib/agent/activity"
+import type { AgentTraceEvent } from "@/lib/agent/trace-contract"
 
 interface ThreadSummary {
   threadId: number
@@ -76,6 +77,7 @@ interface ChatResult {
   assistantMessage: AgentMessage
   orderResult?: OrderResult | null
   activity: AgentActivity[]
+  trace: AgentTraceEvent[]
 }
 
 const starterPrompts = ["晚餐怎么安排更合适？", "帮我复盘今天的蛋白质", "给我一个附近外卖思路"]
@@ -103,17 +105,26 @@ function mergeActivity(current: AgentActivity[], next: AgentActivity) {
   return updated
 }
 
+type StreamPayload = {
+  activity?: AgentActivity
+  data?: ChatResult
+  error?: string
+  textDelta?: string
+}
+
 function parseActivityEvent(block: string) {
   const event = block.match(/^event:\s*(.+)$/m)?.[1]
   const data = block.match(/^data:\s*(.+)$/m)?.[1]
   if (!event || !data) return null
-  return { event, payload: JSON.parse(data) as { activity?: AgentActivity; data?: ChatResult; error?: string } }
+  return { event, payload: JSON.parse(data) as StreamPayload }
 }
 
 async function streamAgentChat(
   threadId: number | null,
   message: string,
   onActivity: (activity: AgentActivity) => void,
+  onTrace: (event: AgentTraceEvent) => void,
+  onAnswerDelta: (delta: string) => void,
 ) {
   const response = await fetch("/api/agent/chat", {
     method: "POST",
@@ -137,6 +148,14 @@ async function streamAgentChat(
     if (!parsed) return
     if (parsed.event === "activity" && parsed.payload.activity) {
       onActivity(parsed.payload.activity)
+      return
+    }
+    if (parsed.event === "trace") {
+      onTrace(parsed.payload as unknown as AgentTraceEvent)
+      return
+    }
+    if (parsed.event === "delta" && parsed.payload.textDelta) {
+      onAnswerDelta(parsed.payload.textDelta)
       return
     }
     if (parsed.event === "error") throw new Error(parsed.payload.error || "Agent 对话失败")
@@ -184,7 +203,11 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
   // component state for the current reply and disappears on reload.
   const [lastOrder, setLastOrder] = useState<OrderResult | null>(null)
   const [turnActivity, setTurnActivity] = useState<AgentActivity[]>([])
+  const [turnTrace, setTurnTrace] = useState<AgentTraceEvent[]>([])
+  const [streamingAnswer, setStreamingAnswer] = useState("")
+  const [turnError, setTurnError] = useState<string | null>(null)
   const messageViewportRef = useRef<HTMLDivElement>(null)
+  const followViewportRef = useRef(true)
 
   const activeThread = useMemo(
     () => threads.find((thread) => thread.threadId === activeThreadId) ?? null,
@@ -193,8 +216,14 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
 
   useEffect(() => {
     const viewport = messageViewportRef.current
-    if (viewport) viewport.scrollTop = viewport.scrollHeight
-  }, [messages, sending, turnActivity])
+    if (viewport && followViewportRef.current) viewport.scrollTop = viewport.scrollHeight
+  }, [messages, sending, turnActivity, turnTrace, streamingAnswer, turnError])
+
+  const handleViewportScroll = () => {
+    const viewport = messageViewportRef.current
+    if (!viewport) return
+    followViewportRef.current = viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 96
+  }
 
   const openThread = async (threadId: number) => {
     if (threadId === activeThreadId || loadingThread || sending) return
@@ -205,6 +234,9 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
       setMessages(thread.messages)
       setLastOrder(null)
       setTurnActivity([])
+      setTurnTrace([])
+      setStreamingAnswer("")
+      setTurnError(null)
       setThreads((current) => mergeThread(current, thread))
       setMobileHistoryOpen(false)
     } catch (error) {
@@ -221,6 +253,9 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
     setDraft("")
     setLastOrder(null)
     setTurnActivity([])
+    setTurnTrace([])
+    setStreamingAnswer("")
+    setTurnError(null)
     setMobileHistoryOpen(false)
   }
 
@@ -243,21 +278,43 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
     const message = draft.trim()
     if (!message || sending) return
 
+    const optimisticMessage: AgentMessage = {
+      messageId: -Date.now(),
+      threadId: activeThreadId ?? -1,
+      role: "user",
+      content: message,
+      createdAt: new Date().toISOString(),
+      memoryCandidates: [],
+    }
+    followViewportRef.current = true
+    setMessages((current) => [...current, optimisticMessage])
+    setDraft("")
     setSending(true)
     setLastOrder(null)
     setTurnActivity([])
+    setTurnTrace([])
+    setStreamingAnswer("")
+    setTurnError(null)
     try {
-      const result = await streamAgentChat(activeThreadId, message, (activity) => {
-        setTurnActivity((current) => mergeActivity(current, activity))
-      })
+      const result = await streamAgentChat(
+        activeThreadId,
+        message,
+        (activity) => setTurnActivity((current) => mergeActivity(current, activity)),
+        (event) => setTurnTrace((current) => [...current, event]),
+        (delta) => setStreamingAnswer((current) => current + delta),
+      )
       setActiveThreadId(result.thread.threadId)
       setMessages(result.thread.messages)
       setThreads((current) => mergeThread(current, result.thread))
       setLastOrder(result.orderResult ?? null)
       setTurnActivity(result.activity)
-      setDraft("")
+      setTurnTrace(result.trace ?? [])
+      setStreamingAnswer("")
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Agent 对话失败")
+      const messageText = error instanceof Error ? error.message : "Agent 对话失败"
+      setDraft(message)
+      setTurnError(messageText)
+      toast.error(messageText)
     } finally {
       setSending(false)
     }
@@ -402,7 +459,11 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
               </div>
             </header>
 
-            <div ref={messageViewportRef} className="min-h-0 space-y-5 px-4 py-5 sm:px-7 sm:py-7 lg:flex-1 lg:overflow-y-auto">
+            <div
+              ref={messageViewportRef}
+              onScroll={handleViewportScroll}
+              className="min-h-0 space-y-5 px-4 py-5 sm:px-7 sm:py-7 lg:flex-1 lg:overflow-y-auto"
+            >
               {messages.length === 0 ? (
                 <div className="flex min-h-[25rem] flex-col justify-center">
                   <div className="grid size-11 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
@@ -464,7 +525,25 @@ export function AgentWorkspace({ username, initialThreads, initialThread }: Agen
                   </div>
                 ))
               )}
-              <AgentActivityPanel activities={turnActivity} active={sending} />
+              <AgentTracePanel events={turnTrace} active={sending} />
+              {streamingAnswer ? (
+                <div className="flex gap-3" data-testid="agent-streaming-answer">
+                  <div className="mt-1 grid size-8 shrink-0 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
+                    <Bot className="size-4" />
+                  </div>
+                  <div className="max-w-[min(43rem,88%)]">
+                    <div className="break-words rounded-lg border border-[var(--brand-mint)]/40 bg-card px-4 py-3 text-sm leading-6 text-foreground shadow-sm">
+                      <AssistantText content={streamingAnswer} />
+                    </div>
+                    <p className="mt-1 text-[11px] text-muted-foreground">实时生成中</p>
+                  </div>
+                </div>
+              ) : null}
+              {turnError ? (
+                <div role="alert" className="border-l-2 border-[var(--brand-coral)] bg-[var(--brand-coral-soft)] px-3 py-2 text-xs leading-5 text-[var(--brand-heading)]">
+                  本回合没有完成：{turnError}。你的消息已保留在当前对话中。
+                </div>
+              ) : null}
               {lastOrder ? (
                 <div className="rounded-lg border border-[var(--brand-mint)]/50 bg-card p-4 shadow-sm">
                   <p className="text-sm font-semibold text-[var(--brand-heading)]">

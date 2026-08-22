@@ -1,0 +1,33 @@
+{
+  "contract_id": "C-23",
+  "slice_id": "C-23-S2",
+  "status": "passed",
+  "timestamp": "2026-08-22T13:35:00+08:00",
+  "red_tests": [
+    "optimistic user bubble is inserted before the SSE promise resolves",
+    "answer deltas render in a separate assistant bubble while Trace stays live",
+    "final done payload replaces optimistic thread exactly once",
+    "stream failure retains user message and visible error state",
+    "Trace panel groups answer deltas, nests parentId children and has 375px-safe wrapping"
+  ],
+  "green_tests": [
+    "npm run lint: passed",
+    "npm run typecheck: passed",
+    "npm run build: passed"
+  ],
+  "implementation": {
+    "transcript": "sendMessage inserts a temporary user AgentMessage and clears the composer immediately; done reconciles with persisted thread",
+    "trace_ui": "AgentTracePanel renders versioned events as a collapsible nested timeline and aggregates token-level answer deltas",
+    "failure": "stream errors keep the optimistic bubble, restore the draft and show an alert without hiding the run.failed Trace"
+  },
+  "browser": {
+    "status": "passed via C-23-S3 cloud acceptance",
+    "local_note": "localhost:3001 compiled and rendered /access; authenticated cloud acceptance, optimistic transcript, streaming answer and Trace UI are recorded in C-23-S3-verification.json"
+  },
+  "data_model": {
+    "delta": "none",
+    "migration_required": false,
+    "backfill_required": false
+  },
+  "issues": "Issues #6-#8 remain closed after external confirmation; Issues #3-#5 remain open until external retest."
+}

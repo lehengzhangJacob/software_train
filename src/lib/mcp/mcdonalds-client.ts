@@ -5,10 +5,12 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import {
   MCP_MAX_OUTPUT_BYTES,
   MCP_TIMEOUT_MS,
+  MCDONALD_TOOL_DEFINITIONS,
   McpToolError,
   type McDonaldToolName,
 } from "@/lib/mcp/contracts"
 import { getMcDonaldMcpConfig, type McDonaldMcpConfig } from "@/lib/mcp/settings"
+import type { AgentTraceReporter } from "@/lib/agent/trace"
 
 export interface McDonaldMcpSession {
   listTools(): Promise<string[]>
@@ -64,6 +66,7 @@ export async function withMcDonaldMcp<T>(
   run: (session: McDonaldMcpSession) => Promise<T>,
   config?: McDonaldMcpConfig,
   accountId?: number,
+  reportTrace?: AgentTraceReporter,
 ) {
   const connection = await connectMcDonaldMcp(config ?? await getMcDonaldMcpConfig(accountId))
   const session: McDonaldMcpSession = {
@@ -72,7 +75,40 @@ export async function withMcDonaldMcp<T>(
       return result.tools.map((tool) => tool.name)
     },
     async callTool(name, input = {}) {
-      return parseToolResult(await connection.client.callTool({ name, arguments: input }))
+      const definition = MCDONALD_TOOL_DEFINITIONS.find((tool) => tool.name === name)
+      const startedAt = Date.now()
+      const started = await reportTrace?.({
+        eventType: "tool.started",
+        status: "running",
+        label: definition?.label ?? "调用麦当劳工具",
+        toolName: name,
+        safeSummary: "已通过工具白名单，开始调用",
+      })
+      const parentId = started && typeof started === "object" && "eventId" in started ? started.eventId : undefined
+      try {
+        const parsed = parseToolResult(await connection.client.callTool({ name, arguments: input }))
+        await reportTrace?.({
+          eventType: "tool.result",
+          status: "completed",
+          label: definition?.label ?? "调用麦当劳工具",
+          toolName: name,
+          ...(parentId ? { parentId } : {}),
+          durationMs: Date.now() - startedAt,
+          safeSummary: "工具返回已解析，原始结果已隔离",
+        })
+        return parsed
+      } catch (error) {
+        await reportTrace?.({
+          eventType: "tool.result",
+          status: "failed",
+          label: definition?.label ?? "调用麦当劳工具",
+          toolName: name,
+          ...(parentId ? { parentId } : {}),
+          durationMs: Date.now() - startedAt,
+          safeSummary: "工具调用失败",
+        })
+        throw error
+      }
     },
   }
   try {

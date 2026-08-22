@@ -3,6 +3,7 @@ import { McpToolError, McpUnavailableError } from "@/lib/mcp/contracts"
 import type { OrderingGrant } from "@/lib/actions/policy"
 import { runAgentActivity } from "@/lib/agent/activity"
 import type { AgentActivityReporter } from "@/lib/agent/contracts"
+import { runAgentTraceStep, type AgentTraceRecorder } from "@/lib/agent/trace"
 
 // ADR-0004 orchestration: explicit intent (checked in ordering-intent.ts plus
 // an action.policy grant) drives a deterministic server-side pipeline. The
@@ -54,6 +55,7 @@ export interface OrderingDeps {
   selectItems(input: { message: string; menu: MenuOption[]; remainingCalories: number | null }): Promise<OrderSelection>
   verifyPrice?(itemsTotalCents: number | null, priceSummary: Record<string, unknown>): boolean
   reportActivity?: AgentActivityReporter
+  reportTrace?: AgentTraceRecorder
 }
 
 const MAX_MENU_OPTIONS = 60
@@ -246,7 +248,12 @@ export async function planMcDonaldOrder(
         kind: "model",
         label: "按营养目标选择餐品",
       },
-      () => deps.selectItems({ message, menu, remainingCalories }),
+      () =>
+        runAgentTraceStep(
+          deps.reportTrace,
+          { kind: "model", label: "按营养目标选择餐品", safeSummary: "模型只接收已校验菜单编码" },
+          () => deps.selectItems({ message, menu, remainingCalories }),
+        ),
     )
     const items = validateSelection(selection, menu)
 

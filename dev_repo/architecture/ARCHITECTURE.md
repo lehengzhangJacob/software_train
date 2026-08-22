@@ -160,3 +160,22 @@ accepts `Accept: text/event-stream` for an ephemeral current-turn activity
 projection. The stream contains only safe labels, tool names, statuses, and
 durations. The Browser UI renders it as a collapsible timeline; durable
 `AgentMessage` history remains the canonical message projection.
+
+### Agent Trace observability (C-23 / ADR-0013)
+
+The activity projection is upgraded to a complete, versioned current-turn
+`AgentTraceEvent` stream. `agent.runtime` creates events at the real boundaries
+of context reads, policy checks, model requests/deltas, MCP `callTool` calls,
+retries, answer deltas, persistence, and terminal status. Every event is tied to
+one `traceId`/`runId`, carries a monotonic sequence and optional parent step, and
+contains only a bounded safe summary. Tool names are allowlisted labels; raw
+arguments, results, provider error bodies, payment links, credentials and
+hidden chain-of-thought never cross the API boundary.
+
+The SSE transport emits `trace` envelopes plus answer `delta` events and a
+terminal `done`; ordinary JSON clients still receive the existing completion
+contract. The Browser inserts the user message optimistically, renders answer
+deltas while they arrive, and reconciles the final thread once. The trace
+workspace is nested/collapsible, keyboard accessible, responsive at 375px, and
+ephemeral: only final user/assistant messages enter `AgentMessage`. Historical
+trace replay or audit retention requires a separate ER/data-model amendment.

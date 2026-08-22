@@ -5,6 +5,7 @@ import {
   extractAssistantResponse,
   parseAgentChatInput,
   sanitizeAssistantText,
+  type AgentChatInput,
   type AgentActivity,
   type AgentActivityReporter,
 } from "@/lib/agent/contracts"
@@ -30,7 +31,7 @@ import {
 import { hasExplicitOrderingIntent } from "@/lib/agent/ordering-intent"
 import { issueOrderingGrant } from "@/lib/actions/policy"
 import { getCurrentAccountId, getCurrentUser } from "@/lib/current-user"
-import { getAssistantText, requestAiChatCompletion } from "@/lib/ai/client"
+import { getAssistantText, requestAiChatCompletion, requestAiChatCompletionStream } from "@/lib/ai/client"
 import { redactSuppressedMemoryContent } from "@/lib/agent/context-safety"
 import { getPublicAiError } from "@/lib/ai/errors"
 import { getActiveAiProviderConfig, type ResolvedAiProviderConfig } from "@/lib/ai/settings"
@@ -38,6 +39,9 @@ import { markMemoriesUsed } from "@/lib/memory/repository"
 import { withMcDonaldMcp } from "@/lib/mcp/mcdonalds-client"
 import { getMcDonaldMcpConfig, type McDonaldMcpConfig } from "@/lib/mcp/settings"
 import { createAgentActivityRecorder, runAgentActivity } from "@/lib/agent/activity"
+import { createAgentTraceRecorder, runAgentTraceStep, type AgentTraceRecorder } from "@/lib/agent/trace"
+import type { AgentTraceEvent } from "@/lib/agent/trace-contract"
+import { sanitizeTraceText } from "@/lib/agent/trace-contract"
 import { getTodayStr } from "@/lib/utils"
 import { after } from "next/server"
 
@@ -47,6 +51,28 @@ export const runtime = "nodejs"
 function titleFromMessage(message: string) {
   const compact = message.replace(/\s+/g, " ").trim()
   return compact.length > 28 ? `${compact.slice(0, 28)}…` : compact
+}
+
+function createVisibleAnswerProjector(onDelta?: (delta: string) => void | Promise<void>) {
+  let raw = ""
+  let visible = ""
+
+  const push = async (delta: string) => {
+    if (!delta) return
+    raw += delta
+    const markerStart = raw.search(/<memory-candidates>/i)
+    const candidate = markerStart >= 0 ? raw.slice(0, markerStart) : raw
+    const next = sanitizeTraceText(sanitizeAssistantText(candidate), 12_000) ?? ""
+    if (!next || !next.startsWith(visible) || next.length <= visible.length) return
+    const visibleDelta = next.slice(visible.length)
+    visible = next
+    await onDelta?.(visibleDelta)
+  }
+
+  return {
+    push,
+    value: () => sanitizeAssistantText(raw),
+  }
 }
 
 function selectItemsWithModel(config: ResolvedAiProviderConfig) {
@@ -83,6 +109,7 @@ async function runOrderingPlan(
   context: Awaited<ReturnType<typeof getAgentContext>>,
   mcpConfig: McDonaldMcpConfig,
   reportActivity?: AgentActivityReporter,
+  trace?: AgentTraceRecorder,
 ): Promise<OrderingOutcome> {
   const today = getTodayStr()
   const todayIntake = context.meals
@@ -93,9 +120,10 @@ async function runOrderingPlan(
     : null
   return planMcDonaldOrder(
     {
-      openSession: (run) => withMcDonaldMcp(run, mcpConfig),
+      openSession: (run) => withMcDonaldMcp(run, mcpConfig, undefined, trace?.emit),
       selectItems: selectItemsWithModel(config),
       reportActivity,
+      reportTrace: trace,
     },
     message,
     remainingCalories,
@@ -147,11 +175,23 @@ type AgentChatResult = {
     itemsTotalCents: number | null
   } | null
   activity: AgentActivity[]
+  trace: AgentTraceEvent[]
 }
 
-async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter): Promise<AgentChatResult> {
-  const input = parseAgentChatInput(value)
-  const recorder = createAgentActivityRecorder(onActivity)
+type AgentChatInternalResult = Omit<AgentChatResult, "trace">
+
+type AgentChatOptions = {
+  onActivity?: AgentActivityReporter
+  onTrace?: (event: AgentTraceEvent) => void | Promise<void>
+  onAnswerDelta?: (delta: string) => void | Promise<void>
+}
+
+async function runAgentChatInternal(
+  input: AgentChatInput,
+  trace: AgentTraceRecorder,
+  options: AgentChatOptions,
+): Promise<AgentChatInternalResult> {
+  const recorder = createAgentActivityRecorder(options.onActivity)
   const user = await getCurrentUser()
   if (!user) throw new AgentNotFoundError("请先创建个人档案")
   const accountId = await getCurrentAccountId()
@@ -159,8 +199,16 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
   // Resolve credentials before creating a thread so an unconfigured local
   // provider cannot leave behind a ghost conversation.
   const config = await getActiveAiProviderConfig(accountId ?? undefined)
-  const threadId = await ensureAgentThread(user.userId, input.threadId, titleFromMessage(input.message))
-  const userMessage = await appendAgentMessage(user.userId, threadId, "user", input.message)
+  const threadId = await runAgentTraceStep(
+    trace,
+    { kind: "context", label: "定位当前对话线程", safeSummary: "已确认账户拥有该线程" },
+    () => ensureAgentThread(user.userId, input.threadId, titleFromMessage(input.message)),
+  )
+  const userMessage = await runAgentTraceStep(
+    trace,
+    { kind: "step", label: "接收用户消息", safeSummary: "消息已写入当前线程" },
+    () => appendAgentMessage(user.userId, threadId, "user", input.message),
+  )
   const [context, sessionDigest, history] = await runAgentActivity(
     recorder.emit,
     {
@@ -169,12 +217,51 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
       label: "整理饮食档案与对话上下文",
     },
     async () => {
-      const [context, sessionDigest] = await Promise.all([
-        getAgentContext(user.userId),
-        getSessionDigest(user.userId, threadId),
-      ])
-      const history = await getAgentMessageHistory(user.userId, threadId, 24, sessionDigest?.coveredMessageId)
-      return [context, sessionDigest, history] as const
+      const parent = await trace.emit({
+        eventType: "step.started",
+        status: "running",
+        label: "整理饮食档案与对话上下文",
+        safeSummary: "并行读取当前回合所需的安全上下文",
+      })
+      const startedAt = Date.now()
+      try {
+        const [context, sessionDigest] = await Promise.all([
+          runAgentTraceStep(
+            trace,
+            { kind: "context", parentId: parent.eventId, label: "读取饮食档案与近期记录" },
+            () => getAgentContext(user.userId),
+          ),
+          runAgentTraceStep(
+            trace,
+            { kind: "context", parentId: parent.eventId, label: "读取会话摘要" },
+            () => getSessionDigest(user.userId, threadId),
+          ),
+        ])
+        const history = await runAgentTraceStep(
+          trace,
+          { kind: "context", parentId: parent.eventId, label: "读取当前线程尾部消息" },
+          () => getAgentMessageHistory(user.userId, threadId, 24, sessionDigest?.coveredMessageId),
+        )
+        await trace.emit({
+          eventType: "step.completed",
+          status: "completed",
+          label: "整理饮食档案与对话上下文",
+          parentId: parent.eventId,
+          durationMs: Date.now() - startedAt,
+          safeSummary: "档案、摘要和尾部消息已就绪",
+        })
+        return [context, sessionDigest, history] as const
+      } catch (error) {
+        await trace.emit({
+          eventType: "step.completed",
+          status: "failed",
+          label: "整理饮食档案与对话上下文",
+          parentId: parent.eventId,
+          durationMs: Date.now() - startedAt,
+          safeSummary: "上下文读取失败",
+        })
+        throw error
+      }
     },
   )
 
@@ -189,27 +276,46 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
         kind: "policy",
         label: "校验点餐意图与一次性建单权限",
       },
-      async () => issueOrderingGrant(true),
+      () =>
+        runAgentTraceStep(
+          trace,
+          { kind: "policy", label: "校验点餐意图与一次性建单权限", safeSummary: "当前消息命中明确点餐意图" },
+          async () => issueOrderingGrant(true),
+        ),
     )
-    const mcpConfig = await getMcDonaldMcpConfig(accountId ?? undefined)
-    const outcome = await runOrderingPlan(config, input.message, context, mcpConfig, recorder.emit)
+    const mcpConfig = await runAgentTraceStep(
+      trace,
+      { kind: "context", label: "读取麦当劳工具配置", safeSummary: "服务端读取连接器，凭据不进入 Trace" },
+      () => getMcDonaldMcpConfig(accountId ?? undefined),
+    )
+    const outcome = await runOrderingPlan(config, input.message, context, mcpConfig, recorder.emit, trace)
     if (outcome.status === "planned") {
-      const execution = await executeMcDonaldOrder((run) => withMcDonaldMcp(run, mcpConfig), grant, outcome.plan, recorder.emit)
-      const assistantMessage = await appendAgentMessage(
-        user.userId,
-        threadId,
-        "assistant",
-        composeOrderedReply(outcome.plan, execution),
-        execution.status === "created"
-          ? {
-              order: {
-                orderId: execution.order.orderId,
-                itemsTotalCents: outcome.plan.itemsTotalCents,
-                itemCount: outcome.plan.items.length,
-                storeName: outcome.plan.storeName,
-              },
-            }
-          : {},
+      const execution = await executeMcDonaldOrder(
+        (run) => withMcDonaldMcp(run, mcpConfig, undefined, trace.emit),
+        grant,
+        outcome.plan,
+        recorder.emit,
+      )
+      const assistantMessage = await runAgentTraceStep(
+        trace,
+        { kind: "step", label: "保存 Agent 回复", safeSummary: "最终回复写入消息历史，支付入口不写入消息" },
+        () =>
+          appendAgentMessage(
+            user.userId,
+            threadId,
+            "assistant",
+            composeOrderedReply(outcome.plan, execution),
+            execution.status === "created"
+              ? {
+                  order: {
+                    orderId: execution.order.orderId,
+                    itemsTotalCents: outcome.plan.itemsTotalCents,
+                    itemCount: outcome.plan.items.length,
+                    storeName: outcome.plan.storeName,
+                  },
+                }
+              : {},
+          ),
       )
       scheduleSessionConsolidation(user.userId, threadId)
       return {
@@ -227,11 +333,10 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
         activity: recorder.snapshot(),
       }
     }
-    const assistantMessage = await appendAgentMessage(
-      user.userId,
-      threadId,
-      "assistant",
-      composeOrderingReply(outcome),
+    const assistantMessage = await runAgentTraceStep(
+      trace,
+      { kind: "step", label: "保存 Agent 回复", safeSummary: "点餐阻塞原因已写入消息历史" },
+      () => appendAgentMessage(user.userId, threadId, "assistant", composeOrderingReply(outcome)),
     )
     scheduleSessionConsolidation(user.userId, threadId)
     return {
@@ -243,35 +348,88 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
     }
   }
 
-  const result = await runAgentActivity(
+  const modelResult = await runAgentActivity(
     recorder.emit,
     {
       activityId: "health-agent-response",
       kind: "model",
       label: "健康 Agent 生成建议",
     },
-    () =>
-      requestAiChatCompletion(config, {
-        messages: [
-          { role: "system", content: buildAgentSystemPrompt(context, sessionDigest?.summary) },
-          ...history.map((message) => ({
-            role: message.role,
-            content: redactSuppressedMemoryContent(message.content, context.suppressedMemoryContents),
-          })),
-        ],
-        temperature: 0.4,
-        max_tokens: 1_500,
-      }),
+    async () => {
+      const modelStartedAt = Date.now()
+      const modelStarted = await trace.emit({
+        eventType: "model.started",
+        status: "running",
+        label: "健康 Agent 生成建议",
+        safeSummary: "模型仅接收脱敏后的营养上下文与线程尾部",
+      })
+      const projector = createVisibleAnswerProjector(async (delta) => {
+        await trace.emit({
+          eventType: "answer.delta",
+          status: "running",
+          label: "答案增量",
+          parentId: modelStarted.eventId,
+          textDelta: delta,
+        })
+        await options.onAnswerDelta?.(delta)
+      })
+      try {
+        const streamed = await requestAiChatCompletionStream(
+          config,
+          {
+            messages: [
+              { role: "system", content: buildAgentSystemPrompt(context, sessionDigest?.summary) },
+              ...history.map((message) => ({
+                role: message.role,
+                content: redactSuppressedMemoryContent(message.content, context.suppressedMemoryContents),
+              })),
+            ],
+            temperature: 0.4,
+            max_tokens: 1_500,
+          },
+          projector.push,
+        )
+        if (!streamed.streamed) await projector.push(streamed.text)
+        await trace.emit({
+          eventType: "step.completed",
+          status: streamed.streamed ? "completed" : "fallback",
+          label: "健康 Agent 生成建议",
+          parentId: modelStarted.eventId,
+          durationMs: Date.now() - modelStartedAt,
+          safeSummary: streamed.streamed ? "模型以 SSE 增量返回" : "提供商未提供 SSE，已按完整响应回退",
+        })
+        return streamed.text
+      } catch (error) {
+        await trace.emit({
+          eventType: "step.completed",
+          status: "failed",
+          label: "健康 Agent 生成建议",
+          parentId: modelStarted.eventId,
+          durationMs: Date.now() - modelStartedAt,
+          safeSummary: "模型调用失败",
+        })
+        throw error
+      }
+    },
   )
-  const rawText = getAssistantText(result)
+  const rawText = typeof modelResult === "string" ? modelResult : getAssistantText(modelResult)
   if (!rawText) throw new AgentResponseError("AI 没有返回可读内容", 502)
 
   const parsed = extractAssistantResponse(sanitizeAssistantText(rawText))
-  const assistantMessage = await appendAgentMessage(user.userId, threadId, "assistant", parsed.visibleText, {
-    memoryCandidates: parsed.candidates,
-    usedMemoryIds: context.memories.map((memory) => memory.memoryId),
-  })
-  await markMemoriesUsed(user.userId, context.memories.map((memory) => memory.memoryId))
+  const assistantMessage = await runAgentTraceStep(
+    trace,
+    { kind: "step", label: "保存 Agent 回复", safeSummary: "最终回复和合法记忆候选写入消息历史" },
+    () =>
+      appendAgentMessage(user.userId, threadId, "assistant", parsed.visibleText, {
+        memoryCandidates: parsed.candidates,
+        usedMemoryIds: context.memories.map((memory) => memory.memoryId),
+      }),
+  )
+  await runAgentTraceStep(
+    trace,
+    { kind: "context", label: "更新记忆使用状态", safeSummary: "仅更新本回合实际命中的记忆" },
+    () => markMemoriesUsed(user.userId, context.memories.map((memory) => memory.memoryId)),
+  )
   scheduleSessionConsolidation(user.userId, threadId)
 
   return {
@@ -279,6 +437,35 @@ async function runAgentChat(value: unknown, onActivity?: AgentActivityReporter):
     userMessage,
     assistantMessage,
     activity: recorder.snapshot(),
+  }
+}
+
+async function runAgentChat(value: unknown, options: AgentChatOptions = {}): Promise<AgentChatResult> {
+  const input = parseAgentChatInput(value)
+  const trace = createAgentTraceRecorder(options.onTrace)
+  await trace.emit({
+    eventType: "run.started",
+    status: "running",
+    label: "开始 Agent 回合",
+    safeSummary: "已建立当前回合 Trace",
+  })
+  try {
+    const result = await runAgentChatInternal(input, trace, options)
+    await trace.emit({
+      eventType: "run.completed",
+      status: "completed",
+      label: "Agent 回合完成",
+      safeSummary: "最终消息已保存，Trace 仅保留在当前回合",
+    })
+    return { ...result, trace: trace.snapshot() }
+  } catch (error) {
+    await trace.emit({
+      eventType: "run.failed",
+      status: "failed",
+      label: "Agent 回合失败",
+      safeSummary: "回合未完成，已保留已有消息状态",
+    })
+    throw error
   }
 }
 
@@ -298,7 +485,11 @@ function activityStreamResponse(value: unknown) {
       }
 
       try {
-        const data = await runAgentChat(value, (activity) => send("activity", { activity }))
+        const data = await runAgentChat(value, {
+          onActivity: (activity) => send("activity", { activity }),
+          onTrace: (event) => send("trace", event),
+          onAnswerDelta: (textDelta) => send("delta", { textDelta }),
+        })
         send("done", { data })
       } catch (error) {
         const failure = failureDetails(error, "Agent 对话失败")

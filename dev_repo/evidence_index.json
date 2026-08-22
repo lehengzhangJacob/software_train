@@ -1281,5 +1281,58 @@
       "path": "dev_repo/evidence/C-20/S1/verification.json",
       "description": "README 素材引用、lint、typecheck、production build 通过；远端推送因当前 GitHub 身份仅有 READ 权限而暂停"
     }
+  ],
+  "C-23-A1": [
+    {
+      "type": "architecture_amendment",
+      "path": "dev_repo/architecture/decisions/ADR-0013-agent-trace-and-trace-ui.md, dev_repo/architecture/ARCHITECTURE.md, dev_repo/architecture/graph.json, dev_repo/architecture/index.json, dev_repo/architecture/invariants.md, dev_repo/architecture/diagrams/runtime-flow.mmd",
+      "description": "完整 Agent Trace 事件边界、SSE/JSON 兼容、optimistic transcript、脱敏和当前回合临时性架构修宪"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/trace-contract.ts, scripts/agent-trace-contract.test.ts",
+      "description": "版本化 Trace 信封、事件类型、严格序列、摘要脱敏和禁止字段合同"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-23/A1-verification.json",
+      "description": "C-23-A1 架构、数据模型边界和 Trace 合同验证"
+    }
+  ],
+  "C-23-S1": [
+    {
+      "type": "implementation",
+      "path": "src/app/api/agent/chat/route.ts, src/lib/ai/client.ts, src/lib/agent/trace.ts, src/lib/mcp/mcdonalds-client.ts, src/lib/agent/ordering.ts, package.json",
+      "description": "真实上下文/模型/MCP Trace 埋点、OpenAI-compatible SSE 答案流、fallback 标记与 JSON/SSE 兼容"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-23/S1-verification.json, scripts/agent-stream-contract.test.ts, scripts/agent-trace-contract.test.ts",
+      "description": "Agent Trace、SSE parser、原有 Agent/ordering 合同、lint、typecheck 和 production build 通过"
+    }
+  ],
+  "C-23-S2": [
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-workspace.tsx, src/components/agent/agent-trace-panel.tsx",
+      "description": "optimistic user transcript、流式答案气泡、错误保留、滚动跟随和嵌套 Trace workspace"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-23/S2-verification.json",
+      "description": "前端 Trace UI 静态质量门通过；云端真实账户验收与截图已在 C-23-S3 通过并归档"
+    }
+  ],
+  "C-23-S3": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-23/S3-verification.json",
+      "description": "云端真实账户 Browser 验收：optimistic 用户消息、真实 SSE 答案增量、完整父子 Trace、375px 无横向溢出与无浏览器错误"
+    },
+    {
+      "type": "visual",
+      "path": "dev_repo/evidence/C-23/trace-cloud-mid-desktop.png, dev_repo/evidence/C-23/trace-cloud-desktop.png, dev_repo/evidence/C-23/trace-cloud-desktop-detail.png, dev_repo/evidence/C-23/trace-cloud-mobile.png, dev_repo/evidence/C-23/trace-cloud-mobile-detail.png",
+      "description": "云端 Agent Trace 桌面/移动验收截图：用户消息即时出现、时间线实时拼装、终态可读、移动端输入区与时间线不重叠"
+    }
   ]
 }

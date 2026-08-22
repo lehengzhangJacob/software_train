@@ -208,8 +208,11 @@
       "implementation_status": "partial",
       "activity_projection": {
         "owner": "current Agent turn presentation",
-        "source": "server activity events only",
-        "keyboard_accessible": true
+        "source": "versioned AgentTraceEvent SSE + optimistic transcript",
+        "persistence": "ephemeral current-turn only",
+        "keyboard_accessible": true,
+        "safe_fields": ["status", "label", "toolName", "safeSummary", "durationMs", "textDelta"],
+        "prohibited": ["hidden chain-of-thought", "credentials", "raw tool input/output", "payment links"]
       },
       "recognition_handoff": {
         "owner": "food recognition review workflow",
@@ -288,7 +291,8 @@
       "public_interfaces": [
         "/api/ai/recognize",
         "/api/settings/ai",
-        "/api/settings/ai/test"
+        "/api/settings/ai/test",
+        "OpenAI-compatible chat completion stream"
       ],
       "depends_on": [
         "account.secret_store",
@@ -651,7 +655,7 @@
       "public_interfaces": [
         "/agent",
         "/api/agent",
-        "/api/agent Accept: text/event-stream (activity projection)"
+        "/api/agent Accept: text/event-stream (versioned trace projection)"
       ],
       "depends_on": [
         "backend.api",
@@ -688,8 +692,11 @@
       "implementation_status": "confirmed",
       "activity_projection": {
         "transport": "optional SSE via Accept: text/event-stream",
+        "schema": "AgentTraceEvent v1",
+        "events": ["trace", "delta", "done"],
         "persistence": "ephemeral turn presentation only",
-        "secret_policy": "labels and timings only; no raw tool payloads or credentials"
+        "secret_policy": "safe summaries and answer deltas only; no raw tool payloads, hidden reasoning, credentials or payment links",
+        "reconciliation": "optimistic user bubble reconciles once against final AgentMessage thread"
       }
     },
     {
@@ -701,7 +708,8 @@
       ],
       "public_interfaces": [
         "tool discovery",
-        "guarded tool invocation"
+        "guarded tool invocation",
+        "trace hook at actual call boundary"
       ],
       "depends_on": [
         "account.secret_store",
@@ -714,7 +722,8 @@
       "invariants": [
         "工具白名单",
         "超时",
-        "输出不可信"
+        "输出不可信",
+        "Trace 只投影白名单工具名和安全结果摘要"
       ],
       "allowed_change_types": [
         "transport",
