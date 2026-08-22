@@ -26,7 +26,8 @@ export function decideAccess(pathname: string, hasSession: boolean, enabled: boo
     pathname === "/auth" ||
     pathname === "/access" ||
     pathname.startsWith("/api/auth/") ||
-    pathname === "/api/app/version"
+    pathname === "/api/app/version" ||
+    pathname.startsWith("/api/internal/content/")
   ) return "allow"
   if (pathname.startsWith("/api/")) return "unauthorized-api"
   return "gate-page"
