@@ -4,16 +4,27 @@ import test from "node:test"
 
 const sidebar = readFileSync("src/components/sidebar.tsx", "utf8")
 const chrome = readFileSync("src/components/app-chrome.tsx", "utf8")
+const todayTabs = readFileSync("src/components/today-tabs.tsx", "utf8")
 const planTabs = readFileSync("src/components/plan-tabs.tsx", "utf8")
 const styles = readFileSync("src/app/globals.css", "utf8")
 
 test("mobile navigation reserves a centered meal action without dropping routes", () => {
-  assert.match(sidebar, /mobileNav\.slice\(0, 3\)/)
-  assert.match(sidebar, /mobileNav\[3\]/)
-  assert.match(sidebar, /mobileNav\.slice\(4\)/)
+  assert.match(sidebar, /mobileNav\.slice\(0, 2\)/)
+  assert.match(sidebar, /mobileNav\[2\]/)
+  assert.match(sidebar, /mobileNav\.slice\(3\)/)
   assert.match(sidebar, /w-16 shrink-0/)
   assert.match(sidebar, /aria-label="移动端主导航"/)
   assert.match(sidebar, /mobile-nav-indicator-active/)
+  assert.doesNotMatch(sidebar, /label: "阅读"/)
+  assert.match(sidebar, /matches: \["\/dashboard", "\/insights"\]/)
+})
+
+test("reading stays inside the today secondary navigation", () => {
+  assert.match(chrome, /<TodayTabs \/>/)
+  assert.match(todayTabs, /aria-label="今天二级导航"/)
+  assert.match(todayTabs, /href: "\/dashboard"/)
+  assert.match(todayTabs, /href: "\/insights"/)
+  assert.match(todayTabs, /isTodayArea/)
 })
 
 test("route and plan tab changes expose motion hooks with a reduced-motion escape hatch", () => {

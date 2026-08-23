@@ -7,7 +7,6 @@ import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
 import {
   BarChart3,
-  BookOpen,
   Bot,
   Brain,
   CalendarDays,
@@ -33,18 +32,16 @@ type SessionUser = {
 }
 
 const desktopNav = [
-  { href: "/dashboard", label: "今天", matches: ["/dashboard"] },
+  { href: "/dashboard", label: "今天", matches: ["/dashboard", "/insights"] },
   { href: "/agent", label: "AI 教练", matches: ["/agent"] },
-  { href: "/insights", label: "每日阅读", matches: ["/insights"] },
   { href: "/meals", label: "记一餐", matches: ["/meals"] },
   { href: "/calendar", label: "计划", matches: ["/calendar", "/exercise"] },
   { href: "/reports", label: "报告", matches: ["/reports"] },
 ]
 
 const mobileNav = [
-  { href: "/dashboard", label: "今天", icon: House, matches: ["/dashboard"] },
+  { href: "/dashboard", label: "今天", icon: House, matches: ["/dashboard", "/insights"] },
   { href: "/agent", label: "教练", icon: Bot, matches: ["/agent"] },
-  { href: "/insights", label: "阅读", icon: BookOpen, matches: ["/insights"] },
   { href: "/meals", label: "记一餐", icon: Camera, matches: ["/meals"], action: true },
   { href: "/calendar", label: "计划", icon: CalendarDays, matches: ["/calendar", "/exercise"] },
   { href: "/reports", label: "报告", icon: BarChart3, matches: ["/reports"] },
@@ -235,8 +232,8 @@ export function Sidebar() {
         aria-label="移动端主导航"
         className="fixed inset-x-0 bottom-0 z-40 flex h-[calc(4.25rem+env(safe-area-inset-bottom))] border-t border-border/80 bg-white/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur dark:bg-card/98 lg:hidden"
       >
-        <div className="grid min-w-0 flex-1 grid-cols-3">
-          {mobileNav.slice(0, 3).map((item) => {
+        <div className="grid min-w-0 flex-1 grid-cols-2">
+          {mobileNav.slice(0, 2).map((item) => {
             const active = isRouteActive(pathname, item.matches)
             return (
               <Link
@@ -263,7 +260,7 @@ export function Sidebar() {
         </div>
 
         {(() => {
-          const item = mobileNav[3]
+          const item = mobileNav[2]
           const active = isRouteActive(pathname, item.matches)
           return (
             <Link
@@ -289,7 +286,7 @@ export function Sidebar() {
         })()}
 
         <div className="grid min-w-0 flex-1 grid-cols-2">
-          {mobileNav.slice(4).map((item) => {
+          {mobileNav.slice(3).map((item) => {
             const active = isRouteActive(pathname, item.matches)
             return (
               <Link
