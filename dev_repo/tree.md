@@ -63,8 +63,8 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     └── C-28 - 日更文章后台生成边界修正 [in_progress]
         ├── C-28-A1 架构与运行时边界 [completed]
         ├── C-28-S1 持久入队与后台 worker [completed]
-        ├── C-28-S2 阅读流后台状态 [in_progress]
-        └── C-28-S3 云端验收与证据 [pending，return_to=C-27-S3]
+        ├── C-28-S2 阅读流后台状态 [completed]
+        └── C-28-S3 云端验收与证据 [in_progress，return_to=C-27-S3]
 ```
 
 - 当前合同：`C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]`

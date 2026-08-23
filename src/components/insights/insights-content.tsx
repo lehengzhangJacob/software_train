@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { ArrowLeft, Bookmark, Check, EyeOff, ImageIcon, LoaderCircle, RefreshCcw, Sparkles } from "lucide-react"
 import { ArticleVisualBlock } from "@/components/insights/article-visual"
 import type { DailyArticleFeed, ArticleView } from "@/lib/agent/content/repository"
@@ -37,18 +37,27 @@ export function InsightsContent({ initialFeed, username, date }: Props) {
   const [busy, setBusy] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
 
-  async function refresh() {
+  const refresh = useCallback(async (announce = true) => {
     try {
       const response = await fetch(`/api/agent/articles?date=${date}`, { cache: "no-store" })
       const payload = await response.json() as { data?: DailyArticleFeed | null; error?: string | null }
       if (!response.ok) throw new Error(payload.error || "读取文章失败")
       setFeed(payload.data ?? null)
-      if (selected && payload.data) setSelected(payload.data.articles.find((item) => item.articleId === selected.articleId) ?? null)
-      setNotice("阅读流已刷新")
+      setSelected((current) => current && payload.data ? payload.data.articles.find((item) => item.articleId === current.articleId) ?? null : current)
+      if (announce) setNotice("阅读流已刷新")
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "读取文章失败")
     }
-  }
+  }, [date])
+
+  const generationStatus = feed?.status ?? "missing"
+  const generationBusy = generationStatus === "pending" || generationStatus === "generating"
+
+  useEffect(() => {
+    if (!generationBusy) return
+    const timer = window.setInterval(() => { void refresh(false) }, 5_000)
+    return () => window.clearInterval(timer)
+  }, [generationBusy, refresh])
 
   async function generate() {
     setBusy(true)
@@ -56,11 +65,11 @@ export function InsightsContent({ initialFeed, username, date }: Props) {
     try {
       const response = await fetch("/api/agent/articles", { method: "POST" })
       const payload = await response.json() as { data?: DailyArticleFeed | null; error?: string | null }
-      if (!response.ok) throw new Error(payload.error || "生成每日文章失败")
+      if (!response.ok) throw new Error(payload.error || "提交每日文章后台任务失败")
       setFeed(payload.data ?? null)
-      setNotice("今天的阅读已经准备好了")
+      setNotice("已提交后台整理，文章准备好后会自动出现在这里")
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "生成每日文章失败")
+      setNotice(error instanceof Error ? error.message : "提交每日文章后台任务失败")
     } finally {
       setBusy(false)
     }
@@ -132,7 +141,7 @@ export function InsightsContent({ initialFeed, username, date }: Props) {
 
       {notice ? <div role="status" className="rounded-md border border-[var(--brand-mint-deep)]/30 bg-[var(--brand-mint)]/10 px-4 py-3 text-sm text-[var(--brand-mint-deep)]">{notice}</div> : null}
       {!feed || feed.readyCount < 10 ? (
-        <section className="surface-card flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center"><div><h2 className="text-lg font-semibold text-[var(--brand-heading)]">今天的阅读还没准备好</h2><p className="mt-1 text-sm text-muted-foreground">让 Agent 根据你已经记录的内容整理一组文章。</p></div><button type="button" onClick={() => void generate()} disabled={busy} className="inline-flex h-10 items-center gap-2 rounded-md bg-[var(--brand-plum)] px-4 text-sm font-semibold text-white disabled:opacity-60">{busy ? <LoaderCircle className="size-4 animate-spin" /> : <Sparkles className="size-4" />}{busy ? "正在准备" : "生成今天的文章"}</button></section>
+        <section className="surface-card flex flex-col items-start justify-between gap-4 p-6 sm:flex-row sm:items-center"><div><h2 className="text-lg font-semibold text-[var(--brand-heading)]">{generationBusy ? "今天的阅读正在后台整理" : generationStatus === "failed" ? "今天的阅读需要重试" : "今天的阅读还没准备好"}</h2><p className="mt-1 text-sm text-muted-foreground">{generationBusy ? "文章会根据你的记录在后台准备好，完成后会自动刷新。" : generationStatus === "failed" ? "后台任务暂时没有完成，可以重新提交一次。" : "把任务交给后台，稍后回来就能看到为你整理的文章。"}</p></div><button type="button" onClick={() => void generate()} disabled={busy || generationBusy} className="inline-flex h-10 items-center gap-2 rounded-md bg-[var(--brand-plum)] px-4 text-sm font-semibold text-white disabled:opacity-60">{busy || generationBusy ? <LoaderCircle className="size-4 animate-spin" /> : <Sparkles className="size-4" />}{busy ? "正在提交" : generationBusy ? "后台整理中" : generationStatus === "failed" ? "重新提交后台生成" : "交给后台生成"}</button></section>
       ) : null}
 
       {feed && feed.articles.length > 0 ? <section className="grid gap-5 md:grid-cols-2">{feed.articles.map((article) => <article key={article.articleId} className="surface-card overflow-hidden"><button type="button" onClick={() => void openArticle(article)} className="block w-full text-left"><ArticleCover article={article} compact /><div className="space-y-2 p-5"><div className="flex items-center justify-between gap-3"><p className="page-eyebrow">{String(article.slot).padStart(2, "0")} · {article.topic}</p>{article.savedAt ? <Bookmark className="size-4 fill-[var(--brand-mint-deep)] text-[var(--brand-mint-deep)]" /> : null}</div><h2 className="text-xl font-semibold leading-tight text-[var(--brand-heading)]">{article.title}</h2><p className="line-clamp-3 text-sm leading-6 text-muted-foreground">{article.summary}</p></div></button></article>)}</section> : null}
