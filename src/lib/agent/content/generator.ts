@@ -94,6 +94,48 @@ async function prepareBatch(userId: number, contentDate: string) {
   return { batch, shouldGenerate: true }
 }
 
+export async function queueDailyArticleBatch(userId: number, contentDate = getContentDate()): Promise<DailyArticleFeed> {
+  const existing = await findBatch(userId, contentDate)
+  if (existing?.status === "ready" && existing.articles.length === DAILY_ARTICLE_COUNT) {
+    try {
+      return (await getDailyArticleFeed(userId, contentDate)) as DailyArticleFeed
+    } catch {
+      await prisma.agentDailyArticleBatch.update({
+        where: { batchId: existing.batchId },
+        data: { status: "failed", generationError: "invalid_content", startedAt: null },
+      })
+    }
+  }
+  if (existing && isFreshlyGenerating(existing)) {
+    return (await getDailyArticleFeed(userId, contentDate)) as DailyArticleFeed
+  }
+
+  const batch = await prisma.agentDailyArticleBatch.upsert({
+    where: { uq_daily_article_batch_user_date: { userId, contentDate } },
+    create: {
+      userId,
+      contentDate,
+      status: "pending",
+      requestedCount: DAILY_ARTICLE_COUNT,
+      readyCount: 0,
+      imagePendingCount: 0,
+      startedAt: null,
+      publishedAt: null,
+    },
+    update: {
+      status: "pending",
+      generationError: null,
+      readyCount: 0,
+      imagePendingCount: 0,
+      startedAt: null,
+      publishedAt: null,
+    },
+  })
+  const feed = await getDailyArticleFeed(userId, contentDate)
+  if (!feed || feed.batchId !== batch.batchId) throw new Error("daily_article_queue_missing")
+  return feed
+}
+
 async function persistArticles(
   batchId: number,
   userId: number,

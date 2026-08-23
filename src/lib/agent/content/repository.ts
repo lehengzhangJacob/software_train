@@ -99,6 +99,7 @@ export async function getDailyArticleFeed(userId: number, contentDate: string): 
   const unreadCount = await prisma.agentDailyArticle.count({
     where: { batchId: batch.batchId, status: "ready", hiddenAt: null, readAt: null },
   })
+  const articles = batch.status === "ready" ? batch.articles : []
   return {
     date: batch.contentDate,
     batchId: batch.batchId,
@@ -106,9 +107,9 @@ export async function getDailyArticleFeed(userId: number, contentDate: string): 
     sourceKind: batch.sourceKind,
     readyCount: batch.readyCount,
     imagePendingCount: batch.imagePendingCount,
-    totalCount: batch.articles.length,
+    totalCount: articles.length,
     unreadCount,
-    articles: batch.articles.map(toArticleView),
+    articles: articles.map(toArticleView),
   }
 }
 
