@@ -1483,5 +1483,17 @@
       "path": "dev_repo/evidence/C-28/A1/architecture-verification.json",
       "description": "C-28-A1 架构与 ER JSON 解析、运行边界和返回父合同路径已归档"
     }
+  ],
+  "C-28-S3": [
+    {
+      "type": "cloud_acceptance",
+      "path": "dev_repo/evidence/C-28/S3/cloud-background-article-verification.json, dev_repo/evidence/C-28/S3/cloud-batch-status.json",
+      "description": "同一云端部署与 Team A 账号先观察到后台 generating，随后阅读流自动显示 10/10 ready；五个 active 账号均为 ready=10，service/timer active，控制台无 warning/error"
+    },
+    {
+      "type": "visual_gap",
+      "path": "dev_repo/evidence/C-28/S3/screenshot-gap.txt",
+      "description": "In-app Browser screenshot API 在既有/新建标签页与连接重置后均不可用；未声称 PNG，DOM/状态证据已保存"
+    }
   ]
 }

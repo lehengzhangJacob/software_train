@@ -530,11 +530,11 @@
       "contract_id": "C-28",
       "parent_contract_id": "C-27",
       "root_campaign": "nutrition-agent",
-      "status": "in_progress",
+      "status": "completed",
       "summary": "把日更文章从同步生成改为可恢复的后台任务",
       "goal": "认证 POST 只持久入队并返回 202，由长驻服务后台生成正文与图片，阅读流观察状态；不新增数据表、不迁移旧文章。",
-      "current_slice": "C-28-S3",
-      "completed_slices": ["C-28-A1", "C-28-S1", "C-28-S2"],
+      "current_slice": null,
+      "completed_slices": ["C-28-A1", "C-28-S1", "C-28-S2", "C-28-S3"],
       "deferred_slices": [],
       "return_to": "C-27-S3",
       "architecture_amendment": "C-28-A1 / ADR-0018",
@@ -542,7 +542,7 @@
       "migration_required": false,
       "backfill_required": false,
       "issue_state": "Issue #10 remains open until external retest; Issues #3/#4/#5 remain open for external retest.",
-      "latest_verification": "C-28-S2 passed: article background contract tests (5), lint and typecheck; insights shows queued/background/failed states and polls only while pending or generating."
+      "latest_verification": "C-28-S3 passed: deploy 20260823111748; authenticated Browser observed 202 enqueue, generating, then 10/10 ready; five account batches ready=10; service/timer active; DOM and console clean; screenshot binary unavailable and not claimed."
     }
   }
 }

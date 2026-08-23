@@ -1,0 +1,17 @@
+{
+  "deployment": "20260823111748",
+  "service": "foodtracker.service active",
+  "timer": {
+    "enabled": "enabled",
+    "active": "active"
+  },
+  "rows": [
+    {"userId": 1, "contentDate": "2026-08-23", "status": "ready", "readyCount": 10, "imagePendingCount": 0, "generationError": "safe_fallback"},
+    {"userId": 2, "contentDate": "2026-08-23", "status": "ready", "readyCount": 10, "imagePendingCount": 0, "generationError": "safe_fallback"},
+    {"userId": 3, "contentDate": "2026-08-23", "status": "ready", "readyCount": 10, "imagePendingCount": 0, "generationError": "safe_fallback"},
+    {"userId": 4, "contentDate": "2026-08-23", "status": "ready", "readyCount": 10, "imagePendingCount": 0, "generationError": "safe_fallback"},
+    {"userId": 5, "contentDate": "2026-08-23", "status": "ready", "readyCount": 10, "imagePendingCount": 0, "generationError": "safe_fallback"}
+  ],
+  "query": "select user_id, content_date, status, ready_count, image_pending_count, generation_error from agent_daily_article_batches where content_date = 2026-08-23",
+  "note": "Team A user_id=2 was observed as generating after the 202 response and later reached ready=10; all five active accounts are now ready."
+}
