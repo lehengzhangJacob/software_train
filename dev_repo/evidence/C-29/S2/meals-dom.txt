@@ -1,0 +1,50 @@
+- link "跳至主要内容":
+  - /url: "#main-content"
+- banner:
+  - link "记一餐":
+    - /url: /dashboard
+    - generic: 记一餐
+  - button "打开个人菜单": F
+- navigation "移动端主导航":
+  - link "今天":
+    - /url: /dashboard
+    - generic: 今天
+  - link "教练":
+    - /url: /agent
+    - generic: 教练
+  - link "阅读":
+    - /url: /insights
+    - generic: 阅读
+  - link "记一餐":
+    - /url: /meals
+    - generic: 记一餐
+  - link "计划":
+    - /url: /calendar
+    - generic: 计划
+  - link "报告":
+    - /url: /reports
+    - generic: 报告
+- main:
+  - paragraph: Photo log
+  - heading "拍下这一餐，再认真确认。" [level=1]
+  - paragraph: AI 会拆分多项食物；保存前由你决定名称、餐别、份量和营养数值。
+  - generic: 2026-08-23 · 图片不会写入数据库
+  - text: 拍照识别与审核
+  - img "三文鱼、牛油果和蔬菜组成的健康餐"
+  - paragraph: 让 AI 先看一眼，再由你确认。
+  - paragraph: 支持 JPEG、PNG、WebP，最大 10MB；原图只用于本次识别。
+  - button "选择图片":
+    - text: 选择图片
+  - button "立即拍照":
+    - text: 立即拍照
+  - text: 图片不会随记录保存
+  - text: 最多审核 10 项
+  - button "手动录入":
+    - text: 手动录入
+  - paragraph: Today's log
+  - generic: 今日记录
+  - generic: 0 项
+  - paragraph: 还没有保存今天的第一餐
+  - paragraph: 拍照识别或手动录入后，食物会按餐别整理在这里。
+- region "Notifications alt+T"
+- alert

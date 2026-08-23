@@ -1,0 +1,122 @@
+- link "跳至主要内容":
+  - /url: "#main-content"
+- banner:
+  - link "运动建议":
+    - /url: /dashboard
+    - generic: 运动建议
+  - button "打开个人菜单": F
+- navigation "移动端主导航":
+  - link "今天":
+    - /url: /dashboard
+    - generic: 今天
+  - link "教练":
+    - /url: /agent
+    - generic: 教练
+  - link "阅读":
+    - /url: /insights
+    - generic: 阅读
+  - link "记一餐":
+    - /url: /meals
+    - generic: 记一餐
+  - link "计划":
+    - /url: /calendar
+    - generic: 计划
+  - link "报告":
+    - /url: /reports
+    - generic: 报告
+- main:
+  - navigation "计划类型":
+    - link "饮食日历" [active]:
+      - /url: /calendar
+      - text: 饮食日历
+    - link "运动建议":
+      - /url: /exercise
+      - text: 运动建议
+  - region "今天的训练":
+    - paragraph: Agent movement plan
+    - heading "今天的训练" [level=2]
+    - paragraph: 改善活动量
+    - link "让教练调整":
+      - /url: /agent?mode=exercise-plan&exercisePlanId=13&returnTo=%2Fexercise
+      - text: 让教练调整
+    - generic: 20 分钟
+    - generic: 强度 轻松
+    - generic: 第 1 版
+    - status:
+      - text: 计划已完成
+    - list "训练步骤":
+      - checkbox "完成 关节环绕与动态热身" [checked]
+      - generic: 热身
+      - generic: 3 分钟
+      - generic: 关节环绕与动态热身
+      - generic: 缓慢转动颈、肩、髋、膝、踝关节，配合深呼吸，逐步提高心率
+      - checkbox "完成 全身动态拉伸" [checked]
+      - generic: 活动度
+      - generic: 5 分钟
+      - generic: 全身动态拉伸
+      - generic: 进行猫牛式、世界最佳拉伸、侧向伸展等动作，每个动作保持30秒
+      - checkbox "完成 核心力量训练" [checked]
+      - generic: 力量
+      - generic: 10 分钟
+      - generic: 核心力量训练
+      - generic: 包括平板支撑（30秒×2组）、卷腹（15次×2组）、鸟狗式（每侧10次×2组），保持核心收紧
+      - checkbox "完成 静态放松拉伸" [checked]
+      - generic: 放松
+      - generic: 2 分钟
+      - generic: 静态放松拉伸
+      - generic: 针对腹部、下背部、髋屈肌进行静态拉伸，缓慢深呼吸
+    - status: 今天的训练已经全部打卡，做得很好。
+    - paragraph: 出现疼痛、头晕或呼吸异常立即停止 · 无需器械
+  - img "在健身房进行下肢拉伸的训练者"
+  - paragraph: Today's movement
+  - paragraph: 动一动，身体会记得。
+  - paragraph: 不需要追求极限，完成今天适合你的那一小步。
+  - paragraph: 为你安排
+  - heading "今天适合轻一点。" [level=1]
+  - paragraph: 摄入仍在目标内，今天不必补偿，保持适度活动就很好。
+  - text: 今日摄入
+  - strong: "0"
+  - text: 目标
+  - strong: 1,755
+  - text: 摄入状态
+  - strong: 余 1,755
+  - paragraph: Movement options
+  - heading "选择今天做得到的" [level=2]
+  - article:
+    - heading "步行（慢速，4km/h） · 30 分钟" [level=3]
+    - generic: 有氧
+    - text: 30 分钟
+    - text: 约 73 千卡
+    - paragraph: 散步式步行，适合饭后消食
+    - button "加入今天"
+  - article:
+    - heading "遛狗 · 30 分钟" [level=3]
+    - generic: 有氧
+    - text: 30 分钟
+    - text: 约 83 千卡
+    - paragraph: 散步遛狗
+    - button "加入今天"
+  - article:
+    - heading "步行（中速，5.6km/h） · 30 分钟" [level=3]
+    - generic: 有氧
+    - text: 30 分钟
+    - text: 约 101 千卡
+    - paragraph: 正常步行速度
+    - button "加入今天"
+  - article:
+    - heading "骑行（休闲，<16km/h） · 30 分钟" [level=3]
+    - generic: 有氧
+    - text: 30 分钟
+    - text: 约 128 千卡
+    - paragraph: 休闲骑行
+    - button "加入今天"
+  - article:
+    - heading "乒乓球 · 30 分钟" [level=3]
+    - generic: 有氧
+    - text: 30 分钟
+    - text: 约 128 千卡
+    - paragraph: 休闲对打
+    - button "加入今天"
+  - paragraph: 活动建议用于支持日常体能与习惯，不需要也不建议用运动抵消饮食。以上内容不是医疗建议；如有不适或基础疾病，请咨询专业人士。
+- region "Notifications alt+T"
+- alert

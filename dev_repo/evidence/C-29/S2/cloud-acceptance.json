@@ -1,0 +1,52 @@
+{
+  "deploy": "20260823134105",
+  "screenshots": [
+    "exercise-375.png",
+    "exercise-mobile.png",
+    "calendar-mobile.png",
+    "meals-mobile.png"
+  ],
+  "narrowExercise": {
+    "actionCenter": 180,
+    "clientWidth": 360,
+    "innerWidth": 375,
+    "navCenter": 180,
+    "navLinks": [
+      "今天",
+      "教练",
+      "阅读",
+      "记一餐",
+      "计划",
+      "报告"
+    ],
+    "path": "/exercise",
+    "routeAnimation": "app-route-enter",
+    "scrollWidth": 360
+  },
+  "calendar": {
+    "animationName": "app-route-enter",
+    "clientWidth": 470,
+    "mobileLinks": [
+      "今天",
+      "教练",
+      "阅读",
+      "记一餐",
+      "计划",
+      "报告"
+    ],
+    "pageClass": "app-page app-route-transition",
+    "path": "/calendar",
+    "scrollWidth": 470
+  },
+  "meals": {
+    "actionCenter": 235,
+    "actionText": "记一餐",
+    "clientWidth": 470,
+    "navCenter": 235,
+    "path": "/meals",
+    "routeAnimation": "app-route-enter",
+    "scrollWidth": 470
+  },
+  "consoleIssues": [],
+  "note": "The Browser viewport capability produced a true 375 CSS px tab for exercise (clientWidth 360 after scrollbar); subsequent direct navigations in the agent-created narrow tab were blocked by the client. Calendar and meals were verified on the claimed authenticated tab at clientWidth 470."
+}
