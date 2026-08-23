@@ -520,7 +520,7 @@ export function CalendarContent({ today, availableDates, initialMeals }: Calenda
             )}
 
             <Link
-              href="/meals"
+              href={`/meals?date=${encodeURIComponent(currentDate)}`}
               className="mt-4 flex h-10 w-full items-center justify-center gap-2 rounded-md bg-[var(--brand-plum)] text-sm font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint)]"
             >
               <Plus className="size-4" />

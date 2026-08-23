@@ -407,8 +407,8 @@
       ],
       "deferred_slices": [],
       "return_to": "web_completion_audit",
-      "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5 and #10 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-26-S2 complete: cloud Issue #10 nutrition-boundary acceptance passed on deploy 20260822202323; #10 remains open for external retest alongside #3/#4/#5, while #6/#7/#8 remain closed after confirmation."
+      "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5, #9 and #10 remain open until external testers confirm non-reproduction.",
+      "latest_verification": "C-30-S2 complete: cloud Issue #9 historical meal backfill acceptance passed on deploy 20260823153431; #9 remains open for external retest alongside #3/#4/#5/#10, while #6/#7/#8 remain closed after confirmation."
     },
     "C-21-UI1": {
       "contract_id": "C-21-UI1",
@@ -561,6 +561,24 @@
       "backfill_required": false,
       "issue_state": "Issues #3/#4/#5/#10 remain open for external retest; no issue was closed by this contract.",
       "latest_verification": "UI deploy 20260823134105; Browser cloud evidence shows a centered meal action at 375px, app-route-enter on /calendar and /meals, clean console, and no horizontal overflow. Team A browser API seed verified 56 meals across 2026-08-10..2026-08-23, 14 activity days, 7 exercise suggestions, 3 memories; B/C marker reads were zero; session restored to Team A."
+    },
+    "C-30": {
+      "contract_id": "C-30",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "修复 Issue #9 计划页补记日期失效",
+      "goal": "让日历选中的历史日期在记一餐页面展示并保存到同一天，同时保留当天默认值和无效日期回退行为。",
+      "current_slice": null,
+      "completed_slices": ["C-30-S1", "C-30-S2"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "none; existing calendar-to-meals route boundary",
+      "data_model_delta": "none; MealRecord recordDate flow only",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "Issue #9 remains open for external retest; no issue was closed by this contract.",
+      "latest_verification": "C-30-S2 passed: deploy 20260823153431; Team A historical route `/meals?date=2026-08-22` displayed the selected date, a temporary manual record appeared under that date and was deleted, the list returned to 5 items, console errors were empty, and screenshot PNG evidence was captured. AI batch write path is covered by the source contract test; no provider-costing AI cloud write was claimed."
     }
   }
 }

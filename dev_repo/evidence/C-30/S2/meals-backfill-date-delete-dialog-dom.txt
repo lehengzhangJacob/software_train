@@ -1,0 +1,88 @@
+- link "跳至主要内容":
+  - /url: "#main-content"
+- banner:
+  - link "营养 Agent":
+    - /url: /dashboard
+    - generic: 营养 Agent
+  - navigation "主导航":
+    - link "今天":
+      - /url: /dashboard
+    - link "AI 教练":
+      - /url: /agent
+    - link "每日阅读":
+      - /url: /insights
+    - link "记一餐":
+      - /url: /meals
+      - text: 记一餐
+    - link "计划":
+      - /url: /calendar
+    - link "报告":
+      - /url: /reports
+  - text: 私密同步
+  - button "F FoodMoment Team A 打开个人菜单":
+    - generic: F
+    - generic: FoodMoment Team A
+    - generic: 打开个人菜单
+- main:
+  - paragraph: Photo log
+  - heading "拍下这一餐，再认真确认。" [level=1]
+  - paragraph: AI 会拆分多项食物；保存前由你决定名称、餐别、份量和营养数值。
+  - generic: 2026-08-22 · 图片不会写入数据库
+  - text: 拍照识别与审核
+  - img "三文鱼、牛油果和蔬菜组成的健康餐"
+  - paragraph: 让 AI 先看一眼，再由你确认。
+  - paragraph: 支持 JPEG、PNG、WebP，最大 10MB；原图只用于本次识别。
+  - button "选择图片":
+    - text: 选择图片
+  - button "立即拍照":
+    - text: 立即拍照
+  - text: 图片不会随记录保存
+  - text: 最多审核 10 项
+  - button "手动录入":
+    - text: 手动录入
+  - paragraph: Daily log
+  - generic: 当天记录
+  - generic: 5 项
+  - heading "早餐" [level=4]
+  - paragraph: 咖喱鸡腿海鲜面
+  - generic: 950 千卡
+  - text: "50.0"
+  - text: "40.0"
+  - text: "85.0"
+  - generic: 1大碗（约900克，含汤）
+  - button "删除 咖喱鸡腿海鲜面":
+  - paragraph: 燕麦酸奶蓝莓碗
+  - generic: 390 千卡
+  - text: "20.0"
+  - text: "12.0"
+  - text: "52.0"
+  - generic: 燕麦 50g + 无糖酸奶 200g + 蓝莓 80g
+  - button "删除 燕麦酸奶蓝莓碗":
+  - heading "午餐" [level=4]
+  - paragraph: 香煎鸡胸肉糙米沙拉
+  - generic: 640 千卡
+  - text: "46.0"
+  - text: "18.0"
+  - text: "64.0"
+  - generic: 鸡胸肉 150g + 糙米 120g + 时蔬
+  - button "删除 香煎鸡胸肉糙米沙拉":
+  - heading "晚餐" [level=4]
+  - paragraph: 清蒸鳕鱼配西兰花
+  - generic: 520 千卡
+  - text: "43.0"
+  - text: "14.0"
+  - text: "48.0"
+  - generic: 鳕鱼 160g + 西兰花 200g + 小土豆
+  - button "删除 清蒸鳕鱼配西兰花":
+  - heading "加餐" [level=4]
+  - paragraph: 苹果与无盐杏仁
+  - generic: 210 千卡
+  - text: "5.0"
+  - text: "12.0"
+  - text: "24.0"
+  - generic: 苹果 1 个 + 杏仁 15g
+  - button "删除 苹果与无盐杏仁":
+- region "Notifications alt+T":
+  - list:
+    - generic: 已删除记录
+- alert
