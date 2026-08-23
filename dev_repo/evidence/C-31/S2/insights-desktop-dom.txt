@@ -1,0 +1,171 @@
+- link "跳至主要内容":
+  - /url: "#main-content"
+- banner:
+  - link "营养 Agent":
+    - /url: /dashboard
+    - generic: 营养 Agent
+  - navigation "主导航":
+    - link "今天":
+      - /url: /dashboard
+      - text: 今天
+    - link "AI 教练":
+      - /url: /agent
+    - link "记一餐":
+      - /url: /meals
+    - link "计划":
+      - /url: /calendar
+    - link "报告":
+      - /url: /reports
+  - text: 私密同步
+  - button "F FoodMoment Team A 打开个人菜单":
+    - generic: F
+    - generic: FoodMoment Team A
+    - generic: 打开个人菜单
+- main:
+  - navigation "今天二级导航":
+    - link "今日概览":
+      - /url: /dashboard
+      - text: 今日概览
+    - link "每日阅读":
+      - /url: /insights
+      - text: 每日阅读
+  - paragraph:
+    - text: Personal reading
+  - heading "FoodMoment Team A，今天有 10 篇为你准备的文章。" [level=1]
+  - paragraph: 从你已经留下的饮食、活动和计划出发，给你一点可以马上用上的新视角。
+  - generic: 2026 年 8 月 23 日
+  - generic: 9 篇未读
+  - paragraph: 今日内容
+  - paragraph: 10/ 10
+  - paragraph: 每篇文章都带有配图或结构化视觉。
+  - article:
+    - button "今日视觉 每餐的分配 早餐 午餐 晚餐 把关注点放在整天的分配，而不是某一餐的得失。 01 · 蛋白质节奏 把蛋白质分到每一餐 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "每餐的分配" [level=3]
+      - generic: 早餐
+      - generic: 午餐
+      - generic: 晚餐
+      - paragraph: 把关注点放在整天的分配，而不是某一餐的得失。
+      - paragraph: 01 · 蛋白质节奏
+      - heading "把蛋白质分到每一餐" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - article:
+    - button "今日视觉 今天的节奏 100% 热量 100 活动 0 余量 95 记录是观察自己的工具，不是给自己打分。 02 · 热量安排 今天的热量，留一点给晚上 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "今天的节奏" [level=3]
+      - generic: 100%
+      - paragraph: 热量 100
+      - paragraph: 活动 0
+      - paragraph: 余量 95
+      - paragraph: 记录是观察自己的工具，不是给自己打分。
+      - paragraph: 02 · 热量安排
+      - heading "今天的热量，留一点给晚上" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - article:
+    - button "今日视觉 三个小步骤 1 看见 2 安排 3 坚持 让下一步足够小，才更容易重复。 03 · 晚餐搭配 晚餐用一盘饭找回平衡 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "三个小步骤" [level=3]
+      - generic: "1"
+      - paragraph: 看见
+      - generic: "2"
+      - paragraph: 安排
+      - generic: "3"
+      - paragraph: 坚持
+      - paragraph: 让下一步足够小，才更容易重复。
+      - paragraph: 03 · 晚餐搭配
+      - heading "晚餐用一盘饭找回平衡" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - article:
+    - button "今日视觉 每餐的分配 早餐 午餐 晚餐 把关注点放在整天的分配，而不是某一餐的得失。 04 · 外食选择 外食时先看这三个信号 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "每餐的分配" [level=3]
+      - generic: 早餐
+      - generic: 午餐
+      - generic: 晚餐
+      - paragraph: 把关注点放在整天的分配，而不是某一餐的得失。
+      - paragraph: 04 · 外食选择
+      - heading "外食时先看这三个信号" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - article:
+    - button "今日视觉 今天的节奏 100% 热量 100 活动 0 余量 80 记录是观察自己的工具，不是给自己打分。 05 · 蔬菜与纤维 让蔬菜成为餐盘的第一眼 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "今天的节奏" [level=3]
+      - generic: 100%
+      - paragraph: 热量 100
+      - paragraph: 活动 0
+      - paragraph: 余量 80
+      - paragraph: 记录是观察自己的工具，不是给自己打分。
+      - paragraph: 05 · 蔬菜与纤维
+      - heading "让蔬菜成为餐盘的第一眼" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - article:
+    - button "今日视觉 三个小步骤 1 看见 2 安排 3 坚持 让下一步足够小，才更容易重复。 06 · 饮水习惯 把喝水变成餐间的小动作 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "三个小步骤" [level=3]
+      - generic: "1"
+      - paragraph: 看见
+      - generic: "2"
+      - paragraph: 安排
+      - generic: "3"
+      - paragraph: 坚持
+      - paragraph: 让下一步足够小，才更容易重复。
+      - paragraph: 06 · 饮水习惯
+      - heading "把喝水变成餐间的小动作" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - article:
+    - button "今日视觉 每餐的分配 早餐 午餐 晚餐 把关注点放在整天的分配，而不是某一餐的得失。 07 · 日常活动 步数之外，给身体一点连续活动 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "每餐的分配" [level=3]
+      - generic: 早餐
+      - generic: 午餐
+      - generic: 晚餐
+      - paragraph: 把关注点放在整天的分配，而不是某一餐的得失。
+      - paragraph: 07 · 日常活动
+      - heading "步数之外，给身体一点连续活动" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - article:
+    - button "今日视觉 三个小步骤 1 看见 2 安排 3 坚持 让下一步足够小，才更容易重复。 08 · 运动恢复 运动后的恢复，不只看汗量 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "三个小步骤" [level=3]
+      - generic: "1"
+      - paragraph: 看见
+      - generic: "2"
+      - paragraph: 安排
+      - generic: "3"
+      - paragraph: 坚持
+      - paragraph: 让下一步足够小，才更容易重复。
+      - paragraph: 08 · 运动恢复
+      - heading "运动后的恢复，不只看汗量" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - article:
+    - button "今日视觉 今天的节奏 100% 热量 100 活动 0 余量 60 记录是观察自己的工具，不是给自己打分。 09 · 一周复盘 从一周记录里找到一个规律 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "今天的节奏" [level=3]
+      - generic: 100%
+      - paragraph: 热量 100
+      - paragraph: 活动 0
+      - paragraph: 余量 60
+      - paragraph: 记录是观察自己的工具，不是给自己打分。
+      - paragraph: 09 · 一周复盘
+      - heading "从一周记录里找到一个规律" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - article:
+    - button "今日视觉 三个小步骤 1 看见 2 安排 3 坚持 让下一步足够小，才更容易重复。 10 · 明日行动 明天只做一个更容易的选择 FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。":
+      - paragraph: 今日视觉
+      - heading "三个小步骤" [level=3]
+      - generic: "1"
+      - paragraph: 看见
+      - generic: "2"
+      - paragraph: 安排
+      - generic: "3"
+      - paragraph: 坚持
+      - paragraph: 让下一步足够小，才更容易重复。
+      - paragraph: 10 · 明日行动
+      - heading "明天只做一个更容易的选择" [level=2]
+      - paragraph: FoodMoment Team A，从咖喱鸡腿海鲜面和最近的记录出发，今天给你一个轻量、可执行的调整方向。
+  - link "想调整计划？去找 AI 教练":
+    - /url: /agent
+  - button "刷新阅读流":
+    - text: 刷新阅读流
+- region "Notifications alt+T"
+- alert

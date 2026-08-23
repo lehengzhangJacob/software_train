@@ -1,0 +1,138 @@
+- link "跳至主要内容":
+  - /url: "#main-content"
+- banner:
+  - link "营养 Agent":
+    - /url: /dashboard
+    - generic: 营养 Agent
+  - navigation "主导航":
+    - link "今天":
+      - /url: /dashboard
+      - text: 今天
+    - link "AI 教练":
+      - /url: /agent
+    - link "记一餐":
+      - /url: /meals
+    - link "计划":
+      - /url: /calendar
+    - link "报告":
+      - /url: /reports
+  - text: 私密同步
+  - button "F FoodMoment Team A 打开个人菜单":
+    - generic: F
+    - generic: FoodMoment Team A
+    - generic: 打开个人菜单
+- main:
+  - navigation "今天二级导航":
+    - link "今日概览":
+      - /url: /dashboard
+      - text: 今日概览
+    - link "每日阅读":
+      - /url: /insights
+      - text: 每日阅读
+  - text: Today's rhythm
+  - heading "今天，照顾好 你的晚餐。" [level=1]:
+    - text: 今天，照顾好
+    - text: 你的晚餐。
+  - paragraph: FoodMoment Team A，今天已经记录 4 项
+  - strong: "0"
+  - generic: 千卡可安排
+  - link "记录这一餐":
+    - /url: /meals
+    - text: 记录这一餐
+  - img "包含三文鱼、牛油果和蔬菜的健康餐"
+  - paragraph: 下一步
+  - paragraph: 给晚餐留一点余量
+  - paragraph: 当前完成 100%，优先补足蛋白质和蔬菜。
+  - paragraph: Daily reading
+  - heading "今天的专属阅读" [level=2]
+  - paragraph: Agent 根据你的记录生成 10 篇短文，边读边把建议落到今天的饮食上。
+  - paragraph: 9篇未读
+  - paragraph: 10/10 已准备
+  - link "打开阅读":
+    - /url: /insights
+    - text: 打开阅读
+  - paragraph: Today's meals
+  - heading "今天吃了什么" [level=2]
+  - link "添加记录":
+    - /url: /meals
+    - text: 添加记录
+  - generic: 早
+  - paragraph: 早餐
+  - paragraph: 1 项食物 · 430 千卡
+  - text: "22.0"
+  - text: "22.0"
+  - text: "38.0"
+  - generic: 午
+  - paragraph: 午餐
+  - paragraph: 1 项食物 · 710 千卡
+  - text: "39.0"
+  - text: "21.0"
+  - text: "83.0"
+  - generic: 晚
+  - paragraph: 晚餐
+  - paragraph: 1 项食物 · 480 千卡
+  - text: "38.0"
+  - text: "16.0"
+  - text: "42.0"
+  - generic: 加
+  - paragraph: 加餐
+  - paragraph: 1 项食物 · 160 千卡
+  - text: "15.0"
+  - text: "4.0"
+  - text: "18.0"
+  - complementary:
+    - paragraph: Daily targets
+    - heading "今天的身体账本" [level=2]
+    - generic: 热量
+    - generic: 1,780 千卡/ 1,755 千卡
+    - progressbar: x
+    - generic: 蛋白质
+    - generic: 114.0 克/ 60.0 克
+    - progressbar: x
+    - generic: 脂肪
+    - generic: 63.0 克/ 50.0 克
+    - progressbar: x
+    - generic: 碳水
+    - generic: 181.0 克/ 220.2 克
+    - progressbar: x
+  - paragraph: Macro balance
+  - heading "宏量营养分布" [level=2]
+  - img "宏量营养素总计 1,747 千卡":
+    - 'generic "蛋白质: 114.0 克，占 26%"'
+    - 'generic "脂肪: 63.0 克，占 32%"'
+    - 'generic "碳水: 181.0 克，占 41%"'
+    - generic: 1,747
+    - generic: 千卡
+  - generic: 蛋白质
+  - generic: 114.0g
+  - generic: (26%)
+  - generic: 脂肪
+  - generic: 63.0g
+  - generic: (32%)
+  - generic: 碳水
+  - generic: 181.0g
+  - generic: (41%)
+  - paragraph: Seven days
+  - heading "最近的节奏" [level=2]
+  - generic: 目标 1,755 千卡
+  - img "近 7 天热量摄入趋势":
+    - generic: 5,000
+    - generic: 2,500
+    - generic: "0"
+    - generic: 目标
+    - 'generic "2026-08-17: 1,875 千卡"'
+    - 'generic "2026-08-18: 1,760 千卡"'
+    - 'generic "2026-08-19: 1,780 千卡"'
+    - 'generic "2026-08-20: 2,260 千卡"'
+    - 'generic "2026-08-21: 4,480 千卡"'
+    - 'generic "2026-08-22: 2,710 千卡"'
+    - 'generic "2026-08-23: 1,780 千卡"'
+    - generic: 08-17
+    - generic: 08-18
+    - generic: 08-19
+    - generic: 08-20
+    - generic: 08-21
+    - generic: 08-22
+    - generic: 08-23
+- region "Notifications alt+T"
+- alert

@@ -1,0 +1,138 @@
+- link "跳至主要内容":
+  - /url: "#main-content"
+- banner:
+  - link "营养 Agent":
+    - /url: /dashboard
+    - generic: 营养 Agent
+  - navigation "主导航":
+    - link "今天":
+      - /url: /dashboard
+    - link "AI 教练":
+      - /url: /agent
+    - link "记一餐":
+      - /url: /meals
+    - link "计划":
+      - /url: /calendar
+      - text: 计划
+    - link "报告":
+      - /url: /reports
+  - text: 私密同步
+  - button "F FoodMoment Team A 打开个人菜单":
+    - generic: F
+    - generic: FoodMoment Team A
+    - generic: 打开个人菜单
+- main:
+  - paragraph: Your rhythm
+  - heading "这个月，你在认真生活。" [level=1]
+  - paragraph: 记录不是负担，它只是帮你看见自己的节奏。
+  - navigation "计划类型":
+    - link "饮食日历":
+      - /url: /calendar
+      - text: 饮食日历
+    - link "运动建议":
+      - /url: /exercise
+      - text: 运动建议
+  - text: 2026-08
+  - heading "认真生活的第 14 天" [level=2]
+  - paragraph: 每一次记录都在帮你看见更稳定的节奏。
+  - strong: 61%
+  - paragraph: 本月记录率
+  - paragraph: Monthly view
+  - heading "2026 年 8 月" [level=2]
+  - button "查看上个月":
+  - button "查看下个月" [disabled]:
+  - generic: 一
+  - generic: 二
+  - generic: 三
+  - generic: 四
+  - generic: 五
+  - generic: 六
+  - generic: 日
+  - button "查看 2026-07-27": "27"
+  - button "查看 2026-07-28": "28"
+  - button "查看 2026-07-29": "29"
+  - button "查看 2026-07-30": "30"
+  - button "查看 2026-07-31": "31"
+  - button "查看 2026-08-01": "1"
+  - button "查看 2026-08-02": "2"
+  - button "查看 2026-08-03": "3"
+  - button "查看 2026-08-04": "4"
+  - button "查看 2026-08-05": "5"
+  - button "查看 2026-08-06": "6"
+  - button "查看 2026-08-07": "7"
+  - button "查看 2026-08-08": "8"
+  - button "查看 2026-08-09": "9"
+  - button "查看 2026-08-10": "10"
+  - button "查看 2026-08-11": "11"
+  - button "查看 2026-08-12": "12"
+  - button "查看 2026-08-13": "13"
+  - button "查看 2026-08-14": "14"
+  - button "查看 2026-08-15": "15"
+  - button "查看 2026-08-16": "16"
+  - button "查看 2026-08-17": "17"
+  - button "查看 2026-08-18": "18"
+  - button "查看 2026-08-19": "19"
+  - button "查看 2026-08-20": "20"
+  - button "查看 2026-08-21": "21"
+  - button "查看 2026-08-22": "22"
+  - button "查看 2026-08-23" [pressed]: "23"
+  - button "查看 2026-08-24" [disabled]: "24"
+  - button "查看 2026-08-25" [disabled]: "25"
+  - button "查看 2026-08-26" [disabled]: "26"
+  - button "查看 2026-08-27" [disabled]: "27"
+  - button "查看 2026-08-28" [disabled]: "28"
+  - button "查看 2026-08-29" [disabled]: "29"
+  - button "查看 2026-08-30" [disabled]: "30"
+  - button "查看 2026-08-31" [disabled]: "31"
+  - button "查看 2026-09-01" [disabled]: "1"
+  - button "查看 2026-09-02" [disabled]: "2"
+  - button "查看 2026-09-03" [disabled]: "3"
+  - button "查看 2026-09-04" [disabled]: "4"
+  - button "查看 2026-09-05" [disabled]: "5"
+  - button "查看 2026-09-06" [disabled]: "6"
+  - complementary:
+    - img "健康餐食"
+    - button "查看前一天":
+    - paragraph: 2026-08-23
+    - paragraph: 今天 · 4 项食物
+    - button "查看后一天" [disabled]:
+    - paragraph: Daily detail
+    - heading "当天吃了什么" [level=3]
+    - generic: 1,780 千卡
+    - generic: 早餐
+    - paragraph: 全麦吐司鸡蛋牛油果
+    - generic: 430 千卡
+    - text: "22.0"
+    - text: "22.0"
+    - text: "38.0"
+    - button "编辑 全麦吐司鸡蛋牛油果":
+    - button "删除 全麦吐司鸡蛋牛油果":
+    - generic: 午餐
+    - paragraph: 番茄牛肉全麦意面
+    - generic: 710 千卡
+    - text: "39.0"
+    - text: "21.0"
+    - text: "83.0"
+    - button "编辑 番茄牛肉全麦意面":
+    - button "删除 番茄牛肉全麦意面":
+    - generic: 晚餐
+    - paragraph: 虾仁豆腐菌菇汤
+    - generic: 480 千卡
+    - text: "38.0"
+    - text: "16.0"
+    - text: "42.0"
+    - button "编辑 虾仁豆腐菌菇汤":
+    - button "删除 虾仁豆腐菌菇汤":
+    - generic: 加餐
+    - paragraph: 低糖希腊酸奶
+    - generic: 160 千卡
+    - text: "15.0"
+    - text: "4.0"
+    - text: "18.0"
+    - button "编辑 低糖希腊酸奶":
+    - button "删除 低糖希腊酸奶":
+    - link "添加饮食记录":
+      - /url: /meals?date=2026-08-23
+      - text: 添加饮食记录
+- region "Notifications alt+T"
+- alert
