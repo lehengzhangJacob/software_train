@@ -1,0 +1,26 @@
+{
+  "deployment": "20260823114823",
+  "account": "FoodMoment Team A",
+  "planId": 13,
+  "planDate": "2026-08-23",
+  "fixtureNote": "为验收清单持久化，远端仅追加当天 active agent 计划副本；旧计划与旧建议未删除或改写。Agent 当天生成链路另有未持久化的失败/原始标记问题，不能据此宣称生成链路已通过。",
+  "partialState": {
+    "summary": "完成 1/4",
+    "firstStepChecked": true
+  },
+  "completedState": {
+    "summary": "计划已完成",
+    "checkedCount": 4,
+    "successText": "今天的训练已经全部打卡，做得很好。"
+  },
+  "reloadPersistence": {
+    "summary": "计划已完成",
+    "checkedCount": 4
+  },
+  "remoteRows": {
+    "plan": [13, 2, "2026-08-23", 1, "active", "agent"],
+    "progressSteps": [1, 2, 3, 4]
+  },
+  "screenshot": null,
+  "screenshotNote": "Exercise screenshot capture returned Unable to capture screenshot during this run; DOM and remote persistence evidence are retained."
+}

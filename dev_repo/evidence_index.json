@@ -1472,6 +1472,18 @@
       "description": "运动计划步骤 checkbox、完成摘要和 UI contract test"
     }
   ],
+  "C-27-S3": [
+    {
+      "type": "cloud_acceptance",
+      "path": "dev_repo/evidence/C-27/S3/exercise-checklist-cloud-verification.json",
+      "description": "云端 Team A 运动计划完成 1/4、全部完成、刷新后仍为 4/4；远端进度表保留 4 行"
+    },
+    {
+      "type": "verification_note",
+      "path": "dev_repo/evidence/C-27/S3/screenshot-gap.txt",
+      "description": "运动页截图接口本轮失败；未虚报 PNG，DOM 与数据库持久化证据已保存"
+    }
+  ],
   "C-28-A1": [
     {
       "type": "architecture",
@@ -1488,12 +1500,17 @@
     {
       "type": "cloud_acceptance",
       "path": "dev_repo/evidence/C-28/S3/cloud-background-article-verification.json, dev_repo/evidence/C-28/S3/cloud-batch-status.json",
-      "description": "同一云端部署与 Team A 账号先观察到后台 generating，随后阅读流自动显示 10/10 ready；五个 active 账号均为 ready=10，service/timer active，控制台无 warning/error"
+      "description": "同一云端部署与 Team A 账号先观察到后台 generating，随后阅读流自动显示 10/10 ready；五个 active 账号均为 ready=10，service/timer active，控制台无 warning/error；移动视口截图已保存"
     },
     {
-      "type": "visual_gap",
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-28/S3/insights-ready.png",
+      "description": "云端 Team A 阅读页移动视口最终态：10/10 ready、后台提交提示和文章卡片"
+    },
+    {
+      "type": "verification_note",
       "path": "dev_repo/evidence/C-28/S3/screenshot-gap.txt",
-      "description": "In-app Browser screenshot API 在既有/新建标签页与连接重置后均不可用；未声称 PNG，DOM/状态证据已保存"
+      "description": "记录首次截图重试失败以及后续成功，最终 PNG 已保存"
     }
   ]
 }

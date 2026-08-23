@@ -1,0 +1,1 @@
+The in-app Browser DOM acceptance and reload persistence checks passed. The exercise page screenshot call returned `Unable to capture screenshot` during this run, so no PNG is claimed for C-27-S3. The article acceptance has a separate successful PNG at `dev_repo/evidence/C-28/S3/insights-ready.png`.

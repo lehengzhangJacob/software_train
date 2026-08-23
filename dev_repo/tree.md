@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: C-27-S3；C-27 为运动计划 checklist 子合同，C-26 已完成并回归主合同，Issues #3/#4/#5/#10 仍保持开放等待外部复测
+- Current slice: 无；C-27 checklist 与 C-28 日更后台生成均已完成并回归主合同，Issues #3/#4/#5/#10 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 and #10 remain open until external testers confirm non-reproduction.
@@ -26,6 +26,7 @@
 - C-27-A1 completed: AgentExercisePlanStepProgress is an additive completion projection; migration copy preserved existing plan, suggestion and meal rows with no backfill.
 - C-27-S1 completed: GET plan projections include x/N progress and derived planCompleted; PATCH toggle is ownership-scoped and idempotent. Return path is C-27-S2.
 - C-27-S2 completed: the exercise page now renders native accessible checkboxes, `完成 x/N`, and `计划已完成`, with failed-write rollback. Return path is C-27-S3.
+- C-27-S3 completed: deploy 20260823114823; Team A cloud checklist passed partial, completed and reload persistence checks; Android 0.1.2 metadata test and full verify passed. Exercise screenshot API failed, so no PNG is claimed for this slice.
 
 ```text
 C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
@@ -55,11 +56,11 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-26-A1 营养值域与数据模型修宪 [completed]
     ├── C-26-S1 后端创建/批量/更新校验 [completed]
     └── C-26-S2 前端输入、提示与历史展示保护 [completed]
-└── C-27 - Agent 运动计划完成 checklist 与 v0.1.2 发布 [in_progress，C-28 子合同执行中]
+└── C-27 - Agent 运动计划完成 checklist 与 v0.1.2 发布 [completed]
     ├── C-27-A1 数据模型与迁移 [completed]
     ├── C-27-S1 完成状态 API [completed]
     ├── C-27-S2 运动页 checklist UI [completed]
-    └── C-27-S3 云端验收与 Release [pending]
+    └── C-27-S3 云端验收与 Release [completed：deploy 20260823114823；运动清单云端持久化通过]
     └── C-28 - 日更文章后台生成边界修正 [completed，return_to=C-27-S3]
         ├── C-28-A1 架构与运行时边界 [completed]
         ├── C-28-S1 持久入队与后台 worker [completed]
