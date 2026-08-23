@@ -62,6 +62,12 @@ interface ExercisePlanView {
     safetyNote: string
     equipment: string[]
   }
+  progress: {
+    completedStepOrders: number[]
+    completedCount: number
+    totalSteps: number
+    planCompleted: boolean
+  }
   createdAt: string
   updatedAt: string
 }
@@ -133,9 +139,45 @@ function MovementMedia() {
 
 function AgentPlanSection({ projection }: { projection: ExercisePlanProjection }) {
   const current = projection.current
+  const [progress, setProgress] = useState(current?.progress ?? null)
+  const [savingStepOrder, setSavingStepOrder] = useState<number | null>(null)
+  const [progressError, setProgressError] = useState<string | null>(null)
   const coachHref = current
     ? `/agent?mode=exercise-plan&exercisePlanId=${current.planId}&returnTo=${encodeURIComponent("/exercise")}`
     : `/agent?mode=exercise-plan&returnTo=${encodeURIComponent("/exercise")}`
+
+  const toggleStep = async (stepOrder: number, completed: boolean) => {
+    if (!current || !progress || savingStepOrder !== null) return
+    const previous = progress
+    const nextOrders = completed
+      ? [...new Set([...progress.completedStepOrders, stepOrder])]
+      : progress.completedStepOrders.filter((order) => order !== stepOrder)
+    const nextProgress = {
+      ...progress,
+      completedStepOrders: nextOrders,
+      completedCount: nextOrders.length,
+      planCompleted: nextOrders.length === progress.totalSteps,
+    }
+    setProgress(nextProgress)
+    setProgressError(null)
+    setSavingStepOrder(stepOrder)
+
+    try {
+      const response = await fetch("/api/exercise/plans", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId: current.planId, stepOrder, completed }),
+      })
+      const result = await readApiEnvelope<{ plan: ExercisePlanView }>(response)
+      if (!response.ok || !result.data?.plan) throw new Error(result.error || "更新完成状态失败")
+      setProgress(result.data.plan.progress)
+    } catch (error) {
+      setProgress(previous)
+      setProgressError(error instanceof Error ? error.message : "更新完成状态失败，请重试")
+    } finally {
+      setSavingStepOrder(null)
+    }
+  }
 
   return (
     <section className="border border-[var(--brand-plum)]/15 bg-[var(--brand-paper)] p-5 sm:p-7" aria-labelledby="agent-exercise-plan-title">
@@ -165,24 +207,68 @@ function AgentPlanSection({ projection }: { projection: ExercisePlanProjection }
             <span className="rounded-full bg-[var(--brand-lavender-soft)] px-3 py-1.5">{current.totalMinutes} 分钟</span>
             <span className="rounded-full bg-[var(--brand-lavender-soft)] px-3 py-1.5">强度 {intensityLabel(current.intensity)}</span>
             <span className="rounded-full bg-[var(--brand-lavender-soft)] px-3 py-1.5">第 {current.revision} 版</span>
+            <span
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-semibold",
+                progress?.planCompleted
+                  ? "bg-[var(--brand-mint)]/25 text-[var(--brand-mint-deep)]"
+                  : "bg-[var(--brand-lavender-soft)] text-[var(--brand-heading)]",
+              )}
+              role="status"
+              aria-live="polite"
+            >
+              {progress?.planCompleted ? <Check className="size-3.5" aria-hidden="true" /> : null}
+              {progress ? (progress.planCompleted ? "计划已完成" : `完成 ${progress.completedCount}/${progress.totalSteps}`) : "完成状态读取中"}
+            </span>
           </div>
+          {progressError ? <p className="mt-3 text-xs text-destructive" role="alert">{progressError}</p> : null}
           <ol className="mt-6 grid gap-3 md:grid-cols-3" aria-label="训练步骤">
-            {current.plan.steps.map((step) => (
-              <li key={`${current.planId}-${step.order}`} className="relative border-l-2 border-[var(--brand-mint)] bg-card px-4 py-3">
-                <div className="flex items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-wide text-[var(--brand-mint-deep)]">
-                  <span>{stepKindLabel(step.kind)}</span>
-                  <span>{step.minutes} 分钟</span>
-                </div>
-                <h3 className="mt-1 font-semibold text-[var(--brand-heading)]">{step.name}</h3>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">{step.instructions}</p>
-                {step.sets || step.reps ? (
-                  <p className="mt-2 text-[11px] text-muted-foreground">
-                    {step.sets ? `${step.sets} 组` : ""}{step.sets && step.reps ? " · " : ""}{step.reps ? `${step.reps} 次` : ""}
-                  </p>
-                ) : null}
-              </li>
-            ))}
+            {current.plan.steps.map((step) => {
+              const completed = progress?.completedStepOrders.includes(step.order) ?? false
+              const saving = savingStepOrder === step.order
+              return (
+                <li key={`${current.planId}-${step.order}`} className={cn("relative border-l-2 border-[var(--brand-mint)] bg-card px-4 py-3 transition-colors", completed && "bg-[var(--brand-mint)]/10")}>
+                  <label className="block cursor-pointer">
+                    <span className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        className="peer sr-only"
+                        checked={completed}
+                        disabled={savingStepOrder !== null}
+                        onChange={(event) => void toggleStep(step.order, event.target.checked)}
+                        aria-label={`完成 ${step.name}`}
+                      />
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "mt-0.5 grid size-5 shrink-0 place-items-center rounded border-2 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--brand-mint-deep)] peer-focus-visible:ring-offset-2",
+                          completed ? "border-[var(--brand-mint-deep)] bg-[var(--brand-mint-deep)] text-white" : "border-[var(--brand-plum)]/30 bg-background",
+                        )}
+                      >
+                        {saving ? <Loader2 className="size-3.5 animate-spin" /> : completed ? <Check className="size-3.5" /> : null}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-wide text-[var(--brand-mint-deep)]">
+                          <span>{stepKindLabel(step.kind)}</span>
+                          <span>{step.minutes} 分钟</span>
+                        </span>
+                        <span className={cn("mt-1 block font-semibold text-[var(--brand-heading)]", completed && "line-through decoration-[var(--brand-mint-deep)]/60")}>{step.name}</span>
+                        <span className="mt-1 block text-xs leading-5 text-muted-foreground">{step.instructions}</span>
+                        {step.sets || step.reps ? (
+                          <span className="mt-2 block text-[11px] text-muted-foreground">
+                            {step.sets ? `${step.sets} 组` : ""}{step.sets && step.reps ? " · " : ""}{step.reps ? `${step.reps} 次` : ""}
+                          </span>
+                        ) : null}
+                      </span>
+                    </span>
+                  </label>
+                </li>
+              )
+            })}
           </ol>
+          <p className="mt-3 text-xs text-muted-foreground" role="status">
+            {progress?.planCompleted ? "今天的训练已经全部打卡，做得很好。" : "完成一项就勾选一项，所有步骤完成后计划会标记为已完成。"}
+          </p>
           <p className="mt-4 text-xs leading-5 text-muted-foreground">
             {current.plan.safetyNote}{current.plan.equipment.length > 0 ? ` · 需要：${current.plan.equipment.join("、")}` : " · 无需器械"}
           </p>

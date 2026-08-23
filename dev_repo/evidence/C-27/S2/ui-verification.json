@@ -1,0 +1,15 @@
+{
+  "contract_id": "C-27",
+  "slice_id": "C-27-S2",
+  "checks": {
+    "npm_run_test_exercise_plan": {"passed": 6},
+    "npm_run_test_exercise_plan_ui": {"passed": 3},
+    "npm_run_lint": "passed",
+    "npm_run_typecheck": "passed",
+    "accessibility": "native checkbox with accessible step label and keyboard focus ring",
+    "progress_states": ["完成 0/N", "完成 x/N", "计划已完成"],
+    "failure_behavior": "failed PATCH restores the prior checklist state and exposes an alert"
+  },
+  "red_line_crossed": false,
+  "cloud_screenshot_pending": true
+}

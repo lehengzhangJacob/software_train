@@ -1459,5 +1459,17 @@
       "path": "src/lib/exercise/progress.ts, src/lib/exercise/plan-repository.ts, src/app/api/exercise/plans/route.ts",
       "description": "步骤完成投影计算、读取投影和 PATCH /api/exercise/plans toggle"
     }
+  ],
+  "C-27-S2": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-27/S2/ui-verification.json",
+      "description": "运动页 checklist 的可访问控件、0/N/部分/N/N 状态、失败回滚，以及测试/lint/typecheck 结果"
+    },
+    {
+      "type": "implementation",
+      "path": "src/components/exercise/exercise-content.tsx, scripts/exercise-plan-ui-contract.test.ts, package.json",
+      "description": "运动计划步骤 checkbox、完成摘要和 UI contract test"
+    }
   ]
 }

@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: C-27-S2；C-27 为运动计划 checklist 子合同，C-26 已完成并回归主合同，Issues #3/#4/#5/#10 仍保持开放等待外部复测
+- Current slice: C-27-S3；C-27 为运动计划 checklist 子合同，C-26 已完成并回归主合同，Issues #3/#4/#5/#10 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 and #10 remain open until external testers confirm non-reproduction.
@@ -25,6 +25,7 @@
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
 - C-27-A1 completed: AgentExercisePlanStepProgress is an additive completion projection; migration copy preserved existing plan, suggestion and meal rows with no backfill.
 - C-27-S1 completed: GET plan projections include x/N progress and derived planCompleted; PATCH toggle is ownership-scoped and idempotent. Return path is C-27-S2.
+- C-27-S2 completed: the exercise page now renders native accessible checkboxes, `完成 x/N`, and `计划已完成`, with failed-write rollback. Return path is C-27-S3.
 
 ```text
 C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
@@ -57,7 +58,7 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
 └── C-27 - Agent 运动计划完成 checklist 与 v0.1.2 发布 [in_progress]
     ├── C-27-A1 数据模型与迁移 [completed]
     ├── C-27-S1 完成状态 API [completed]
-    ├── C-27-S2 运动页 checklist UI [pending]
+    ├── C-27-S2 运动页 checklist UI [completed]
     └── C-27-S3 云端验收与 Release [pending]
 ```
 
