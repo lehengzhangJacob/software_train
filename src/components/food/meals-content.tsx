@@ -56,7 +56,7 @@ interface MealDraft {
 }
 
 interface MealsContentProps {
-  today: string
+  recordDate: string
   initialMeals: MealItem[]
 }
 
@@ -124,7 +124,7 @@ function toNutritionInputValue(value: number): MealNutritionInputValue {
   return Number.isFinite(value) ? value : ""
 }
 
-export function MealsContent({ today, initialMeals }: MealsContentProps) {
+export function MealsContent({ recordDate, initialMeals }: MealsContentProps) {
   const router = useRouter()
   const [meals, setMeals] = useState<MealItem[]>(initialMeals)
   const [drafts, setDrafts] = useState<MealDraft[]>([])
@@ -200,7 +200,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
       const response = await fetch("/api/meals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, ...nutrition.values, recordDate: today }),
+        body: JSON.stringify({ ...form, ...nutrition.values, recordDate }),
       })
       const json: { data?: MealItem | null; error?: string | null } = await response.json()
       if (!response.ok || json.error || !json.data) {
@@ -249,7 +249,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          recordDate: today,
+          recordDate,
           items: normalizedDrafts.map(({ draft, nutrition }) => ({
             foodName: draft.foodName,
             mealType: draft.mealType,
@@ -544,8 +544,8 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
         <CardHeader>
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="page-eyebrow">Today&apos;s log</p>
-              <CardTitle className="mt-1 text-xl text-[var(--brand-heading)]">今日记录</CardTitle>
+              <p className="page-eyebrow">Daily log</p>
+              <CardTitle className="mt-1 text-xl text-[var(--brand-heading)]">当天记录</CardTitle>
             </div>
             <span className="rounded-md bg-[var(--brand-lavender-soft)] px-2.5 py-1 text-xs font-medium text-[#5f51cc] dark:text-[var(--brand-lavender-deep)]">{meals.length} 项</span>
           </div>
@@ -554,7 +554,7 @@ export function MealsContent({ today, initialMeals }: MealsContentProps) {
           {meals.length === 0 ? (
             <div className="grid min-h-[380px] place-items-center rounded-md bg-[var(--brand-paper)] px-6 text-center">
               <div>
-                <p className="text-sm font-semibold text-[var(--brand-heading)]">还没有保存今天的第一餐</p>
+                <p className="text-sm font-semibold text-[var(--brand-heading)]">当天还没有保存第一餐</p>
                 <p className="mt-1 text-xs leading-5 text-muted-foreground">拍照识别或手动录入后，食物会按餐别整理在这里。</p>
               </div>
             </div>
