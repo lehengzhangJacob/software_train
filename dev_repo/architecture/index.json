@@ -53,6 +53,11 @@
       "description": "Persistent per-step exercise-plan completion projection without mutating Agent plan source data"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0018-background-daily-article-generation.md",
+      "node": "agent.runtime",
+      "description": "Durable daily article enqueue, non-blocking background generation and timer recovery"
+    },
+    {
       "path": "dev_repo/architecture/content-generation.md",
       "node": "agent.runtime",
       "description": "C-25 daily article context, content, image, trigger and retry contract"

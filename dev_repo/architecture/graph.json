@@ -7,10 +7,10 @@
     "return_to": "web_completion_audit"
   },
   "active_amendment": {
-    "contract_id": "C-27-A1",
-    "decision": "exercise_plan_checklist_progress_projection",
+    "contract_id": "C-28-A1",
+    "decision": "background_daily_article_generation",
     "status": "accepted",
-    "return_to": "C-21"
+    "return_to": "C-27-S3"
   },
   "nodes": [
     {
@@ -658,7 +658,8 @@
       "public_interfaces": [
         "/agent",
         "/api/agent",
-        "/api/agent Accept: text/event-stream (versioned trace projection)"
+        "/api/agent Accept: text/event-stream (versioned trace projection)",
+        "/api/agent/articles POST (durable background enqueue, 202 Accepted)"
       ],
       "depends_on": [
         "backend.api",
@@ -679,6 +680,7 @@
         "运动计划是安全的结构化 artifact；原始模型响应和隐藏推理不得持久化",
         "同一用户同一天的调整创建新 revision，旧 active 版本只标记 superseded",
         "日更批次按 user_id+content_date 幂等且 ready 恰好十篇",
+        "日更公开 POST 只入队并快速返回，后台 job 执行正文/图片生成",
         "文章只使用允许的账户上下文；DashScope task/临时 URL 不进入消息或 SQLite",
         "图片由 server-owned adapter 下载到 shared data，失败时保留结构化视觉 fallback"
       ],
@@ -687,13 +689,14 @@
         "context selection",
         "tool loop",
         "structured exercise plan projection",
-        "daily article generation",
+        "daily article enqueue and background generation",
         "DashScope async image adapter"
       ],
       "requires_amendment_when": [
         "扩大自主建单授权范围或新增支付能力",
         "改变 AgentMessage 与结构化计划的持久化边界"
-        ,"新增跨回合内容持久化或图片资产真相"
+        ,"新增跨回合内容持久化或图片资产真相",
+        "让公开日更请求同步等待 provider 或图片任务"
       ],
       "verification": [
         "context tests",
@@ -908,6 +911,7 @@
         "服务器上不执行构建，只接收本仓构建产物",
         ".env.production 权限 0600 且不入 Git",
         "daily content job is loopback/token protected and idempotent",
+        "authenticated article enqueue returns before provider work and timer recovers pending batches",
         "article image assets live under shared/data, never in SQLite"
       ],
       "allowed_change_types": [

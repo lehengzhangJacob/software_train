@@ -120,8 +120,10 @@ DashScope 只作为 server-owned 的异步图片适配器。创建图像任务�
 失败时保留结构化视觉 fallback，不阻塞当天十篇正文。
 
 云端 systemd timer 调用 token 保护的内部内容 job；重复执行不产生第二个日期批次，job 可
-从 `pending/running/fallback` 图片状态恢复。应用内 `/insights` 阅读流显示每日批次、未读数、
-收藏/隐藏状态和图片生成进度；系统级浏览器/Android 通知不在 C-25 伪称已交付。
+从 `pending/running/fallback` 图片状态恢复。应用内 `/api/agent/articles` POST 只持久入队并
+返回 `202 Accepted`，正文与图片由长驻服务后台完成，timer 负责跨重启恢复；GET 只读批次状态。
+`/insights` 阅读流在 `pending/generating` 时显示后台整理中并低频刷新，ready 后显示每日批次、
+未读数、收藏/隐藏状态和图片生成进度；系统级浏览器/Android 通知不在 C-25/C-28 伪称已交付。
 
 ### 健康活动同步
 

@@ -82,3 +82,9 @@ The earlier single-user statement is superseded by this amendment:
     asset 路径和 image MIME；失败时必须提供结构化视觉 fallback。
 46. 日更 job 只能通过 token 保护的内部接口触发，运行日志只记录 batch/slot、状态和脱敏错误码；
     未配置 token、DashScope key 或模型权限时不得宣称自动系统通知已启用。
+47. 认证 `/api/agent/articles` POST 只允许创建/复用当天批次并返回 `202 Accepted`；响应前不得
+    等待 Agent 文本生成、文章落库或 DashScope 图片任务。
+48. 日更批次必须沿 `pending → generating → ready/failed` 推进；长驻后台 job 负责执行，systemd
+    timer 负责跨重启恢复，重复请求不得复制 `(user_id, content_date)` 或 slot。
+49. `/api/agent/articles` GET 与 `/insights` 观察流不得触发 provider；pending/generating 只显示
+    后台状态，ready/failed 后停止轮询或给出可重试入口。

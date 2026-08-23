@@ -525,6 +525,24 @@
       "backfill_required": false,
       "issue_state": "Issue #10 remains open until external retest; Issues #3/#4/#5 remain open for external retest.",
       "latest_verification": "C-27-S2 passed: six exercise-plan tests, three UI contract tests, lint and typecheck; native checkbox renders 0/N, partial and planCompleted states, persists through PATCH, and rolls back on failure. Cloud screenshots and release remain pending."
+    },
+    "C-28": {
+      "contract_id": "C-28",
+      "parent_contract_id": "C-27",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "把日更文章从同步生成改为可恢复的后台任务",
+      "goal": "认证 POST 只持久入队并返回 202，由长驻服务后台生成正文与图片，阅读流观察状态；不新增数据表、不迁移旧文章。",
+      "current_slice": "C-28-S1",
+      "completed_slices": ["C-28-A1"],
+      "deferred_slices": [],
+      "return_to": "C-27-S3",
+      "architecture_amendment": "C-28-A1 / ADR-0018",
+      "data_model_delta": "none; reuse AgentDailyArticleBatch pending/generating/ready/failed state",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "Issue #10 remains open until external retest; Issues #3/#4/#5 remain open for external retest.",
+      "latest_verification": "C-28-A1 passed: ADR-0018, architecture graph/index/invariants and runtime evidence updated; JSON parse and git diff checks passed."
     }
   }
 }

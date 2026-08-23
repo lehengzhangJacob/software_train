@@ -31,3 +31,13 @@ DashScope 只在服务端异步调用。成功 URL 立即下载到 `data/article
 云端 systemd user timer 触发受 token 保护的内部 job。job 先确保文字批次，再处理待补图文章；
 重复执行使用批次唯一键和文章 slot 唯一键。provider 临时失败只留下安全 fallback 和
 可重试状态，不覆盖已经 ready 的内容。
+
+## 应用内后台入队（C-28 / ADR-0018）
+
+认证用户从 `/api/agent/articles` 发起生成时，公开 POST 只创建或复用当天的批次并返回
+`202 Accepted` 与状态摘要；它不等待 Agent、正文落库或 DashScope。长驻 Node 服务在响应后
+调度后台 job，user-level systemd timer 负责跨重启拾取 `pending/failed` 批次。
+
+阅读流只读取批次状态：`pending/generating` 显示后台整理中，`ready` 显示可阅读文章，
+`failed` 显示可重试提示。轮询是低频、可取消的观察机制，不是第二个生成器；GET 不触发
+provider 调用，重复点击不产生第二个 `(user_id, content_date)` 批次。

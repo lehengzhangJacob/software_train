@@ -1,0 +1,24 @@
+{
+  "contract_id": "C-28",
+  "slice_id": "C-28-A1",
+  "status": "passed",
+  "architecture_delta": "公开文章 POST 只负责 durable enqueue 并返回 202；长驻服务后台 job 负责正文/图片生成，systemd timer 负责跨重启恢复。",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "assertions": [
+    "AgentDailyArticleBatch 已有 pending/generating/ready/failed 状态，无需新增表或字段。",
+    "GET /api/agent/articles 保持只读边界。",
+    "现有 token-protected internal content job 与 user-level timer 保持不变并承担恢复职责。",
+    "Issue #10/#3/#4/#5 仍保持开放。"
+  ],
+  "artifacts": [
+    "dev_repo/architecture/decisions/ADR-0018-background-daily-article-generation.md",
+    "dev_repo/architecture/content-generation.md",
+    "dev_repo/architecture/ARCHITECTURE.md",
+    "dev_repo/architecture/graph.json",
+    "dev_repo/architecture/index.json",
+    "dev_repo/architecture/invariants.md"
+  ],
+  "return_to": "C-28-S1"
+}
