@@ -1447,5 +1447,17 @@
       "path": "dev_repo/evidence/C-27/S1/verification.json",
       "description": "迁移副本保留 AgentExercisePlan=2、ExerciseSuggestion=2、MealRecord=14；新进度表 0 行，integrity/foreign-key 通过"
     }
+  ],
+  "C-27-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-27/S1/api-verification.json",
+      "description": "运动计划 progress 汇总、拥有权边界、非法步骤拒绝和幂等 toggle API；exercise contract tests/lint/typecheck 通过"
+    },
+    {
+      "type": "implementation",
+      "path": "src/lib/exercise/progress.ts, src/lib/exercise/plan-repository.ts, src/app/api/exercise/plans/route.ts",
+      "description": "步骤完成投影计算、读取投影和 PATCH /api/exercise/plans toggle"
+    }
   ]
 }

@@ -7,6 +7,10 @@ import {
   serializeExercisePlan,
   type ExercisePlanPayload,
 } from "@/lib/exercise/plan-contracts"
+import {
+  summarizeExercisePlanProgress,
+  type ExercisePlanProgress,
+} from "@/lib/exercise/progress"
 
 const planSelect = {
   planId: true,
@@ -25,6 +29,11 @@ const planSelect = {
   planJson: true,
   createdAt: true,
   updatedAt: true,
+  stepProgress: {
+    select: {
+      stepOrder: true,
+    },
+  },
 } satisfies Prisma.AgentExercisePlanSelect
 
 type PlanRow = Prisma.AgentExercisePlanGetPayload<{ select: typeof planSelect }>
@@ -44,6 +53,7 @@ export type ExercisePlanView = {
   totalMinutes: number
   intensity: string
   plan: ExercisePlanPayload
+  progress: ExercisePlanProgress
   createdAt: string
   updatedAt: string
 }
@@ -56,6 +66,7 @@ export type ExercisePlanProjection = {
 }
 
 function toPlanView(row: PlanRow): ExercisePlanView {
+  const plan = parseStoredExercisePlan(row.planJson)
   return {
     planId: row.planId,
     userId: row.userId,
@@ -70,10 +81,41 @@ function toPlanView(row: PlanRow): ExercisePlanView {
     goal: row.goal,
     totalMinutes: row.totalMinutes,
     intensity: row.intensity,
-    plan: parseStoredExercisePlan(row.planJson),
+    plan,
+    progress: summarizeExercisePlanProgress(plan.steps, row.stepProgress.map((item) => item.stepOrder)),
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   }
+}
+
+export async function setExercisePlanStepProgress(
+  userId: number,
+  planId: number,
+  stepOrder: number,
+  completed: boolean,
+) {
+  const row = await prisma.agentExercisePlan.findFirst({
+    where: { userId, planId },
+    select: { planId: true, planJson: true },
+  })
+  if (!row) return null
+
+  const plan = parseStoredExercisePlan(row.planJson)
+  if (!plan.steps.some((step) => step.order === stepOrder)) {
+    throw new Error("步骤不存在")
+  }
+
+  if (completed) {
+    await prisma.agentExercisePlanStepProgress.upsert({
+      where: { uq_agent_plan_step_progress: { planId, stepOrder } },
+      create: { planId, stepOrder },
+      update: { completedAt: new Date() },
+    })
+  } else {
+    await prisma.agentExercisePlanStepProgress.deleteMany({ where: { planId, stepOrder } })
+  }
+
+  return getOwnedExercisePlan(userId, planId)
 }
 
 export async function getExercisePlanProjection(userId: number, date: string): Promise<ExercisePlanProjection> {

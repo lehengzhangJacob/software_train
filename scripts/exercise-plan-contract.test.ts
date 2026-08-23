@@ -1,10 +1,16 @@
 import assert from "node:assert/strict"
+import { readFileSync } from "node:fs"
+import path from "node:path"
 import test from "node:test"
 import {
   ExercisePlanValidationError,
   parseExercisePlanPayload,
   parseStoredExercisePlan,
 } from "../src/lib/exercise/plan-contracts"
+import {
+  parseExercisePlanStepProgressInput,
+  summarizeExercisePlanProgress,
+} from "../src/lib/exercise/progress"
 
 function validPlan() {
   return {
@@ -52,4 +58,36 @@ test("legacy mirror payload remains readable without becoming an Agent payload",
   }))
   assert.equal(parsed.legacy?.isAdopted, 1)
   assert.equal(parsed.legacy?.calorieBurnEstimate, 120)
+})
+
+test("checklist progress derives completion without changing the plan payload", () => {
+  const steps = validPlan().steps
+  assert.deepEqual(summarizeExercisePlanProgress(steps, [3, 3, 99, 1]), {
+    completedStepOrders: [1, 3],
+    completedCount: 2,
+    totalSteps: 3,
+    planCompleted: false,
+  })
+  assert.equal(summarizeExercisePlanProgress(steps, [1, 2, 3]).planCompleted, true)
+})
+
+test("checklist progress input rejects malformed or non-boolean updates", () => {
+  assert.deepEqual(parseExercisePlanStepProgressInput({ planId: 12, stepOrder: 2, completed: true }), {
+    planId: 12,
+    stepOrder: 2,
+    completed: true,
+  })
+  assert.throws(() => parseExercisePlanStepProgressInput({ planId: 12, stepOrder: 2, completed: "yes" }), /布尔值/)
+  assert.throws(() => parseExercisePlanStepProgressInput({ planId: 12, stepOrder: 0, completed: false }), /正整数/)
+})
+
+test("checklist migration is additive and does not rewrite plan rows", () => {
+  const migration = readFileSync(
+    path.join(process.cwd(), "prisma", "migrations", "20260823090000_add_exercise_plan_step_progress", "migration.sql"),
+    "utf8",
+  )
+  assert.match(migration, /CREATE TABLE "agent_exercise_plan_step_progress"/)
+  assert.match(migration, /uq_agent_plan_step_progress/)
+  assert.doesNotMatch(migration, /DROP TABLE/i)
+  assert.doesNotMatch(migration, /INSERT INTO "agent_exercise_plans"/i)
 })

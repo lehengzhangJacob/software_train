@@ -1,0 +1,14 @@
+{
+  "contract_id": "C-27",
+  "slice_id": "C-27-S1",
+  "checks": {
+    "npm_run_test_exercise_plan": {"passed": 6},
+    "npm_run_typecheck": "passed",
+    "npm_run_lint": "passed",
+    "progress_summary": "deduplicates and ignores unknown step orders; derives completedCount/totalSteps/planCompleted",
+    "ownership_boundary": "repository lookup scopes by userId and planId; cross-account plan returns null",
+    "invalid_step_boundary": "unknown step order rejected before write",
+    "toggle_semantics": "upsert on complete, delete on uncheck; repeated operations are idempotent"
+  },
+  "red_line_crossed": false
+}
