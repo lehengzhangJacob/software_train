@@ -4,6 +4,6 @@ import test from "node:test"
 
 test("Android shell release metadata tracks the web release version", () => {
   const gradle = readFileSync("android/app/build.gradle", "utf8")
-  assert.match(gradle, /versionCode\s+3/)
-  assert.match(gradle, /versionName\s+"0\.1\.2"/)
+  assert.match(gradle, /versionCode\s+4/)
+  assert.match(gradle, /versionName\s+"0\.1\.3"/)
 })
