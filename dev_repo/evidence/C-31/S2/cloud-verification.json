@@ -1,0 +1,31 @@
+{
+  "contract_id": "C-31",
+  "slice_id": "C-31-S2",
+  "cloud_deploy": "20260823161502",
+  "routes": {
+    "dashboard": "http://8.148.206.131:8000/dashboard",
+    "insights": "http://8.148.206.131:8000/insights",
+    "non_today_control": "http://8.148.206.131:8000/calendar"
+  },
+  "checks": {
+    "desktop_primary_nav_excludes_reading": "passed",
+    "dashboard_today_secondary_tabs": "passed",
+    "insights_today_primary_active": "passed",
+    "insights_reading_secondary_active": "passed",
+    "non_today_route_hides_secondary_tabs": "passed",
+    "desktop_console_errors_or_warnings": "none",
+    "desktop_horizontal_overflow": "none",
+    "mobile_bottom_nav_structure": "source-contract passed: 2 + centered meal action + 2",
+    "mobile_375_png": "not proven: connected in-app browser viewport is fixed desktop"
+  },
+  "evidence_files": [
+    "dashboard-desktop.png",
+    "dashboard-desktop-dom.txt",
+    "insights-desktop.png",
+    "insights-desktop-dom.txt",
+    "calendar-desktop-dom.txt",
+    "browser-console-and-viewport.json",
+    "screenshot-gap.txt"
+  ],
+  "notes": "No article data, API, database entity, migration or release state was changed by this UI-only contract."
+}

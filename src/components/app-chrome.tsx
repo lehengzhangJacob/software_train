@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 
 import { AppUpdateNotice } from "@/components/app-update-notice"
 import { Sidebar } from "@/components/sidebar"
+import { TodayTabs } from "@/components/today-tabs"
 import { cn } from "@/lib/utils"
 
 export function AppChrome({
@@ -36,6 +37,7 @@ export function AppChrome({
         )}
       >
         {!isAccessRoute && <AppUpdateNotice currentBuild={currentBuild} />}
+        {!isAccessRoute && <TodayTabs />}
         <div
           key={pathname}
           className={cn("app-page", !isAccessRoute && "app-route-transition", isAccessRoute && "access-page")}

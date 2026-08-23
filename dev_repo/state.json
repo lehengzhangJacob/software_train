@@ -408,7 +408,7 @@
       "deferred_slices": [],
       "return_to": "web_completion_audit",
       "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5, #9 and #10 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-30-S2 complete: cloud Issue #9 historical meal backfill acceptance passed on deploy 20260823153431; #9 remains open for external retest alongside #3/#4/#5/#10, while #6/#7/#8 remain closed after confirmation."
+      "latest_verification": "C-31-S2 complete: cloud deploy 20260823161502 moved Daily Reading into the Today secondary navigation; #9 remains open for external retest alongside #3/#4/#5/#10, while #6/#7/#8 remain closed after confirmation."
     },
     "C-21-UI1": {
       "contract_id": "C-21-UI1",
@@ -579,6 +579,24 @@
       "backfill_required": false,
       "issue_state": "Issue #9 remains open for external retest; no issue was closed by this contract.",
       "latest_verification": "C-30-S2 passed: deploy 20260823153431; Team A historical route `/meals?date=2026-08-22` displayed the selected date, a temporary manual record appeared under that date and was deleted, the list returned to 5 items, console errors were empty, and screenshot PNG evidence was captured. AI batch write path is covered by the source contract test; no provider-costing AI cloud write was claimed."
+    },
+    "C-31": {
+      "contract_id": "C-31",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "将每日阅读降为今天的二级 Tab，释放移动底栏一级导航位置并保持左右对称",
+      "goal": "移除每日阅读一级导航，将其与今日概览组成今天二级 Tab；移动底栏改为左 2 + 中央记一餐 + 右 2，同时保持阅读路由和文章功能不变。",
+      "current_slice": null,
+      "completed_slices": ["C-31-S1", "C-31-S2"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "none; existing web.app-shell navigation boundary",
+      "data_model_delta": "none",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No issue or release state changed by this UI-only contract.",
+      "latest_verification": "C-31-S2 passed on deploy 20260823161502: desktop dashboard and insights screenshots/DOM show Today secondary tabs, /insights keeps Today primary active, /calendar hides the secondary tabs, console is clean and desktop scrollWidth does not exceed clientWidth. Mobile 2+center+2 structure is covered by source contract; 375px PNG is not claimed because the connected in-app browser viewport is fixed desktop."
     }
   }
 }

@@ -1,0 +1,14 @@
+{
+  "url": "http://8.148.206.131:8000/insights",
+  "activeCheck": {
+    "primary": "今天",
+    "secondary": "每日阅读",
+    "secondaryCount": 2,
+    "viewport": {
+      "clientWidth": 1265,
+      "innerWidth": 1280,
+      "scrollWidth": 1265
+    }
+  },
+  "insightLogs": []
+}
