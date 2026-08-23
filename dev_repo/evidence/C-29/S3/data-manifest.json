@@ -1,0 +1,107 @@
+{
+  "contractId": "C-29",
+  "sliceId": "C-29-S3",
+  "generatedAt": "2026-08-23T06:51:55.995Z",
+  "baseUrl": "http://8.148.206.131:8000",
+  "marker": "C-29-DEMO-20260823",
+  "anchorDate": "2026-08-23",
+  "userScope": "foodmoment-team-a only; B/C read-only isolation checks",
+  "writePath": "authenticated same-origin Browser API session",
+  "created": {
+    "activity": 14,
+    "exercise": 7,
+    "meals": 56,
+    "memories": 3
+  },
+  "verification": {
+    "activityDays": 14,
+    "demoMealRows": 56,
+    "demoMemories": 3,
+    "exerciseAdoptedRows": 7,
+    "expectedActivityDays": 14,
+    "expectedExerciseDays": 7,
+    "mealDays": [
+      "2026-08-10",
+      "2026-08-11",
+      "2026-08-12",
+      "2026-08-13",
+      "2026-08-14",
+      "2026-08-15",
+      "2026-08-16",
+      "2026-08-17",
+      "2026-08-18",
+      "2026-08-19",
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-22",
+      "2026-08-23"
+    ],
+    "recordedDays": 14
+  },
+  "isolation": {
+    "restoreTeamALogin": {
+      "body": {
+        "data": {
+          "user": {
+            "login": "foodmoment-team-a",
+            "userId": 2,
+            "username": "FoodMoment Team A"
+          }
+        },
+        "error": null
+      },
+      "status": 200
+    },
+    "restoredSession": "foodmoment-team-a",
+    "teamB": {
+      "mealMarkerRows": 0,
+      "memoryMarkerRows": 0
+    },
+    "teamBLogin": {
+      "body": {
+        "data": {
+          "user": {
+            "login": "foodmoment-team-b",
+            "userId": 3,
+            "username": "FoodMoment Team B"
+          }
+        },
+        "error": null
+      },
+      "status": 200
+    },
+    "teamC": {
+      "mealMarkerRows": 0,
+      "memoryMarkerRows": 0
+    },
+    "teamCLogin": {
+      "body": {
+        "data": {
+          "user": {
+            "login": "foodmoment-team-c",
+            "userId": 4,
+            "username": "FoodMoment Team C"
+          }
+        },
+        "error": null
+      },
+      "status": 200
+    }
+  },
+  "safety": {
+    "orderSubmitCalled": false,
+    "paymentCalled": false,
+    "credentialsWrittenToEvidence": false,
+    "directDatabaseWrite": false,
+    "bAndCWriteCalled": false
+  },
+  "screenshots": [
+    "calendar-seeded.png"
+  ],
+  "calendarEvidence": {
+    "url": "http://8.148.206.131:8000/calendar",
+    "heading": "认真生活的第 14 天",
+    "recordDate": "2026-08-23",
+    "mealsShown": "4 项食物"
+  }
+}

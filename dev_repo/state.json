@@ -543,6 +543,24 @@
       "backfill_required": false,
       "issue_state": "Issue #10 remains open until external retest; Issues #3/#4/#5 remain open for external retest.",
       "latest_verification": "C-28-S3 passed: deploy 20260823111748; authenticated Browser observed 202 enqueue, generating, then 10/10 ready; five account batches ready=10; service/timer active; DOM and console clean; final mobile PNG saved at dev_repo/evidence/C-28/S3/insights-ready.png."
+    },
+    "C-29": {
+      "contract_id": "C-29",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "移动端中央记一餐入口、路线切换动效与 Team A 两周演示数据",
+      "goal": "让移动端记一餐成为真正的中央主入口，补足路由与计划 Tab 切换动效，并为 Team A 生成可重复的两周演示数据。",
+      "current_slice": null,
+      "completed_slices": ["C-29-S1", "C-29-S2", "C-29-S3"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "none; existing frontend navigation and app shell boundaries",
+      "data_model_delta": "none; reuse MealRecord, DailyActivity, ExerciseSuggestion and MemoryItem",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "Issues #3/#4/#5/#10 remain open for external retest; no issue was closed by this contract.",
+      "latest_verification": "UI deploy 20260823134105; Browser cloud evidence shows a centered meal action at 375px, app-route-enter on /calendar and /meals, clean console, and no horizontal overflow. Team A browser API seed verified 56 meals across 2026-08-10..2026-08-23, 14 activity days, 7 exercise suggestions, 3 memories; B/C marker reads were zero; session restored to Team A."
     }
   }
 }
