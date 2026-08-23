@@ -1,0 +1,19 @@
+{
+  "contract_id": "C-27",
+  "slice_id": "C-27-A1",
+  "migration": "20260823090000_add_exercise_plan_step_progress",
+  "checks": {
+    "prisma_validate": "passed",
+    "copy_migrate_deploy": "passed",
+    "architecture_json": "passed",
+    "old_agent_exercise_plans": {"before": 2, "after": 2},
+    "old_exercise_suggestions": {"before": 2, "after": 2},
+    "old_meal_records": {"before": 14, "after": 14},
+    "new_progress_rows": 0,
+    "integrity_check": "ok",
+    "foreign_key_check": "empty"
+  },
+  "migration_required": true,
+  "backfill_required": false,
+  "red_line_crossed": false
+}

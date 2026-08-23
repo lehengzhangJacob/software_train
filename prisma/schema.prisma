@@ -167,11 +167,27 @@ model AgentExercisePlan {
   thread           AgentThread?        @relation(fields: [threadId], references: [threadId], onDelete: SetNull)
   sourceMessage    AgentMessage?       @relation(fields: [sourceMessageId], references: [messageId], onDelete: SetNull)
   legacySuggestion ExerciseSuggestion? @relation(fields: [legacySuggestionId], references: [suggestionId], onDelete: SetNull)
+  stepProgress     AgentExercisePlanStepProgress[]
 
   @@index([userId, planDate, status, revision], name: "idx_agent_plan_user_date_status_revision")
   @@index([threadId], name: "idx_agent_plan_thread")
   @@index([sourceMessageId], name: "idx_agent_plan_source_message")
   @@map("agent_exercise_plans")
+}
+
+model AgentExercisePlanStepProgress {
+  progressId  Int      @id @default(autoincrement()) @map("progress_id")
+  planId      Int      @map("plan_id")
+  stepOrder   Int      @map("step_order")
+  completedAt DateTime @default(now()) @map("completed_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+
+  plan AgentExercisePlan @relation(fields: [planId], references: [planId], onDelete: Cascade)
+
+  @@unique([planId, stepOrder], name: "uq_agent_plan_step_progress")
+  @@index([planId, completedAt], name: "idx_agent_plan_step_progress")
+  @@map("agent_exercise_plan_step_progress")
 }
 
 model AgentDailyArticleBatch {

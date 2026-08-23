@@ -1,5 +1,5 @@
 {
-  "schema_version": 8,
+  "schema_version": 9,
   "source_of_truth": ["prisma/migrations/**", "prisma/schema.prisma", "dev_repo/architecture/decisions/ADR-0003-agent-memory-data-model.md", "dev_repo/architecture/decisions/ADR-0009-account-scoped-runtime-settings.md"],
   "entities": [
     {

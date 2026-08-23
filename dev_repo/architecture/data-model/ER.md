@@ -27,6 +27,7 @@
 | MealRecord | meal_records | 用户输入或审核后的 AI 结果 | record_id | UserProfile |
 | ExerciseSuggestion | exercise_suggestions | 规则/AI 建议与采纳状态 | suggestion_id | UserProfile |
 | AgentExercisePlan | agent_exercise_plans | Agent 校验后的结构化运动计划与 revision 历史 | plan_id | UserProfile |
+| AgentExercisePlanStepProgress | agent_exercise_plan_step_progress | 用户对某个计划步骤的完成投影（缺行即未完成） | progress_id / (plan_id, step_order) | AgentExercisePlan |
 | ExerciseCalorieReference | exercise_calorie_reference | 版本化 reference seed | exercise_id | 应用参考目录 |
 | AgentThread | agent_threads | 用户创建或 Agent 工作台创建 | thread_id | UserProfile |
 | AgentMessage | agent_messages | 用户、助手或工具的本地对话消息 | message_id | AgentThread |
@@ -41,6 +42,7 @@
 - UserProfile 1:N MealRecord，通过 user_id，删除档案时级联删除。
 - UserProfile 1:N ExerciseSuggestion，通过 user_id，删除档案时级联删除。
 - UserProfile 1:N AgentExercisePlan，通过 user_id，删除档案时级联删除；计划可选地追溯到 AgentThread、来源 AgentMessage 或旧 ExerciseSuggestion。
+- AgentExercisePlan 1:N AgentExercisePlanStepProgress，通过 plan_id，删除计划时级联删除完成投影；(plan_id, step_order) 唯一。
 - UserProfile 1:N AgentThread，通过 user_id，删除档案时级联删除。
 - AgentThread 1:N AgentMessage，通过 thread_id，删除对话时级联删除消息。
 - AgentThread 1:N AgentExercisePlan 为可选来源关系；删除对话时计划保留并将 thread_id 置空。
@@ -71,6 +73,7 @@
 - recognition_raw：可选脱敏 JSON，不含图片 data URL、密钥或供应商错误正文。
 - is_adopted：ExerciseSuggestion 的持久用户决策，不是临时 UI 状态。
 - AgentExercisePlan 是 Agent 输出经服务端校验后的持久结构化 artifact；`source_kind` 仅为 `agent` 或 `legacy_suggestion`，`status` 仅为 `active`、`superseded`、`legacy`、`archived`。
+- AgentExercisePlanStepProgress 是用户操作产生的派生投影，只保存已完成步骤；没有行表示未完成。整体“计划已完成”由校验后的步骤总数与完成行数派生，不修改 `AgentExercisePlan.plan_json`。
 - 同一 UserProfile 同一天只能有一个 `active` Agent 计划；调整通过新 revision 替换 active，不能覆盖旧 revision。
 - `plan_json` 只允许受限的日期、标题、目标、时长、强度、步骤和安全提示；不得包含原始模型响应、隐藏推理、凭据或工具原文。
 - 每条旧 ExerciseSuggestion 都保留在原表；迁移以 `legacy_suggestion_id` 幂等创建 legacy 镜像，不能删除、覆盖或重复镜像。

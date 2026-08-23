@@ -1,5 +1,5 @@
 {
-  "schema_version": 6,
+  "schema_version": 7,
   "amendment": {
     "contract_id": "C-11",
     "decision": "cloud_delivery_shared_gate_and_cloud_credentials",
@@ -7,8 +7,8 @@
     "return_to": "web_completion_audit"
   },
   "active_amendment": {
-    "contract_id": "C-24-A1",
-    "decision": "agent_structured_exercise_plan_and_legacy_migration",
+    "contract_id": "C-27-A1",
+    "decision": "exercise_plan_checklist_progress_projection",
     "status": "accepted",
     "return_to": "C-21"
   },

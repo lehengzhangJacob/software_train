@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: 无；C-26 已完成并回归主合同，Issues #3/#4/#5/#10 仍保持开放等待外部复测
+- Current slice: C-27-A1；C-27 为运动计划 checklist 子合同，C-26 已完成并回归主合同，Issues #3/#4/#5/#10 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 and #10 remain open until external testers confirm non-reproduction.
@@ -23,6 +23,7 @@
 - C-24-S4 completed: StepFun exercise turns request low reasoning effort so hidden reasoning cannot consume the answer budget; cloud generation, persistence, coach return link, active plan projection, legacy history and Browser console checks passed. Existing pre-generation desktop/375px visual evidence remains; the current In-app Browser session could not export screenshot bytes, so no post-generation screenshot is claimed.
 - C-25-A1 completed: ADR-0015 defines per-account ten-article batches, safe context, DashScope async image tasks, durable shared assets, protected daily job and visual fallback; ER/data-model and architecture invariants are amended. C-25-S1 is implementing additive empty-start tables and account-scoped APIs.
 - C-20 is separately blocked on the remote repository write permission and is not part of this fix line.
+- C-27-A1 completed: AgentExercisePlanStepProgress is an additive completion projection; migration copy preserved existing plan, suggestion and meal rows with no backfill. Return path is C-27-S1.
 
 ```text
 C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
@@ -52,6 +53,11 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-26-A1 营养值域与数据模型修宪 [completed]
     ├── C-26-S1 后端创建/批量/更新校验 [completed]
     └── C-26-S2 前端输入、提示与历史展示保护 [completed]
+└── C-27 - Agent 运动计划完成 checklist 与 v0.1.2 发布 [in_progress]
+    ├── C-27-A1 数据模型与迁移 [completed]
+    ├── C-27-S1 完成状态 API [pending]
+    ├── C-27-S2 运动页 checklist UI [pending]
+    └── C-27-S3 云端验收与 Release [pending]
 ```
 
 - 当前合同：`C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]`

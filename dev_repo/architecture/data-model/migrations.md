@@ -152,6 +152,13 @@
 6. 回滚只恢复迁移前 SQLite 副本并移除新表/共享图片目录，不触碰历史业务表；任何跨 profile
    文章或破坏性 backfill 都是 red-line delta contract。
 
+## C-27 AgentExercisePlan checklist 进度
+
+1. 新增 `agent_exercise_plan_step_progress`，以 `(plan_id, step_order)` 唯一保存已完成步骤；缺少行即表示未完成。
+2. 迁移不回填历史计划，因为旧数据没有可信的完成事件；既有 `agent_exercise_plans`、revision、`plan_json` 和 legacy 镜像完整保留。
+3. 外键由计划级联删除，账户隔离沿 `AgentExercisePlan.user_id` 继承；API 写入前必须校验 plan 所有权和步骤序号。
+4. 验证副本的旧计划行数、主键、revision、plan_json、`PRAGMA integrity_check` 和 `foreign_key_check` 不变，新进度表初始为零行。
+
 ## 验证
 
 - prisma validate

@@ -48,6 +48,11 @@
       "description": "MealRecord nutrition value-domain bounds shared by API validation and UI display"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0017-exercise-plan-checklist-progress.md",
+      "node": "database.prisma",
+      "description": "Persistent per-step exercise-plan completion projection without mutating Agent plan source data"
+    },
+    {
       "path": "dev_repo/architecture/content-generation.md",
       "node": "agent.runtime",
       "description": "C-25 daily article context, content, image, trigger and retry contract"

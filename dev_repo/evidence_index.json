@@ -1435,5 +1435,17 @@
       "path": "dev_repo/evidence/C-26/S2/cloud-acceptance.json",
       "description": "云端 20260822202323：300 位输入拒绝且不落库、100000 边界可保存并清理、375px 无溢出、控制台无错误"
     }
+  ],
+  "C-27-A1": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0017-exercise-plan-checklist-progress.md, dev_repo/architecture/data-model/ER.md, dev_repo/architecture/data-model/entities.json, dev_repo/architecture/data-model/relationships.json",
+      "description": "AgentExercisePlanStepProgress 独立保存已完成步骤；旧计划、旧建议与 plan_json 不变"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-27/S1/verification.json",
+      "description": "迁移副本保留 AgentExercisePlan=2、ExerciseSuggestion=2、MealRecord=14；新进度表 0 行，integrity/foreign-key 通过"
+    }
   ]
 }

@@ -10,6 +10,7 @@ erDiagram
   UserProfile ||--o{ MealRecord : owns
   UserProfile ||--o{ ExerciseSuggestion : owns
   UserProfile ||--o{ AgentExercisePlan : owns
+  AgentExercisePlan ||--o{ AgentExercisePlanStepProgress : tracks
   UserProfile ||--o{ AgentThread : owns
   AgentThread ||--o{ AgentMessage : contains
   AgentThread o|--o{ AgentExercisePlan : contextualizes
@@ -109,6 +110,14 @@ erDiagram
     int total_minutes
     string intensity
     string plan_json
+    datetime created_at
+    datetime updated_at
+  }
+  AgentExercisePlanStepProgress {
+    int progress_id PK
+    int plan_id FK
+    int step_order
+    datetime completed_at
     datetime created_at
     datetime updated_at
   }

@@ -101,6 +101,11 @@ flowchart LR
 
 旧 `ExerciseSuggestion` 不删除、不重写。新增 migration 会以 `legacy_suggestion_id` 幂等镜像旧建议为 `source_kind=legacy_suggestion` 的计划历史，旧表继续保存完整原始记录；迁移前后必须通过行数、主键、integrity 和 foreign-key 检查。
 
+计划步骤完成状态由 `AgentExercisePlanStepProgress` 单独持久化：每个
+`(plan_id, step_order)` 只记录已完成步骤，运动页读取时派生
+`completedCount/totalSteps/planCompleted`。勾选不修改 Agent 生成的 `plan_json`；新 revision
+拥有全新的 checklist，旧计划的完成投影仍可追溯。
+
 ### Agent 日更图文与 DashScope 生图（C-25 / ADR-0015）
 
 日更内容是 Agent Runtime 的独立派生流：服务端从允许的档案、餐食/活动聚合、active

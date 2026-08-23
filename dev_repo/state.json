@@ -507,6 +507,24 @@
       "backfill_required": false,
       "issue_state": "Issue #10 remains open until external retest; Issues #3/#4/#5 remain open for external retest.",
       "latest_verification": "C-26-S2 passed locally and in cloud deploy 20260822202323: 300-digit input rejected without write, 100000 boundary saved/cleaned, 375px no-overflow and console clean; Issue #10 remains open for external retest"
+    },
+    "C-27": {
+      "contract_id": "C-27",
+      "parent_contract_id": "C-24",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "为 Agent 运动计划增加可持久化的逐项完成 checklist，并带真实云端截图发布",
+      "goal": "新增账户隔离的运动计划步骤完成投影、拥有权校验 API、运动页 checklist 交互，并在云端真实验收后发布 v0.1.2；不改写旧计划或关闭 Issue #10。",
+      "current_slice": "C-27-A1",
+      "completed_slices": [],
+      "deferred_slices": [],
+      "return_to": "C-26-release",
+      "architecture_amendment": "C-27-A1 / ADR-0017",
+      "data_model_delta": "新增 AgentExercisePlanStepProgress；按 (plan_id, step_order) 保存已完成步骤，缺行即未完成",
+      "migration_required": true,
+      "backfill_required": false,
+      "issue_state": "Issue #10 remains open until external retest; Issues #3/#4/#5 remain open for external retest.",
+      "latest_verification": "C-27-A1 migration copy preserved AgentExercisePlan=2, ExerciseSuggestion=2 and MealRecord=14; new progress table has 0 rows; integrity and foreign-key checks passed."
     }
   }
 }
