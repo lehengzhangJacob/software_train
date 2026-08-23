@@ -7,8 +7,15 @@ const args = new Set(process.argv.slice(2))
 const apply = args.has("--apply")
 const baseUrl = (process.env.DEMO_BASE_URL || "http://8.148.206.131:8000").replace(/\/+$/, "")
 const marker = process.env.DEMO_MARKER || "C-12-E2E-20260818"
-const anchorDate = process.env.DEMO_ANCHOR_DATE || "2026-08-18"
-const evidenceDirectory = path.join(root, "dev_repo", "evidence", "C-12")
+const anchorDate = process.env.DEMO_ANCHOR_DATE || new Date().toISOString().slice(0, 10)
+const dataWindowDays = Number(process.env.DEMO_DATA_WINDOW_DAYS || 14)
+const activityDays = Number(process.env.DEMO_ACTIVITY_DAYS || dataWindowDays)
+const exerciseDays = Number(process.env.DEMO_EXERCISE_DAYS || Math.min(dataWindowDays, 7))
+const contractId = process.env.DEMO_CONTRACT_ID || "C-12"
+const sliceId = process.env.DEMO_SLICE_ID || "C-12-S1"
+const evidenceDirectory = process.env.DEMO_EVIDENCE_DIR
+  ? path.resolve(root, process.env.DEMO_EVIDENCE_DIR)
+  : path.join(root, "dev_repo", "evidence", contractId)
 const demoLogin = process.env.DEMO_LOGIN?.trim()
 const demoPassword = process.env.DEMO_PASSWORD || ""
 const demoUsername = process.env.DEMO_USERNAME?.trim() || "云端演示用户"
@@ -29,6 +36,11 @@ function dateOffset(daysAgo) {
   const date = parseDate(anchorDate)
   date.setUTCDate(date.getUTCDate() - daysAgo)
   return date.toISOString().slice(0, 10)
+}
+
+function dayOffsets(count) {
+  assert(Number.isInteger(count) && count > 0 && count <= dataWindowDays, `Invalid demo day count: ${count}`)
+  return Array.from({ length: count }, (_, index) => dataWindowDays - 1 - index)
 }
 
 function mealTemplates(variant) {
@@ -124,7 +136,7 @@ async function requestJson(cookie, pathname, options = {}) {
 }
 
 function mealPayload(date, daysAgo) {
-  return mealTemplates(13 - daysAgo).map(([foodName, mealType, calories, proteinG, fatG, carbsG, portionDesc, recordTime]) => ({
+  return mealTemplates(dataWindowDays - 1 - daysAgo).map(([foodName, mealType, calories, proteinG, fatG, carbsG, portionDesc, recordTime]) => ({
     foodName,
     mealType,
     calories,
@@ -140,7 +152,7 @@ function mealPayload(date, daysAgo) {
 
 async function seedMeals(cookie) {
   const created = []
-  for (let daysAgo = 13; daysAgo >= 0; daysAgo -= 1) {
+  for (const daysAgo of dayOffsets(dataWindowDays)) {
     const date = dateOffset(daysAgo)
     const existing = await requestJson(cookie, `/api/meals?date=${date}`)
     const desired = mealPayload(date, daysAgo)
@@ -159,16 +171,17 @@ async function seedActivity(cookie) {
   const recent = await requestJson(cookie, "/api/health/recent?days=31")
   const existingDates = new Set(recent.activities.map((activity) => activity.activityDate))
   const created = []
-  for (let daysAgo = 6; daysAgo >= 0; daysAgo -= 1) {
+  for (const daysAgo of dayOffsets(activityDays)) {
     const activityDate = dateOffset(daysAgo)
     if (existingDates.has(activityDate)) continue
+    const dayIndex = dataWindowDays - 1 - daysAgo
     const activity = await requestJson(cookie, "/api/health/sync", {
       method: "POST",
       body: JSON.stringify({
         activityDate,
-        steps: 5_400 + ((6 - daysAgo) % 5) * 1_350,
-        activeCalories: 210 + ((6 - daysAgo) % 4) * 65,
-        exerciseMinutes: 22 + ((6 - daysAgo) % 4) * 9,
+        steps: 5_400 + (dayIndex % 5) * 1_350,
+        activeCalories: 210 + (dayIndex % 4) * 65,
+        exerciseMinutes: 22 + (dayIndex % 4) * 9,
         sourceKind: "manual",
       }),
     })
@@ -179,7 +192,7 @@ async function seedActivity(cookie) {
 
 async function seedExercise(cookie) {
   const created = []
-  for (const daysAgo of [6, 3, 0]) {
+  for (const daysAgo of dayOffsets(exerciseDays)) {
     const date = dateOffset(daysAgo)
     const suggestion = await requestJson(cookie, `/api/exercise/suggest?date=${date}`)
     if (suggestion.adopted.length > 0 || suggestion.candidates.length === 0) continue
@@ -218,28 +231,30 @@ async function seedMemories(cookie) {
 
 async function verifyDataset(cookie) {
   const mealRows = []
-  for (let daysAgo = 13; daysAgo >= 0; daysAgo -= 1) {
+  for (const daysAgo of dayOffsets(dataWindowDays)) {
     const date = dateOffset(daysAgo)
     mealRows.push(...(await requestJson(cookie, `/api/meals?date=${date}`)))
   }
-  const activity = await requestJson(cookie, "/api/health/recent?days=7")
+  const activity = await requestJson(cookie, "/api/health/recent?days=31")
   const report = await requestJson(cookie, "/api/reports?period=monthly")
   const memories = await requestJson(cookie, "/api/memories?status=all")
   const exerciseRows = []
-  for (const daysAgo of [6, 3, 0]) {
+  for (const daysAgo of dayOffsets(exerciseDays)) {
     const suggestion = await requestJson(cookie, `/api/exercise/suggest?date=${dateOffset(daysAgo)}`)
     exerciseRows.push(...suggestion.adopted)
   }
   const demoMeals = mealRows.filter((record) => record.notes?.startsWith(marker))
   const demoMemories = memories.filter((memory) => memory.content.startsWith(marker))
   assert(demoMeals.some((record) => record.recordDate === anchorDate), "Seeded meals were not visible on the anchor date")
-  assert(report.daysRecorded >= 7, "Monthly report did not include the seeded meal window")
-  assert(activity.activities.length >= 6, "Health activity window did not include seeded activity")
+  assert(report.daysRecorded >= Math.min(dataWindowDays, 7), "Monthly report did not include the seeded meal window")
+  assert(activity.activities.length >= activityDays, "Health activity window did not include seeded activity")
   assert(demoMemories.length >= 3, "Seeded memories were not readable")
   return {
     anchorMeals: demoMeals.filter((record) => record.recordDate === anchorDate).length,
     recordedDays: report.daysRecorded,
     activityDays: activity.activities.length,
+    expectedActivityDays: activityDays,
+    expectedExerciseDays: exerciseDays,
     demoMemories: demoMemories.length,
     present: {
       mealIds: demoMeals.map((record) => record.recordId),
@@ -259,10 +274,10 @@ async function main() {
       marker,
       anchorDate,
       plan: {
-        mealDays: 14,
+        mealDays: dataWindowDays,
         mealsPerDay: 4,
-        activityDays: 7,
-        adoptedExerciseDays: 3,
+        activityDays,
+        adoptedExerciseDays: exerciseDays,
         memories: 3,
         writePath: "cloud HTTP API only",
       },
@@ -278,8 +293,8 @@ async function main() {
   const createdMemories = await seedMemories(cookie)
   const verification = await verifyDataset(cookie)
   const manifest = {
-    contractId: "C-12",
-    sliceId: "C-12-S1",
+    contractId,
+    sliceId,
     generatedAt: new Date().toISOString(),
     baseUrl,
     marker,
