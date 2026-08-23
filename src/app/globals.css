@@ -174,6 +174,70 @@
     @apply mx-auto w-full max-w-[1480px];
   }
 
+  .app-route-transition {
+    animation: app-route-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    transform-origin: top center;
+    will-change: opacity, transform;
+  }
+
+  .mobile-nav-indicator {
+    position: absolute;
+    top: 0.25rem;
+    width: 1.15rem;
+    height: 0.18rem;
+    border-radius: 999px;
+    background: var(--brand-mint-deep);
+    opacity: 0;
+    transform: scaleX(0.35);
+    transition: opacity 240ms ease, transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .mobile-nav-indicator-active {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .meal-action-button {
+    isolation: isolate;
+    position: relative;
+  }
+
+  .meal-action-button::before {
+    position: absolute;
+    z-index: -1;
+    inset: -0.4rem;
+    border: 1px solid color-mix(in srgb, var(--brand-mint) 52%, transparent);
+    border-radius: 999px;
+    content: "";
+    opacity: 0;
+    transform: scale(0.72);
+    transition: opacity 280ms ease, transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .meal-action-button:hover::before,
+  .meal-action-button:focus-visible::before,
+  .meal-action-button-active::before {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .meal-action-button-active {
+    background: var(--brand-plum);
+    color: var(--brand-mint);
+    box-shadow: 0 10px 26px color-mix(in srgb, var(--brand-plum) 24%, transparent);
+  }
+
+  @keyframes app-route-enter {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 0.65rem, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
   .page-eyebrow {
     @apply text-[11px] font-semibold uppercase text-[var(--brand-mint-deep)];
   }
@@ -784,6 +848,15 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .app-route-transition,
+    .mobile-nav-indicator,
+    .meal-action-button,
+    .meal-action-button::before {
+      animation: none !important;
+      transition-duration: 1ms !important;
+      scroll-behavior: auto !important;
+    }
+
     .access-page-content *,
     .access-page-content *::before,
     .access-page-content *::after {

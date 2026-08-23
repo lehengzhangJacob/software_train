@@ -36,7 +36,12 @@ export function AppChrome({
         )}
       >
         {!isAccessRoute && <AppUpdateNotice currentBuild={currentBuild} />}
-        <div className={cn("app-page", isAccessRoute && "access-page")}>{children}</div>
+        <div
+          key={pathname}
+          className={cn("app-page", !isAccessRoute && "app-route-transition", isAccessRoute && "access-page")}
+        >
+          {children}
+        </div>
       </main>
     </div>
   )

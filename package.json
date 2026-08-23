@@ -20,6 +20,7 @@
     "test:health": "tsx --test scripts/health-contract.test.ts",
     "test:meal-validation": "tsx --test scripts/meal-validation-contract.test.ts",
     "test:meal-ui": "tsx --test scripts/meal-ui-contract.test.ts",
+    "test:navigation-motion": "tsx --test scripts/navigation-motion-contract.test.ts",
     "test:exercise-plan": "tsx --test scripts/exercise-plan-contract.test.ts",
     "test:exercise-plan-ui": "tsx --test scripts/exercise-plan-ui-contract.test.ts",
     "test:article": "tsx --test scripts/article-contract.test.ts",

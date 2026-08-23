@@ -177,9 +177,13 @@ export function Sidebar() {
                   )}
                 >
                   {item.label}
-                  {active && (
-                    <span className="absolute inset-x-4 bottom-0 h-[3px] bg-[var(--brand-mint)]" />
-                  )}
+                  <span
+                    aria-hidden="true"
+                    className={cn(
+                      "absolute inset-x-4 bottom-0 h-[3px] origin-center bg-[var(--brand-mint)] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                      active ? "scale-x-100" : "scale-x-0"
+                    )}
+                  />
                 </Link>
               )
             })}
@@ -229,36 +233,87 @@ export function Sidebar() {
 
       <nav
         aria-label="移动端主导航"
-        className="fixed inset-x-0 bottom-0 z-40 grid h-[calc(4.25rem+env(safe-area-inset-bottom))] grid-cols-6 border-t border-border/80 bg-white/98 dark:bg-card/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-40 flex h-[calc(4.25rem+env(safe-area-inset-bottom))] border-t border-border/80 bg-white/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur dark:bg-card/98 lg:hidden"
       >
-        {mobileNav.map((item) => {
+        <div className="grid min-w-0 flex-1 grid-cols-3">
+          {mobileNav.slice(0, 3).map((item) => {
+            const active = isRouteActive(pathname, item.matches)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "group relative flex min-w-0 flex-col items-center justify-center gap-1 px-1 pt-1 text-[10px] font-medium transition-[color,transform] duration-300 focus-visible:z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand-mint)]",
+                  active ? "text-[var(--brand-mint-deep)]" : "text-muted-foreground"
+                )}
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn("mobile-nav-indicator", active && "mobile-nav-indicator-active")}
+                />
+                <item.icon
+                  className="size-[18px] transition-transform duration-300 group-hover:-translate-y-0.5 group-active:scale-90"
+                  strokeWidth={active ? 2.4 : 1.8}
+                />
+                <span className="truncate">{item.label}</span>
+              </Link>
+            )
+          })}
+        </div>
+
+        {(() => {
+          const item = mobileNav[3]
           const active = isRouteActive(pathname, item.matches)
           return (
             <Link
-              key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-[10px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand-mint)]",
+                "group relative z-10 flex w-16 shrink-0 -translate-y-1 flex-col items-center justify-center gap-1 px-0 text-[10px] font-semibold transition-[color,transform] duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint-deep)] focus-visible:ring-offset-2",
                 active ? "text-[var(--brand-mint-deep)]" : "text-muted-foreground"
               )}
             >
-              {item.action ? (
-                <span
-                  className={cn(
-                    "-mt-4 grid size-11 place-items-center rounded-full border-4 border-white bg-[var(--brand-mint)] dark:border-card text-[var(--brand-plum)] shadow-[0_8px_20px_rgba(39,211,157,.28)]",
-                    active && "bg-[var(--brand-plum)] text-[var(--brand-mint)]"
-                  )}
-                >
-                  <item.icon className="size-5" strokeWidth={2.2} />
-                </span>
-              ) : (
-                <item.icon className="size-[18px]" strokeWidth={active ? 2.4 : 1.8} />
-              )}
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "meal-action-button grid size-11 place-items-center rounded-full border-4 border-white bg-[var(--brand-mint)] text-[var(--brand-plum)] shadow-[0_8px_20px_rgba(39,211,157,.28)] transition-[background-color,box-shadow,transform] duration-300 group-hover:-translate-y-1 group-active:scale-95 dark:border-card",
+                  active && "meal-action-button-active"
+                )}
+              >
+                <item.icon className="size-5" strokeWidth={2.2} />
+              </span>
               <span className="truncate">{item.label}</span>
             </Link>
           )
-        })}
+        })()}
+
+        <div className="grid min-w-0 flex-1 grid-cols-2">
+          {mobileNav.slice(4).map((item) => {
+            const active = isRouteActive(pathname, item.matches)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "group relative flex min-w-0 flex-col items-center justify-center gap-1 px-1 pt-1 text-[10px] font-medium transition-[color,transform] duration-300 focus-visible:z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--brand-mint)]",
+                  active ? "text-[var(--brand-mint-deep)]" : "text-muted-foreground"
+                )}
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn("mobile-nav-indicator", active && "mobile-nav-indicator-active")}
+                />
+                <item.icon
+                  className="size-[18px] transition-transform duration-300 group-hover:-translate-y-0.5 group-active:scale-90"
+                  strokeWidth={active ? 2.4 : 1.8}
+                />
+                <span className="truncate">{item.label}</span>
+              </Link>
+            )
+          })}
+        </div>
       </nav>
     </>
   )
