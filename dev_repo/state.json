@@ -408,7 +408,7 @@
       "deferred_slices": [],
       "return_to": "web_completion_audit",
       "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5, #9 and #10 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-31-S2 complete: cloud deploy 20260823161502 moved Daily Reading into the Today secondary navigation; #9 remains open for external retest alongside #3/#4/#5/#10, while #6/#7/#8 remain closed after confirmation."
+      "latest_verification": "C-32 release complete: v0.1.3 is published as the latest GitHub Release at tag target 6c37d8d; cloud deploy 20260823164114 reports app version 0.1.3. Issue #9 remains open for external retest alongside #3/#4/#5/#10, while #6/#7/#8 remain closed after confirmation."
     },
     "C-21-UI1": {
       "contract_id": "C-21-UI1",
@@ -597,6 +597,24 @@
       "backfill_required": false,
       "issue_state": "No issue or release state changed by this UI-only contract.",
       "latest_verification": "C-31-S2 passed on deploy 20260823161502: desktop dashboard and insights screenshots/DOM show Today secondary tabs, /insights keeps Today primary active, /calendar hides the secondary tabs, console is clean and desktop scrollWidth does not exceed clientWidth. Mobile 2+center+2 structure is covered by source contract; 375px PNG is not claimed because the connected in-app browser viewport is fixed desktop."
+    },
+    "C-32": {
+      "contract_id": "C-32",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "发布包含 C-31 今天二级导航调整的 v0.1.3",
+      "goal": "同步 Web/Android 版本元数据、部署云端并公开发布 v0.1.3 GitHub Release，保留截图证据与既有 Issue 状态。",
+      "current_slice": null,
+      "completed_slices": ["C-32-S1"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "none; existing delivery.version_contract and web.app-shell navigation boundaries",
+      "data_model_delta": "none",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "Issues #3/#4/#5/#9/#10 remain open for external retest; Issues #6/#7/#8 remain closed after confirmation.",
+      "latest_verification": "C-32-S1 passed: npm run verify and Android 0.1.3 contract test; remote main 6c37d8d; cloud deploy 20260823164114 with /api/app/version=0.1.3; GitHub Release v0.1.3 published 2026-08-23T08:57:27Z with visual evidence links."
     }
   }
 }
