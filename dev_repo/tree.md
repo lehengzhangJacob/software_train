@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: 无；C-27 checklist 与 C-28 日更后台生成均已完成并回归主合同，Issues #3/#4/#5/#10 仍保持开放等待外部复测
+- Current slice: 无；C-27、C-28、C-31 与 C-32 已完成并回归主合同，v0.1.3 已公开发布；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 and #10 remain open until external testers confirm non-reproduction.
@@ -74,6 +74,7 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
 - C-29 - 移动端中央记一餐入口、路线切换动效与 Team A 两周演示数据 [completed：UI 云端验收、375px 截图、Team A 56/14/7/3 数据回读与 B/C 隔离证据]
 - C-30 - 修复 Issue #9 计划页补记日期失效 [completed：日期参数、手动保存与清理云端回归、截图证据；Issue #9 保持 Open]
 - C-31 - 将每日阅读降为今天的二级 Tab [completed：一级导航收敛、移动底栏 2+中央+2、桌面云端截图与 DOM 验收]
+- C-32 - 发布 v0.1.3 今天二级导航版本 [completed：版本元数据、云端 0.1.3、GitHub Release 与两张截图证据]
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text
