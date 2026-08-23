@@ -1,0 +1,9 @@
+{
+  "url": "http://8.148.206.131:8000/meals?date=2026-08-22",
+  "consoleLogs": [],
+  "viewportCheck": {
+    "clientWidth": 1265,
+    "innerWidth": 1280,
+    "scrollWidth": 1265
+  }
+}
