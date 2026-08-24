@@ -1,6 +1,7 @@
 {
   "contract": "C-37-S5",
   "deploy": "20260824204147",
+  "fullVerify": "passed after terminal-barrier correction",
   "version": {
     "version": "0.1.5",
     "build": "kBAGzLnp0_fp0fj3sCrD3"

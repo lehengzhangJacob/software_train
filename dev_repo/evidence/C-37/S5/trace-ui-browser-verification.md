@@ -4,8 +4,8 @@ Date: 2026-08-24 (Asia/Shanghai)
 
 ## Build and deployment
 
-- `npm run verify` passed before the terminal-barrier correction.
-- After the correction, `npm run test:agent-trace-ui`, `npm run typecheck`, `npm run lint -- --quiet`, `git diff --check`, and `npm run build` passed.
+- `npm run verify` passed after the terminal-barrier correction, including all Agent/search/Trace/UI and existing business contract tests, lint, typecheck, and production build.
+- Focused post-fix checks also passed: `npm run test:agent-trace-ui`, `npm run typecheck`, `npm run lint -- --quiet`, `git diff --check`, and `npm run build`.
 - Cloud deploy `20260824204147` completed with Prisma migration status clean, `/access` 200, anonymous `/api/users` 401, and the content timer enabled/active.
 - Public version endpoint remained `0.1.5` (`build=kBAGzLnp0_fp0fj3sCrD3`).
 

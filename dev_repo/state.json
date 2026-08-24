@@ -704,7 +704,7 @@
       "migration_required": false,
       "backfill_required": false,
       "issue_state": "No Issue is closed by this contract; existing external retest status remains unchanged.",
-      "latest_verification": "C-37-S5 passed: deploy 20260824204147, npm verify baseline plus focused post-fix tests/typecheck/lint/build; Team A cloud Browser confirmed in-order streaming, four friendly phases, 16/16 technical spans, real read-only tools, deterministic Warhammer scope reply, and explicit no-search fallback on StepFun."
+      "latest_verification": "C-37-S5 passed: deploy 20260824204147, post-fix npm run verify plus focused checks; Team A cloud Browser confirmed in-order streaming, four friendly phases, 16/16 technical spans, real read-only tools, deterministic Warhammer scope reply, and explicit no-search fallback on StepFun."
     }
   }
 }
