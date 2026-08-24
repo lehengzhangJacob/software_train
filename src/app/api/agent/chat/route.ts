@@ -47,6 +47,7 @@ import { sanitizeTraceText } from "@/lib/agent/trace-contract"
 import { runAgentKernel } from "@/lib/agent/kernel/runner"
 import { AGENT_TOOL_USAGE_INSTRUCTIONS, createAgentToolRegistry } from "@/lib/agent/kernel/tool-registry"
 import { classifyAgentIntent } from "@/lib/agent/policy/intent"
+import { isDashScopeWebSearchAvailable } from "@/lib/agent/search/web-search"
 import { getTodayStr } from "@/lib/utils"
 import { after } from "next/server"
 
@@ -413,6 +414,7 @@ async function runAgentChatInternal(
     },
     async () => {
       const modelStartedAt = Date.now()
+      const webSearchAvailable = policy.requiresWebSearch && isDashScopeWebSearchAvailable(config)
       const modelStarted = await trace.emit({
         eventType: "model.started",
         status: "running",
@@ -437,6 +439,7 @@ async function runAgentChatInternal(
               exerciseMode,
               exercisePlan: currentExercisePlan?.plan ?? null,
               intent: policy.intent,
+              webSearchAvailable,
             }),
             AGENT_TOOL_USAGE_INSTRUCTIONS,
           ].join("\n\n"),
@@ -446,7 +449,7 @@ async function runAgentChatInternal(
           })),
           message: input.message,
           capabilities: { stream: true, toolCalls: true },
-          tools: createAgentToolRegistry(),
+          tools: createAgentToolRegistry({ config, allowWebSearch: policy.requiresWebSearch }),
           context: {
             context,
             currentExercisePlan: currentExercisePlan?.plan ?? null,

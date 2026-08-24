@@ -13,7 +13,7 @@
     "smoke": "node scripts/release-smoke.mjs",
     "test:ai": "tsx --test scripts/ai-settings.test.ts",
     "test:memory": "tsx --test scripts/memory-contract.test.ts",
-    "test:agent": "tsx --test scripts/agent-contract.test.ts scripts/agent-policy-contract.test.ts scripts/agent-fitness-prompt-contract.test.ts",
+    "test:agent": "tsx --test scripts/agent-contract.test.ts scripts/agent-policy-contract.test.ts scripts/agent-fitness-prompt-contract.test.ts scripts/web-search-contract.test.ts",
     "test:agent-trace": "tsx --test scripts/agent-trace-contract.test.ts scripts/agent-stream-contract.test.ts",
     "test:agent-kernel": "tsx --test scripts/agent-kernel-contract.test.ts",
     "test:agent-trace-ui": "tsx --test scripts/agent-trace-ui-contract.test.ts",
