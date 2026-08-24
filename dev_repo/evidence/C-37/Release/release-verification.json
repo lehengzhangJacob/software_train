@@ -1,0 +1,37 @@
+{
+  "contract_id": "C-37-Release",
+  "slice_id": "C-37-Release-S1",
+  "summary": "发布 Agent 自主性与真实 Trace 收口的 FoodMoment v0.1.6",
+  "source_commit": "a75ff817a56599bbd179ae2a1235ebd13c86e056",
+  "branch": "main",
+  "local_gates": {
+    "npm run verify": "pass; middleware-to-proxy deprecation warning only",
+    "npx tsx --test scripts/android-update-contract.test.ts": "pass",
+    "android/gradlew.bat assembleRelease": "pass; unsigned APK",
+    "npm run smoke": "pass",
+    "apk_sha256": "61DB2A99B1834203FD98BA0F5759BBA5FC8132823D859D3575B264ABA8F2132F"
+  },
+  "cloud": {
+    "deployment": "20260824210817",
+    "access_status": 200,
+    "anonymous_api_status": 401,
+    "version": "0.1.6",
+    "build": "wbWhERfGonZG5-QYEae4u",
+    "content_timer": "enabled/active"
+  },
+  "release": {
+    "tag": "v0.1.6",
+    "name": "FoodMoment v0.1.6",
+    "url": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.6",
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      "app-release-unsigned.apk",
+      "cloud-trace-streaming-fixed.png",
+      "cloud-trace-completed-detail.png",
+      "cloud-trace-technical.png",
+      "cloud-off-topic-scope.png"
+    ]
+  },
+  "issue_state": "No Issue is closed by this release; #3/#4/#5/#9/#10 remain open for external retest and #6/#7/#8 remain closed after prior confirmation."
+}

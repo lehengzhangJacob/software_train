@@ -13,6 +13,8 @@
 - `npm run verify`
 - `npx tsx --test scripts/android-update-contract.test.ts`
 - `android/gradlew.bat assembleRelease`
+- Cloud deploy: `20260824210817`
+- `/api/app/version`: `0.1.6` (`wbWhERfGonZG5-QYEae4u`)
 - Cloud Browser Team A: optimistic user message, in-order streaming answer, four friendly phases, `16/16` technical spans, four real read-only tools, deterministic off-topic handling and transparent StepFun no-search fallback.
 - Issues are unchanged by this release: #3/#4/#5/#9/#10 remain open for external retest; #6/#7/#8 remain closed after prior confirmation.
 
@@ -29,3 +31,5 @@
 ## Android
 
 The release asset is `app-release-unsigned.apk` (`versionCode 7`, `versionName 0.1.6`). It is explicitly unsigned and intended for local/test installation.
+
+APK SHA-256: `61DB2A99B1834203FD98BA0F5759BBA5FC8132823D859D3575B264ABA8F2132F`

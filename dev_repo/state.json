@@ -705,6 +705,24 @@
       "backfill_required": false,
       "issue_state": "No Issue is closed by this contract; existing external retest status remains unchanged.",
       "latest_verification": "C-37-S5 passed: deploy 20260824204147, post-fix npm run verify plus focused checks; Team A cloud Browser confirmed in-order streaming, four friendly phases, 16/16 technical spans, real read-only tools, deterministic Warhammer scope reply, and explicit no-search fallback on StepFun."
+    },
+    "C-37-Release": {
+      "contract_id": "C-37-Release",
+      "parent_contract_id": "C-37",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "发布 Agent 自主性与真实 Trace 收口的 FoodMoment v0.1.6",
+      "goal": "同步 Web/Android 版本、部署云端并创建带 APK 与 Trace 截图证据的 GitHub Release。",
+      "current_slice": null,
+      "completed_slices": ["C-37-Release-S1"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "none; existing delivery.version_contract and agent.runtime boundaries",
+      "data_model_delta": "none",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this release; existing external retest status remains unchanged.",
+      "latest_verification": "v0.1.6 source commit a75ff817; npm run verify, Android metadata/assembleRelease and release smoke passed; cloud deploy 20260824210817 reports /api/app/version=0.1.6/build wbWhERfGonZG5-QYEae4u; GitHub Release v0.1.6 includes unsigned APK and four C-37 Trace screenshots."
     }
   }
 }

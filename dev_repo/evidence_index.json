@@ -1656,5 +1656,17 @@
       "path": "dev_repo/evidence/C-37/S5/cloud-trace-streaming-fixed.png, dev_repo/evidence/C-37/S5/cloud-trace-completed-fixed.png, dev_repo/evidence/C-37/S5/cloud-trace-completed-detail.png, dev_repo/evidence/C-37/S5/cloud-trace-technical.png, dev_repo/evidence/C-37/S5/cloud-off-topic-scope.png",
       "description": "云端 Browser 流式 Trace、完成态、友好阶段、技术详情与无关话题分流截图"
     }
+  ],
+  "C-37-Release-S1": [
+    {
+      "type": "release",
+      "path": "dev_repo/release-notes-v0.1.6.md, dev_repo/evidence/C-37/Release/release-verification.json, https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.6",
+      "description": "v0.1.6 已推送至 main，云端 0.1.6 已上线，GitHub Release 为正式发布并包含未签名 Android APK 与四张 C-37 Trace 截图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-37/Release/release-verification.json",
+      "description": "npm verify、Android versionCode 7/assembleRelease、云端访问门与版本接口、Release draft/prerelease 状态和资产清单均已核验"
+    }
   ]
 }
