@@ -1,0 +1,58 @@
+{
+  "contract": "C-37-S5",
+  "deploy": "20260824204147",
+  "version": {
+    "version": "0.1.5",
+    "build": "kBAGzLnp0_fp0fj3sCrD3"
+  },
+  "smoke": {
+    "access": 200,
+    "anonymousApiUsers": 401,
+    "contentTimer": {
+      "enabled": "enabled",
+      "active": "active"
+    }
+  },
+  "browser": {
+    "account": "foodmoment-team-a",
+    "fitnessTurn": {
+      "optimisticUserMessage": true,
+      "friendlyPhases": [
+        "确认请求范围",
+        "准备相关信息",
+        "生成个性化建议",
+        "保存本回合结果"
+      ],
+      "technicalSpanCount": 16,
+      "terminalSequence": 185,
+      "modelDeltaCount": 80,
+      "answerDeltaCount": 75,
+      "tools": [
+        "read_profile",
+        "read_daily_activity",
+        "read_active_memories",
+        "read_exercise_plan"
+      ]
+    },
+    "offTopic": {
+      "topic": "Warhammer 40K",
+      "deterministicScopeReply": true,
+      "modelOrSearchCalled": false
+    },
+    "researchFallback": {
+      "explicitResearchIntent": true,
+      "provider": "stepfun",
+      "dashscopeConfigured": false,
+      "transparentUnavailableMessage": true,
+      "researchPhaseShown": false,
+      "fabricatedCitation": false
+    }
+  },
+  "screenshots": [
+    "dev_repo/evidence/C-37/S5/cloud-trace-streaming-fixed.png",
+    "dev_repo/evidence/C-37/S5/cloud-trace-completed-fixed.png",
+    "dev_repo/evidence/C-37/S5/cloud-trace-completed-detail.png",
+    "dev_repo/evidence/C-37/S5/cloud-trace-technical.png",
+    "dev_repo/evidence/C-37/S5/cloud-off-topic-scope.png"
+  ]
+}

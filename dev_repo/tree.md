@@ -89,6 +89,13 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
         └── C-36 - 推送 main、云端部署与 v0.1.5 GitHub Release [completed：deploy 20260824172751；APK 与 Trace 截图]
 └── C-34 - 发布包含真实 Agent Trace 的 v0.1.4 [completed：deploy 20260824122436；GitHub Release v0.1.4]
     └── S1 Web/Android 版本、云端部署与 GitHub Release [completed：版本接口 0.1.4、Android versionCode 5、Trace 截图与 APK]
+└── C-37 - Agent 自主性、领域边界、受控 Web Search 与渐进式 Trace 投影 [completed：deploy 20260824204147；Team A Browser 流式/终态/无关话题验收]
+    ├── C-37-A1 架构修订与运行时边界 [completed：ADR-0021]
+    ├── C-37-S1 领域意图策略与无关话题处理 [completed]
+    ├── C-37-S2 健身/恢复系统提示词 [completed]
+    ├── C-37-S3 DashScope Web Search 受控适配器与引用 [completed：Qwen 能力门与单元合同通过]
+    ├── C-37-S4 真实事件到友好阶段/技术详情投影 [completed]
+    └── C-37-S5 云端 Browser 验收与截图证据 [completed：4 个友好阶段、16/16 spans、StepFun 搜索透明降级]
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

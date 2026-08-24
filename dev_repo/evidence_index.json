@@ -1644,5 +1644,17 @@
       "path": "dev_repo/evidence/C-36-S1/release-verification.json",
       "description": "npm verify、Android versionCode 6/assembleRelease、云端访问门与版本接口、Release draft/prerelease 状态和资产清单均已核验"
     }
+  ],
+  "C-37-S5": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-37/S5/trace-ui-browser-verification.md, dev_repo/evidence/C-37/S5/cloud-trace-verification.json",
+      "description": "deploy 20260824204147 后，Team A 云端 Browser 验证健身回合即时消息、流式答案、4 个友好阶段、16/16 真实 span、真实只读工具、Warhammer 无关话题分流与 StepFun 联网能力透明降级"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-37/S5/cloud-trace-streaming-fixed.png, dev_repo/evidence/C-37/S5/cloud-trace-completed-fixed.png, dev_repo/evidence/C-37/S5/cloud-trace-completed-detail.png, dev_repo/evidence/C-37/S5/cloud-trace-technical.png, dev_repo/evidence/C-37/S5/cloud-off-topic-scope.png",
+      "description": "云端 Browser 流式 Trace、完成态、友好阶段、技术详情与无关话题分流截图"
+    }
   ]
 }

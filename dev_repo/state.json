@@ -408,7 +408,7 @@
       "deferred_slices": [],
       "return_to": "web_completion_audit",
       "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5, #9 and #10 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-34 release complete: v0.1.4 is published as the latest GitHub Release; cloud deploy 20260824122436 reports app version 0.1.4. Issues #3/#4/#5/#9/#10 remain open for external retest, while #6/#7/#8 remain closed after confirmation."
+      "latest_verification": "C-37 completed: deploy 20260824204147 runs the fitness-domain prompt, deterministic off-topic scope policy, guarded Web Search capability gate, and progressive friendly/technical Trace projection. Team A Browser confirmed streaming and final-state alignment, 16/16 real spans, and transparent StepFun search fallback; existing Issue status unchanged."
     },
     "C-21-UI1": {
       "contract_id": "C-21-UI1",
@@ -687,6 +687,24 @@
       "backfill_required": false,
       "issue_state": "No Issue is closed by this release; existing external retest status remains unchanged.",
       "latest_verification": "C-36-S1 passed: v0.1.5 release source tag c88e7c8; origin/codex/c35-trace-refactor and origin/main ledger at cbdc8b7; npm run verify; Android versionCode 6/versionName 0.1.5 and unsigned assembleRelease; cloud deploy 20260824172751 with /api/app/version=0.1.5; GitHub Release v0.1.5 published with APK and three Trace screenshots."
+    },
+    "C-37": {
+      "contract_id": "C-37",
+      "parent_contract_id": "C-35",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "Agent 自主性、健身领域边界、受控联网搜索与渐进式 Trace 投影",
+      "goal": "在既有 AgentKernel 与 Canonical Trace 架构内，让 Agent 能按领域策略自主选择安全工具，专门化饮食/训练/恢复提示词，并以真实事件驱动友好阶段与技术详情。",
+      "current_slice": null,
+      "completed_slices": ["C-37-A1", "C-37-S1", "C-37-S2", "C-37-S3", "C-37-S4", "C-37-S5"],
+      "deferred_slices": ["真实 DashScope Web Search 云端回合：待账户配置 Qwen/DashScope 凭据后验收"],
+      "return_to": "C-21",
+      "architecture_amendment": "C-37-A1 / ADR-0021",
+      "data_model_delta": "none; Trace remains an ephemeral current-turn projection; no new entities or migrations",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this contract; existing external retest status remains unchanged.",
+      "latest_verification": "C-37-S5 passed: deploy 20260824204147, npm verify baseline plus focused post-fix tests/typecheck/lint/build; Team A cloud Browser confirmed in-order streaming, four friendly phases, 16/16 technical spans, real read-only tools, deterministic Warhammer scope reply, and explicit no-search fallback on StepFun."
     }
   }
 }
