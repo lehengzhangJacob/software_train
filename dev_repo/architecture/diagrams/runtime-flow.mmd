@@ -15,11 +15,20 @@ sequenceDiagram
   end
   User->>UI: 发起营养对话或附近外卖请求
   UI->>API: POST /api/agent
-  API->>API: AgentKernel 建立受能力门控的回合
+  API->>API: AgentIntentPolicy 判断领域与联网需求
+  alt 明显越界话题
+    API-->>UI: SSE policy safe reply（不调用工具/搜索）
+  else 饮食、健身、恢复或当前资料
+    API->>API: AgentKernel 建立受能力门控的回合
+  end
   API-->>UI: SSE run.started / canonical trace (current turn only)
   API->>DB: 读取档案、餐食与可用记忆
   DB-->>API: safe context summaries
   API->>API: ToolRegistry 暴露白名单上下文/领域工具
+  opt 用户询问当前或明确要求公开资料
+    API->>AI: WebSearchAdapter（Qwen/DashScope enable_search）
+    AI-->>API: 清洗后的来源标题、URL、摘要与时间
+  end
   API->>AI: ModelProviderAdapter 调用 (tool calls + stream when proven)
   AI-->>API: model deltas / tool calls
   API-->>UI: SSE model.started / model.delta / step events
@@ -45,7 +54,10 @@ sequenceDiagram
     API-->>UI: 只返回建议，不创建订单
   end
   API-->>UI: SSE run.completed / run.failed + done
-  UI->>UI: TraceProjectionReducer 按 runId 聚合、排序并冻结终态
+  UI->>UI: Friendly Projection 默认聚合业务阶段
+  User->>UI: 主动展开技术详情
+  UI->>UI: Technical Projection 展示真实嵌套 span、耗时与来源计数
+  UI->>UI: 按 runId 聚合、排序并冻结终态
   User->>UI: 确认保存
   UI->>API: POST /api/meals
   API->>DB: 绑定 primary profile 后写入

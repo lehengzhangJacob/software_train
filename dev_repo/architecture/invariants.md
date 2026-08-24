@@ -115,3 +115,13 @@ The earlier single-user statement is superseded by this amendment:
     详情，不得改变其视觉时间线位置。
 61. 回合摘要与详情必须绑定同一 runId；SSE 收尾、消息对账、自动滚动或组件重渲染不得
     自动重播已完成回合的详情。
+62. `AgentIntentPolicy` 必须在模型回合前判定请求范围；明显越界请求不得触发个人数据工具、
+    `web_search` 或无关模型流程，能够明确转成饮食、健身或恢复目标的请求可重新进入 Agent。
+63. Agent 的领域提示词必须同时覆盖饮食、训练和恢复，并明确渐进、器械、恢复和安全边界；
+    普通运动咨询不得被迫输出结构化运动计划，exercise-plan 模式仍须经过既有服务端校验。
+64. `web_search` 只能由服务端白名单工具调用；首期仅允许显式支持 DashScope `enable_search`
+    的 Qwen Provider，能力未知或失败时必须透明降级，不得伪称联网或把原始搜索 payload 传播。
+65. 搜索来源只能以清洗后的标题、来源 URL、摘要、时间和来源计数进入模型回答或 Trace；
+    搜索提示注入、凭据、原始参数/结果、隐藏推理和支付信息不得进入 SSE、AgentMessage、Memory 或日志。
+66. Trace Friendly Projection 默认只显示 3–5 个真实业务阶段；Technical Projection 才展开
+    真实嵌套工具/模型/策略 span，两者必须共享同一 `traceId`、`runId`、sequence 和终态屏障。

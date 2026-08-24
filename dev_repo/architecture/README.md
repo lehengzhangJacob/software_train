@@ -41,6 +41,7 @@ authorization boundary.
 - data-model/：实体、关系、迁移与回填真相。
 - decisions/ADR-0001-private-course-boundary.md：本次修宪决策。
 - decisions/ADR-0018-background-daily-article-generation.md：日更文章后台生成与公开入队边界。
+- decisions/ADR-0021-agent-domain-policy-search-and-progressive-trace.md：Agent 领域范围、受控 Web Search 与渐进式 Trace 投影。
 
 ## 置信度
 

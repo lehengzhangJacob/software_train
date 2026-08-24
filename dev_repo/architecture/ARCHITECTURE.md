@@ -249,3 +249,23 @@ C-35 将现有 Canonical Trace 的浏览器消费边界收紧为一层纯
 工作台的“回合摘要”和“回合详情”是同一回合的两种投影，不是两套状态。`sending`、兼容
 activity 和流式答案只负责传输与局部反馈；完成事实只能由 Canonical Trace 终态决定。
 Trace 继续是临时投影，不新增数据库实体、迁移、回填或历史回放语义。
+
+### Agent 领域策略、受控搜索与渐进式 Trace（C-37-A1 / ADR-0021）
+
+C-37 在 AgentKernel 之前增加 `AgentIntentPolicy`，把请求分为饮食、健身、恢复、
+健康数据、点餐、当前资料、待澄清和越界。明显越界请求只返回范围说明，不调用个人
+数据工具或联网搜索；能明确转成训练/饮食目标的主题才重新进入 Agent Runtime。
+
+系统提示词现在把 Agent 定义为饮食、训练和恢复教练。它可使用活动量与运动计划，
+但必须遵守渐进、恢复、器械和安全边界，不做诊断或处方。现有 exercise-plan 模式的
+受限结构化 artifact 合同保持不变。
+
+联网能力由服务端 `WebSearchAdapter` 作为白名单 `web_search` 工具提供，首期只对
+显式支持 DashScope `enable_search` 的 Qwen Provider 开放。搜索结果经过标题、来源 URL、
+摘要和时间字段清洗后再交给模型；回答必须给出可见来源。其他 Provider 或搜索失败时
+明确降级，不能伪称已联网。搜索原始 payload、提示注入和凭据不进入 AgentTrace 或持久化。
+
+Trace 继续只由 Canonical `AgentTraceEvent v1` 驱动。Friendly Projection 默认把真实
+事件聚合为 3–5 个业务阶段；Technical Projection 由用户主动展开，显示同一回合真实的
+工具/模型/策略 span、序号、耗时和来源数量。两层共享终态屏障和 sequence，不新增
+固定模板、第二运行时或 Prisma 数据模型。

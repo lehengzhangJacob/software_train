@@ -308,7 +308,9 @@
       "invariants": [
         "完整密钥不回传浏览器",
         "失败不得伪装成功",
-        "提供商响应脱敏"
+        "提供商响应脱敏",
+        "联网搜索只通过服务端适配器，Provider 能力未知时透明降级",
+        "搜索原始 payload、提示注入和凭据不进入 AgentTrace 或持久化"
       ],
       "allowed_change_types": [
         "provider adapter",
@@ -674,6 +676,9 @@
         "推断不冒充事实",
         "建议不是医疗诊断",
         "工具调用经过策略层",
+        "请求先经过 AgentIntentPolicy；明显越界话题不触发模型工具或联网搜索",
+        "领域提示词同时覆盖饮食、健身和恢复，并明确渐进与安全边界",
+        "web_search 仅对显式支持 DashScope enable_search 的 Qwen Provider 开放",
         "只有当前消息的明确点餐意图可授权创建一笔未支付订单",
         "上下文 = 滚动摘要 + 水位后尾部，历史只压缩不丢弃",
         "后台整理非阻塞且失败静默，不影响对话主流程",
@@ -696,16 +701,21 @@
         "DashScope async image adapter"
       ],
       "internal_boundaries": [
+        "AgentIntentPolicy",
         "AgentKernel",
         "ModelProviderAdapter",
         "ToolRegistry",
+        "WebSearchAdapter",
         "CanonicalTraceBridge",
         "TraceProjectionReducer",
+        "FriendlyTraceProjection",
+        "TechnicalTraceProjection",
         "SSEProjection"
       ],
-      "runtime_flow": "API façade -> AgentKernel -> ModelProviderAdapter -> Context/ToolRegistry -> ActionPolicy -> MCP/domain tools -> Canonical AgentTraceEvent v1 -> SSE -> TraceProjectionReducer -> stable run summary/detail -> final AgentMessage",
+      "runtime_flow": "API façade -> AgentIntentPolicy -> (safe off-topic reply | AgentKernel -> ModelProviderAdapter -> Context/ToolRegistry -> WebSearchAdapter when enabled -> ActionPolicy -> MCP/domain tools) -> Canonical AgentTraceEvent v1 -> SSE -> Friendly/Technical Trace Projection -> final AgentMessage",
       "capability_gate": {
         "autonomous_loop_requires": ["tool_calls", "verifiable_stream"],
+        "web_search_requires": ["explicit current-research intent", "providerId=qwen", "DashScope enable_search support"],
         "unsupported_provider": "explicit fallback; never fake streaming or tool events",
         "sdk_boundary": "@openai/agents is used only behind the local adapter"
       },

@@ -68,6 +68,11 @@
       "description": "Canonical Trace lifecycle, terminal barrier, and single browser projection reducer"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0021-agent-domain-policy-search-and-progressive-trace.md",
+      "node": "agent.runtime",
+      "description": "Agent domain scope policy, guarded DashScope Web Search, and progressive Friendly/Technical Trace projections"
+    },
+    {
       "path": "dev_repo/architecture/content-generation.md",
       "node": "agent.runtime",
       "description": "C-25 daily article context, content, image, trigger and retry contract"
