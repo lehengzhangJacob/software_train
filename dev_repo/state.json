@@ -669,6 +669,24 @@
       "backfill_required": false,
       "issue_state": "No Issue is closed by this contract; existing external retest status remains unchanged.",
       "latest_verification": "C-35-S3 passed: npm run verify; local Browser desktop and 375px regression; optimistic message appeared before completion, logical spans collapsed without duplicate rows, terminal #76 aligned with 11/11 completed nodes, technical sequence/delta projection visible, no console errors or visual horizontal overflow."
+    },
+    "C-36": {
+      "contract_id": "C-36",
+      "parent_contract_id": "C-35",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "发布 Agent Trace 生命周期重构的 FoodMoment v0.1.5",
+      "goal": "将 C-35 的 Trace UI 修复同步到临时分支与 main，部署云端并创建带 APK/截图证据的 GitHub Release。",
+      "current_slice": null,
+      "completed_slices": ["C-36-S1"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "none; existing delivery.version_contract and agent.runtime boundaries",
+      "data_model_delta": "none",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this release; existing external retest status remains unchanged.",
+      "latest_verification": "C-36-S1 passed: origin/codex/c35-trace-refactor and origin/main at c88e7c8; npm run verify; Android versionCode 6/versionName 0.1.5 and unsigned assembleRelease; cloud deploy 20260824172751 with /api/app/version=0.1.5; GitHub Release v0.1.5 published with APK and three Trace screenshots."
     }
   }
 }

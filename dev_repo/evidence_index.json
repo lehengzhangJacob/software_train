@@ -1632,5 +1632,17 @@
       "path": "dev_repo/evidence/C-35/desktop-completed.png, dev_repo/evidence/C-35/desktop-technical.png, dev_repo/evidence/C-35/mobile-technical.png",
       "description": "桌面完成态、桌面技术详情和 375px 技术详情截图"
     }
+  ],
+  "C-36-S1": [
+    {
+      "type": "release",
+      "path": "dev_repo/release-notes-v0.1.5.md, dev_repo/evidence/C-36-S1/release-verification.json, https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.5",
+      "description": "v0.1.5 已推送至临时分支与 main，云端 0.1.5 已上线，GitHub Release 为正式发布并包含未签名 Android APK 与三张 Trace 截图"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-36-S1/release-verification.json",
+      "description": "npm verify、Android versionCode 6/assembleRelease、云端访问门与版本接口、Release draft/prerelease 状态和资产清单均已核验"
+    }
   ]
 }

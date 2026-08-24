@@ -12,7 +12,10 @@
 
 - `npm run verify`
 - `npx tsx --test scripts/android-update-contract.test.ts`
+- Cloud deploy: `20260824172751`
+- `/api/app/version`: `0.1.5` (`DSYgfLmmNAza2DKtxOk_b`)
 - Android release build: `versionCode 6` / `versionName 0.1.5`; uploaded asset is explicitly unsigned (`app-release-unsigned.apk`)
+- Android APK SHA-256: `4FD15315BE47E267E7094106D50F4B412FF9481710328BC6F79F0D1F6909AF21`
 - Local Browser desktop and 375px acceptance: optimistic message, no duplicate logical rows, terminal `11/11` with `#76`, technical sequence/delta projection, no console errors or visual horizontal overflow
 
 ## Visual evidence

@@ -1,0 +1,40 @@
+{
+  "contract_id": "C-36",
+  "slice_id": "C-36-S1",
+  "summary": "发布 Agent Trace 生命周期重构的 FoodMoment v0.1.5",
+  "source_commit": "c88e7c83e927770868af843db72f82e63d883adb",
+  "branch": "codex/c35-trace-refactor",
+  "main": "origin/main",
+  "remote_branches": {
+    "origin/codex/c35-trace-refactor": "c88e7c83e927770868af843db72f82e63d883adb",
+    "origin/main": "c88e7c83e927770868af843db72f82e63d883adb"
+  },
+  "local_gates": {
+    "npm run verify": "pass; middleware-to-proxy deprecation warning only",
+    "npx tsx --test scripts/android-update-contract.test.ts": "pass",
+    "android/.gradlew.bat assembleRelease": "pass; unsigned APK",
+    "apk_sha256": "4FD15315BE47E267E7094106D50F4B412FF9481710328BC6F79F0D1F6909AF21"
+  },
+  "cloud": {
+    "deployment": "20260824172751",
+    "access_status": 200,
+    "anonymous_api_status": 401,
+    "version": "0.1.5",
+    "build": "DSYgfLmmNAza2DKtxOk_b",
+    "content_timer": "enabled/active"
+  },
+  "release": {
+    "tag": "v0.1.5",
+    "name": "FoodMoment v0.1.5",
+    "url": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.5",
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      "app-release-unsigned.apk",
+      "desktop-completed.png",
+      "desktop-technical.png",
+      "mobile-technical.png"
+    ]
+  },
+  "issue_state": "No Issue is closed by this release; #3/#4/#5/#9/#10 remain open for external retest and #6/#7/#8 remain closed after prior confirmation."
+}
