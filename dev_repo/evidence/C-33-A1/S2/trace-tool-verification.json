@@ -1,0 +1,42 @@
+{
+  "contract_id": "C-33-A1",
+  "slice_id": "C-33-A1-S2",
+  "implementation": {
+    "tool_registry": "src/lib/agent/kernel/tool-registry.ts",
+    "registered_tools": [
+      "read_profile",
+      "read_recent_meals",
+      "read_daily_activity",
+      "read_active_memories",
+      "read_exercise_plan"
+    ],
+    "kernel_trace_bridge": "src/lib/agent/kernel/runner.ts",
+    "route_integration": "src/app/api/agent/chat/route.ts",
+    "max_turns": 4,
+    "write_boundary": "read-only context tools only; ordering remains behind action.policy and the existing MCP chain"
+  },
+  "verification": {
+    "npm run test:agent-kernel": "5 passed; SDK model -> tool -> model stream and tool failure Trace covered",
+    "npm run test:agent": "11 passed",
+    "npm run test:agent-trace": "9 passed",
+    "npm run test:ordering": "12 passed",
+    "npm run test:mcp": "8 passed",
+    "npm run typecheck": "passed",
+    "npm run lint": "passed",
+    "npm run build": "passed"
+  },
+  "trace_proof": {
+    "tool_started_and_result": "SDK RunToolCallItem and RunToolCallOutputItem are projected only when emitted by the live run",
+    "parent_child": "tool.result references the recorder-generated tool.started event ID; provider call IDs remain local correlation keys",
+    "model_deltas": "each SDK output_text_delta emits a model.delta event before visible answer projection",
+    "redaction": "Trace stores allowlisted tool names and bounded safe summaries only; raw tool arguments and outputs are excluded"
+  },
+  "compatibility": {
+    "agent_message_persistence": "unchanged; only final user/assistant messages are persisted",
+    "sse_envelopes": "unchanged",
+    "data_model": "none; AgentTraceEvent remains ephemeral current-turn projection",
+    "provider_fallback": "unsupported stream/tool capability remains explicit fallback rather than a false autonomous claim"
+  },
+  "red_line_check": "not crossed; no account mutation, payment, order creation, credential access, raw hidden reasoning, or MCP bypass added",
+  "cloud_acceptance": "deferred to C-33-A1-S4; this slice proves the kernel and canonical Trace with local SDK contract doubles"
+}

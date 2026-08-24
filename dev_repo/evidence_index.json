@@ -1536,5 +1536,17 @@
       "path": "dev_repo/evidence/C-33-A1/S1/kernel-verification.json",
       "description": "Kernel 3 项、Agent 11 项、Trace 9 项测试通过，typecheck/lint 通过；无数据模型变化"
     }
+  ],
+  "C-33-A1-S2": [
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/kernel/tool-registry.ts, src/lib/agent/kernel/runner.ts, src/app/api/agent/chat/route.ts, scripts/agent-kernel-contract.test.ts",
+      "description": "五个受限只读工具接入 AgentKernel；真实 SDK tool_called/tool_output 事件桥接到 Canonical Trace；普通 Agent 回合启用最多四轮自主循环，点餐/MCP 写路径保持原策略边界"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-33-A1/S2/trace-tool-verification.json",
+      "description": "AgentKernel 5 项、Agent 11 项、Trace 9 项、Ordering 12 项、MCP 8 项通过；lint/typecheck/build 通过；工具原始参数与结果不进入 Trace"
+    }
   ]
 }

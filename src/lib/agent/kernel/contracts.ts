@@ -1,5 +1,6 @@
 import type { ModelProvider, Tool } from "@openai/agents"
 import type { ResolvedAiProviderConfig } from "@/lib/ai/settings"
+import type { AgentTraceRecorder } from "@/lib/agent/trace"
 
 export type AgentKernelMessage = {
   role: "user" | "assistant"
@@ -23,6 +24,8 @@ export type AgentKernelOptions = {
   capabilities?: AgentKernelCapabilities
   tools?: Tool[]
   modelProvider?: ModelProvider
+  context?: unknown
+  trace?: AgentTraceRecorder
   signal?: AbortSignal
   maxTurns?: number
   temperature?: number

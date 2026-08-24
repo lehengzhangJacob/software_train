@@ -45,6 +45,7 @@ import { createAgentTraceRecorder, runAgentTraceStep, type AgentTraceRecorder } 
 import type { AgentTraceEvent } from "@/lib/agent/trace-contract"
 import { sanitizeTraceText } from "@/lib/agent/trace-contract"
 import { runAgentKernel } from "@/lib/agent/kernel/runner"
+import { AGENT_TOOL_USAGE_INSTRUCTIONS, createAgentToolRegistry } from "@/lib/agent/kernel/tool-registry"
 import { getTodayStr } from "@/lib/utils"
 import { after } from "next/server"
 
@@ -394,18 +395,26 @@ async function runAgentChatInternal(
       try {
         const kernelResult = await runAgentKernel({
           config,
-          instructions: buildAgentSystemPrompt(context, sessionDigest?.summary, {
-            exerciseMode,
-            exercisePlan: currentExercisePlan?.plan ?? null,
-          }),
+          instructions: [
+            buildAgentSystemPrompt(context, sessionDigest?.summary, {
+              exerciseMode,
+              exercisePlan: currentExercisePlan?.plan ?? null,
+            }),
+            AGENT_TOOL_USAGE_INSTRUCTIONS,
+          ].join("\n\n"),
           messages: history.map((message) => ({
             role: message.role,
             content: redactSuppressedMemoryContent(message.content, context.suppressedMemoryContents),
           })),
           message: input.message,
-          // S1 establishes the Kernel façade. Tool-call capability is enabled
-          // only after S2 registers policy-gated tools and real Trace hooks.
-          capabilities: { stream: true, toolCalls: false },
+          capabilities: { stream: true, toolCalls: true },
+          tools: createAgentToolRegistry(),
+          context: {
+            context,
+            currentExercisePlan: currentExercisePlan?.plan ?? null,
+          },
+          trace,
+          maxTurns: 4,
           reasoningEffort: exerciseMode && config.providerId === "stepfun" ? "low" : undefined,
           onTextDelta: projector.push,
         })
