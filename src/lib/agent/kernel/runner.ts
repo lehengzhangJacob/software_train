@@ -16,6 +16,7 @@ import type {
   AgentKernelResult,
 } from "@/lib/agent/kernel/contracts"
 import { defaultAgentKernelCapabilities } from "@/lib/agent/kernel/contracts"
+import type { AgentTraceEventInput } from "@/lib/agent/trace-contract"
 
 function toAgentInput(messages: AgentKernelMessage[], message: string): AgentInputItem[] {
   return [
@@ -37,6 +38,51 @@ function streamTextDelta(event: RunStreamEvent): string | undefined {
   const data = event.data as unknown as { type?: string; delta?: unknown }
   if (data.type !== "output_text_delta" && data.type !== "response.output_text.delta") return undefined
   return typeof data.delta === "string" && data.delta ? data.delta : undefined
+}
+
+function safeToolName(value: unknown, allowedToolNames: Set<string>) {
+  if (typeof value !== "string" || !allowedToolNames.has(value)) return undefined
+  return value
+}
+
+function traceInputForToolEvent(
+  event: RunStreamEvent,
+  allowedToolNames: Set<string>,
+  activeTools: Map<string, { eventId: string; startedAt: number; toolName?: string }>,
+): AgentTraceEventInput | null {
+  if (event.type !== "run_item_stream_event") return null
+  const item = event.item as unknown as Record<string, unknown>
+  const rawItem = item.rawItem as Record<string, unknown> | undefined
+  const callId = typeof item.callId === "string"
+    ? item.callId
+    : typeof rawItem?.callId === "string"
+      ? rawItem.callId
+      : undefined
+  const toolName = safeToolName(
+    typeof item.toolName === "string" ? item.toolName : rawItem?.name,
+    allowedToolNames,
+  )
+  if (event.name === "tool_called" && item.type === "tool_call_item" && callId) {
+    return {
+      eventType: "tool.started",
+      status: "running",
+      label: toolName ? `调用 ${toolName}` : "调用受限工具",
+      ...(toolName ? { toolName } : {}),
+      safeSummary: "模型选择了一个已注册的只读工具",
+    }
+  }
+  if (event.name === "tool_output" && item.type === "tool_call_output_item" && callId) {
+    const active = activeTools.get(callId)
+    return {
+      eventType: "tool.result",
+      status: rawItem?.status === "incomplete" || item.executionStatus !== "executed" ? "failed" : "completed",
+      label: active?.toolName || toolName ? `调用 ${active?.toolName ?? toolName}` : "调用受限工具",
+      ...((active?.toolName ?? toolName) ? { toolName: active?.toolName ?? toolName } : {}),
+      ...(active ? { parentId: active.eventId, durationMs: Date.now() - active.startedAt } : {}),
+      safeSummary: "只读工具返回已隔离的安全摘要",
+    }
+  }
+  return null
 }
 
 function modeFor(capabilities: AgentKernelCapabilities, streamed: boolean): AgentKernelMode {
@@ -91,16 +137,53 @@ export async function runAgentKernel(options: AgentKernelOptions): Promise<Agent
   })
 
   let streamedText = ""
+  let toolWasInvoked = false
+  const activeTools = new Map<string, { eventId: string; startedAt: number; toolName?: string }>()
   try {
     const result = await runner.run(agent, toAgentInput(options.messages, options.message), {
       stream: true,
       maxTurns: options.maxTurns ?? 1,
       signal: options.signal,
+      context: options.context,
     })
+    const allowedToolNames = new Set((options.tools ?? []).map((tool) => tool.name))
     for await (const event of result) {
+      if (event.type === "run_item_stream_event" && event.name === "tool_called") {
+        toolWasInvoked = true
+      }
+      const toolTrace = traceInputForToolEvent(event, allowedToolNames, activeTools)
+      if (toolTrace && options.trace) {
+        const itemEventName = event.type === "run_item_stream_event" ? event.name : undefined
+        const callId = event.type === "run_item_stream_event"
+          ? String(
+              ((event.item as unknown as Record<string, unknown>).callId
+                ?? ((event.item as unknown as Record<string, unknown>).rawItem as Record<string, unknown> | undefined)?.callId
+                ?? ""),
+            )
+          : ""
+        if (itemEventName === "tool_called") {
+          const started = await options.trace.emit(toolTrace)
+          if (callId) {
+            activeTools.set(callId, {
+              eventId: started.eventId,
+              startedAt: Date.now(),
+              ...(started.toolName ? { toolName: started.toolName } : {}),
+            })
+          }
+        } else {
+          await options.trace.emit(toolTrace)
+          if (callId) activeTools.delete(callId)
+        }
+      }
       const delta = streamTextDelta(event)
       if (!delta) continue
       streamedText += delta
+      await options.trace?.emit({
+        eventType: "model.delta",
+        status: "running",
+        label: "模型返回增量",
+        safeSummary: "模型返回了一段可见内容",
+      })
       await options.onTextDelta?.(delta)
     }
     await result.completed
@@ -125,6 +208,22 @@ export async function runAgentKernel(options: AgentKernelOptions): Promise<Agent
   } catch (error) {
     // A provider that rejects stream mode is an explicit fallback, but a
     // partially emitted stream must remain an honest failed turn.
+    if (toolWasInvoked) {
+      if (options.trace) {
+        for (const active of activeTools.values()) {
+          await options.trace.emit({
+            eventType: "tool.result",
+            status: "failed",
+            label: active.toolName ? `调用 ${active.toolName}` : "调用受限工具",
+            ...(active.toolName ? { toolName: active.toolName } : {}),
+            parentId: active.eventId,
+            durationMs: Date.now() - active.startedAt,
+            safeSummary: "只读工具执行失败",
+          })
+        }
+      }
+      throw error
+    }
     if (streamedText) throw error
     return fallbackCompletion(options)
   }
