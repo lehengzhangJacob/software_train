@@ -1,0 +1,44 @@
+{
+  "contract_id": "C-33-A1",
+  "slice_id": "C-33-A1-S3",
+  "status": "completed",
+  "scope": "Canonical Trace UI is a pure projection of real current-turn events; no data model, migration, or backfill change.",
+  "browser": {
+    "target": "http://localhost:3100/agent",
+    "session": "Local seeded authenticated session as 测试用户_张三",
+    "checks": [
+      "The optimistic user message is visible before the assistant response completes.",
+      "The live Trace panel is visible while the run is in progress.",
+      "Actual SDK-backed read_recent_meals and read_daily_activity tool start/result events are rendered in chronological order.",
+      "Default projection uses friendly labels and hides raw tool names, model deltas, raw arguments, and raw results.",
+      "Technical details are opt-in and expose event sequence, tool name, and grouped model-delta counts.",
+      "The completed progress panel remains collapsible and the final answer remains in the normal conversation stream."
+    ],
+    "observations": [
+      {
+        "prompt": "我最近吃了什么？请结合真实记录回答",
+        "observed": "read_recent_meals start/result events appeared during the run, followed by the generated answer."
+      },
+      {
+        "prompt": "最近一周我走了多少步？请基于真实记录回答",
+        "observed": "read_daily_activity start/result events appeared during the run, followed by the generated answer."
+      }
+    ],
+    "viewport_375": {
+      "inner_width": 375,
+      "inner_height": 812,
+      "client_width": 360,
+      "scroll_width": 360,
+      "horizontal_overflow": false
+    },
+    "console": {
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "screenshots": [
+    "dev_repo/evidence/C-33-A1/S3/trace-desktop-timeline.png",
+    "dev_repo/evidence/C-33-A1/S3/trace-mobile-375-panel.png"
+  ],
+  "cloud_acceptance": "deferred to C-33-A1-S4; this record claims local Browser acceptance only"
+}

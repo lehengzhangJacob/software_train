@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-33-A1 - AgentKernel、自主工具循环与真实 Canonical Trace` [in_progress]
-- Current slice: `C-33-A1-S3`；父合同 `C-21` 保持 in_progress，完成后返回 C-21；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
+- Current slice: `C-33-A1-S4`；父合同 `C-21` 保持 in_progress，完成后返回 C-21；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 and #10 remain open until external testers confirm non-reproduction.
@@ -79,8 +79,8 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── S0 架构修宪、Provider 能力探针与基线证据 [completed]
     ├── S1 AgentKernel 与 ModelProviderAdapter [completed]
     ├── S2 白名单工具循环与 Canonical Trace [completed]
-    ├── S3 Trace UI 纯投影与 Browser 验收 [in_progress]
-    └── S4 云端验收、截图与证据归档 [pending]
+    ├── S3 Trace UI 纯投影与 Browser 验收 [completed：本地 Browser 即时消息、真实工具事件、技术详情、375px 无溢出]
+    └── S4 云端验收、截图与证据归档 [in_progress]
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text
