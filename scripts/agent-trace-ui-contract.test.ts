@@ -54,4 +54,20 @@ test("Trace projection collapses logical spans, closes deltas and preserves firs
   const defaultView = projectTraceEvents(events, false)
   assert.equal(defaultView.some((item) => item.eventType === "model.delta"), false)
   assert.equal(defaultView.some((item) => item.eventType === "run.completed"), false)
+  assert.ok(defaultView.length <= 5)
+  assert.deepEqual(defaultView.map((item) => item.label), ["准备相关信息", "生成个性化建议", "保存本回合结果"])
+})
+
+test("friendly projection gives a real search span its own research phase", () => {
+  const events = [
+    event({ eventType: "run.started", status: "running", label: "开始 Agent 回合", sequence: 0 }),
+    event({ eventType: "tool.started", status: "running", label: "调用 web_search", sequence: 1, eventId: "search", toolName: "web_search" }),
+    event({ eventType: "tool.result", status: "completed", label: "调用 web_search", sequence: 2, parentId: "search", toolName: "web_search", safeSummary: "公开资料检索完成，共 2 条来源" }),
+    event({ eventType: "model.started", status: "running", label: "健康 Agent 生成建议", sequence: 3, eventId: "model" }),
+    event({ eventType: "step.completed", status: "completed", label: "健康 Agent 生成建议", sequence: 4, parentId: "model" }),
+    event({ eventType: "run.completed", status: "completed", label: "Agent 回合完成", sequence: 5 }),
+  ]
+  const friendly = projectTraceEvents(events, false)
+  assert.deepEqual(friendly.map((item) => item.label), ["检索公开资料", "生成个性化建议"])
+  assert.equal(friendly[0]?.status, "completed")
 })

@@ -48,6 +48,8 @@ import { runAgentKernel } from "@/lib/agent/kernel/runner"
 import { AGENT_TOOL_USAGE_INSTRUCTIONS, createAgentToolRegistry } from "@/lib/agent/kernel/tool-registry"
 import { classifyAgentIntent } from "@/lib/agent/policy/intent"
 import { isDashScopeWebSearchAvailable } from "@/lib/agent/search/web-search"
+import type { WebSearchSource } from "@/lib/agent/search/web-search"
+import { appendWebSearchSources } from "@/lib/agent/search/citations"
 import { getTodayStr } from "@/lib/utils"
 import { after } from "next/server"
 
@@ -405,6 +407,7 @@ async function runAgentChatInternal(
     }
   }
 
+  const webSearchSources: WebSearchSource[] = []
   const modelResult = await runAgentActivity(
     recorder.emit,
     {
@@ -449,7 +452,13 @@ async function runAgentChatInternal(
           })),
           message: input.message,
           capabilities: { stream: true, toolCalls: true },
-          tools: createAgentToolRegistry({ config, allowWebSearch: policy.requiresWebSearch }),
+          tools: createAgentToolRegistry({
+            config,
+            allowWebSearch: policy.requiresWebSearch,
+            onWebSearchResult: (result) => {
+              webSearchSources.push(...result.sources)
+            },
+          }),
           context: {
             context,
             currentExercisePlan: currentExercisePlan?.plan ?? null,
@@ -487,6 +496,7 @@ async function runAgentChatInternal(
   if (!rawText) throw new AgentResponseError("AI 没有返回可读内容", 502)
 
   const parsed = extractAssistantResponse(sanitizeAssistantText(rawText))
+  const visibleText = appendWebSearchSources(parsed.visibleText, webSearchSources)
   const generatedExercisePlan = exerciseMode ? parsed.exercisePlan : undefined
   const assistantMessage = await runAgentTraceStep(
     trace,
@@ -498,7 +508,7 @@ async function runAgentChatInternal(
         : "最终回复和合法记忆候选写入消息历史",
     },
     () =>
-      appendAgentMessage(user.userId, threadId, "assistant", parsed.visibleText, {
+       appendAgentMessage(user.userId, threadId, "assistant", visibleText, {
         memoryCandidates: parsed.candidates,
         usedMemoryIds: context.memories.map((memory) => memory.memoryId),
       }, {

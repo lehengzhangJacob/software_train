@@ -55,6 +55,12 @@ const friendlyLabels: Record<string, string> = {
   "保存 Agent 回复": "保存回答",
   "保存运动计划与 Agent 回复": "保存运动计划与回答",
   "更新记忆使用状态": "更新记忆",
+  "确认请求范围": "确认请求范围",
+  "准备相关信息": "准备相关信息",
+  "检索公开资料": "检索公开资料",
+  "读取相关信息": "读取相关信息",
+  "生成个性化建议": "生成个性化建议",
+  "保存本回合结果": "保存本回合结果",
   "校验点餐意图与一次性建单权限": "确认点餐请求",
   "读取麦当劳工具配置": "准备点餐服务",
   "查询配送地址": "查询配送信息",
@@ -71,6 +77,7 @@ const friendlyToolLabels: Record<string, string> = {
   read_daily_activity: "读取近期活动",
   read_active_memories: "结合长期偏好",
   read_exercise_plan: "查看运动计划",
+  web_search: "检索公开资料",
 }
 
 function friendlyLabel(event: AgentTraceProjectionNode, heading: string) {
@@ -99,6 +106,8 @@ function friendlySummary(value: string | undefined, status: AgentTraceStatus) {
   if (value === "模型选择了一个已注册的只读工具") return "已根据问题读取相关信息"
   if (value === "只读工具返回已隔离的安全摘要") return "相关信息已返回"
   if (value === "只读工具执行失败") return "读取相关信息时遇到问题"
+  if (/^公开资料检索完成，共 \d+ 条来源$/.test(value)) return value.replace("公开资料检索完成", "找到公开来源")
+  if (value === "公开资料检索暂不可用") return "公开资料检索暂不可用"
   if (value === "已确认账户拥有该线程") return "已确认当前对话"
   if (value.startsWith("最终消息已保存")) return "回答已保存"
   if (value === "模型调用失败") return "生成建议时遇到问题"
@@ -203,8 +212,9 @@ export function AgentTracePanel({ events, active }: AgentTracePanelProps) {
   const [showTechnical, setShowTechnical] = useState(false)
   const projection = useMemo(() => projectTrace(events), [events])
   const displayEvents = useMemo(() => projectTraceEvents(events, showTechnical), [events, showTechnical])
+  const technicalEvents = useMemo(() => projectTraceEvents(events, true), [events])
   const timeline = useMemo(() => buildTimeline(displayEvents), [displayEvents])
-  const completedCount = displayEvents.filter((event) => event.status === "completed" || event.status === "fallback").length
+  const completedCount = technicalEvents.filter((event) => event.status === "completed" || event.status === "fallback").length
   const hasFailure = projection.status === "failed" || projection.status === "cancelled" || displayEvents.some((event) => event.status === "failed" || event.status === "cancelled")
   const isRunning = projection.status === "running"
   const isExpanded = (active && isRunning) || expanded
@@ -242,8 +252,8 @@ export function AgentTracePanel({ events, active }: AgentTracePanelProps) {
           <div className="mb-4 flex min-w-0 items-center justify-between gap-3">
             <p className="min-w-0 text-[11px] text-muted-foreground">
               {showTechnical
-                ? `${completedCount}/${displayEvents.length} 个逻辑节点已完成${projection.terminalSequence !== undefined ? ` · 终态 #${String(projection.terminalSequence + 1).padStart(2, "0")}` : ""}`
-                : "这里展示这次回答实际走过的步骤"}
+                ? `${completedCount}/${technicalEvents.length} 个真实 span 已完成${projection.terminalSequence !== undefined ? ` · 终态 #${String(projection.terminalSequence + 1).padStart(2, "0")}` : ""}`
+                : `${displayEvents.length} 个真实阶段 · 这里展示这次回答实际走过的步骤`}
             </p>
             <button
               type="button"

@@ -163,7 +163,77 @@ export function projectTrace(events: readonly AgentTraceEvent[]): AgentTraceProj
   }
 }
 
+type FriendlyPhaseKey = "scope" | "prepare" | "research" | "generate" | "save"
+
+function friendlyPhaseFor(event: AgentTraceProjectionNode): FriendlyPhaseKey {
+  const label = event.label || ""
+  if (event.eventType === "model.started" || event.eventType === "model.delta" || event.eventType === "answer.delta" || /生成|答案/.test(label)) {
+    return "generate"
+  }
+  if (event.toolName === "web_search" || /搜索|检索|公开资料/.test(label)) return "research"
+  if (/保存|更新记忆/.test(label)) return "save"
+  if (event.eventType === "step.started" && /范围|意图/.test(label)) return "scope"
+  return "prepare"
+}
+
+function friendlyPhaseLabel(key: FriendlyPhaseKey, events: AgentTraceProjectionNode[]) {
+  if (key === "scope") return "确认请求范围"
+  if (key === "prepare") return "准备相关信息"
+  if (key === "research") return events.some((event) => event.toolName === "web_search") ? "检索公开资料" : "读取相关信息"
+  if (key === "generate") return "生成个性化建议"
+  return "保存本回合结果"
+}
+
+function friendlyPhaseStatus(events: AgentTraceProjectionNode[], runStatus: AgentTraceProjection["status"]): AgentTraceStatus {
+  if (events.some((event) => event.status === "failed")) return "failed"
+  if (events.some((event) => event.status === "cancelled")) return "cancelled"
+  if (events.some((event) => event.status === "running")) return runStatus === "running" ? "running" : runStatus === "idle" ? "completed" : runStatus
+  if (events.every((event) => event.status === "fallback")) return "fallback"
+  return "completed"
+}
+
+function projectFriendlyEvents(projection: AgentTraceProjection): AgentTraceProjectionNode[] {
+  const groups = new Map<FriendlyPhaseKey, AgentTraceProjectionNode[]>()
+  for (const event of projection.events) {
+    const key = friendlyPhaseFor(event)
+    const group = groups.get(key) ?? []
+    group.push(event)
+    groups.set(key, group)
+  }
+
+  return [...groups.entries()]
+    .map(([key, events]) => {
+      const ordered = [...events].sort((left, right) => left.firstSequence - right.firstSequence)
+      const first = ordered[0]
+      const last = ordered[ordered.length - 1]
+      const toolNames = [...new Set(ordered.map((event) => event.toolName).filter(Boolean))]
+      const sourceEventTypes = [...new Set(ordered.flatMap((event) => event.sourceEventTypes))]
+      const deltaCount = ordered.reduce((total, event) => total + (event.deltaCount ?? 0), 0)
+      const summary = pickSummary(ordered)
+      return {
+        ...first,
+        eventId: first.eventId,
+        parentId: undefined,
+        sequence: first.firstSequence,
+        occurredAt: first.firstOccurredAt,
+        eventType: "step.started",
+        status: friendlyPhaseStatus(ordered, projection.status),
+        label: friendlyPhaseLabel(key, ordered),
+        ...(toolNames.length === 1 ? { toolName: toolNames[0] } : {}),
+        ...(summary ? { safeSummary: summary } : {}),
+        firstSequence: first.firstSequence,
+        lastSequence: last.lastSequence,
+        firstOccurredAt: first.firstOccurredAt,
+        lastOccurredAt: last.lastOccurredAt,
+        eventIds: ordered.flatMap((event) => event.eventIds),
+        sourceEventTypes,
+        ...(deltaCount ? { deltaCount } : {}),
+      } satisfies AgentTraceProjectionNode
+    })
+    .sort((left, right) => left.firstSequence - right.firstSequence)
+}
+
 export function projectTraceEvents(events: readonly AgentTraceEvent[], showTechnical = true) {
-  const projected = projectTrace(events).events
-  return showTechnical ? projected : projected.filter((event) => event.eventType !== "model.delta")
+  const projection = projectTrace(events)
+  return showTechnical ? projection.events : projectFriendlyEvents(projection)
 }

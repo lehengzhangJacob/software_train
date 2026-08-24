@@ -5,6 +5,7 @@ import {
   parseDashScopeSearchResponse,
   searchDashScope,
 } from "../src/lib/agent/search/web-search"
+import { appendWebSearchSources } from "../src/lib/agent/search/citations"
 import type { ResolvedAiProviderConfig } from "../src/lib/ai/settings"
 
 const qwenConfig = {
@@ -75,4 +76,11 @@ test("unsupported provider fails explicitly instead of pretending to search", as
     () => searchDashScope({ ...qwenConfig, providerId: "openai" } as unknown as ResolvedAiProviderConfig, "query"),
     /未启用联网搜索/,
   )
+})
+
+test("visible answers receive deduplicated source citations", () => {
+  const source = { title: "蛋白质指南", url: "https://example.com/guide", snippet: "摘要" }
+  const answer = appendWebSearchSources("建议先看证据。", [source, source])
+  assert.match(answer, /参考来源：/)
+  assert.equal((answer.match(/https:\/\/example\.com\/guide/g) ?? []).length, 1)
 })

@@ -45,6 +45,24 @@ function safeToolName(value: unknown, allowedToolNames: Set<string>) {
   return value
 }
 
+function safeToolResultSummary(toolName: string | undefined, item: Record<string, unknown>, rawItem: Record<string, unknown> | undefined) {
+  if (toolName !== "web_search") return "只读工具返回已隔离的安全摘要"
+  const output = item.output ?? rawItem?.output
+  let parsed: unknown = output
+  if (typeof output === "string") {
+    try { parsed = JSON.parse(output) } catch { parsed = undefined }
+  }
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    const sourceCount = (parsed as Record<string, unknown>).sourceCount
+    const status = (parsed as Record<string, unknown>).status
+    if (status === "unavailable") return "公开资料检索暂不可用"
+    if (typeof sourceCount === "number" && Number.isInteger(sourceCount) && sourceCount >= 0 && sourceCount <= 20) {
+      return `公开资料检索完成，共 ${sourceCount} 条来源`
+    }
+  }
+  return "公开资料检索完成"
+}
+
 function traceInputForToolEvent(
   event: RunStreamEvent,
   allowedToolNames: Set<string>,
@@ -79,7 +97,7 @@ function traceInputForToolEvent(
       label: active?.toolName || toolName ? `调用 ${active?.toolName ?? toolName}` : "调用受限工具",
       ...((active?.toolName ?? toolName) ? { toolName: active?.toolName ?? toolName } : {}),
       ...(active ? { parentId: active.eventId, durationMs: Date.now() - active.startedAt } : {}),
-      safeSummary: "只读工具返回已隔离的安全摘要",
+      safeSummary: safeToolResultSummary(toolName, item, rawItem),
     }
   }
   return null
