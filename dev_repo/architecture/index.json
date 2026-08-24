@@ -58,6 +58,11 @@
       "description": "Durable daily article enqueue, non-blocking background generation and timer recovery"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0019-agent-kernel-and-autonomous-tool-loop.md",
+      "node": "agent.runtime",
+      "description": "AgentKernel boundary, provider capability gate, policy-gated tool loop and Canonical Trace source"
+    },
+    {
       "path": "dev_repo/architecture/content-generation.md",
       "node": "agent.runtime",
       "description": "C-25 daily article context, content, image, trigger and retry contract"

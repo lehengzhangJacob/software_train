@@ -1,0 +1,25 @@
+{
+  "contract_id": "C-33-A1",
+  "slice_id": "C-33-A1-S0",
+  "checked_at": "2026-08-24",
+  "provider_gateway": {
+    "content_stream": "proven_by_existing_test",
+    "non_stream_fallback": "proven_by_existing_test",
+    "tool_calls": "not_yet_supported_by_existing_client",
+    "reasoning_delta": "kept_private_by_existing_client",
+    "account_credentials": "server_only; value intentionally omitted"
+  },
+  "sdk_probe": {
+    "package": "@openai/agents",
+    "latest_checked_version": "0.17.0",
+    "peer_dependency": "zod ^4.0.0",
+    "integration_rule": "use only behind the local ModelProviderAdapter"
+  },
+  "baseline": {
+    "command": "npm run test:agent-trace",
+    "tests": 9,
+    "passed": 9,
+    "failed": 0
+  },
+  "decision": "Proceed to S1 adapter and capability gate; do not claim production autonomous tool streaming until a configured cloud provider passes the real-case probe."
+}

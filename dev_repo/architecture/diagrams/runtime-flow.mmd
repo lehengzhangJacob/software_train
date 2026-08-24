@@ -15,14 +15,23 @@ sequenceDiagram
   end
   User->>UI: 发起营养对话或附近外卖请求
   UI->>API: POST /api/agent
-  API-->>UI: SSE run.started / trace events (current turn only)
+  API->>API: AgentKernel 建立受能力门控的回合
+  API-->>UI: SSE run.started / canonical trace (current turn only)
   API->>DB: 读取档案、餐食与可用记忆
   DB-->>API: safe context summaries
-  API-->>UI: SSE step/tool/model started events
-  API->>AI: 受控上下文调用 (stream when supported)
-  AI-->>API: model deltas
-  API-->>UI: SSE answer.delta + model.delta
-  AI-->>API: 建议或工具意图
+  API->>API: ToolRegistry 暴露白名单上下文/领域工具
+  API->>AI: ModelProviderAdapter 调用 (tool calls + stream when proven)
+  AI-->>API: model deltas / tool calls
+  API-->>UI: SSE model.started / model.delta / step events
+  alt 模型选择只读工具
+    API->>API: ActionPolicy 校验工具能力与参数
+    API->>DB: 读取领域数据或派生计划
+    DB-->>API: safe tool result summary
+    API->>AI: 继续下一轮模型回合
+  else Provider 不支持自主能力
+    API-->>UI: SSE fallback（不伪造流式或工具事件）
+  end
+  API-->>UI: SSE answer.delta
   API-->>UI: 建议、搜索结果或订单草案
   alt 当前消息明确要求点麦当劳
     API->>AI: 注入档案、记忆与可信菜单候选

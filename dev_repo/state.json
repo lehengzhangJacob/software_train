@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-21",
+  "active_contract_id": "C-33-A1",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -615,6 +615,23 @@
       "backfill_required": false,
       "issue_state": "Issues #3/#4/#5/#9/#10 remain open for external retest; Issues #6/#7/#8 remain closed after confirmation.",
       "latest_verification": "C-32-S1 passed: npm run verify and Android 0.1.3 contract test; remote main 6c37d8d; cloud deploy 20260823164114 with /api/app/version=0.1.3; GitHub Release v0.1.3 published 2026-08-23T08:57:27Z with visual evidence links."
+    },
+    "C-33-A1": {
+      "contract_id": "C-33-A1",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "在既有架构内引入 AgentKernel、自主工具循环与真实 Canonical Trace",
+      "goal": "让 Agent 具备受策略约束的模型驱动自主性，并让 Trace UI 只投影实际执行过程。",
+      "current_slice": "C-33-A1-S1",
+      "completed_slices": ["C-33-A1-S0"],
+      "deferred_slices": ["LangGraph/DeerFlow durable runtime", "cross-turn Trace replay", "background subagents", "automatic payment"],
+      "return_to": "C-21",
+      "architecture_amendment": "C-33-A1 / ADR-0019",
+      "data_model_delta": "none; AgentTraceEvent remains ephemeral current-turn projection",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this contract; existing external retest status remains unchanged."
     }
   }
 }

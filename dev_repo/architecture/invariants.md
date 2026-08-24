@@ -88,3 +88,19 @@ The earlier single-user statement is superseded by this amendment:
     timer 负责跨重启恢复，重复请求不得复制 `(user_id, content_date)` 或 slot。
 49. `/api/agent/articles` GET 与 `/insights` 观察流不得触发 provider；pending/generating 只显示
     后台状态，ready/failed 后停止轮询或给出可重试入口。
+
+50. `agent.runtime` 的 AgentKernel、ModelProviderAdapter、ToolRegistry、Canonical
+    Trace Bridge 和 SSE Projection 只能在既有 agent.runtime/ai.gateway/mcp.gateway/
+    action.policy 边界内协作；`/api/agent/chat` 继续作为账户与传输 façade。
+51. 自主工具循环必须同时满足 provider 的 `tool_calls` 与可验证流式能力；能力未知或
+    不完整时只能沿用明确 `fallback`，不得伪造 model.delta、tool.started 或 tool.result。
+52. AgentKernel 注册的工具必须来自服务端白名单；模型不得直接访问数据库、凭据、MCP
+    客户端或支付能力，所有外部写操作继续经过 action.policy。
+53. Canonical Trace 是当前回合唯一事件来源；Trace UI、activity 兼容投影和 SSE 消费者
+    不得自行补造步骤、调用关系或完成状态。
+54. AgentKernel 的每一轮都必须受步数、超时、取消和单次业务副作用约束；异常、断流或重试
+    不得造成重复 AgentMessage、重复未支付订单或跨请求残留工具授权。
+55. `@openai/agents` 若被引入，只能通过本仓 ModelProviderAdapter 使用；SDK 不得改变
+    账户级凭据存储、AgentMessage 持久化或 MCP/action.policy 所有权。
+56. LangGraph/DeerFlow 第二运行时、checkpoint、历史 Trace 留存、后台 Subagent 或自动
+    支付均不属于当前 AgentKernel；引入这些能力必须另开架构或 ER 修宪合同。

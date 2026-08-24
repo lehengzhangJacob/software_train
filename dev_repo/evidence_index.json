@@ -1512,5 +1512,17 @@
       "path": "dev_repo/evidence/C-28/S3/screenshot-gap.txt",
       "description": "记录首次截图重试失败以及后续成功，最终 PNG 已保存"
     }
+  ],
+  "C-33-A1-S0": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0019-agent-kernel-and-autonomous-tool-loop.md, dev_repo/architecture/ARCHITECTURE.md, dev_repo/architecture/graph.json, dev_repo/architecture/index.json, dev_repo/architecture/invariants.md, dev_repo/architecture/diagrams/runtime-flow.mmd",
+      "description": "AgentKernel、Provider capability gate、policy-gated tool loop 与 Canonical Trace v1 边界已入架构真相；不新增 ER、迁移或回填"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-33-A1/S0/provider-capability.json",
+      "description": "现有内容流式/fallback 与安全 Trace 基线已证明；生产 tool-call 能力仍待后续配置 Provider 实例回归"
+    }
   ]
 }
