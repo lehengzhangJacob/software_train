@@ -12,15 +12,12 @@ import {
 } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { AgentTraceEvent, AgentTraceEventType, AgentTraceStatus } from "@/lib/agent/trace-contract"
+import { projectTrace, projectTraceEvents, type AgentTraceProjectionNode } from "@/lib/agent/trace-projection"
 import { cn } from "@/lib/utils"
 
 interface AgentTracePanelProps {
   events: AgentTraceEvent[]
   active: boolean
-}
-
-type DisplayEvent = AgentTraceEvent & {
-  deltaCount?: number
 }
 
 const eventLabels: Record<AgentTraceEventType, string> = {
@@ -47,18 +44,16 @@ const statusLabels: Record<AgentTraceStatus, string> = {
 }
 
 const friendlyLabels: Record<string, string> = {
-  "开始 Agent 回合": "准备这次回答",
-  "Agent 回合完成": "回答已完成",
-  "Agent 回合失败": "这次回答没有完成",
   "接收用户消息": "已收到你的消息",
   "定位当前对话线程": "确认当前对话",
-  "整理饮食档案与对话上下文": "结合你的饮食记录",
-  "读取饮食档案与近期记录": "读取你的近期记录",
+  "整理饮食档案与对话上下文": "整理饮食档案",
+  "读取饮食档案与近期记录": "读取近期记录",
   "读取会话摘要": "回顾之前的对话",
   "读取当前线程尾部消息": "查看当前对话",
   "健康 Agent 生成建议": "生成个性化建议",
   "答案增量": "生成回答",
   "保存 Agent 回复": "保存回答",
+  "保存运动计划与 Agent 回复": "保存运动计划与回答",
   "更新记忆使用状态": "更新记忆",
   "校验点餐意图与一次性建单权限": "确认点餐请求",
   "读取麦当劳工具配置": "准备点餐服务",
@@ -78,7 +73,7 @@ const friendlyToolLabels: Record<string, string> = {
   read_exercise_plan: "查看运动计划",
 }
 
-function friendlyLabel(event: DisplayEvent, heading: string) {
+function friendlyLabel(event: AgentTraceProjectionNode, heading: string) {
   if (event.eventType === "answer.delta") return "生成回答"
   if (event.eventType === "model.delta") return "处理回答"
   if (event.toolName) return friendlyToolLabels[event.toolName] ?? "读取相关信息"
@@ -87,8 +82,8 @@ function friendlyLabel(event: DisplayEvent, heading: string) {
 
 function friendlySummary(value: string | undefined, status: AgentTraceStatus) {
   if (!value) return undefined
-  if (/^已接收 \d+ 段答案增量$/.test(value)) return "回答正在生成"
-  if (value === "模型以 SSE 增量返回") return "回答正在持续生成"
+  if (/^已接收 \d+ 段(?:答案|模型)增量$/.test(value)) return status === "completed" ? "回答输出完成" : "回答正在生成"
+  if (value === "AgentKernel 以 SSE 增量返回") return "回答输出完成"
   if (value === "提供商未提供 SSE，已按完整响应回退") return "回答已准备好"
   if (value === "已建立当前回合 Trace") return "已开始整理信息"
   if (value === "消息已写入当前线程") return "消息已收到"
@@ -124,7 +119,13 @@ function formatDuration(value: number | undefined) {
   return `${(value / 1_000).toFixed(1)}s`
 }
 
-function eventIcon(event: DisplayEvent) {
+function formatSequence(event: AgentTraceProjectionNode) {
+  const first = String(event.firstSequence + 1).padStart(2, "0")
+  const last = String(event.lastSequence + 1).padStart(2, "0")
+  return first === last ? `#${first}` : `#${first}–#${last}`
+}
+
+function eventIcon(event: AgentTraceProjectionNode) {
   if (event.status === "running") return <LoaderCircle className="size-3.5 animate-spin" aria-hidden="true" />
   if (event.status === "failed" || event.status === "cancelled") return <CircleAlert className="size-3.5" aria-hidden="true" />
   if (event.eventType.startsWith("tool.")) return <Wrench className="size-3.5" aria-hidden="true" />
@@ -148,52 +149,16 @@ function nodeClass(status: AgentTraceStatus) {
   return "bg-[var(--brand-coral-soft)] text-[var(--brand-coral)]"
 }
 
-function compactDeltas(events: AgentTraceEvent[]): DisplayEvent[] {
-  const result: DisplayEvent[] = []
-  const deltaIndex = new Map<string, number>()
-  const ordered = [...events].sort((left, right) => left.sequence - right.sequence)
-  for (const event of ordered) {
-    if (event.eventType !== "answer.delta" && event.eventType !== "model.delta") {
-      result.push(event)
-      continue
-    }
-    const key = `${event.eventType}:${event.parentId ?? "root"}`
-    const existingIndex = deltaIndex.get(key)
-    const deltaLabel = event.eventType === "answer.delta" ? "答案增量" : "模型增量"
-    if (existingIndex === undefined) {
-      deltaIndex.set(key, result.length)
-      result.push({ ...event, safeSummary: `已接收 1 段${deltaLabel}`, deltaCount: 1 })
-      continue
-    }
-    const existing = result[existingIndex]
-    const deltaCount = (existing.deltaCount ?? 1) + 1
-    result[existingIndex] = {
-      ...existing,
-      sequence: event.sequence,
-      occurredAt: event.occurredAt,
-      status: event.status,
-      durationMs: event.durationMs ?? existing.durationMs,
-      safeSummary: `已接收 ${deltaCount} 段${deltaLabel}`,
-      deltaCount,
-    }
-  }
-  return result
-}
-
-export function projectTraceEvents(events: AgentTraceEvent[], showTechnical: boolean) {
-  const compacted = compactDeltas(events)
-  return showTechnical ? compacted : compacted.filter((event) => event.eventType !== "model.delta")
-}
-
-function buildTimeline(events: DisplayEvent[]) {
+function buildTimeline(events: AgentTraceProjectionNode[]) {
   const knownParents = new Set(events.map((event) => event.eventId))
+  const byId = new Map(events.map((event) => [event.eventId, event]))
   const depthCache = new Map<string, number>()
-  const depthFor = (event: DisplayEvent, visited = new Set<string>()): number => {
+  const depthFor = (event: AgentTraceProjectionNode, visited = new Set<string>()): number => {
     if (!event.parentId || !knownParents.has(event.parentId) || visited.has(event.eventId)) return 0
     const cached = depthCache.get(event.eventId)
     if (cached !== undefined) return cached
     visited.add(event.eventId)
-    const parent = events.find((candidate) => candidate.eventId === event.parentId)
+    const parent = byId.get(event.parentId)
     const depth = parent ? Math.min(3, depthFor(parent, visited) + 1) : 0
     depthCache.set(event.eventId, depth)
     return depth
@@ -201,15 +166,7 @@ function buildTimeline(events: DisplayEvent[]) {
   return events.map((event) => ({ event, depth: depthFor(event) }))
 }
 
-function TraceNode({
-  event,
-  depth,
-  showTechnical,
-}: {
-  event: DisplayEvent
-  depth: number
-  showTechnical: boolean
-}) {
+function TraceNode({ event, depth, showTechnical }: { event: AgentTraceProjectionNode; depth: number; showTechnical: boolean }) {
   const heading = event.eventType === "answer.delta" ? "答案输出" : eventLabels[event.eventType]
   const label = friendlyLabel(event, heading)
   const summary = showTechnical ? event.safeSummary : friendlySummary(event.safeSummary, event.status)
@@ -228,8 +185,9 @@ function TraceNode({
           </span>
           {showTechnical ? (
             <span className="mt-1 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-              <span className="inline-flex items-center gap-1 tabular-nums"><Clock3 className="size-3" />#{String(event.sequence + 1).padStart(2, "0")}</span>
+              <span className="inline-flex items-center gap-1 tabular-nums"><Clock3 className="size-3" />{formatSequence(event)}</span>
               {event.toolName ? <code className="break-all font-mono text-[10px]">{event.toolName}</code> : null}
+              {event.deltaCount ? <span>{event.deltaCount} 段增量</span> : null}
               {formatDuration(event.durationMs) ? <span>{formatDuration(event.durationMs)}</span> : null}
             </span>
           ) : null}
@@ -243,18 +201,22 @@ function TraceNode({
 export function AgentTracePanel({ events, active }: AgentTracePanelProps) {
   const [expanded, setExpanded] = useState(false)
   const [showTechnical, setShowTechnical] = useState(false)
+  const projection = useMemo(() => projectTrace(events), [events])
   const displayEvents = useMemo(() => projectTraceEvents(events, showTechnical), [events, showTechnical])
   const timeline = useMemo(() => buildTimeline(displayEvents), [displayEvents])
   const completedCount = displayEvents.filter((event) => event.status === "completed" || event.status === "fallback").length
-  const hasFailure = displayEvents.some((event) => event.status === "failed" || event.status === "cancelled")
-  const isExpanded = active || expanded
-  const progressLabel = active ? "进行中" : hasFailure ? "需要处理" : "已完成"
-  const progressSummary = active ? "正在整理信息并生成建议" : hasFailure ? "这次回答没有完成，请查看上方提示" : "本回合已完成"
+  const hasFailure = projection.status === "failed" || projection.status === "cancelled" || displayEvents.some((event) => event.status === "failed" || event.status === "cancelled")
+  const isRunning = projection.status === "running"
+  const isExpanded = (active && isRunning) || expanded
+  const progressLabel = isRunning ? "进行中" : hasFailure ? "需要处理" : projection.status === "cancelled" ? "已暂停" : "已完成"
+  const progressSummary = isRunning
+    ? active ? "正在整理信息并生成建议" : "等待回合终态"
+    : hasFailure ? "这次回答没有完成，请查看上方提示" : "本回合已完成"
 
   if (events.length === 0) return null
 
   return (
-    <section className="min-w-0 py-1" aria-label="本回合进度" data-testid="agent-trace-panel">
+    <section className="min-w-0 py-1" aria-label="本回合进度" data-testid="agent-trace-panel" data-run-id={projection.runId}>
       <button
         type="button"
         className="group flex w-full min-w-0 items-center gap-3 border-b border-border/60 pb-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-mint)]"
@@ -270,16 +232,18 @@ export function AgentTracePanel({ events, active }: AgentTracePanelProps) {
           <span className="block text-sm font-semibold text-[var(--brand-heading)]">本回合进度</span>
           <span className="mt-0.5 block text-[11px] text-muted-foreground">{progressSummary}</span>
         </span>
-        <span className={cn("text-[11px] font-medium", hasFailure ? "text-[var(--brand-coral)]" : active ? "text-[var(--brand-lavender-deep)]" : "text-[var(--brand-mint-deep)]")}>
+        <span className={cn("text-[11px] font-medium", hasFailure ? "text-[var(--brand-coral)]" : isRunning ? "text-[var(--brand-lavender-deep)]" : "text-[var(--brand-mint-deep)]")}>
           {progressLabel}
         </span>
         <ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform group-hover:text-[var(--brand-plum)]", isExpanded && "rotate-180")} aria-hidden="true" />
       </button>
       {isExpanded ? (
-        <div id="agent-trace-timeline" className="min-w-0 pt-4" aria-live={active ? "polite" : undefined}>
+        <div id="agent-trace-timeline" className="min-w-0 pt-4" aria-live={active && isRunning ? "polite" : undefined}>
           <div className="mb-4 flex min-w-0 items-center justify-between gap-3">
             <p className="min-w-0 text-[11px] text-muted-foreground">
-              {showTechnical ? `${completedCount}/${displayEvents.length} 个事件已完成` : "这里展示这次回答实际走过的步骤"}
+              {showTechnical
+                ? `${completedCount}/${displayEvents.length} 个逻辑节点已完成${projection.terminalSequence !== undefined ? ` · 终态 #${String(projection.terminalSequence + 1).padStart(2, "0")}` : ""}`
+                : "这里展示这次回答实际走过的步骤"}
             </p>
             <button
               type="button"
@@ -293,10 +257,12 @@ export function AgentTracePanel({ events, active }: AgentTracePanelProps) {
             {timeline.map(({ event, depth }) => <TraceNode key={event.eventId} event={event} depth={depth} showTechnical={showTechnical} />)}
           </ol>
           <p className="mt-4 border-l-2 border-[var(--brand-lavender)]/60 pl-4 text-[11px] leading-5 text-muted-foreground">
-            {showTechnical ? "完整过程仅展示安全摘要；原始参数、结果、Token 和支付入口不会进入这里。" : "这里只显示当前回答的进度摘要。"}
+            {showTechnical ? "技术详情只展示真实事件的安全摘要；原始参数、结果、Token 和支付入口不会进入这里。" : "这里只显示当前回答的进度摘要。"}
           </p>
         </div>
       ) : null}
     </section>
   )
 }
+
+export { projectTraceEvents }

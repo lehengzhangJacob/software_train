@@ -122,6 +122,12 @@ function mergeActivity(current: AgentActivity[], next: AgentActivity) {
   return updated
 }
 
+function mergeTrace(current: AgentTraceEvent[], next: AgentTraceEvent) {
+  if (current.length > 0 && current[0].traceId !== next.traceId) return [next]
+  if (current.some((event) => event.eventId === next.eventId)) return current
+  return [...current, next].sort((left, right) => left.sequence - right.sequence)
+}
+
 type StreamPayload = {
   activity?: AgentActivity
   data?: ChatResult
@@ -343,7 +349,7 @@ export function AgentWorkspace({
         exerciseMode ? "exercise-plan" : "general",
         exercisePlanId,
         (activity) => setTurnActivity((current) => mergeActivity(current, activity)),
-        (event) => setTurnTrace((current) => [...current, event]),
+        (event) => setTurnTrace((current) => mergeTrace(current, event)),
         (delta) => setStreamingAnswer((current) => current + delta),
       )
       setActiveThreadId(result.thread.threadId)
