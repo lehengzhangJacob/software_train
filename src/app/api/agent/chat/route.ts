@@ -33,7 +33,7 @@ import {
 import { hasExplicitOrderingIntent } from "@/lib/agent/ordering-intent"
 import { issueOrderingGrant } from "@/lib/actions/policy"
 import { getCurrentAccountId, getCurrentUser } from "@/lib/current-user"
-import { getAssistantText, requestAiChatCompletion, requestAiChatCompletionStream } from "@/lib/ai/client"
+import { getAssistantText, requestAiChatCompletion } from "@/lib/ai/client"
 import { redactSuppressedMemoryContent } from "@/lib/agent/context-safety"
 import { getPublicAiError } from "@/lib/ai/errors"
 import { getActiveAiProviderConfig, type ResolvedAiProviderConfig } from "@/lib/ai/settings"
@@ -44,6 +44,7 @@ import { createAgentActivityRecorder, runAgentActivity } from "@/lib/agent/activ
 import { createAgentTraceRecorder, runAgentTraceStep, type AgentTraceRecorder } from "@/lib/agent/trace"
 import type { AgentTraceEvent } from "@/lib/agent/trace-contract"
 import { sanitizeTraceText } from "@/lib/agent/trace-contract"
+import { runAgentKernel } from "@/lib/agent/kernel/runner"
 import { getTodayStr } from "@/lib/utils"
 import { after } from "next/server"
 
@@ -391,50 +392,34 @@ async function runAgentChatInternal(
         await options.onAnswerDelta?.(delta)
       })
       try {
-        const modelRequest = {
-          messages: [
-            {
-              role: "system" as const,
-              content: buildAgentSystemPrompt(context, sessionDigest?.summary, {
-                exerciseMode,
-                exercisePlan: currentExercisePlan?.plan ?? null,
-              }),
-            },
-            ...history.map((message) => ({
-              role: message.role,
-              content: redactSuppressedMemoryContent(message.content, context.suppressedMemoryContents),
-            })),
-          ],
-          temperature: 0.4,
-          max_tokens: 1_500,
-          // StepFun's reasoning model can spend the entire small output
-          // budget on hidden reasoning before it emits the structured plan.
-          // Keep that reasoning private while asking the provider to leave
-          // room for the user-facing answer and <exercise-plan> payload.
-          ...(exerciseMode && config.providerId === "stepfun" ? { reasoning_effort: "low" } : {}),
-        }
-        let modelResponse = await requestAiChatCompletionStream(
+        const kernelResult = await runAgentKernel({
           config,
-          modelRequest,
-          projector.push,
-        )
-        if (modelResponse.streamed && !modelResponse.text.trim()) {
-          const fallbackRaw = await requestAiChatCompletion(config, modelRequest)
-          const fallbackText = getAssistantText(fallbackRaw)
-          if (fallbackText) {
-            modelResponse = { raw: fallbackRaw, text: fallbackText, streamed: false }
-          }
-        }
-        if (!modelResponse.streamed) await projector.push(modelResponse.text)
+          instructions: buildAgentSystemPrompt(context, sessionDigest?.summary, {
+            exerciseMode,
+            exercisePlan: currentExercisePlan?.plan ?? null,
+          }),
+          messages: history.map((message) => ({
+            role: message.role,
+            content: redactSuppressedMemoryContent(message.content, context.suppressedMemoryContents),
+          })),
+          message: input.message,
+          // S1 establishes the Kernel façade. Tool-call capability is enabled
+          // only after S2 registers policy-gated tools and real Trace hooks.
+          capabilities: { stream: true, toolCalls: false },
+          reasoningEffort: exerciseMode && config.providerId === "stepfun" ? "low" : undefined,
+          onTextDelta: projector.push,
+        })
         await trace.emit({
           eventType: "step.completed",
-          status: modelResponse.streamed ? "completed" : "fallback",
+          status: kernelResult.streamed ? "completed" : "fallback",
           label: "健康 Agent 生成建议",
           parentId: modelStarted.eventId,
           durationMs: Date.now() - modelStartedAt,
-          safeSummary: modelResponse.streamed ? "模型以 SSE 增量返回" : "提供商未提供 SSE，已按完整响应回退",
+          safeSummary: kernelResult.streamed
+            ? "AgentKernel 以 SSE 增量返回"
+            : "提供商未提供可验证流式，已按完整响应回退",
         })
-        return modelResponse.text
+        return kernelResult.text
       } catch (error) {
         await trace.emit({
           eventType: "step.completed",
@@ -448,7 +433,7 @@ async function runAgentChatInternal(
       }
     },
   )
-  const rawText = typeof modelResult === "string" ? modelResult : getAssistantText(modelResult)
+  const rawText = modelResult
   if (!rawText) throw new AgentResponseError("AI 没有返回可读内容", 502)
 
   const parsed = extractAssistantResponse(sanitizeAssistantText(rawText))
