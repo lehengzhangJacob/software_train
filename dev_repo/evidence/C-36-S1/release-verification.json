@@ -3,11 +3,12 @@
   "slice_id": "C-36-S1",
   "summary": "发布 Agent Trace 生命周期重构的 FoodMoment v0.1.5",
   "source_commit": "c88e7c83e927770868af843db72f82e63d883adb",
+  "ledger_commit": "cbdc8b7d4ae89add9ced3a12e4770f5b4134d25c",
   "branch": "codex/c35-trace-refactor",
   "main": "origin/main",
   "remote_branches": {
-    "origin/codex/c35-trace-refactor": "c88e7c83e927770868af843db72f82e63d883adb",
-    "origin/main": "c88e7c83e927770868af843db72f82e63d883adb"
+    "origin/codex/c35-trace-refactor": "cbdc8b7d4ae89add9ced3a12e4770f5b4134d25c",
+    "origin/main": "cbdc8b7d4ae89add9ced3a12e4770f5b4134d25c"
   },
   "local_gates": {
     "npm run verify": "pass; middleware-to-proxy deprecation warning only",

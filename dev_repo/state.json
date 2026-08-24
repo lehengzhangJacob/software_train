@@ -686,7 +686,7 @@
       "migration_required": false,
       "backfill_required": false,
       "issue_state": "No Issue is closed by this release; existing external retest status remains unchanged.",
-      "latest_verification": "C-36-S1 passed: origin/codex/c35-trace-refactor and origin/main at c88e7c8; npm run verify; Android versionCode 6/versionName 0.1.5 and unsigned assembleRelease; cloud deploy 20260824172751 with /api/app/version=0.1.5; GitHub Release v0.1.5 published with APK and three Trace screenshots."
+      "latest_verification": "C-36-S1 passed: v0.1.5 release source tag c88e7c8; origin/codex/c35-trace-refactor and origin/main ledger at cbdc8b7; npm run verify; Android versionCode 6/versionName 0.1.5 and unsigned assembleRelease; cloud deploy 20260824172751 with /api/app/version=0.1.5; GitHub Release v0.1.5 published with APK and three Trace screenshots."
     }
   }
 }
