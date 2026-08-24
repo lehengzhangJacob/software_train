@@ -1524,5 +1524,17 @@
       "path": "dev_repo/evidence/C-33-A1/S0/provider-capability.json",
       "description": "现有内容流式/fallback 与安全 Trace 基线已证明；生产 tool-call 能力仍待后续配置 Provider 实例回归"
     }
+  ],
+  "C-33-A1-S1": [
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/kernel/contracts.ts, src/lib/agent/kernel/model-provider.ts, src/lib/agent/kernel/runner.ts, src/app/api/agent/chat/route.ts, package.json, package-lock.json",
+      "description": "官方 Agents SDK 通过本仓 Kernel/Provider Adapter 接入；路由保留 JSON/SSE 外层合同，工具调用能力仍由 gate 关闭"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-33-A1/S1/kernel-verification.json",
+      "description": "Kernel 3 项、Agent 11 项、Trace 9 项测试通过，typecheck/lint 通过；无数据模型变化"
+    }
   ]
 }

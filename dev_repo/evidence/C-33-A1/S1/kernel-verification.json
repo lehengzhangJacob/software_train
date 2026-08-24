@@ -1,0 +1,26 @@
+{
+  "contract_id": "C-33-A1",
+  "slice_id": "C-33-A1-S1",
+  "implementation": {
+    "sdk": "@openai/agents@0.17.0",
+    "adapter": "src/lib/agent/kernel/model-provider.ts",
+    "kernel": "src/lib/agent/kernel/runner.ts",
+    "route_integration": "src/app/api/agent/chat/route.ts",
+    "capability_gate": "stream=true/toolCalls=false until S2 tool registry and real Trace hooks"
+  },
+  "verification": {
+    "npm run test:agent-kernel": "3 passed",
+    "npm run test:agent": "11 passed",
+    "npm run test:agent-trace": "9 passed",
+    "npm run typecheck": "passed",
+    "npm run lint": "passed"
+  },
+  "compatibility": {
+    "json_completion_contract": "unchanged",
+    "sse_envelopes": "unchanged",
+    "agent_message_persistence": "unchanged",
+    "ordering_policy": "unchanged",
+    "data_model": "none"
+  },
+  "red_line_check": "not crossed; production tool-call capability intentionally remains gated for S2/S4 real-case verification"
+}
