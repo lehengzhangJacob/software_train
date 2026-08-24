@@ -12,7 +12,7 @@ import {
 } from "lucide-react"
 import { useMemo, useState } from "react"
 import type { AgentTraceEvent, AgentTraceEventType, AgentTraceStatus } from "@/lib/agent/trace-contract"
-import { projectTrace, projectTraceEvents, type AgentTraceProjectionNode } from "@/lib/agent/trace-projection"
+import { effectiveTraceStatus, projectTrace, projectTraceEvents, type AgentTraceProjectionNode } from "@/lib/agent/trace-projection"
 import { cn } from "@/lib/utils"
 
 interface AgentTracePanelProps {
@@ -216,12 +216,15 @@ export function AgentTracePanel({ events, active }: AgentTracePanelProps) {
   const timeline = useMemo(() => buildTimeline(displayEvents), [displayEvents])
   const completedCount = technicalEvents.filter((event) => event.status === "completed" || event.status === "fallback").length
   const hasFailure = projection.status === "failed" || projection.status === "cancelled" || displayEvents.some((event) => event.status === "failed" || event.status === "cancelled")
-  const isRunning = projection.status === "running"
+  const visibleStatus = effectiveTraceStatus(projection, active)
+  const isRunning = visibleStatus === "running"
   const isExpanded = (active && isRunning) || expanded
-  const progressLabel = isRunning ? "进行中" : hasFailure ? "需要处理" : projection.status === "cancelled" ? "已暂停" : "已完成"
-  const progressSummary = isRunning
-    ? active ? "正在整理信息并生成建议" : "等待回合终态"
-    : hasFailure ? "这次回答没有完成，请查看上方提示" : "本回合已完成"
+  const progressLabel = hasFailure ? "需要处理" : isRunning ? "进行中" : visibleStatus === "cancelled" ? "已暂停" : "已完成"
+  const progressSummary = hasFailure
+    ? "这次回答没有完成，请查看上方提示"
+    : isRunning
+      ? active ? "正在整理信息并生成建议" : "等待回合终态"
+      : "本回合已完成"
 
   if (events.length === 0) return null
 

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { projectTrace, projectTraceEvents } from "../src/lib/agent/trace-projection"
+import { effectiveTraceStatus, projectTrace, projectTraceEvents } from "../src/lib/agent/trace-projection"
 import type { AgentTraceEvent } from "../src/lib/agent/trace-contract"
 
 function event(partial: Partial<AgentTraceEvent> & Pick<AgentTraceEvent, "eventType" | "status" | "label" | "sequence">): AgentTraceEvent {
@@ -70,4 +70,20 @@ test("friendly projection gives a real search span its own research phase", () =
   const friendly = projectTraceEvents(events, false)
   assert.deepEqual(friendly.map((item) => item.label), ["检索公开资料", "生成个性化建议"])
   assert.equal(friendly[0]?.status, "completed")
+})
+
+test("active SSE keeps a terminal trace visibly in progress until done arrives", () => {
+  const projection = projectTrace([
+    event({ eventType: "run.started", status: "running", label: "开始 Agent 回合", sequence: 0 }),
+    event({ eventType: "run.completed", status: "completed", label: "Agent 回合完成", sequence: 1 }),
+  ])
+
+  assert.equal(effectiveTraceStatus(projection, true), "running")
+  assert.equal(effectiveTraceStatus(projection, false), "completed")
+
+  const failed = projectTrace([
+    event({ eventType: "run.started", status: "running", label: "开始 Agent 回合", sequence: 0 }),
+    event({ eventType: "run.failed", status: "failed", label: "Agent 回合失败", sequence: 1 }),
+  ])
+  assert.equal(effectiveTraceStatus(failed, true), "failed")
 })

@@ -163,6 +163,18 @@ export function projectTrace(events: readonly AgentTraceEvent[]): AgentTraceProj
   }
 }
 
+/**
+ * A terminal trace event can arrive just before the SSE `done` envelope. Keep
+ * the friendly status in-flight until the client has received that envelope,
+ * while preserving an already reported failure or cancellation.
+ */
+export function effectiveTraceStatus(projection: AgentTraceProjection, active: boolean): AgentTraceProjection["status"] {
+  if (!active || projection.status === "failed" || projection.status === "cancelled" || projection.status === "idle") {
+    return projection.status
+  }
+  return "running"
+}
+
 type FriendlyPhaseKey = "scope" | "prepare" | "research" | "generate" | "save"
 
 function friendlyPhaseFor(event: AgentTraceProjectionNode): FriendlyPhaseKey {
