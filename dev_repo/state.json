@@ -623,8 +623,8 @@
       "status": "in_progress",
       "summary": "在既有架构内引入 AgentKernel、自主工具循环与真实 Canonical Trace",
       "goal": "让 Agent 具备受策略约束的模型驱动自主性，并让 Trace UI 只投影实际执行过程。",
-      "current_slice": "C-33-A1-S3",
-      "completed_slices": ["C-33-A1-S0", "C-33-A1-S1", "C-33-A1-S2"],
+      "current_slice": "C-33-A1-S4",
+      "completed_slices": ["C-33-A1-S0", "C-33-A1-S1", "C-33-A1-S2", "C-33-A1-S3"],
       "deferred_slices": ["LangGraph/DeerFlow durable runtime", "cross-turn Trace replay", "background subagents", "automatic payment"],
       "return_to": "C-21",
       "architecture_amendment": "C-33-A1 / ADR-0019",
@@ -632,7 +632,7 @@
       "migration_required": false,
       "backfill_required": false,
       "issue_state": "No Issue is closed by this contract; existing external retest status remains unchanged.",
-      "latest_verification": "C-33-A1-S2 passed: five read-only tools are registered behind AgentKernel; local SDK model -> tool -> model and tool failure Trace contracts pass; Agent/Trace/Ordering/MCP regression, lint, typecheck and production build pass. Browser/cloud acceptance remains for S3/S4."
+      "latest_verification": "C-33-A1-S3 passed: local Browser shows the optimistic user message before completion, live real tool events in chronological order, a friendly default projection, opt-in technical details, clean console, and no 375px horizontal overflow. Cloud acceptance remains for S4."
     }
   }
 }

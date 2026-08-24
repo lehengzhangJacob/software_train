@@ -1548,5 +1548,22 @@
       "path": "dev_repo/evidence/C-33-A1/S2/trace-tool-verification.json",
       "description": "AgentKernel 5 项、Agent 11 项、Trace 9 项、Ordering 12 项、MCP 8 项通过；lint/typecheck/build 通过；工具原始参数与结果不进入 Trace"
     }
+  ],
+  "C-33-A1-S3": [
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-trace-panel.tsx, scripts/agent-trace-ui-contract.test.ts, package.json",
+      "description": "Canonical Trace 事件按 sequence 平面投影，父子关系仅以缩进表达；默认视图使用友好摘要，技术详情保留序号/工具名/模型增量计数"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-33-A1/S3/trace-ui-browser-verification.json",
+      "description": "本地 Browser 观察到即时用户消息、真实只读工具事件流、技术详情切换、375px 无横向溢出和空控制台错误/警告"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-33-A1/S3/trace-desktop-timeline.png, dev_repo/evidence/C-33-A1/S3/trace-mobile-375-panel.png",
+      "description": "桌面与 375px 移动 Trace 时间线截图，工具步骤在真实序号位置呈现"
+    }
   ]
 }
