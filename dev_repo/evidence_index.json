@@ -1565,5 +1565,17 @@
       "path": "dev_repo/evidence/C-33-A1/S3/trace-desktop-timeline.png, dev_repo/evidence/C-33-A1/S3/trace-mobile-375-panel.png",
       "description": "桌面与 375px 移动 Trace 时间线截图，工具步骤在真实序号位置呈现"
     }
+  ],
+  "C-33-A1-S4": [
+    {
+      "type": "cloud_acceptance",
+      "path": "dev_repo/evidence/C-33-A1/S4/cloud-trace-verification.json",
+      "description": "deploy 20260824120520 后，Team A 云端 Browser 验证即时消息、真实 read_recent_meals 工具调用/结果、模型与答案增量、默认/技术投影、375px 无溢出和空控制台"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-33-A1/S4/cloud-trace-desktop.png, dev_repo/evidence/C-33-A1/S4/cloud-trace-desktop-tool.png, dev_repo/evidence/C-33-A1/S4/cloud-trace-mobile-375.png",
+      "description": "云端桌面 Trace 完成态、工具调用技术详情和 375px 移动 Trace 截图"
+    }
   ]
 }

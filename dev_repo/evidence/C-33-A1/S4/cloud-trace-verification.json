@@ -1,0 +1,46 @@
+{
+  "contract_id": "C-33-A1",
+  "slice_id": "C-33-A1-S4",
+  "status": "completed",
+  "deploy": {
+    "id": "20260824120520",
+    "target": "http://8.148.206.131:8000",
+    "smoke": {
+      "/access": 200,
+      "anonymous_/api/users": 401,
+      "content_timer": "enabled/active",
+      "pending_migrations": false
+    }
+  },
+  "browser": {
+    "account": "FoodMoment Team A",
+    "route": "/agent",
+    "checks": [
+      "The user message is visible 300ms after submit while the current-turn progress region is present.",
+      "The completed default Trace view shows the real read_recent_meals tool step using a friendly label and hides the raw tool name.",
+      "Technical details expose the actual read_recent_meals call/result, strict event sequence numbers, 148 model deltas, and 148 answer deltas.",
+      "Tool events appear before the model/answer completion steps in the displayed order.",
+      "375px viewport has clientWidth=360 and scrollWidth=360; no horizontal overflow.",
+      "Browser console has no error or warning entries."
+    ],
+    "viewport_375": {
+      "inner_width": 375,
+      "inner_height": 812,
+      "client_width": 360,
+      "scroll_width": 360,
+      "horizontal_overflow": false
+    },
+    "console": {
+      "errors": [],
+      "warnings": []
+    }
+  },
+  "screenshots": [
+    "dev_repo/evidence/C-33-A1/S4/cloud-trace-desktop.png",
+    "dev_repo/evidence/C-33-A1/S4/cloud-trace-desktop-tool.png",
+    "dev_repo/evidence/C-33-A1/S4/cloud-trace-mobile-375.png"
+  ],
+  "issue_state": "No Issue is closed by this contract; #3/#4/#5/#9/#10 remain open for external retest and #6/#7/#8 remain closed after confirmation.",
+  "data_model_delta": "none; AgentTraceEvent remains ephemeral current-turn projection",
+  "return_to": "C-21"
+}
