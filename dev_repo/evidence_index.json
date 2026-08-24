@@ -1594,5 +1594,43 @@
       "path": "dev_repo/release-notes-v0.1.4.md, https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.4",
       "description": "GitHub Release v0.1.4，包含真实 Trace 桌面/375px 截图和明确标注 unsigned 的 Android APK"
     }
+  ],
+  "C-35-A1": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0020-agent-trace-lifecycle-and-projection.md, dev_repo/architecture/ARCHITECTURE.md, dev_repo/architecture/graph.json, dev_repo/architecture/index.json, dev_repo/architecture/invariants.md, dev_repo/architecture/diagrams/runtime-flow.mmd",
+      "description": "Agent Trace run lifecycle、terminal barrier、logical span projection 与 UI ownership 边界已写入架构真相；不新增数据模型或迁移"
+    }
+  ],
+  "C-35-S1": [
+    {
+      "type": "implementation",
+      "path": "src/lib/agent/trace-projection.ts, scripts/agent-trace-ui-contract.test.ts",
+      "description": "纯 reducer 将 Canonical AgentTraceEvent v1 聚合为稳定逻辑节点，按终态事件截断并保留真实 sequence、duration 与 delta 计数"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-35/S3/trace-ui-browser-verification.md",
+      "description": "Trace projection contract test、typecheck、lint 与完整 verify 通过"
+    }
+  ],
+  "C-35-S2": [
+    {
+      "type": "implementation",
+      "path": "src/components/agent/agent-trace-panel.tsx, src/components/agent/agent-workspace.tsx",
+      "description": "工作台按 traceId/eventId 去重并消费生命周期投影；即时消息、完成态、技术详情和安全摘要由真实事件驱动"
+    }
+  ],
+  "C-35-S3": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-35/S3/trace-ui-browser-verification.md",
+      "description": "本地 Browser 桌面与 375px 回归：即时消息先显示、11/11 与终态 #76 对齐、技术序号/增量/时长可见、无视觉横溢出、无控制台错误警告"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-35/desktop-completed.png, dev_repo/evidence/C-35/desktop-technical.png, dev_repo/evidence/C-35/mobile-technical.png",
+      "description": "桌面完成态、桌面技术详情和 375px 技术详情截图"
+    }
   ]
 }

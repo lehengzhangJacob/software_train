@@ -651,6 +651,24 @@
       "backfill_required": false,
       "issue_state": "No Issue is closed by this release; existing external retest status remains unchanged.",
       "latest_verification": "C-34-S1 passed: v0.1.4 / Android versionCode 5; npm run verify, Android metadata/assembleRelease and smoke passed; cloud deploy 20260824122436 reports /api/app/version=0.1.4; GitHub Release v0.1.4 includes Trace screenshots and an explicitly unsigned APK."
+    },
+    "C-35": {
+      "contract_id": "C-35",
+      "parent_contract_id": "C-33-A1",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "按真实回合生命周期重构 Agent Trace 投影与工作台交互",
+      "goal": "让 Trace UI 由 Canonical AgentTraceEvent v1 的真实事件驱动，消除固定模板、重复节点、终态错位和回合完成后详情突现。",
+      "current_slice": null,
+      "completed_slices": ["C-35-A1", "C-35-S1", "C-35-S2", "C-35-S3"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "C-35-A1 / ADR-0020",
+      "data_model_delta": "none; AgentTraceEvent remains ephemeral current-turn projection",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this contract; existing external retest status remains unchanged.",
+      "latest_verification": "C-35-S3 passed: npm run verify; local Browser desktop and 375px regression; optimistic message appeared before completion, logical spans collapsed without duplicate rows, terminal #76 aligned with 11/11 completed nodes, technical sequence/delta projection visible, no console errors or visual horizontal overflow."
     }
   }
 }
