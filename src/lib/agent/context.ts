@@ -9,6 +9,8 @@ import {
   redactSuppressedMemoryContent,
 } from "@/lib/agent/context-safety"
 import { prisma } from "@/lib/prisma"
+import type { AgentIntent } from "@/lib/agent/policy/intent"
+import { buildAgentDomainInstructions } from "@/lib/agent/prompt-policy"
 
 export async function getAgentContext(userId: number) {
   const now = new Date()
@@ -79,6 +81,8 @@ function safeText(value: string | null | undefined, maxLength: number) {
 export type AgentSystemPromptOptions = {
   exerciseMode?: boolean
   exercisePlan?: ExercisePlanPayload | null
+  intent?: AgentIntent
+  webSearchAvailable?: boolean
 }
 
 function exercisePlanForPrompt(plan: ExercisePlanPayload | null | undefined) {
@@ -160,6 +164,8 @@ export function buildAgentSystemPrompt(
       ))
     : ""
   const currentExercisePlanText = JSON.stringify(exercisePlanForPrompt(options.exercisePlan))
+  const intentText = options.intent ?? "ambiguous"
+  const domainInstructions = buildAgentDomainInstructions(intentText, options.webSearchAvailable)
   const exercisePlanInstructions = options.exerciseMode
     ? `
 本回合是“运动计划”模式：
@@ -172,11 +178,13 @@ export function buildAgentSystemPrompt(
 <exercise-plan>{"planDate":"${context.today}","title":"今天的训练","goal":"改善活动量","totalMinutes":30,"intensity":"moderate","steps":[{"order":1,"kind":"warmup","name":"动态热身","minutes":5,"instructions":"轻松活动关节并逐步提高心率"},{"order":2,"kind":"strength","name":"自重训练","minutes":20,"instructions":"保持动作可控，按舒适强度完成"},{"order":3,"kind":"cooldown","name":"放松拉伸","minutes":5,"instructions":"缓慢呼吸并放松主要肌群"}],"safetyNote":"出现疼痛、头晕或呼吸异常立即停止","equipment":[]}</exercise-plan>`
     : "\n当前为普通咨询模式，不要输出 <exercise-plan> 标签；如果用户只是询问运动，请用普通中文建议回答。"
 
-  return `你是本地个人营养 Agent。你服务的是一个单用户饮食记录工具，不要把自己描述成云端客服。
+  return `你是 FoodMoment 的个人饮食、健身和恢复教练。你服务的是一个单用户健康记录工具，
+不是通用问答机器人，也不要把自己描述成云端客服。
 
 回答要求：
 - 使用中文，先给直接、可执行且针对当前情况的建议，再补充必要解释。
-- 只使用下面提供的个人档案、饮食记录、活动量和已启用长期记忆；没有数据时明确说不知道，不要编造医学诊断或精确效果。
+- 只使用下面提供的个人档案、饮食记录、活动量、运动计划和已启用长期记忆；没有数据时明确说不知道，不要编造医学诊断或精确效果。
+${domainInstructions}
 - 不要索要、复述或保存 API Key、令牌、支付信息、图片原文等敏感内容。
 - 涉及附近外卖、搜索或下单时，只能提出建议或生成草案；真实外部写操作必须等用户明确确认。
 - 如果用户在本轮表达了稳定的偏好、限制、目标、习惯或生活情境，可以最多整理 3 条长期记忆候选。候选会在回复保存时自动写入本地记忆，用户之后可在管理页修正、停用或删除。
@@ -188,7 +196,8 @@ ${exercisePlanInstructions}
 ${buildAgentDateInstruction(context.today)}
 个人档案：${profileText}
 近 14 天饮食记录（最多 40 条）：${mealsText}
-近 7 天活动量（来源 health_connect 为手机 Health Connect 自动同步，manual 为手动填写）：${activitiesText}
+ 近 7 天活动量（来源 health_connect 为手机 Health Connect 自动同步，manual 为手动填写）：${activitiesText}
+当前运动计划：${currentExercisePlanText}
 已启用长期记忆：${memoriesText}
 ${digestText ? `更早会话摘要（只作为参考，不替代当前数据）：${digestText}` : ""}
 

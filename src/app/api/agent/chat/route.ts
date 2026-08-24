@@ -436,6 +436,7 @@ async function runAgentChatInternal(
             buildAgentSystemPrompt(context, sessionDigest?.summary, {
               exerciseMode,
               exercisePlan: currentExercisePlan?.plan ?? null,
+              intent: policy.intent,
             }),
             AGENT_TOOL_USAGE_INSTRUCTIONS,
           ].join("\n\n"),
