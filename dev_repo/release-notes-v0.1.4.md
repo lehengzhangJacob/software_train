@@ -11,8 +11,10 @@
 
 - `npm run verify`
 - `npx tsx --test scripts/android-update-contract.test.ts`
-- Cloud deploy: `20260824120520` (Agent Trace runtime) / v0.1.4 redeploy pending
-- `/api/app/version`: `0.1.4` after release deploy
+- Cloud deploy: `20260824122436`
+- `/api/app/version`: `0.1.4` (`LZ_mbeaJ47eTMxiEFlcUs`)
+- Android release build: `versionCode 5` / `versionName 0.1.4`; uploaded asset is explicitly unsigned (`app-release-unsigned.apk`)
+- Android APK SHA-256: `375C5AB2070EEB8219FF9DB0D7825C7D4A70E527372FB64546546F1EBE71A041`
 - Team A cloud Browser: real `read_recent_meals` start/result, 148 model deltas, 148 answer deltas, clean console, and 375px no-overflow
 
 ## Visual evidence

@@ -1,0 +1,53 @@
+{
+  "contract_id": "C-34",
+  "slice_id": "C-34-S1",
+  "status": "completed",
+  "version": {
+    "web": "0.1.4",
+    "android": {
+      "versionCode": 5,
+      "versionName": "0.1.4",
+      "artifact": "app-release-unsigned.apk",
+      "sha256": "375C5AB2070EEB8219FF9DB0D7825C7D4A70E527372FB64546546F1EBE71A041"
+    }
+  },
+  "verification": {
+    "npm_verify": "pass",
+    "android_metadata_test": "pass",
+    "android_gradle_assembleRelease": "pass; existing Kotlin/Gradle deprecation warnings only",
+    "release_smoke": "pass"
+  },
+  "cloud": {
+    "deploy_id": "20260824122436",
+    "target": "http://8.148.206.131:8000",
+    "version_endpoint": {
+      "status": 200,
+      "version": "0.1.4",
+      "build": "LZ_mbeaJ47eTMxiEFlcUs",
+      "cache_control": "no-store"
+    },
+    "smoke": {
+      "/access": 200,
+      "anonymous_/api/users": 401,
+      "content_timer": "enabled/active",
+      "pending_migrations": false
+    }
+  },
+  "release": {
+    "tag": "v0.1.4",
+    "url": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.4",
+    "assets": [
+      "cloud-trace-desktop-tool.png",
+      "cloud-trace-mobile-375.png",
+      "app-release-unsigned.apk"
+    ]
+  },
+  "screenshots": [
+    "dev_repo/evidence/C-33-A1/S4/cloud-trace-desktop-tool.png",
+    "dev_repo/evidence/C-33-A1/S4/cloud-trace-mobile-375.png"
+  ],
+  "issue_state": "No Issue is closed by this release; #3/#4/#5/#9/#10 remain open for external retest and #6/#7/#8 remain closed after prior confirmation.",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false
+}

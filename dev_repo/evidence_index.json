@@ -1583,6 +1583,16 @@
       "type": "implementation",
       "path": "package.json, package-lock.json, android/app/build.gradle, scripts/android-update-contract.test.ts, dev_repo/release-notes-v0.1.4.md",
       "description": "Web/Android 版本元数据递增至 0.1.4 / versionCode 5，并准备包含真实 Agent Trace 证据的 Release 文案"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-34/S1/release-verification.json",
+      "description": "npm verify、Android metadata/assembleRelease、release smoke、云端 0.1.4 版本接口与部署 smoke 通过"
+    },
+    {
+      "type": "release",
+      "path": "dev_repo/release-notes-v0.1.4.md, https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.4",
+      "description": "GitHub Release v0.1.4，包含真实 Trace 桌面/375px 截图和明确标注 unsigned 的 Android APK"
     }
   ]
 }
