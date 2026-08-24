@@ -1,6 +1,6 @@
 {
   "name": "food-tracker",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "packageManager": "npm@11.6.2",
   "scripts": {
