@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-33-A1",
+  "active_contract_id": "C-34",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -633,6 +633,24 @@
       "backfill_required": false,
       "issue_state": "No Issue is closed by this contract; existing external retest status remains unchanged.",
       "latest_verification": "C-33-A1-S4 passed: deploy 20260824120520; Team A cloud Browser confirmed an immediate user message, real read_recent_meals tool start/result, 148 model and answer deltas in technical Trace, friendly default projection, clean console and 375px no-overflow."
+    },
+    "C-34": {
+      "contract_id": "C-34",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "发布包含真实 Agent Trace 的 v0.1.4",
+      "goal": "同步 Web/Android 版本元数据、部署包含 AgentKernel 自主工具循环的云端版本，并公开发布带 Trace 截图与 Android APK 的 GitHub Release。",
+      "current_slice": "C-34-S1",
+      "completed_slices": [],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "none; existing delivery.version_contract and agent.runtime boundaries",
+      "data_model_delta": "none",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this release; existing external retest status remains unchanged.",
+      "latest_verification": "Version metadata bumped to 0.1.4 / Android versionCode 5; release gates and cloud deployment pending."
     }
   }
 }

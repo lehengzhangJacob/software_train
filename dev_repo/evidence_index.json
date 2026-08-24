@@ -1577,5 +1577,12 @@
       "path": "dev_repo/evidence/C-33-A1/S4/cloud-trace-desktop.png, dev_repo/evidence/C-33-A1/S4/cloud-trace-desktop-tool.png, dev_repo/evidence/C-33-A1/S4/cloud-trace-mobile-375.png",
       "description": "云端桌面 Trace 完成态、工具调用技术详情和 375px 移动 Trace 截图"
     }
+  ],
+  "C-34-S1": [
+    {
+      "type": "implementation",
+      "path": "package.json, package-lock.json, android/app/build.gradle, scripts/android-update-contract.test.ts, dev_repo/release-notes-v0.1.4.md",
+      "description": "Web/Android 版本元数据递增至 0.1.4 / versionCode 5，并准备包含真实 Agent Trace 证据的 Release 文案"
+    }
   ]
 }
