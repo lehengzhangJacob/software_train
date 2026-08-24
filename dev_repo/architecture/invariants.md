@@ -104,3 +104,14 @@ The earlier single-user statement is superseded by this amendment:
     账户级凭据存储、AgentMessage 持久化或 MCP/action.policy 所有权。
 56. LangGraph/DeerFlow 第二运行时、checkpoint、历史 Trace 留存、后台 Subagent 或自动
     支付均不属于当前 AgentKernel；引入这些能力必须另开架构或 ER 修宪合同。
+
+57. `AgentTraceEvent v1` 是原始事件唯一来源；Trace Projection Reducer 可以聚合和脱敏，
+    但不得制造不存在的工具调用、调用关系或答案内容。
+58. 同一 `runId` 内同一逻辑步骤的 started/updated/completed 事件在 UI 只投影为一个节点；
+    节点必须保留原始事件身份、父子关系、首尾 sequence 和可验证的状态。
+59. 增量节点必须在 `run.completed`、`run.failed` 或 `run.cancelled` 到达时收敛到终态；
+    终态之后的事件不得让回合重新显示为处理中。
+60. Trace 投影必须按首个原始 sequence 稳定排序；压缩增量的最新 sequence 只用于技术
+    详情，不得改变其视觉时间线位置。
+61. 回合摘要与详情必须绑定同一 runId；SSE 收尾、消息对账、自动滚动或组件重渲染不得
+    自动重播已完成回合的详情。

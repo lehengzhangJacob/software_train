@@ -700,9 +700,10 @@
         "ModelProviderAdapter",
         "ToolRegistry",
         "CanonicalTraceBridge",
+        "TraceProjectionReducer",
         "SSEProjection"
       ],
-      "runtime_flow": "API façade -> AgentKernel -> ModelProviderAdapter -> Context/ToolRegistry -> ActionPolicy -> MCP/domain tools -> Canonical AgentTraceEvent v1 -> SSE -> Browser Projection -> final AgentMessage",
+      "runtime_flow": "API façade -> AgentKernel -> ModelProviderAdapter -> Context/ToolRegistry -> ActionPolicy -> MCP/domain tools -> Canonical AgentTraceEvent v1 -> SSE -> TraceProjectionReducer -> stable run summary/detail -> final AgentMessage",
       "capability_gate": {
         "autonomous_loop_requires": ["tool_calls", "verifiable_stream"],
         "unsupported_provider": "explicit fallback; never fake streaming or tool events",
@@ -727,8 +728,10 @@
         "schema": "AgentTraceEvent v1",
         "events": ["trace", "delta", "done"],
         "source_of_truth": "canonical events emitted only at real model/tool/policy/persistence/terminal boundaries",
-        "ui_role": "projection only; sort, dedupe, aggregate and redact; no fixed step template",
+        "ui_role": "TraceProjectionReducer only; aggregate lifecycle, close deltas at terminal, sort by first sequence and redact; no fixed step template",
         "persistence": "ephemeral turn presentation only",
+        "lifecycle": "run.completed/run.failed/run.cancelled are the terminal barrier; post-terminal events are ignored",
+        "view_model": "one logical step per node; summary and details share the same runId",
         "secret_policy": "safe summaries and answer deltas only; no raw tool payloads, hidden reasoning, credentials or payment links",
         "reconciliation": "optimistic user bubble reconciles once against final AgentMessage thread"
       }

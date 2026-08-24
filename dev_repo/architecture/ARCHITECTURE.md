@@ -237,3 +237,15 @@ Provider 能力必须显式门控：同时支持工具调用和可验证流式�
 
 LangGraph/DeerFlow 第二运行时、跨重启 checkpoint、历史 Trace 审计、后台 Subagent
 和自动支付不属于 C-33-A1；任何此类需求必须另立架构或 ER 修宪合同。
+
+### Trace 生命周期与单一投影（C-35-A1 / ADR-0020）
+
+C-35 将现有 Canonical Trace 的浏览器消费边界收紧为一层纯
+`TraceProjectionReducer`。`AgentTraceEvent v1` 仍只在真实模型、工具、策略、持久化和
+终态边界产生；浏览器不再把每一个 started/completed 原始事件直接当成一行。Reducer
+按 `runId` 聚合同一逻辑步骤，保留首尾 `sequence`，在 `run.completed`、`run.failed` 或
+`run.cancelled` 后冻结回合状态，并按首个事件序号稳定排序。
+
+工作台的“回合摘要”和“回合详情”是同一回合的两种投影，不是两套状态。`sending`、兼容
+activity 和流式答案只负责传输与局部反馈；完成事实只能由 Canonical Trace 终态决定。
+Trace 继续是临时投影，不新增数据库实体、迁移、回填或历史回放语义。

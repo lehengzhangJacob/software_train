@@ -63,6 +63,11 @@
       "description": "AgentKernel boundary, provider capability gate, policy-gated tool loop and Canonical Trace source"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0020-agent-trace-lifecycle-and-projection.md",
+      "node": "agent.runtime",
+      "description": "Canonical Trace lifecycle, terminal barrier, and single browser projection reducer"
+    },
+    {
       "path": "dev_repo/architecture/content-generation.md",
       "node": "agent.runtime",
       "description": "C-25 daily article context, content, image, trigger and retry contract"
