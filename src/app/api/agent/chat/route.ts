@@ -46,6 +46,7 @@ import type { AgentTraceEvent } from "@/lib/agent/trace-contract"
 import { sanitizeTraceText } from "@/lib/agent/trace-contract"
 import { runAgentKernel } from "@/lib/agent/kernel/runner"
 import { AGENT_TOOL_USAGE_INSTRUCTIONS, createAgentToolRegistry } from "@/lib/agent/kernel/tool-registry"
+import { classifyAgentIntent } from "@/lib/agent/policy/intent"
 import { getTodayStr } from "@/lib/utils"
 import { after } from "next/server"
 
@@ -200,17 +201,35 @@ async function runAgentChatInternal(
   if (!user) throw new AgentNotFoundError("请先创建个人档案")
   const accountId = await getCurrentAccountId()
 
-  // Resolve credentials before creating a thread so an unconfigured local
-  // provider cannot leave behind a ghost conversation.
-  const config = await getActiveAiProviderConfig(accountId ?? undefined)
+  const policy = await runAgentActivity(
+    recorder.emit,
+    { activityId: "agent-scope-policy", kind: "policy", label: "判断请求范围" },
+    () => runAgentTraceStep(
+      trace,
+      {
+        kind: "policy",
+        label: "判断请求范围",
+        safeSummary: "正在确认请求是否属于饮食与运动教练范围",
+      },
+      async () => classifyAgentIntent(input.message),
+      { completedSummary: classifyAgentIntent(input.message).safeSummary },
+    ),
+  )
+
+  // Off-topic replies are deterministic and do not require provider credentials.
+  // In-scope turns resolve credentials before creating a thread, preserving the
+  // existing no-ghost-conversation behavior for unconfigured providers.
+  const config = policy.intent === "off-topic"
+    ? null
+    : await getActiveAiProviderConfig(accountId ?? undefined)
   const threadId = await runAgentTraceStep(
     trace,
     { kind: "context", label: "定位当前对话线程", safeSummary: "已确认账户拥有该线程" },
     () => ensureAgentThread(user.userId, input.threadId, titleFromMessage(input.message)),
   )
-  const exerciseMode = input.mode === "exercise-plan" || input.exercisePlanId !== null
+  const exerciseMode = policy.intent !== "off-topic" && (input.mode === "exercise-plan" || input.exercisePlanId !== null)
   const exercisePlanId = input.exercisePlanId
-  const currentExercisePlan = exercisePlanId === null
+  const currentExercisePlan = policy.intent === "off-topic" || exercisePlanId === null
     ? null
     : await runAgentTraceStep(
         trace,
@@ -226,6 +245,24 @@ async function runAgentChatInternal(
     { kind: "step", label: "接收用户消息", safeSummary: "消息已写入当前线程" },
     () => appendAgentMessage(user.userId, threadId, "user", input.message),
   )
+
+  if (policy.intent === "off-topic") {
+    const assistantMessage = await runAgentTraceStep(
+      trace,
+      { kind: "step", label: "保存范围说明", safeSummary: "已给出教练服务范围" },
+      () => appendAgentMessage(user.userId, threadId, "assistant", policy.safeReply ?? "当前话题不在教练服务范围内"),
+    )
+    return {
+      thread: await getAgentThread(user.userId, threadId),
+      userMessage,
+      assistantMessage,
+      exercisePlan: null,
+      orderResult: null,
+      activity: recorder.snapshot(),
+    }
+  }
+
+  if (!config) throw new AgentResponseError("当前 AI 提供商不可用", 503)
   const [context, sessionDigest, history] = await runAgentActivity(
     recorder.emit,
     {
