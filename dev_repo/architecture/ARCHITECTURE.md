@@ -211,3 +211,29 @@ deltas while they arrive, and reconciles the final thread once. The trace
 workspace is nested/collapsible, keyboard accessible, responsive at 375px, and
 ephemeral: only final user/assistant messages enter `AgentMessage`. Historical
 trace replay or audit retention requires a separate ER/data-model amendment.
+
+### AgentKernel 与自主工具循环（C-33-A1 / ADR-0019）
+
+当前 Agent Runtime 在既有边界内增加 `AgentKernel`、`ModelProviderAdapter` 和
+`ToolRegistry`。Kernel 负责模型回合、工具选择、步数/超时/取消与终态；
+`/api/agent/chat` 仍是账户校验、SSE 和 JSON 完成合同的 façade。首选
+`@openai/agents` TypeScript SDK，但 SDK 只能经 Adapter 复用现有
+`src/lib/ai/client.ts` 与账户级 Provider 配置，不直接读取密钥、数据库或 MCP。
+
+普通回合的目标流是：
+
+`API façade → AgentKernel → ModelProviderAdapter → Context/ToolRegistry →
+ActionPolicy → MCP/domain tools → Canonical AgentTraceEvent v1 → SSE →
+Browser Projection → final AgentMessage`
+
+Provider 能力必须显式门控：同时支持工具调用和可验证流式事件时才进入自主工具
+循环；仅支持完整响应时沿用明确的 `fallback` 语义；能力未知时不得对外宣称自主
+流式。工具仍只能来自白名单，外部写操作继续受 `action.policy` 约束，麦当劳一笔
+未支付订单和支付由用户完成的边界不变。
+
+`AgentTraceEvent v1` 是当前回合唯一 Trace 来源。事件只能由实际模型、工具、策略、
+持久化和终态边界产生，UI 只做排序、去重、聚合和安全摘要投影，不再维护固定步骤
+模板。Trace 仍是临时投影，不新增 Prisma 实体、迁移、回填或历史回放语义。
+
+LangGraph/DeerFlow 第二运行时、跨重启 checkpoint、历史 Trace 审计、后台 Subagent
+和自动支付不属于 C-33-A1；任何此类需求必须另立架构或 ER 修宪合同。

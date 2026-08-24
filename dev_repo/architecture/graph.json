@@ -649,7 +649,7 @@
     },
     {
       "id": "agent.runtime",
-      "purpose": "编排档案、餐食、记忆、近 7 天活动量、模型与工具的营养对话运行时；长对话以滚动摘要 + 水位尾部组装上下文",
+      "purpose": "在账户化营养上下文之上运行 AgentKernel：管理模型回合、能力门控工具循环、策略边界与当前回合 Canonical Trace；长对话以滚动摘要 + 水位尾部组装上下文",
       "owned_files": [
         "src/app/agent/**",
         "src/app/api/agent/**",
@@ -687,15 +687,31 @@
       "allowed_change_types": [
         "prompt orchestration",
         "context selection",
-        "tool loop",
+        "AgentKernel runtime",
+        "model provider adapter",
+        "capability-gated tool loop",
+        "canonical trace bridge",
         "structured exercise plan projection",
         "daily article enqueue and background generation",
         "DashScope async image adapter"
       ],
+      "internal_boundaries": [
+        "AgentKernel",
+        "ModelProviderAdapter",
+        "ToolRegistry",
+        "CanonicalTraceBridge",
+        "SSEProjection"
+      ],
+      "runtime_flow": "API façade -> AgentKernel -> ModelProviderAdapter -> Context/ToolRegistry -> ActionPolicy -> MCP/domain tools -> Canonical AgentTraceEvent v1 -> SSE -> Browser Projection -> final AgentMessage",
+      "capability_gate": {
+        "autonomous_loop_requires": ["tool_calls", "verifiable_stream"],
+        "unsupported_provider": "explicit fallback; never fake streaming or tool events",
+        "sdk_boundary": "@openai/agents is used only behind the local adapter"
+      },
       "requires_amendment_when": [
         "扩大自主建单授权范围或新增支付能力",
-        "改变 AgentMessage 与结构化计划的持久化边界"
-        ,"新增跨回合内容持久化或图片资产真相",
+        "改变 AgentMessage 与结构化计划的持久化边界",
+        "新增跨回合内容持久化或图片资产真相",
         "让公开日更请求同步等待 provider 或图片任务"
       ],
       "verification": [
@@ -710,6 +726,8 @@
         "transport": "optional SSE via Accept: text/event-stream",
         "schema": "AgentTraceEvent v1",
         "events": ["trace", "delta", "done"],
+        "source_of_truth": "canonical events emitted only at real model/tool/policy/persistence/terminal boundaries",
+        "ui_role": "projection only; sort, dedupe, aggregate and redact; no fixed step template",
         "persistence": "ephemeral turn presentation only",
         "secret_policy": "safe summaries and answer deltas only; no raw tool payloads, hidden reasoning, credentials or payment links",
         "reconciliation": "optimistic user bubble reconciles once against final AgentMessage thread"
