@@ -402,7 +402,7 @@ export function AgentWorkspace({
         />
       ) : null}
       <section className="surface-card overflow-hidden border-0">
-        <div className="grid grid-cols-[minmax(0,1fr)] lg:h-[680px] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
+        <div className="grid h-[min(42.5rem,calc(100dvh-9rem))] min-h-[28rem] grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
           <aside className={cn(
             "order-2 min-h-0 flex-col overflow-hidden bg-[var(--brand-plum)] text-white lg:order-1 lg:flex lg:h-full",
             mobileHistoryOpen ? "fixed inset-y-0 left-0 z-50 flex w-[min(22rem,88vw)] shadow-2xl lg:static lg:z-auto lg:w-auto lg:shadow-none" : "hidden",
@@ -503,7 +503,7 @@ export function AgentWorkspace({
             </div>
           </aside>
 
-          <div className="order-1 flex min-h-0 min-w-0 flex-col overflow-hidden bg-[var(--brand-paper)] lg:order-2 lg:h-full">
+          <div className="order-1 flex h-full min-h-0 min-w-0 flex-col overflow-hidden bg-[var(--brand-paper)] lg:order-2">
             <header className="flex items-center justify-between gap-4 border-b border-border/70 px-5 py-4 sm:px-7">
               <div className="min-w-0">
                 <p className="page-eyebrow">Tonight&apos;s plan</p>
@@ -533,7 +533,7 @@ export function AgentWorkspace({
             <div
               ref={messageViewportRef}
               onScroll={handleViewportScroll}
-              className="min-h-0 space-y-5 px-4 py-5 sm:px-7 sm:py-7 lg:flex-1 lg:overflow-y-auto"
+              className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-5 sm:px-7 sm:py-7"
             >
               {messages.length === 0 ? (
                 <div className="flex min-h-[25rem] flex-col justify-center">
@@ -653,7 +653,11 @@ export function AgentWorkspace({
               ) : null}
             </div>
 
-            <form className="border-t border-border/70 bg-card p-3 sm:p-4" onSubmit={(event) => { event.preventDefault(); void sendMessage() }}>
+            <form
+              data-testid="agent-composer"
+              className="shrink-0 border-t border-border/70 bg-card p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:p-4 sm:pb-4"
+              onSubmit={(event) => { event.preventDefault(); void sendMessage() }}
+            >
               <div className="flex items-end gap-2 rounded-md border bg-card p-2 focus-within:border-[var(--brand-mint)] focus-within:ring-2 focus-within:ring-[var(--brand-mint)]/20">
                 <textarea
                   value={draft}

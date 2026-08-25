@@ -1,0 +1,21 @@
+{
+  "contract": "C-40-S1",
+  "surface": "http://localhost:3100/agent",
+  "desktop": {
+    "viewport": [1280, 720],
+    "messageViewport": {"scrollHeight": 642, "clientHeight": 361},
+    "composer": {"top": 541.9, "bottom": 676.0, "visible": true},
+    "document": {"scrollHeight": 720, "clientHeight": 720}
+  },
+  "mobile": {
+    "viewport": [375, 812],
+    "messageViewport": {"scrollHeight": 1106, "clientHeight": 461},
+    "composer": {"top": 608.8, "bottom": 734.9, "visible": true},
+    "document": {"scrollHeight": 820, "clientHeight": 812}
+  },
+  "console": {"errors": 0, "warnings": 0},
+  "screenshots": [
+    "dev_repo/evidence/C-40/S1/chat-composer-desktop.png",
+    "dev_repo/evidence/C-40/S1/chat-composer-mobile-375.png"
+  ]
+}

@@ -3,7 +3,7 @@
 ## Current execution override
 
 - Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: `C-39` 已完成并回到 C-21；普通 Agent 已具备 Goal/Action/Verify 运行时与真实 Trace 投影；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
+- Current slice: none；C-40 已完成并回到 C-21；消息与 Trace 独立滚动，输入 composer 固定在聊天面板底部；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3/#4/#5/#9/#10 remain open until external testers confirm non-reproduction.
@@ -102,6 +102,8 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
             ├── C-39-S1 计划目标路由、validate/save/verify 动作工具与真实 revision 提交 [completed：25/25 Agent 合同、Kernel 7/7、typecheck/lint]
             ├── C-39-S2 真实动作 Trace 投影与工作台显示 [completed：真实 span 顺序、动作标签、技术详情按需展开]
             └── C-39-S3 本地/云端回归与截图证据 [completed：npm verify、deploy 20260825104923、Team A 计划 revision 2、三张截图]
+        └── C-40 - 聊天输入区常驻不可滚动底部 [completed：npm verify；桌面/375px Browser 验收与截图证据]
+            └── C-40-S1 布局、独立滚动与桌面/375px 回归 [completed：composer 在不可滚动 footer，消息/Trace 独立滚动]
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

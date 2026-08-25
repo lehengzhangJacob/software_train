@@ -1701,5 +1701,17 @@
       "path": "dev_repo/evidence/C-39/S3/agent-trace-overview.png, dev_repo/evidence/C-39/S3/agent-trace-actions.png, dev_repo/evidence/C-39/S3/exercise-plan-revision-2.png",
       "description": "完成态 Trace、实际动作链与计划 revision 2 页面截图"
     }
+  ],
+  "C-40-S1": [
+    {
+      "type": "verification",
+      "path": "scripts/agent-chat-ui-contract.test.ts, dev_repo/evidence/C-40/S1/chat-composer-layout-verification.md, dev_repo/evidence/C-40/S1/chat-composer-layout-verification.json",
+      "description": "消息/Trace 独立滚动，composer 为不可滚动 sibling；桌面与 375px Browser 几何验收通过，控制台无错误警告"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-40/S1/chat-composer-desktop.png, dev_repo/evidence/C-40/S1/chat-composer-mobile-375.png",
+      "description": "桌面与 375px 移动端输入区常驻底部截图"
+    }
   ]
 }
