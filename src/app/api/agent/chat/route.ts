@@ -502,7 +502,9 @@ async function runAgentChatInternal(
             actionState,
           },
           trace,
-          maxTurns: 4,
+          // A plan task may need several read-only context calls before the
+          // validate -> save -> verify action chain and its final response.
+          maxTurns: exercisePlanGoal ? 8 : 4,
           reasoningEffort: exerciseMode && config.providerId === "stepfun" ? "low" : undefined,
           onTextDelta: projector.push,
         })
@@ -530,7 +532,11 @@ async function runAgentChatInternal(
       }
     },
   )
-  const rawText = modelResult
+  const rawText = modelResult || (
+    actionState.verifiedExercisePlan
+      ? "运动计划已更新，我已经回读确认新的版本。"
+      : ""
+  )
   if (!rawText) throw new AgentResponseError("AI 没有返回可读内容", 502)
 
   const parsed = extractAssistantResponse(sanitizeAssistantText(rawText))
