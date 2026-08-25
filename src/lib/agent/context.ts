@@ -82,6 +82,8 @@ export type AgentSystemPromptOptions = {
   exerciseMode?: boolean
   exercisePlanGoal?: boolean
   exercisePlanActionsAvailable?: boolean
+  mealRecordGoal?: boolean
+  mealRecordActionsAvailable?: boolean
   exercisePlan?: ExercisePlanPayload | null
   intent?: AgentIntent
   webSearchAvailable?: boolean
@@ -182,6 +184,16 @@ export function buildAgentSystemPrompt(
       ? `
 本回合是兼容性的“运动计划”模式：请生成或调整一份完整结构化运动计划。若当前运行时不能调用计划动作工具，才在回复末尾输出一个 <exercise-plan> 标签，标签内只能放合法 JSON，不要使用 Markdown 代码围栏；JSON 必须包含 planDate、title、goal、totalMinutes、intensity、steps、safetyNote、equipment，步骤序号从 1 连续递增，步骤总时长不能超过 totalMinutes，总时长为 5 到 180 分钟。当前计划如下：${currentExercisePlanText}`
       : "\n当前为普通咨询模式，不要输出 <exercise-plan> 标签；如果用户只是询问运动，请用普通中文建议回答。"
+  const mealRecordInstructions = options.mealRecordGoal && options.mealRecordActionsAvailable
+    ? `
+本回合是“餐食记录任务”，目标是让 Agent 真实写入一条用户明确要求记录的餐食：
+- 只有用户明确说记录、补记、录入或保存一餐时才执行；单纯提到吃过什么、询问吃什么或做营养复盘不能写入。
+- 必须从用户消息或用户明确确认中取得食物名称、餐别和热量、蛋白质、脂肪、碳水；关键值缺失时先询问，不要静默估算或把建议当成记录。
+- 一次回合最多记录一条餐食，日期和时间默认使用当前本地值，用户明确指定时才使用指定值。
+- 必须依次调用 validate_meal_record、save_meal_record、verify_meal_record；只有 verify 返回 verified=true 才能向用户说已记录。
+- 工具会复用服务端餐食边界和当前账号所有权；不要传 userId、批量数组、图片原文或供应商错误。
+本回合 Trace 会显示真实的餐食校验、提交和回读动作。`
+    : ""
 
   return `你是 FoodMoment 的个人饮食、健身和恢复教练。你服务的是一个单用户健康记录工具，
 不是通用问答机器人，也不要把自己描述成云端客服。
@@ -196,6 +208,7 @@ ${domainInstructions}
 - 不要整理与“已启用长期记忆”内容相同或语义等价的候选，也不要把一次性安排、寒暄或不确定猜测写成长期记忆。候选必须是 JSON 数组，并放在回复末尾的 <memory-candidates> 标签中；没有候选时使用空数组。标签之外是给用户看的正文。
 - 当上下文里有活动量数据时，可以在核算热量缺口、给出加餐或运动建议时参考当天步数与活动消耗，但不要虚构未提供的数据。
 ${exercisePlanInstructions}
+${mealRecordInstructions}
 
 当前上下文：
 ${buildAgentDateInstruction(context.today)}

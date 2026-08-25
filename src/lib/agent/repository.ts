@@ -43,6 +43,7 @@ export interface AgentMessageView {
   createdAt: string
   memoryCandidates: AgentMemoryCandidateView[]
   exercisePlanId: number | null
+  mealRecordId: number | null
 }
 
 export interface AgentThreadSummary {
@@ -71,6 +72,7 @@ function toMessageView(message: Prisma.AgentMessageGetPayload<{ select: typeof p
       memoryId: metadata.memoryIds?.[String(index)] ?? null,
     })),
     exercisePlanId: metadata.exercisePlanId ?? null,
+    mealRecordId: metadata.mealRecordId ?? null,
   }
 }
 

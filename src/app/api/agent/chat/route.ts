@@ -22,6 +22,7 @@ import {
   getExercisePlanProjection,
   getOwnedExercisePlan,
 } from "@/lib/exercise/plan-repository"
+import type { MealRecordView } from "@/lib/food/meal-record-repository"
 import { consolidateAgentSession } from "@/lib/agent/consolidation"
 import { getAgentContext, buildAgentSystemPrompt } from "@/lib/agent/context"
 import {
@@ -55,7 +56,7 @@ import {
   createAgentToolRegistry,
 } from "@/lib/agent/kernel/tool-registry"
 import { classifyAgentIntent } from "@/lib/agent/policy/intent"
-import { isExercisePlanGoal } from "@/lib/agent/policy/goal"
+import { isExercisePlanGoal, isMealRecordGoal } from "@/lib/agent/policy/goal"
 import { isDashScopeWebSearchAvailable } from "@/lib/agent/search/web-search"
 import type { WebSearchSource } from "@/lib/agent/search/web-search"
 import { appendWebSearchSources } from "@/lib/agent/search/citations"
@@ -186,6 +187,7 @@ type AgentChatResult = {
   userMessage: Awaited<ReturnType<typeof appendAgentMessage>>
   assistantMessage: Awaited<ReturnType<typeof appendAgentMessage>>
   exercisePlan: Awaited<ReturnType<typeof getOwnedExercisePlan>>
+  mealRecord: MealRecordView | null
   orderResult?: {
     orderId: string | null
     paymentLink: string | null
@@ -244,6 +246,22 @@ async function runAgentChatInternal(
       async () => "exercise-plan",
     )
   }
+  const mealRecordGoal = policy.intent !== "off-topic" && !exercisePlanGoal && isMealRecordGoal({
+    message: input.message,
+    mode: input.mode,
+    exercisePlanId: input.exercisePlanId,
+  })
+  if (mealRecordGoal) {
+    await runAgentTraceStep(
+      trace,
+      {
+        kind: "policy",
+        label: "识别餐食记录目标",
+        safeSummary: "当前回合进入单条餐食记录执行流",
+      },
+      async () => "meal-record",
+    )
+  }
 
   // Off-topic replies are deterministic and do not require provider credentials.
   // In-scope turns resolve credentials before creating a thread, preserving the
@@ -291,6 +309,7 @@ async function runAgentChatInternal(
       userMessage,
       assistantMessage,
       exercisePlan: null,
+      mealRecord: null,
       orderResult: null,
       activity: recorder.snapshot(),
     }
@@ -411,6 +430,7 @@ async function runAgentChatInternal(
         userMessage,
         assistantMessage,
         exercisePlan: null,
+        mealRecord: null,
         orderResult:
           execution.status === "created"
             ? {
@@ -433,6 +453,7 @@ async function runAgentChatInternal(
       userMessage,
       assistantMessage,
       exercisePlan: null,
+      mealRecord: null,
       orderResult: null,
       activity: recorder.snapshot(),
     }
@@ -477,6 +498,8 @@ async function runAgentChatInternal(
               exercisePlan: currentExercisePlan?.plan ?? null,
               intent: policy.intent,
               webSearchAvailable,
+              mealRecordGoal,
+              mealRecordActionsAvailable: mealRecordGoal,
             }),
             AGENT_TOOL_USAGE_INSTRUCTIONS,
           ].join("\n\n"),
@@ -490,6 +513,7 @@ async function runAgentChatInternal(
             config,
             allowWebSearch: policy.requiresWebSearch,
             allowExercisePlanActions: exercisePlanGoal,
+            allowMealRecordActions: mealRecordGoal,
             onWebSearchResult: (result) => {
               webSearchSources.push(...result.sources)
             },
@@ -504,7 +528,7 @@ async function runAgentChatInternal(
           trace,
           // A plan task may need several read-only context calls before the
           // validate -> save -> verify action chain and its final response.
-          maxTurns: exercisePlanGoal ? 8 : 4,
+          maxTurns: exercisePlanGoal || mealRecordGoal ? 8 : 4,
           reasoningEffort: exerciseMode && config.providerId === "stepfun" ? "low" : undefined,
           onTextDelta: projector.push,
         })
@@ -535,6 +559,8 @@ async function runAgentChatInternal(
   const rawText = modelResult || (
     actionState.verifiedExercisePlan
       ? "运动计划已更新，我已经回读确认新的版本。"
+      : actionState.verifiedMealRecord
+        ? `已记录${actionState.verifiedMealRecord.mealType === "breakfast" ? "早餐" : actionState.verifiedMealRecord.mealType === "lunch" ? "午餐" : actionState.verifiedMealRecord.mealType === "dinner" ? "晚餐" : "加餐"}，我已经回读确认这条餐食记录。`
       : ""
   )
   if (!rawText) throw new AgentResponseError("AI 没有返回可读内容", 502)
@@ -544,15 +570,25 @@ async function runAgentChatInternal(
   if (exercisePlanGoal && actionState.planActionInvoked && !actionState.verifiedExercisePlan) {
     throw new AgentResponseError(actionState.actionFailure ?? "运动计划回读核验未完成，本轮不会报告更新成功", 502)
   }
+  if (mealRecordGoal && actionState.mealActionInvoked && !actionState.verifiedMealRecord) {
+    throw new AgentResponseError(actionState.actionFailure ?? "餐食记录回读核验未完成，本轮不会报告已记录成功", 502)
+  }
   const generatedExercisePlan = !actionState.verifiedExercisePlan && legacyExerciseMode ? parsed.exercisePlan : undefined
   const verifiedExercisePlan = actionState.verifiedExercisePlan
+  const verifiedMealRecord = actionState.verifiedMealRecord
   const assistantMessage = await runAgentTraceStep(
     trace,
     {
       kind: "step",
-      label: verifiedExercisePlan ? "保存已核验计划回执与 Agent 回复" : "保存 Agent 回复",
+      label: verifiedExercisePlan
+        ? "保存已核验计划回执与 Agent 回复"
+        : verifiedMealRecord
+          ? "保存已核验餐食回执与 Agent 回复"
+          : "保存 Agent 回复",
       safeSummary: verifiedExercisePlan
         ? "最终回复与已回读核验的运动计划关联"
+        : verifiedMealRecord
+          ? "最终回复与已回读核验的餐食记录关联"
         : "最终回复和合法记忆候选写入消息历史",
     }, 
     () => appendAgentMessage(
@@ -564,6 +600,7 @@ async function runAgentChatInternal(
         memoryCandidates: parsed.candidates,
         usedMemoryIds: context.memories.map((memory) => memory.memoryId),
         ...(verifiedExercisePlan ? { exercisePlanId: verifiedExercisePlan.planId } : {}),
+        ...(verifiedMealRecord ? { mealRecordId: verifiedMealRecord.recordId } : {}),
       },
       {
         ...(generatedExercisePlan ? { exercisePlan: generatedExercisePlan } : {}),
@@ -599,6 +636,7 @@ async function runAgentChatInternal(
     userMessage,
     assistantMessage,
     exercisePlan: persistedExercisePlan,
+    mealRecord: verifiedMealRecord,
     activity: recorder.snapshot(),
   }
 }

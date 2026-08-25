@@ -184,6 +184,9 @@ const FRIENDLY_TOOL_LABELS: Record<string, string> = {
   validate_exercise_plan: "校验运动计划",
   save_exercise_plan: "保存运动计划",
   verify_exercise_plan: "回读并核验运动计划",
+  validate_meal_record: "校验餐食记录",
+  save_meal_record: "保存餐食记录",
+  verify_meal_record: "回读并核验餐食记录",
   web_search: "检索公开资料",
 }
 

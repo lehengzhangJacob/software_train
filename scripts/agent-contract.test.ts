@@ -72,12 +72,14 @@ test("metadata memory ids round-trip and accept legacy confirmation ids", () => 
     confirmedMemoryIds: { "0": 4, "bad": "nope" },
     memoryIds: { "1": 5, "bad": -2 },
     usedMemoryIds: [1, 2, "bad"],
+    mealRecordId: 18,
     apiKey: "must-not-survive",
   }))
   assert.deepEqual(parsed.memoryIds, { "0": 4, "1": 5 })
   assert.deepEqual(parsed.usedMemoryIds, [1, 2])
   assert.equal(parsed.memoryCandidates?.[0].content, "本周想规律吃早餐")
   assert.equal(parsed.exercisePlanId, undefined)
+  assert.equal(parsed.mealRecordId, 18)
   assert.equal("apiKey" in parsed, false)
 })
 

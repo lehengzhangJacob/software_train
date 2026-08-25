@@ -60,6 +60,7 @@ export interface AgentMessageMetadata {
   usedMemoryIds?: number[]
   order?: OrderDigest
   exercisePlanId?: number
+  mealRecordId?: number
 }
 
 export interface AgentMemoryConfirmationInput {
@@ -307,6 +308,9 @@ export function parseAgentMessageMetadata(value: string | null): AgentMessageMet
       ...(order ? { order } : {}),
       ...(typeof parsed.exercisePlanId === "number" && Number.isInteger(parsed.exercisePlanId) && parsed.exercisePlanId > 0
         ? { exercisePlanId: parsed.exercisePlanId }
+        : {}),
+      ...(typeof parsed.mealRecordId === "number" && Number.isInteger(parsed.mealRecordId) && parsed.mealRecordId > 0
+        ? { mealRecordId: parsed.mealRecordId }
         : {}),
     }
   } catch {

@@ -1,6 +1,6 @@
 import type { AgentChatMode } from "@/lib/agent/contracts"
 
-export const AGENT_GOALS = ["exercise-plan", "none"] as const
+export const AGENT_GOALS = ["exercise-plan", "meal-record", "none"] as const
 export type AgentGoal = (typeof AGENT_GOALS)[number]
 
 const PLAN_PHRASES = [
@@ -25,6 +25,21 @@ const PLAN_ACTIONS = [
   "设计",
 ]
 
+const MEAL_RECORD_PHRASES = [
+  "饮食记录",
+  "餐饮记录",
+  "餐食记录",
+  "记一餐",
+  "记录早餐",
+  "记录午餐",
+  "记录晚餐",
+  "记录加餐",
+  "补记",
+  "录入",
+]
+
+const MEAL_RECORD_ACTIONS = ["记录", "记下", "补记", "录入", "保存", "添加", "写入"]
+
 function normalizeMessage(message: string) {
   return message.toLocaleLowerCase().replace(/[\s\p{P}\p{S}]+/gu, " ").trim()
 }
@@ -46,6 +61,14 @@ export function classifyAgentGoal(input: {
   const hasPlanPhrase = PLAN_PHRASES.some((phrase) => normalized.includes(phrase))
   const hasPlanAction = PLAN_ACTIONS.some((action) => normalized.includes(action))
   return hasPlanPhrase && hasPlanAction ? "exercise-plan" : "none"
+}
+
+export function isMealRecordGoal(input: { message: string; mode?: AgentChatMode; exercisePlanId?: number | null }) {
+  if (input.mode === "exercise-plan" || input.exercisePlanId !== null && input.exercisePlanId !== undefined) return false
+  const normalized = normalizeMessage(input.message)
+  const hasRecordPhrase = MEAL_RECORD_PHRASES.some((phrase) => normalized.includes(phrase))
+  const hasRecordAction = MEAL_RECORD_ACTIONS.some((action) => normalized.includes(action))
+  return hasRecordPhrase && hasRecordAction
 }
 
 export function isExercisePlanGoal(input: {
