@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-39",
+  "active_contract_id": "C-21",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -408,7 +408,7 @@
       "deferred_slices": [],
       "return_to": "web_completion_audit",
       "issue_closure": "Issues #6-#8 closed as completed after external confirmation; Issues #3-#5, #9 and #10 remain open until external testers confirm non-reproduction.",
-      "latest_verification": "C-37 completed: deploy 20260824204147 runs the fitness-domain prompt, deterministic off-topic scope policy, guarded Web Search capability gate, and progressive friendly/technical Trace projection. Team A Browser confirmed streaming and final-state alignment, 16/16 real spans, and transparent StepFun search fallback; existing Issue status unchanged."
+      "latest_verification": "C-39 completed: deploy 20260825104923 runs the Goal/Action/Verify Agent runtime. Team A Browser confirmed an ordinary Agent plan turn created revision 2, completed validate/save/verify, streamed 88 answer deltas, and projected 18/18 real spans; existing Issue status unchanged."
     },
     "C-21-UI1": {
       "contract_id": "C-21-UI1",
@@ -728,11 +728,11 @@
       "contract_id": "C-39",
       "parent_contract_id": "C-21",
       "root_campaign": "nutrition-agent",
-      "status": "in_progress",
+      "status": "completed",
       "summary": "把 Agent 从 chat box 升级为可执行、可核验、可投影的领域 Agent",
       "goal": "让 Agent 识别领域目标，按 read -> validate -> act -> observe 执行受控动作，在运动计划场景中真实创建 revision 并回读核验，同时让 Trace 只呈现真实运行事件。",
-      "current_slice": "C-39-S2",
-      "completed_slices": ["C-39-A1", "C-39-S1"],
+      "current_slice": null,
+      "completed_slices": ["C-39-A1", "C-39-S1", "C-39-S2", "C-39-S3"],
       "deferred_slices": [],
       "return_to": "C-21",
       "architecture_amendment": "C-39-A1 / ADR-0022",
@@ -740,7 +740,7 @@
       "migration_required": false,
       "backfill_required": false,
       "issue_state": "No Issue is closed by this contract; #3/#4/#5/#9/#10 remain open until external retest.",
-      "latest_verification": "C-39-S1 passed: npm run test:agent (25/25), AgentKernel/action contracts (7/7), typecheck and focused lint; commit 1ca5d57 wires ordinary plan goals to validate/save/verify actions and verified plan replies.",
+      "latest_verification": "C-39-S3 passed: npm run verify; deploy 20260825104923; Team A cloud Browser completed a real ordinary-Agent plan turn with 18/18 spans, 88 answer deltas, validate/save/verify actions, plan 15 revision 2 on /exercise, and no console errors or warnings; screenshots and JSON evidence are archived under dev_repo/evidence/C-39/S3.",
       "red_lines": [
         "没有真实 save + verify 不得声称运动计划已更新",
         "Trace 不得由固定模板补齐，也不得展示原始工具载荷、隐藏推理或凭据",

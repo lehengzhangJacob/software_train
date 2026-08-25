@@ -1,0 +1,30 @@
+{
+  "contract": "C-39-S3",
+  "deployment": "20260825104923",
+  "account": "foodmoment-team-a",
+  "agentRoute": "/agent",
+  "planRoute": "/exercise",
+  "planId": 15,
+  "revision": 2,
+  "trace": {
+    "completedSpans": 18,
+    "terminalSequence": 210,
+    "streamedAnswerDeltas": 88,
+    "actions": [
+      "validate_exercise_plan",
+      "save_exercise_plan",
+      "verify_exercise_plan"
+    ]
+  },
+  "planChecklist": {
+    "completed": 0,
+    "total": 5
+  },
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "screenshots": [
+    "dev_repo/evidence/C-39/S3/agent-trace-overview.png",
+    "dev_repo/evidence/C-39/S3/agent-trace-actions.png",
+    "dev_repo/evidence/C-39/S3/exercise-plan-revision-2.png"
+  ]
+}

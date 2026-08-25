@@ -1689,5 +1689,17 @@
       "path": "scripts/agent-trace-ui-contract.test.ts",
       "description": "Friendly Trace 按真实逻辑 span 顺序投影，动作/搜索/生成步骤不再被固定五阶段合并"
     }
+  ],
+  "C-39-S3": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-39/S3/cloud-agent-plan-verification.md, dev_repo/evidence/C-39/S3/cloud-agent-plan-verification.json",
+      "description": "deploy 20260825104923 后，Team A 云端普通 Agent 真实完成运动计划 validate/save/verify，18/18 spans、88 个答案增量、计划 15 revision 2 与无控制台错误已核验"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-39/S3/agent-trace-overview.png, dev_repo/evidence/C-39/S3/agent-trace-actions.png, dev_repo/evidence/C-39/S3/exercise-plan-revision-2.png",
+      "description": "完成态 Trace、实际动作链与计划 revision 2 页面截图"
+    }
   ]
 }
