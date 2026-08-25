@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-41-Release",
+  "active_contract_id": "C-21",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -774,11 +774,11 @@
       "contract_id": "C-41-Release",
       "parent_contract_id": "C-40",
       "root_campaign": "nutrition-agent",
-      "status": "in_progress",
+      "status": "completed",
       "summary": "发布聊天输入区布局修复的 FoodMoment v0.1.7",
       "goal": "同步 Web/Android 版本、部署包含聊天 composer 修复的云端构建，并创建带桌面/375px 布局证据的 GitHub Release。",
-      "current_slice": "C-41-Release-S1",
-      "completed_slices": [],
+      "current_slice": null,
+      "completed_slices": ["C-41-Release-S1"],
       "deferred_slices": [],
       "return_to": "C-21",
       "architecture_amendment": "none; existing delivery.version_contract and frontend.components boundaries",
@@ -786,7 +786,7 @@
       "migration_required": false,
       "backfill_required": false,
       "issue_state": "No Issue is closed by this release; #3/#4/#5/#9/#10 remain open for external retest.",
-      "latest_verification": "C-41-Release-S1 in progress: version bump, local release gates, cloud deployment, and GitHub Release are being executed.",
+      "latest_verification": "C-41-Release-S1 passed: v0.1.7 source tag targets main commit 35ef43f; npm verify, Android metadata/assembleRelease, release smoke, cloud deploy 20260825153353, /api/app/version=0.1.7/build qf5uW0Rf0ud-quenuf25p, and GitHub Release v0.1.7 with unsigned APK plus desktop/375px composer screenshots all verified.",
       "red_lines": [
         "Release tag must point to the verified main commit",
         "No Issue status changes are included",

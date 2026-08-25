@@ -2,7 +2,7 @@
   "contract_id": "C-41-Release",
   "slice_id": "C-41-Release-S1",
   "summary": "发布聊天输入区布局修复的 FoodMoment v0.1.7",
-  "source_commit": "1b803fc",
+  "source_commit": "35ef43f",
   "branch": "main",
   "local_gates": {
     "npm run verify": "pass; middleware-to-proxy deprecation warning only",
