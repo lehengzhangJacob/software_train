@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-43-Release",
+  "active_contract_id": "C-21",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -820,11 +820,11 @@
       "contract_id": "C-43-Release",
       "parent_contract_id": "C-42",
       "root_campaign": "nutrition-agent",
-      "status": "in_progress",
+      "status": "completed",
       "summary": "发布移动端输入体验与跨页教练预填的 FoodMoment v0.1.8",
       "goal": "同步 Web/Android 版本、执行完整发布门禁、部署云端，并创建包含 C-42 UI 证据与未签名 APK 的 GitHub Release。",
-      "current_slice": "C-43-Release-S1",
-      "completed_slices": [],
+      "current_slice": null,
+      "completed_slices": ["C-43-Release-S1"],
       "deferred_slices": [],
       "return_to": "C-21",
       "architecture_amendment": "none; existing delivery.version_contract, frontend.pages and frontend.components boundaries",
@@ -832,6 +832,7 @@
       "migration_required": false,
       "backfill_required": false,
       "issue_state": "No Issue is closed by this release; #3/#4/#5/#9/#10 remain open for external retest and #6/#7/#8 remain closed.",
+      "latest_verification": "C-43-Release-S1 passed: source commit ed69db9; npm run release:check, Android metadata/assembleRelease and cloud URL sync passed; deploy 20260825162921 reports /api/app/version=0.1.8/build -OX4BGUL5h-LeqQtz0NDH; GitHub Release v0.1.8 is public with unsigned APK and six C-42 UI screenshots.",
       "red_lines": [
         "Release tag must point to the verified main commit",
         "No Issue status changes are included",
