@@ -1761,5 +1761,17 @@
       "path": "dev_repo/evidence/C-42/S3/agent-prefilled-exercise-desktop.jpg, dev_repo/evidence/C-42/S3/agent-prefilled-exercise-mobile-375.jpg",
       "description": "计划入口进入教练后的桌面与 375px 预填提示截图"
     }
+  ],
+  "C-43-Release-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-43-Release/release-verification.json, dev_repo/release-notes-v0.1.8.md",
+      "description": "v0.1.8 本地发布门禁、Android 未签名 APK、云端部署与版本接口核验"
+    },
+    {
+      "type": "release",
+      "path": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.8",
+      "description": "正式 Release，包含未签名 Android APK 与 C-42 六张桌面/375px UI 截图证据"
+    }
   ]
 }

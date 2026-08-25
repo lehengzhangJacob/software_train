@@ -1,0 +1,51 @@
+{
+  "contract_id": "C-43-Release",
+  "slice_id": "C-43-Release-S1",
+  "summary": "发布移动端输入体验、统一表面与跨页教练预填的 FoodMoment v0.1.8",
+  "source_commit": "ed69db9",
+  "branch": "main",
+  "local_gates": {
+    "npm run release:check": "pass; migrate status current; memory migration, verify, memory API, Agent API, MCP API and smoke all passed; middleware-to-proxy deprecation warning only",
+    "npx tsx --test scripts/android-update-contract.test.ts": "pass",
+    "android/gradlew.bat assembleRelease": "pass; unsigned APK; versionCode 9/versionName 0.1.8; cloud URL baked",
+    "apk_sha256": "822BBAE37C071BA6679965501BBAD30B6A6F8A9935CF050575334A601E740B59"
+  },
+  "cloud": {
+    "deployment": "20260825162921",
+    "access_status": 200,
+    "anonymous_api_status": 401,
+    "version": "0.1.8",
+    "build": "-OX4BGUL5h-LeqQtz0NDH",
+    "content_timer": "enabled/active"
+  },
+  "browser": {
+    "surface": "local Browser evidence from C-42",
+    "desktop": "1280x720; keyboard-aware Agent surface and branded profile menu; console errors/warnings=0",
+    "mobile": "375x812; keyboard-aware Agent composer, manual meal form and prefilled coach context; no horizontal overflow; console errors/warnings=0",
+    "screenshots": [
+      "dev_repo/evidence/C-42/S1/agent-desktop.jpg",
+      "dev_repo/evidence/C-42/S1/agent-mobile-375.jpg",
+      "dev_repo/evidence/C-42/S2/profile-menu-desktop.jpg",
+      "dev_repo/evidence/C-42/S2/manual-meal-mobile-375.jpg",
+      "dev_repo/evidence/C-42/S3/agent-prefilled-exercise-desktop.jpg",
+      "dev_repo/evidence/C-42/S3/agent-prefilled-exercise-mobile-375.jpg"
+    ]
+  },
+  "release": {
+    "tag": "v0.1.8",
+    "name": "FoodMoment v0.1.8",
+    "url": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.8",
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      "app-release-unsigned.apk",
+      "agent-desktop.jpg",
+      "agent-mobile-375.jpg",
+      "profile-menu-desktop.jpg",
+      "manual-meal-mobile-375.jpg",
+      "agent-prefilled-exercise-desktop.jpg",
+      "agent-prefilled-exercise-mobile-375.jpg"
+    ]
+  },
+  "issue_state": "No Issue is closed by this release; #3/#4/#5/#9/#10 remain open for external retest and #6/#7/#8 remain closed after prior confirmation."
+}
