@@ -1,0 +1,16 @@
+{
+  "contract_id": "C-44-S3",
+  "status": "passed",
+  "verification": {
+    "npm run verify": "green",
+    "browser_evidence": "C-44-S2 desktop and 375x812 screenshots plus overflow/composer checks",
+    "release_or_deploy": "not performed"
+  },
+  "issue_state": {
+    "open": [3, 4, 5, 9, 10],
+    "closed": [6, 7, 8],
+    "changed_by_contract": false
+  },
+  "red_lines_crossed": [],
+  "return_to": "C-21"
+}
