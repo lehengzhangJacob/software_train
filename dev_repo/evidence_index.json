@@ -1749,5 +1749,17 @@
       "path": "dev_repo/evidence/C-42/S2/profile-menu-desktop.jpg, dev_repo/evidence/C-42/S2/manual-meal-mobile-375.jpg",
       "description": "统一后的个人菜单和 375px 手动录餐表单截图"
     }
+  ],
+  "C-42-S3": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-42/S3/verification.md, dev_repo/evidence/C-42/S3/verification.json",
+      "description": "运动计划入口到教练页的可编辑提示预填；桌面/375px Browser 验收、合同测试与控制台检查通过"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-42/S3/agent-prefilled-exercise-desktop.jpg, dev_repo/evidence/C-42/S3/agent-prefilled-exercise-mobile-375.jpg",
+      "description": "计划入口进入教练后的桌面与 375px 预填提示截图"
+    }
   ]
 }

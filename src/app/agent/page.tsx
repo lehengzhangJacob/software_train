@@ -26,6 +26,7 @@ export default async function AgentPage({ searchParams }: AgentPageProps) {
     : null
   const returnTo = firstParam(params.returnTo)
   const safeReturnTo = returnTo === "/exercise" ? returnTo : "/exercise"
+  const initialDraft = firstParam(params.prompt)?.trim().slice(0, 4_000) || null
 
   const threads = await listAgentThreads(user.userId)
   const initialThread = threads[0] ? await getAgentThread(user.userId, threads[0].threadId) : null
@@ -38,6 +39,7 @@ export default async function AgentPage({ searchParams }: AgentPageProps) {
       exerciseMode={exerciseMode}
       initialExercisePlanId={exercisePlanId}
       returnTo={safeReturnTo}
+      initialDraft={initialDraft}
     />
   )
 }

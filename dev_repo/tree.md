@@ -2,8 +2,8 @@
 
 ## Current execution override
 
-- Current contract: `C-42 - 移动端键盘适配、头像弹层与手动录餐视觉统一` [in_progress]
-- Current slice: `C-42-S1`；先处理键盘/视口与焦点可见性，再统一头像菜单和手动录餐；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
+- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
+- Current slice: `null`；C-42 已完成键盘/视口适配、头像菜单与手动录餐统一、跨页教练预填；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3/#4/#5/#9/#10 remain open until external testers confirm non-reproduction.
@@ -106,10 +106,10 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
             └── C-40-S1 布局、独立滚动与桌面/375px 回归 [completed：composer 在不可滚动 footer，消息/Trace 独立滚动]
                 └── C-41-Release - FoodMoment v0.1.7 发布 [completed：deploy 20260825153353；GitHub Release 与三项资产]
                     └── C-41-Release-S1 版本同步、云端部署与 GitHub Release [completed：0.1.7、versionCode 8、布局截图]
-        └── C-42 - 移动端键盘适配、头像弹层、手动录餐与跨页教练上下文 [in_progress]
+        └── C-42 - 移动端键盘适配、头像弹层、手动录餐与跨页教练上下文 [completed：键盘、统一表面、跨页预填均已 Browser 验收]
             ├── C-42-S1 键盘/视口与焦点可见性 [completed：定向合同、lint/typecheck、桌面/375px Browser 与截图证据]
             ├── C-42-S2 头像菜单与手动录餐视觉统一 [completed：4/4 + 3/3 合同、桌面/375px Browser 与截图证据]
-            └── C-42-S3 跨页进入教练时预填可编辑上下文提示 [in_progress]
+            └── C-42-S3 跨页进入教练时预填可编辑上下文提示 [completed：2/2 合同、运动计划入口桌面/375px Browser 与截图证据]
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

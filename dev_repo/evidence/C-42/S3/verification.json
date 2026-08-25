@@ -1,0 +1,34 @@
+{
+  "contract_id": "C-42",
+  "slice_id": "C-42-S3",
+  "scope": "contextual prompt prefill for cross-page coach entry points",
+  "checks": {
+    "test:agent-prefill": "passed",
+    "test:agent-chat-ui": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "diff_check": "passed"
+  },
+  "browser": {
+    "route": "/agent?mode=exercise-plan&returnTo=%2Fexercise&prompt=...",
+    "desktop": {
+      "exercise_mode_banner": true,
+      "prefilled": true,
+      "draft": "请结合我最近的饮食、活动量和目标，帮我安排一份今天可以完成的运动计划。",
+      "console_errors_and_warnings": 0,
+      "screenshot": "agent-prefilled-exercise-desktop.jpg"
+    },
+    "mobile": {
+      "viewport": "375x812",
+      "prefilled": true,
+      "document_client_width": 360,
+      "document_scroll_width": 360,
+      "console_errors_and_warnings": 0,
+      "screenshot": "agent-prefilled-exercise-mobile-375.jpg"
+    }
+  },
+  "notes": [
+    "The prompt is bounded to 4,000 characters and remains editable; it is not automatically submitted.",
+    "The cross-page handoff only changes URL/UI state and does not alter Agent API, Trace source, persistence, or data model."
+  ]
+}

@@ -64,6 +64,7 @@ interface AgentWorkspaceProps {
   exerciseMode?: boolean
   initialExercisePlanId?: number | null
   returnTo?: string
+  initialDraft?: string | null
 }
 
 interface ApiEnvelope<T> {
@@ -234,12 +235,13 @@ export function AgentWorkspace({
   exerciseMode = false,
   initialExercisePlanId = null,
   returnTo = "/exercise",
+  initialDraft = null,
 }: AgentWorkspaceProps) {
   const [threads, setThreads] = useState(initialThreads)
   const [activeThreadId, setActiveThreadId] = useState<number | null>(initialThread?.threadId ?? null)
   const [messages, setMessages] = useState<AgentMessage[]>(initialThread?.messages ?? [])
   const [exercisePlanId, setExercisePlanId] = useState<number | null>(initialExercisePlanId)
-  const [draft, setDraft] = useState("")
+  const [draft, setDraft] = useState(initialDraft ?? "")
   const [loadingThread, setLoadingThread] = useState(false)
   const [sending, setSending] = useState(false)
   const [deletingThreadId, setDeletingThreadId] = useState<number | null>(null)
@@ -660,6 +662,7 @@ export function AgentWorkspace({
             >
               <div className="flex items-end gap-2 rounded-md border bg-card p-2 focus-within:border-[var(--brand-mint)] focus-within:ring-2 focus-within:ring-[var(--brand-mint)]/20">
                 <textarea
+                  data-prefilled={initialDraft ? "true" : "false"}
                   value={draft}
                   onChange={(event) => setDraft(event.target.value)}
                   onKeyDown={(event) => {

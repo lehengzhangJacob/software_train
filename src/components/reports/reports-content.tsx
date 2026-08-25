@@ -245,7 +245,7 @@ export function ReportsContent() {
                 <div className="flex items-center gap-2 text-xs font-semibold text-[var(--brand-lavender-deep)]"><Sparkles className="size-3.5" />AI 周期回顾</div>
                 <h2 className="mt-3 text-2xl font-semibold text-[var(--brand-heading)]">{headline}</h2>
                 <p className="mt-3 text-sm leading-6 text-[#5d5665] dark:text-[#c4bdc9]">{review}</p>
-                <Link href="/agent" className="mt-5 inline-flex h-10 items-center gap-2 rounded-md bg-[var(--brand-plum)] px-4 text-sm font-semibold text-white">
+                <Link href={`/agent?prompt=${encodeURIComponent("请帮我解读这份营养报告，并给出今天最值得优先调整的一件事。")}`} className="mt-5 inline-flex h-10 items-center gap-2 rounded-md bg-[var(--brand-plum)] px-4 text-sm font-semibold text-white">
                   和教练继续讨论<ArrowRight className="size-4" />
                 </Link>
               </div>

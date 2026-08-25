@@ -142,9 +142,12 @@ function AgentPlanSection({ projection }: { projection: ExercisePlanProjection }
   const [progress, setProgress] = useState(current?.progress ?? null)
   const [savingStepOrder, setSavingStepOrder] = useState<number | null>(null)
   const [progressError, setProgressError] = useState<string | null>(null)
+  const coachPrompt = current
+    ? `我想调整“${current.title}”这份运动计划。请结合我最近的饮食、活动量和完成情况，给出一版更适合现在状态的调整建议。`
+    : "请结合我最近的饮食、活动量和目标，帮我安排一份今天可以完成的运动计划。"
   const coachHref = current
-    ? `/agent?mode=exercise-plan&exercisePlanId=${current.planId}&returnTo=${encodeURIComponent("/exercise")}`
-    : `/agent?mode=exercise-plan&returnTo=${encodeURIComponent("/exercise")}`
+    ? `/agent?mode=exercise-plan&exercisePlanId=${current.planId}&returnTo=${encodeURIComponent("/exercise")}&prompt=${encodeURIComponent(coachPrompt)}`
+    : `/agent?mode=exercise-plan&returnTo=${encodeURIComponent("/exercise")}&prompt=${encodeURIComponent(coachPrompt)}`
 
   const toggleStep = async (stepOrder: number, completed: boolean) => {
     if (!current || !progress || savingStepOrder !== null) return

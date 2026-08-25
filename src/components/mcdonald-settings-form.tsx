@@ -138,7 +138,7 @@ export function McDonaldSettingsForm({ initialSettings }: { initialSettings: Pub
               <p className="page-eyebrow">Local MCP credential</p>
               <h2 className="mt-2 text-3xl font-semibold text-[var(--brand-heading)]">连接麦当劳账号。</h2>
             </div>
-            <Link href="/agent" className="text-xs font-semibold text-[var(--brand-mint-deep)]">打开教练</Link>
+            <Link href={`/agent?prompt=${encodeURIComponent("我想安排一顿更合适的外卖，请先结合我的饮食目标和今天的记录给我建议。")}`} className="text-xs font-semibold text-[var(--brand-mint-deep)]">打开教练</Link>
           </div>
 
           <div className="mt-5 rounded-md bg-[var(--brand-mint-soft)] px-3 py-2 text-xs leading-5 text-[var(--brand-mint-ink)]">
