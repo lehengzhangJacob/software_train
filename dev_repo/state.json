@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-21",
+  "active_contract_id": "C-42",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -791,6 +791,29 @@
         "Release tag must point to the verified main commit",
         "No Issue status changes are included",
         "Android asset must be labeled unsigned"
+      ]
+    },
+    "C-42": {
+      "contract_id": "C-42",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "移动端键盘适配、头像弹层与手动录餐视觉统一",
+      "goal": "修复手机键盘遮挡输入的问题，并让个人菜单与手动录餐表单回到 FoodMoment 的统一视觉语言。",
+      "current_slice": "C-42-S2",
+      "completed_slices": ["C-42-S1"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "none; existing frontend.pages and frontend.components boundaries",
+      "data_model_delta": "none",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this contract; #3/#4/#5/#9/#10 remain open until external retest.",
+      "latest_verification": "C-42-S1 passed: npm run test:mobile-ui, npm run test:agent-chat-ui, npm run lint, npm run typecheck, and git diff --check; local Browser desktop and 375x812 evidence archived under dev_repo/evidence/C-42/S1; console errors/warnings=0 and no horizontal overflow.",
+      "red_lines": [
+        "键盘打开后焦点输入控件不得被底栏或软键盘遮挡",
+        "不得改变 Agent 消息、Trace、录餐 API 或数据库事实来源",
+        "375px 视口不得出现横向溢出"
       ]
     }
   }

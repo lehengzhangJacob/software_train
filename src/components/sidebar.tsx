@@ -230,7 +230,8 @@ export function Sidebar() {
 
       <nav
         aria-label="移动端主导航"
-        className="fixed inset-x-0 bottom-0 z-40 flex h-[calc(4.25rem+env(safe-area-inset-bottom))] border-t border-border/80 bg-white/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur dark:bg-card/98 lg:hidden"
+        data-mobile-nav
+        className="fixed inset-x-0 bottom-0 z-40 flex h-[calc(4.25rem+env(safe-area-inset-bottom))] border-t border-border/80 bg-white/98 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_35px_rgba(45,39,53,0.08)] backdrop-blur transition-[opacity,transform] duration-200 dark:bg-card/98 lg:hidden"
       >
         <div className="grid min-w-0 flex-1 grid-cols-2">
           {mobileNav.slice(0, 2).map((item) => {

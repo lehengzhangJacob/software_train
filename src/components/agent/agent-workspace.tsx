@@ -402,7 +402,7 @@ export function AgentWorkspace({
         />
       ) : null}
       <section className="surface-card overflow-hidden border-0">
-        <div className="grid h-[min(42.5rem,calc(100dvh-9rem))] min-h-[28rem] grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
+        <div className="grid h-[min(42.5rem,calc(100dvh-9rem-var(--keyboard-inset,0px)))] min-h-[min(28rem,calc(100dvh-9rem-var(--keyboard-inset,0px)))] grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
           <aside className={cn(
             "order-2 min-h-0 flex-col overflow-hidden bg-[var(--brand-plum)] text-white lg:order-1 lg:flex lg:h-full",
             mobileHistoryOpen ? "fixed inset-y-0 left-0 z-50 flex w-[min(22rem,88vw)] shadow-2xl lg:static lg:z-auto lg:w-auto lg:shadow-none" : "hidden",

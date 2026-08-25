@@ -2,11 +2,51 @@
 
 import type { ReactNode } from "react"
 import { usePathname } from "next/navigation"
+import { useEffect } from "react"
 
 import { AppUpdateNotice } from "@/components/app-update-notice"
 import { Sidebar } from "@/components/sidebar"
 import { TodayTabs } from "@/components/today-tabs"
 import { cn } from "@/lib/utils"
+
+function useKeyboardAwareViewport() {
+  useEffect(() => {
+    const root = document.documentElement
+    const viewport = window.visualViewport
+    if (!viewport) return
+
+    let keyboardOpen = false
+    const updateViewport = () => {
+      const inset = Math.max(0, Math.round(window.innerHeight - viewport.height - viewport.offsetTop))
+      keyboardOpen = inset >= 120
+      root.style.setProperty("--keyboard-inset", `${inset}px`)
+      root.dataset.keyboardOpen = keyboardOpen ? "true" : "false"
+    }
+
+    const handleFocusIn = (event: FocusEvent) => {
+      const target = event.target
+      if (!(target instanceof HTMLElement) || !target.matches("input, textarea, select, [contenteditable='true']")) return
+
+      window.setTimeout(() => {
+        if (!keyboardOpen) return
+        target.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" })
+      }, 320)
+    }
+
+    updateViewport()
+    viewport.addEventListener("resize", updateViewport)
+    viewport.addEventListener("scroll", updateViewport)
+    document.addEventListener("focusin", handleFocusIn)
+
+    return () => {
+      viewport.removeEventListener("resize", updateViewport)
+      viewport.removeEventListener("scroll", updateViewport)
+      document.removeEventListener("focusin", handleFocusIn)
+      root.style.removeProperty("--keyboard-inset")
+      delete root.dataset.keyboardOpen
+    }
+  }, [])
+}
 
 export function AppChrome({
   children,
@@ -17,6 +57,7 @@ export function AppChrome({
 }) {
   const pathname = usePathname()
   const isAccessRoute = pathname === "/access" || pathname === "/auth"
+  useKeyboardAwareViewport()
 
   return (
     <div

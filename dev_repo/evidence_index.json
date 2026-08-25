@@ -1725,5 +1725,17 @@
       "path": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.7",
       "description": "正式 Release，包含未签名 Android APK 与聊天输入区桌面/375px 截图资产"
     }
+  ],
+  "C-42-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-42/S1/verification.md, dev_repo/evidence/C-42/S1/verification.json",
+      "description": "键盘感知视口、焦点滚动与 composer 尺寸合同；桌面/375px Browser 验收、lint/typecheck 与控制台检查通过"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-42/S1/agent-desktop.jpg, dev_repo/evidence/C-42/S1/agent-mobile-375.jpg",
+      "description": "Agent 工作台桌面与 375px 移动端输入区布局证据"
+    }
   ]
 }

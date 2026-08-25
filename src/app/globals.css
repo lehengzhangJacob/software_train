@@ -254,6 +254,24 @@
     @apply rounded-lg border border-border/80 bg-card shadow-[0_18px_55px_rgba(45,39,53,0.06)];
   }
 
+  html[data-keyboard-open="true"] #main-content {
+    padding-bottom: max(1rem, var(--keyboard-inset, 0px));
+    scroll-padding-bottom: calc(var(--keyboard-inset, 0px) + 1rem);
+  }
+
+  html[data-keyboard-open="true"] [data-mobile-nav] {
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(110%);
+  }
+
+  html[data-keyboard-open="true"] input:focus,
+  html[data-keyboard-open="true"] select:focus,
+  html[data-keyboard-open="true"] textarea:focus,
+  html[data-keyboard-open="true"] [contenteditable="true"]:focus {
+    scroll-margin-bottom: calc(var(--keyboard-inset, 0px) + 1rem);
+  }
+
   .dark .surface-card {
     @apply shadow-[0_18px_55px_rgba(0,0,0,0.35)];
   }

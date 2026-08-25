@@ -5,7 +5,7 @@ import test from "node:test"
 const source = readFileSync("src/components/agent/agent-workspace.tsx", "utf8")
 
 test("chat composer stays outside the message scroll region", () => {
-  assert.match(source, /h-\[min\(42\.5rem,calc\(100dvh-9rem\)\)\]/)
+  assert.match(source, /h-\[min\(42\.5rem,calc\(100dvh-9rem-var\(--keyboard-inset,0px\)\)\)\]/)
   assert.match(source, /className="order-1 flex h-full min-h-0 min-w-0 flex-col overflow-hidden/)
   assert.match(source, /className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain/)
   assert.match(source, /data-testid="agent-composer"/)

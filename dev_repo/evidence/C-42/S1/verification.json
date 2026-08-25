@@ -1,0 +1,33 @@
+{
+  "contract_id": "C-42",
+  "slice_id": "C-42-S1",
+  "scope": "mobile keyboard-aware viewport, focus visibility, and composer sizing",
+  "checks": {
+    "test:mobile-ui": "passed",
+    "test:agent-chat-ui": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "diff_check": "passed"
+  },
+  "browser": {
+    "url": "http://localhost:3100/agent",
+    "desktop": {
+      "viewport": "reset desktop",
+      "screenshot": "agent-desktop.jpg"
+    },
+    "mobile": {
+      "viewport": "375x812",
+      "composer_bottom": 740.27,
+      "mobile_nav_top": 744.27,
+      "document_client_width": 360,
+      "document_scroll_width": 360,
+      "keyboard_inset": "0px",
+      "screenshot": "agent-mobile-375.jpg"
+    },
+    "console_errors_and_warnings": 0
+  },
+  "notes": [
+    "The in-app Browser cannot open the native soft keyboard, so keyboard-open behavior is covered by source contract assertions and visual viewport wiring.",
+    "No Agent API, message/Trace source, meal API, database, migration, or Issue state was changed."
+  ]
+}
