@@ -54,8 +54,7 @@ test("Trace projection collapses logical spans, closes deltas and preserves firs
   const defaultView = projectTraceEvents(events, false)
   assert.equal(defaultView.some((item) => item.eventType === "model.delta"), false)
   assert.equal(defaultView.some((item) => item.eventType === "run.completed"), false)
-  assert.ok(defaultView.length <= 5)
-  assert.deepEqual(defaultView.map((item) => item.label), ["准备相关信息", "生成个性化建议", "保存本回合结果"])
+  assert.deepEqual(defaultView.map((item) => item.label), ["读取资料", "调用 read_custom_source", "生成教练建议", "保存教练回复"])
 })
 
 test("friendly projection gives a real search span its own research phase", () => {
@@ -68,7 +67,7 @@ test("friendly projection gives a real search span its own research phase", () =
     event({ eventType: "run.completed", status: "completed", label: "Agent 回合完成", sequence: 5 }),
   ]
   const friendly = projectTraceEvents(events, false)
-  assert.deepEqual(friendly.map((item) => item.label), ["检索公开资料", "生成个性化建议"])
+  assert.deepEqual(friendly.map((item) => item.label), ["检索公开资料", "生成教练建议"])
   assert.equal(friendly[0]?.status, "completed")
 })
 

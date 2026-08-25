@@ -175,73 +175,44 @@ export function effectiveTraceStatus(projection: AgentTraceProjection, active: b
   return "running"
 }
 
-type FriendlyPhaseKey = "scope" | "prepare" | "research" | "generate" | "save"
-
-function friendlyPhaseFor(event: AgentTraceProjectionNode): FriendlyPhaseKey {
-  const label = event.label || ""
-  if (event.eventType === "model.started" || event.eventType === "model.delta" || event.eventType === "answer.delta" || /生成|答案/.test(label)) {
-    return "generate"
-  }
-  if (event.toolName === "web_search" || /搜索|检索|公开资料/.test(label)) return "research"
-  if (/保存|更新记忆/.test(label)) return "save"
-  if (event.eventType === "step.started" && /范围|意图/.test(label)) return "scope"
-  return "prepare"
+const FRIENDLY_TOOL_LABELS: Record<string, string> = {
+  read_profile: "读取个人档案",
+  read_recent_meals: "读取近期饮食记录",
+  read_daily_activity: "读取近期活动",
+  read_active_memories: "读取长期记忆",
+  read_exercise_plan: "读取当前运动计划",
+  validate_exercise_plan: "校验运动计划",
+  save_exercise_plan: "保存运动计划",
+  verify_exercise_plan: "回读并核验运动计划",
+  web_search: "检索公开资料",
 }
 
-function friendlyPhaseLabel(key: FriendlyPhaseKey, events: AgentTraceProjectionNode[]) {
-  if (key === "scope") return "确认请求范围"
-  if (key === "prepare") return "准备相关信息"
-  if (key === "research") return events.some((event) => event.toolName === "web_search") ? "检索公开资料" : "读取相关信息"
-  if (key === "generate") return "生成个性化建议"
-  return "保存本回合结果"
-}
-
-function friendlyPhaseStatus(events: AgentTraceProjectionNode[], runStatus: AgentTraceProjection["status"]): AgentTraceStatus {
-  if (events.some((event) => event.status === "failed")) return "failed"
-  if (events.some((event) => event.status === "cancelled")) return "cancelled"
-  if (events.some((event) => event.status === "running")) return runStatus === "running" ? "running" : runStatus === "idle" ? "completed" : runStatus
-  if (events.every((event) => event.status === "fallback")) return "fallback"
-  return "completed"
+function friendlyLabel(event: AgentTraceProjectionNode) {
+  if (event.toolName && FRIENDLY_TOOL_LABELS[event.toolName]) return FRIENDLY_TOOL_LABELS[event.toolName]
+  if (/判断请求范围|识别.*目标/.test(event.label)) return "确认请求目标"
+  if (/定位当前对话线程/.test(event.label)) return "定位当前对话"
+  if (/整理饮食档案与对话上下文/.test(event.label)) return "整理个人上下文"
+  if (/读取饮食档案与近期记录/.test(event.label)) return "读取近期饮食记录"
+  if (/读取会话摘要/.test(event.label)) return "读取会话摘要"
+  if (/读取当前线程尾部消息/.test(event.label)) return "读取当前对话"
+  if (/更新记忆使用状态/.test(event.label)) return "更新记忆使用状态"
+  if (/关联计划来源消息/.test(event.label)) return "关联计划结果"
+  if (/保存.*回复/.test(event.label)) return "保存教练回复"
+  if (event.eventType === "model.started" || /生成建议/.test(event.label)) return "生成教练建议"
+  return event.label
 }
 
 function projectFriendlyEvents(projection: AgentTraceProjection): AgentTraceProjectionNode[] {
-  const groups = new Map<FriendlyPhaseKey, AgentTraceProjectionNode[]>()
-  for (const event of projection.events) {
-    const key = friendlyPhaseFor(event)
-    const group = groups.get(key) ?? []
-    group.push(event)
-    groups.set(key, group)
-  }
-
-  return [...groups.entries()]
-    .map(([key, events]) => {
-      const ordered = [...events].sort((left, right) => left.firstSequence - right.firstSequence)
-      const first = ordered[0]
-      const last = ordered[ordered.length - 1]
-      const toolNames = [...new Set(ordered.map((event) => event.toolName).filter(Boolean))]
-      const sourceEventTypes = [...new Set(ordered.flatMap((event) => event.sourceEventTypes))]
-      const deltaCount = ordered.reduce((total, event) => total + (event.deltaCount ?? 0), 0)
-      const summary = pickSummary(ordered)
-      return {
-        ...first,
-        eventId: first.eventId,
-        parentId: undefined,
-        sequence: first.firstSequence,
-        occurredAt: first.firstOccurredAt,
-        eventType: "step.started",
-        status: friendlyPhaseStatus(ordered, projection.status),
-        label: friendlyPhaseLabel(key, ordered),
-        ...(toolNames.length === 1 ? { toolName: toolNames[0] } : {}),
-        ...(summary ? { safeSummary: summary } : {}),
-        firstSequence: first.firstSequence,
-        lastSequence: last.lastSequence,
-        firstOccurredAt: first.firstOccurredAt,
-        lastOccurredAt: last.lastOccurredAt,
-        eventIds: ordered.flatMap((event) => event.eventIds),
-        sourceEventTypes,
-        ...(deltaCount ? { deltaCount } : {}),
-      } satisfies AgentTraceProjectionNode
-    })
+  const childParentIds = new Set(projection.events.map((event) => event.parentId).filter(Boolean))
+  return projection.events
+    .filter((event) => !["model.delta", "answer.delta"].includes(event.eventType))
+    .filter((event) => !(event.eventType === "step.started" && childParentIds.has(event.eventId) && /整理饮食档案与对话上下文/.test(event.label)))
+    .map((event) => ({
+      ...event,
+      parentId: undefined,
+      eventType: event.eventType === "tool.started" || event.eventType === "model.started" ? event.eventType : "step.started",
+      label: friendlyLabel(event),
+    } satisfies AgentTraceProjectionNode))
     .sort((left, right) => left.firstSequence - right.firstSequence)
 }
 

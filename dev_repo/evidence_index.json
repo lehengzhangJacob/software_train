@@ -1682,5 +1682,12 @@
       "path": "scripts/agent-goal-action-contract.test.ts, scripts/agent-kernel-contract.test.ts",
       "description": "目标路由、validate-save-verify 顺序、AgentKernel 工具循环与未核验不成功的白盒合同"
     }
+  ],
+  "C-39-S2": [
+    {
+      "type": "verification",
+      "path": "scripts/agent-trace-ui-contract.test.ts",
+      "description": "Friendly Trace 按真实逻辑 span 顺序投影，动作/搜索/生成步骤不再被固定五阶段合并"
+    }
   ]
 }

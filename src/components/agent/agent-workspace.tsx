@@ -355,7 +355,7 @@ export function AgentWorkspace({
       setActiveThreadId(result.thread.threadId)
       setMessages(result.thread.messages)
       setThreads((current) => mergeThread(current, result.thread))
-      if (exerciseMode && result.exercisePlan) setExercisePlanId(result.exercisePlan.planId)
+      if (result.exercisePlan) setExercisePlanId(result.exercisePlan.planId)
       setLastOrder(result.orderResult ?? null)
       setTurnActivity(result.activity)
       setTurnTrace(result.trace ?? [])
@@ -592,10 +592,10 @@ export function AgentWorkspace({
                           <Link className="font-semibold underline-offset-2 hover:underline" href="/settings/memory">查看与管理</Link>
                         </div>
                       ) : null}
-                      {message.role === "assistant" && exerciseMode && message.exercisePlanId !== null ? (
+                      {message.role === "assistant" && message.exercisePlanId !== null ? (
                         <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 border-l-2 border-[var(--brand-mint)] bg-[var(--brand-mint-soft)] px-3 py-2 text-xs text-[var(--brand-heading)]">
                           <Dumbbell className="size-3.5 text-[var(--brand-mint-deep)]" />
-                          <span>运动计划已更新</span>
+                          <span>Agent 已核验更新运动计划</span>
                           <Link className="font-semibold underline-offset-2 hover:underline" href={returnTo}>返回计划页查看</Link>
                         </div>
                       ) : null}

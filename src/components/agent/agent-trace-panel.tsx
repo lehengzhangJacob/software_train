@@ -77,6 +77,9 @@ const friendlyToolLabels: Record<string, string> = {
   read_daily_activity: "读取近期活动",
   read_active_memories: "结合长期偏好",
   read_exercise_plan: "查看运动计划",
+  validate_exercise_plan: "校验运动计划",
+  save_exercise_plan: "保存运动计划",
+  verify_exercise_plan: "回读并核验运动计划",
   web_search: "检索公开资料",
 }
 
@@ -106,6 +109,13 @@ function friendlySummary(value: string | undefined, status: AgentTraceStatus) {
   if (value === "模型选择了一个已注册的只读工具") return "已根据问题读取相关信息"
   if (value === "只读工具返回已隔离的安全摘要") return "相关信息已返回"
   if (value === "只读工具执行失败") return "读取相关信息时遇到问题"
+  if (value === "运动计划通过结构化校验") return "计划结构和安全字段已通过校验"
+  if (value === "运动计划未通过结构化校验") return "计划结构校验未通过"
+  if (value === "运动计划已回读核验当前运动计划") return "已确认最新 revision 已写入"
+  if (value === "运动计划回读核验未完成") return "计划写入还没有完成核验"
+  if (value === "运动计划提交未完成") return "计划没有完成保存"
+  if (value === "运动计划提交被顺序策略阻止") return "需要先完成计划校验"
+  if (/^运动计划已提交为第 \d+ 版$/.test(value)) return value.replace("运动计划已提交", "已保存运动计划")
   if (/^公开资料检索完成，共 \d+ 条来源$/.test(value)) return value.replace("公开资料检索完成", "找到公开来源")
   if (value === "公开资料检索暂不可用") return "公开资料检索暂不可用"
   if (value === "已确认账户拥有该线程") return "已确认当前对话"
