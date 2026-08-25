@@ -1675,5 +1675,12 @@
       "path": "dev_repo/architecture/decisions/ADR-0022-agent-goal-action-verify-loop.md",
       "description": "Agent 目标识别、validate/save/verify 动作闭环、现有计划 revision 复用与真实 Trace 边界"
     }
+  ],
+  "C-39-S1": [
+    {
+      "type": "verification",
+      "path": "scripts/agent-goal-action-contract.test.ts, scripts/agent-kernel-contract.test.ts",
+      "description": "目标路由、validate-save-verify 顺序、AgentKernel 工具循环与未核验不成功的白盒合同"
+    }
   ]
 }

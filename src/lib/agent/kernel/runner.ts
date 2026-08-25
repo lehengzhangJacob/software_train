@@ -46,12 +46,30 @@ function safeToolName(value: unknown, allowedToolNames: Set<string>) {
 }
 
 function safeToolResultSummary(toolName: string | undefined, item: Record<string, unknown>, rawItem: Record<string, unknown> | undefined) {
-  if (toolName !== "web_search") return "只读工具返回已隔离的安全摘要"
   const output = item.output ?? rawItem?.output
   let parsed: unknown = output
   if (typeof output === "string") {
     try { parsed = JSON.parse(output) } catch { parsed = undefined }
   }
+  if (toolName === "validate_exercise_plan") {
+    if (parsed && typeof parsed === "object" && (parsed as Record<string, unknown>).status === "valid") return "运动计划通过结构化校验"
+    if (parsed && typeof parsed === "object" && (parsed as Record<string, unknown>).status === "blocked") return "运动计划校验顺序未满足"
+    return "运动计划未通过结构化校验"
+  }
+  if (toolName === "save_exercise_plan") {
+    if (parsed && typeof parsed === "object") {
+      const status = (parsed as Record<string, unknown>).status
+      const revision = (parsed as Record<string, unknown>).revision
+      if (status === "committed" && typeof revision === "number") return `运动计划已提交为第 ${revision} 版`
+      if (status === "blocked") return "运动计划提交被顺序策略阻止"
+    }
+    return "运动计划提交未完成"
+  }
+  if (toolName === "verify_exercise_plan") {
+    if (parsed && typeof parsed === "object" && (parsed as Record<string, unknown>).status === "verified") return "已回读核验当前运动计划"
+    return "运动计划回读核验未完成"
+  }
+  if (toolName !== "web_search") return "受控工具返回已隔离的安全摘要"
   if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
     const sourceCount = (parsed as Record<string, unknown>).sourceCount
     const status = (parsed as Record<string, unknown>).status
@@ -61,6 +79,22 @@ function safeToolResultSummary(toolName: string | undefined, item: Record<string
     }
   }
   return "公开资料检索完成"
+}
+
+function toolResultStatus(
+  toolName: string | undefined,
+  item: Record<string, unknown>,
+  rawItem: Record<string, unknown> | undefined,
+): "completed" | "failed" {
+  if (rawItem?.status === "incomplete" || item.executionStatus !== "executed") return "failed"
+  if (!toolName || !["validate_exercise_plan", "save_exercise_plan", "verify_exercise_plan"].includes(toolName)) return "completed"
+  const output = item.output ?? rawItem?.output
+  let parsed: unknown = output
+  if (typeof output === "string") {
+    try { parsed = JSON.parse(output) } catch { parsed = undefined }
+  }
+  const status = parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>).status : undefined
+  return status === "invalid" || status === "blocked" || status === "failed" ? "failed" : "completed"
 }
 
 function traceInputForToolEvent(
@@ -93,7 +127,7 @@ function traceInputForToolEvent(
     const active = activeTools.get(callId)
     return {
       eventType: "tool.result",
-      status: rawItem?.status === "incomplete" || item.executionStatus !== "executed" ? "failed" : "completed",
+      status: toolResultStatus(toolName, item, rawItem),
       label: active?.toolName || toolName ? `调用 ${active?.toolName ?? toolName}` : "调用受限工具",
       ...((active?.toolName ?? toolName) ? { toolName: active?.toolName ?? toolName } : {}),
       ...(active ? { parentId: active.eventId, durationMs: Date.now() - active.startedAt } : {}),

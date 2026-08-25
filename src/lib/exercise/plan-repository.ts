@@ -196,3 +196,17 @@ export async function saveAgentExercisePlanInTransaction(
 export async function saveAgentExercisePlan(input: SaveAgentExercisePlanInput) {
   return prisma.$transaction((tx) => saveAgentExercisePlanInTransaction(tx, input))
 }
+
+export async function attachAgentExercisePlanSourceMessage(
+  userId: number,
+  planId: number,
+  threadId: number,
+  sourceMessageId: number,
+) {
+  const updated = await prisma.agentExercisePlan.updateMany({
+    where: { planId, userId, threadId, sourceKind: "agent" },
+    data: { sourceMessageId },
+  })
+  if (updated.count === 0) return null
+  return getOwnedExercisePlan(userId, planId)
+}

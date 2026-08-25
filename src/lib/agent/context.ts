@@ -80,6 +80,8 @@ function safeText(value: string | null | undefined, maxLength: number) {
 
 export type AgentSystemPromptOptions = {
   exerciseMode?: boolean
+  exercisePlanGoal?: boolean
+  exercisePlanActionsAvailable?: boolean
   exercisePlan?: ExercisePlanPayload | null
   intent?: AgentIntent
   webSearchAvailable?: boolean
@@ -166,17 +168,20 @@ export function buildAgentSystemPrompt(
   const currentExercisePlanText = JSON.stringify(exercisePlanForPrompt(options.exercisePlan))
   const intentText = options.intent ?? "ambiguous"
   const domainInstructions = buildAgentDomainInstructions(intentText, options.webSearchAvailable)
-  const exercisePlanInstructions = options.exerciseMode
+  const exercisePlanGoal = options.exercisePlanGoal ?? options.exerciseMode ?? false
+  const exercisePlanInstructions = exercisePlanGoal && options.exercisePlanActionsAvailable
     ? `
-本回合是“运动计划”模式：
-- 请根据个人档案、饮食、活动量和用户这次要求，生成或调整一份可执行的结构化运动计划。
-- 计划日期默认使用当前本地日期；只有用户明确指定日期时才改用指定日期。
-- 必须在回复末尾输出一个 <exercise-plan> 标签，标签内只能放合法 JSON，不要使用 Markdown 代码围栏。
-- JSON 必须包含 planDate、title、goal、totalMinutes、intensity、steps、safetyNote、equipment；intensity 只能是 low、moderate、high；steps 为 1 到 8 项，每项包含 order、kind、name、minutes、instructions，kind 只能是 warmup、cardio、strength、mobility、cooldown，步骤序号从 1 连续递增，步骤总时长不能超过 totalMinutes，总时长为 5 到 180 分钟。
-- 运动建议要考虑循序渐进和安全边界；不编造用户没有提供的伤病或器械条件。没有器械时使用 equipment=[]，并提供替代动作。
-- 如果提供了当前计划，输出一份完整的替换计划，而不是局部补丁。当前计划如下：${currentExercisePlanText}
-<exercise-plan>{"planDate":"${context.today}","title":"今天的训练","goal":"改善活动量","totalMinutes":30,"intensity":"moderate","steps":[{"order":1,"kind":"warmup","name":"动态热身","minutes":5,"instructions":"轻松活动关节并逐步提高心率"},{"order":2,"kind":"strength","name":"自重训练","minutes":20,"instructions":"保持动作可控，按舒适强度完成"},{"order":3,"kind":"cooldown","name":"放松拉伸","minutes":5,"instructions":"缓慢呼吸并放松主要肌群"}],"safetyNote":"出现疼痛、头晕或呼吸异常立即停止","equipment":[]}</exercise-plan>`
-    : "\n当前为普通咨询模式，不要输出 <exercise-plan> 标签；如果用户只是询问运动，请用普通中文建议回答。"
+本回合是“运动计划任务”，目标是让 Agent 真实完成一次计划编排：
+- 请根据个人档案、饮食、活动量、当前计划和用户这次要求，生成或调整一份可执行的完整结构化运动计划。
+- 计划日期默认使用当前本地日期；只有用户明确指定日期时才改用指定日期。没有器械时使用 equipment=[]，并提供替代动作；不编造伤病或器械条件。
+- 必须先调用 validate_exercise_plan，再用同一份完整 JSON 调用 save_exercise_plan，最后调用 verify_exercise_plan。只有 verify 返回 verified=true 才能对用户说计划已经更新；不要只输出 JSON 或声称稍后会保存。
+- 如果提供了当前计划，生成一份完整替换计划而不是局部补丁。当前计划如下：${currentExercisePlanText}
+- 工具会校验 planDate、title、goal、totalMinutes、intensity、steps、safetyNote、equipment 及步骤总时长；不要绕过工具或伪造提交结果。
+本回合的 Trace 会显示真实的读取、校验、提交和回读动作。`
+    : options.exerciseMode
+      ? `
+本回合是兼容性的“运动计划”模式：请生成或调整一份完整结构化运动计划。若当前运行时不能调用计划动作工具，才在回复末尾输出一个 <exercise-plan> 标签，标签内只能放合法 JSON，不要使用 Markdown 代码围栏；JSON 必须包含 planDate、title、goal、totalMinutes、intensity、steps、safetyNote、equipment，步骤序号从 1 连续递增，步骤总时长不能超过 totalMinutes，总时长为 5 到 180 分钟。当前计划如下：${currentExercisePlanText}`
+      : "\n当前为普通咨询模式，不要输出 <exercise-plan> 标签；如果用户只是询问运动，请用普通中文建议回答。"
 
   return `你是 FoodMoment 的个人饮食、健身和恢复教练。你服务的是一个单用户健康记录工具，
 不是通用问答机器人，也不要把自己描述成云端客服。

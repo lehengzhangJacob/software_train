@@ -17,7 +17,11 @@ import {
   getSessionDigest,
   getAgentThread,
 } from "@/lib/agent/repository"
-import { getOwnedExercisePlan } from "@/lib/exercise/plan-repository"
+import {
+  attachAgentExercisePlanSourceMessage,
+  getExercisePlanProjection,
+  getOwnedExercisePlan,
+} from "@/lib/exercise/plan-repository"
 import { consolidateAgentSession } from "@/lib/agent/consolidation"
 import { getAgentContext, buildAgentSystemPrompt } from "@/lib/agent/context"
 import {
@@ -45,8 +49,13 @@ import { createAgentTraceRecorder, runAgentTraceStep, type AgentTraceRecorder } 
 import type { AgentTraceEvent } from "@/lib/agent/trace-contract"
 import { sanitizeTraceText } from "@/lib/agent/trace-contract"
 import { runAgentKernel } from "@/lib/agent/kernel/runner"
-import { AGENT_TOOL_USAGE_INSTRUCTIONS, createAgentToolRegistry } from "@/lib/agent/kernel/tool-registry"
+import {
+  AGENT_TOOL_USAGE_INSTRUCTIONS,
+  createAgentActionState,
+  createAgentToolRegistry,
+} from "@/lib/agent/kernel/tool-registry"
 import { classifyAgentIntent } from "@/lib/agent/policy/intent"
+import { isExercisePlanGoal } from "@/lib/agent/policy/goal"
 import { isDashScopeWebSearchAvailable } from "@/lib/agent/search/web-search"
 import type { WebSearchSource } from "@/lib/agent/search/web-search"
 import { appendWebSearchSources } from "@/lib/agent/search/citations"
@@ -219,6 +228,23 @@ async function runAgentChatInternal(
     ),
   )
 
+  const exercisePlanGoal = policy.intent !== "off-topic" && isExercisePlanGoal({
+    message: input.message,
+    mode: input.mode,
+    exercisePlanId: input.exercisePlanId,
+  })
+  if (exercisePlanGoal) {
+    await runAgentTraceStep(
+      trace,
+      {
+        kind: "policy",
+        label: "识别运动计划目标",
+        safeSummary: "当前回合进入结构化运动计划的执行流",
+      },
+      async () => "exercise-plan",
+    )
+  }
+
   // Off-topic replies are deterministic and do not require provider credentials.
   // In-scope turns resolve credentials before creating a thread, preserving the
   // existing no-ghost-conversation behavior for unconfigured providers.
@@ -230,17 +256,22 @@ async function runAgentChatInternal(
     { kind: "context", label: "定位当前对话线程", safeSummary: "已确认账户拥有该线程" },
     () => ensureAgentThread(user.userId, input.threadId, titleFromMessage(input.message)),
   )
-  const exerciseMode = policy.intent !== "off-topic" && (input.mode === "exercise-plan" || input.exercisePlanId !== null)
+  const exerciseMode = exercisePlanGoal
+  const legacyExerciseMode = input.mode === "exercise-plan" || input.exercisePlanId !== null
   const exercisePlanId = input.exercisePlanId
-  const currentExercisePlan = policy.intent === "off-topic" || exercisePlanId === null
+  const currentExercisePlan = policy.intent === "off-topic" || !exercisePlanGoal
     ? null
     : await runAgentTraceStep(
         trace,
         { kind: "context", label: "读取当前运动计划", safeSummary: "已确认运动计划归属当前账户" },
         async () => {
-          const plan = await getOwnedExercisePlan(user.userId, exercisePlanId)
-          if (!plan) throw new AgentNotFoundError("运动计划不存在")
-          return plan
+          if (exercisePlanId !== null) {
+            const plan = await getOwnedExercisePlan(user.userId, exercisePlanId)
+            if (!plan) throw new AgentNotFoundError("运动计划不存在")
+            return plan
+          }
+          const projection = await getExercisePlanProjection(user.userId, getTodayStr())
+          return projection.current
         },
       )
   const userMessage = await runAgentTraceStep(
@@ -407,6 +438,7 @@ async function runAgentChatInternal(
     }
   }
 
+  const actionState = createAgentActionState()
   const webSearchSources: WebSearchSource[] = []
   const modelResult = await runAgentActivity(
     recorder.emit,
@@ -440,6 +472,8 @@ async function runAgentChatInternal(
           instructions: [
             buildAgentSystemPrompt(context, sessionDigest?.summary, {
               exerciseMode,
+              exercisePlanGoal,
+              exercisePlanActionsAvailable: exercisePlanGoal,
               exercisePlan: currentExercisePlan?.plan ?? null,
               intent: policy.intent,
               webSearchAvailable,
@@ -455,6 +489,7 @@ async function runAgentChatInternal(
           tools: createAgentToolRegistry({
             config,
             allowWebSearch: policy.requiresWebSearch,
+            allowExercisePlanActions: exercisePlanGoal,
             onWebSearchResult: (result) => {
               webSearchSources.push(...result.sources)
             },
@@ -462,6 +497,9 @@ async function runAgentChatInternal(
           context: {
             context,
             currentExercisePlan: currentExercisePlan?.plan ?? null,
+            userId: user.userId,
+            threadId,
+            actionState,
           },
           trace,
           maxTurns: 4,
@@ -497,34 +535,59 @@ async function runAgentChatInternal(
 
   const parsed = extractAssistantResponse(sanitizeAssistantText(rawText))
   const visibleText = appendWebSearchSources(parsed.visibleText, webSearchSources)
-  const generatedExercisePlan = exerciseMode ? parsed.exercisePlan : undefined
+  if (exercisePlanGoal && actionState.planActionInvoked && !actionState.verifiedExercisePlan) {
+    throw new AgentResponseError(actionState.actionFailure ?? "运动计划回读核验未完成，本轮不会报告更新成功", 502)
+  }
+  const generatedExercisePlan = !actionState.verifiedExercisePlan && legacyExerciseMode ? parsed.exercisePlan : undefined
+  const verifiedExercisePlan = actionState.verifiedExercisePlan
   const assistantMessage = await runAgentTraceStep(
     trace,
     {
       kind: "step",
-      label: generatedExercisePlan ? "保存运动计划与 Agent 回复" : "保存 Agent 回复",
-      safeSummary: generatedExercisePlan
-        ? "最终回复和合法运动计划写入消息历史"
+      label: verifiedExercisePlan ? "保存已核验计划回执与 Agent 回复" : "保存 Agent 回复",
+      safeSummary: verifiedExercisePlan
+        ? "最终回复与已回读核验的运动计划关联"
         : "最终回复和合法记忆候选写入消息历史",
-    },
-    () =>
-       appendAgentMessage(user.userId, threadId, "assistant", visibleText, {
+    }, 
+    () => appendAgentMessage(
+      user.userId,
+      threadId,
+      "assistant",
+      visibleText,
+      {
         memoryCandidates: parsed.candidates,
         usedMemoryIds: context.memories.map((memory) => memory.memoryId),
-      }, {
+        ...(verifiedExercisePlan ? { exercisePlanId: verifiedExercisePlan.planId } : {}),
+      },
+      {
         ...(generatedExercisePlan ? { exercisePlan: generatedExercisePlan } : {}),
-      }),
+      },
+    ),
   )
+  const persistedExercisePlan = verifiedExercisePlan
+    ? await runAgentTraceStep(
+        trace,
+        {
+          kind: "context",
+          label: "关联计划来源消息",
+          safeSummary: "已将本回合 assistant 消息绑定到已核验的计划 revision",
+        },
+        async () => attachAgentExercisePlanSourceMessage(
+          user.userId,
+          verifiedExercisePlan.planId,
+          threadId,
+          assistantMessage.messageId,
+        ),
+      )
+    : assistantMessage.exercisePlanId === null
+      ? null
+      : await getOwnedExercisePlan(user.userId, assistantMessage.exercisePlanId)
   await runAgentTraceStep(
     trace,
     { kind: "context", label: "更新记忆使用状态", safeSummary: "仅更新本回合实际命中的记忆" },
     () => markMemoriesUsed(user.userId, context.memories.map((memory) => memory.memoryId)),
   )
   scheduleSessionConsolidation(user.userId, threadId)
-  const persistedExercisePlan = assistantMessage.exercisePlanId === null
-    ? null
-    : await getOwnedExercisePlan(user.userId, assistantMessage.exercisePlanId)
-
   return {
     thread: await getAgentThread(user.userId, threadId),
     userMessage,
