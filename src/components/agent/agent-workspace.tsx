@@ -15,6 +15,7 @@ import {
   Send,
   Sparkles,
   Trash2,
+  UtensilsCrossed,
   X,
 } from "lucide-react"
 import { toast } from "sonner"
@@ -51,6 +52,7 @@ interface AgentMessage {
   createdAt: string
   memoryCandidates: MemoryCandidate[]
   exercisePlanId: number | null
+  mealRecordId: number | null
 }
 
 interface AgentThread extends ThreadSummary {
@@ -88,17 +90,31 @@ interface ExercisePlanResult {
   intensity: string
 }
 
+interface MealRecordResult {
+  recordId: number
+  foodName: string
+  mealType: string
+  calories: number
+  proteinG: number
+  fatG: number
+  carbsG: number
+  portionDesc: string | null
+  recordDate: string
+  recordTime: string
+}
+
 interface ChatResult {
   thread: AgentThread
   userMessage: AgentMessage
   assistantMessage: AgentMessage
   exercisePlan: ExercisePlanResult | null
+  mealRecord: MealRecordResult | null
   orderResult?: OrderResult | null
   activity: AgentActivity[]
   trace: AgentTraceEvent[]
 }
 
-const starterPrompts = ["晚餐怎么安排更合适？", "帮我复盘今天的蛋白质", "给我一个附近外卖思路"]
+const starterPrompts = ["把这顿饭记录下来", "晚餐怎么安排更合适？", "帮我复盘今天的蛋白质", "给我一个附近外卖思路"]
 
 function formatThreadDate(value: string) {
   return new Intl.DateTimeFormat("zh-CN", { month: "short", day: "numeric" }).format(new Date(value))
@@ -106,6 +122,16 @@ function formatThreadDate(value: string) {
 
 function formatMessageTime(value: string) {
   return new Intl.DateTimeFormat("zh-CN", { hour: "2-digit", minute: "2-digit" }).format(new Date(value))
+}
+
+function mealTypeLabel(value: string) {
+  const labels: Record<string, string> = {
+    breakfast: "早餐",
+    lunch: "午餐",
+    dinner: "晚餐",
+    snack: "加餐",
+  }
+  return labels[value] ?? value
 }
 
 async function requestJson<T>(url: string, init?: RequestInit) {
@@ -249,6 +275,7 @@ export function AgentWorkspace({
   // Ephemeral by design (ADR-0004): the payment link lives only in this
   // component state for the current reply and disappears on reload.
   const [lastOrder, setLastOrder] = useState<OrderResult | null>(null)
+  const [lastMealRecord, setLastMealRecord] = useState<MealRecordResult | null>(null)
   const [turnActivity, setTurnActivity] = useState<AgentActivity[]>([])
   const [turnTrace, setTurnTrace] = useState<AgentTraceEvent[]>([])
   const [streamingAnswer, setStreamingAnswer] = useState("")
@@ -280,6 +307,7 @@ export function AgentWorkspace({
       setActiveThreadId(thread.threadId)
       setMessages(thread.messages)
       setLastOrder(null)
+      setLastMealRecord(null)
       setTurnActivity([])
       setTurnTrace([])
       setStreamingAnswer("")
@@ -300,6 +328,7 @@ export function AgentWorkspace({
     if (exerciseMode) setExercisePlanId(null)
     setDraft("")
     setLastOrder(null)
+    setLastMealRecord(null)
     setTurnActivity([])
     setTurnTrace([])
     setStreamingAnswer("")
@@ -334,12 +363,14 @@ export function AgentWorkspace({
       createdAt: new Date().toISOString(),
       memoryCandidates: [],
       exercisePlanId: null,
+      mealRecordId: null,
     }
     followViewportRef.current = true
     setMessages((current) => [...current, optimisticMessage])
     setDraft("")
     setSending(true)
     setLastOrder(null)
+    setLastMealRecord(null)
     setTurnActivity([])
     setTurnTrace([])
     setStreamingAnswer("")
@@ -359,6 +390,7 @@ export function AgentWorkspace({
       setThreads((current) => mergeThread(current, result.thread))
       if (result.exercisePlan) setExercisePlanId(result.exercisePlan.planId)
       setLastOrder(result.orderResult ?? null)
+      setLastMealRecord(result.mealRecord ?? null)
       setTurnActivity(result.activity)
       setTurnTrace(result.trace ?? [])
       setStreamingAnswer("")
@@ -404,7 +436,7 @@ export function AgentWorkspace({
         />
       ) : null}
       <section className="surface-card overflow-hidden border-0">
-        <div className="grid h-[min(42.5rem,calc(100dvh-9rem-var(--keyboard-inset,0px)))] min-h-[min(28rem,calc(100dvh-9rem-var(--keyboard-inset,0px)))] grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(18rem,.72fr)_minmax(0,1.48fr)]">
+        <div className="grid h-[min(42.5rem,calc(100dvh-9rem-var(--keyboard-inset,0px)))] min-h-[min(28rem,calc(100dvh-9rem-var(--keyboard-inset,0px)))] grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(15rem,.58fr)_minmax(0,1.72fr)]">
           <aside className={cn(
             "order-2 min-h-0 flex-col overflow-hidden bg-[var(--brand-plum)] text-white lg:order-1 lg:flex lg:h-full",
             mobileHistoryOpen ? "fixed inset-y-0 left-0 z-50 flex w-[min(22rem,88vw)] shadow-2xl lg:static lg:z-auto lg:w-auto lg:shadow-none" : "hidden",
@@ -506,10 +538,10 @@ export function AgentWorkspace({
           </aside>
 
           <div className="order-1 flex h-full min-h-0 min-w-0 flex-col overflow-hidden bg-[var(--brand-paper)] lg:order-2">
-            <header className="flex items-center justify-between gap-4 border-b border-border/70 px-5 py-4 sm:px-7">
+            <header className="flex items-center justify-between gap-4 border-b border-border/70 px-6 py-5 sm:px-8">
               <div className="min-w-0">
                 <p className="page-eyebrow">Tonight&apos;s plan</p>
-                <h2 className="mt-1 truncate text-xl font-semibold text-[var(--brand-heading)]">
+                <h2 className="mt-1 truncate text-2xl font-semibold text-[var(--brand-heading)]">
                   {activeThread?.title ?? "今晚怎么吃，我陪你定。"}
                 </h2>
               </div>
@@ -535,17 +567,17 @@ export function AgentWorkspace({
             <div
               ref={messageViewportRef}
               onScroll={handleViewportScroll}
-              className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-4 py-5 sm:px-7 sm:py-7"
+              className="min-h-0 flex-1 space-y-6 overflow-y-auto overscroll-contain px-5 py-6 sm:px-8 sm:py-8"
             >
               {messages.length === 0 ? (
                 <div className="flex min-h-[25rem] flex-col justify-center">
                   <div className="grid size-11 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
                     <Bot className="size-5" />
                   </div>
-                  <h3 className="mt-5 max-w-xl text-3xl font-semibold leading-tight text-[var(--brand-heading)]">
+                  <h3 className="mt-5 max-w-2xl text-3xl font-semibold leading-tight text-[var(--brand-heading)] sm:text-4xl">
                     先不用焦虑，今天还有调整空间。
                   </h3>
-                  <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
+                  <p className="mt-3 max-w-2xl text-base leading-7 text-muted-foreground">
                     告诉我今天吃过什么、接下来有什么安排，或者直接从一个具体问题开始。
                   </p>
                   <div className="mt-6 flex flex-wrap gap-2">
@@ -553,7 +585,7 @@ export function AgentWorkspace({
                       <button
                         key={prompt}
                         type="button"
-                        className="rounded-full border border-border bg-card px-3 py-2 text-xs font-medium text-[var(--brand-plum)] transition-colors hover:border-[var(--brand-mint)] hover:bg-[var(--brand-mint)]/10"
+                        className="rounded-full border border-border bg-card px-4 py-2.5 text-sm font-medium text-[var(--brand-plum)] transition-colors hover:border-[var(--brand-mint)] hover:bg-[var(--brand-mint)]/10"
                         onClick={() => setDraft(prompt)}
                       >
                         {prompt}
@@ -569,10 +601,10 @@ export function AgentWorkspace({
                         <Bot className="size-4" />
                       </div>
                     ) : null}
-                    <div className="max-w-[min(43rem,88%)]">
+                    <div className="max-w-[min(50rem,92%)]">
                       <div
                         className={cn(
-                          "break-words rounded-lg px-4 py-3 text-sm leading-6 shadow-sm",
+                          "break-words rounded-lg px-5 py-4 text-base leading-7 shadow-sm",
                           message.role === "user"
                             ? "whitespace-pre-wrap bg-[var(--brand-lavender-soft)] text-[var(--brand-heading)]"
                             : "border border-border/70 bg-card text-foreground"
@@ -601,6 +633,25 @@ export function AgentWorkspace({
                           <Link className="font-semibold underline-offset-2 hover:underline" href={returnTo}>返回计划页查看</Link>
                         </div>
                       ) : null}
+                      {message.role === "assistant" && message.mealRecordId !== null ? (
+                        <div className="mt-3 border-l-2 border-[var(--brand-mint)] bg-[var(--brand-mint-soft)] px-4 py-3 text-sm text-[var(--brand-heading)]">
+                          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                            <UtensilsCrossed className="size-4 text-[var(--brand-mint-deep)]" />
+                            <span className="font-semibold">Agent 已核验餐食记录</span>
+                            <Link className="font-semibold underline-offset-2 hover:underline" href="/meals">查看饮食记录</Link>
+                          </div>
+                          {lastMealRecord?.recordId === message.mealRecordId ? (
+                            <div className="mt-3 grid gap-x-4 gap-y-1 text-sm sm:grid-cols-2">
+                              <p className="font-medium sm:col-span-2">{lastMealRecord.foodName}{lastMealRecord.portionDesc ? ` · ${lastMealRecord.portionDesc}` : ""}</p>
+                              <p>{mealTypeLabel(lastMealRecord.mealType)} · {lastMealRecord.recordDate} {lastMealRecord.recordTime}</p>
+                              <p>{lastMealRecord.calories} kcal · 蛋白质 {lastMealRecord.proteinG}g</p>
+                              <p className="text-xs text-muted-foreground sm:col-span-2">脂肪 {lastMealRecord.fatG}g · 碳水 {lastMealRecord.carbsG}g · 已保存到你的饮食记录</p>
+                            </div>
+                          ) : (
+                            <p className="mt-2 text-xs text-muted-foreground">这条餐食已经保存到你的饮食记录中（记录 #{message.mealRecordId}）。</p>
+                          )}
+                        </div>
+                      ) : null}
                     </div>
                   </div>
                 ))
@@ -611,8 +662,8 @@ export function AgentWorkspace({
                   <div className="mt-1 grid size-8 shrink-0 place-items-center rounded-md bg-[var(--brand-plum)] text-[var(--brand-mint)]">
                     <Bot className="size-4" />
                   </div>
-                  <div className="max-w-[min(43rem,88%)]">
-                    <div className="break-words rounded-lg border border-[var(--brand-mint)]/40 bg-card px-4 py-3 text-sm leading-6 text-foreground shadow-sm">
+                  <div className="max-w-[min(50rem,92%)]">
+                    <div className="break-words rounded-lg border border-[var(--brand-mint)]/40 bg-card px-5 py-4 text-base leading-7 text-foreground shadow-sm">
                       <AssistantText content={streamingAnswer} />
                     </div>
                     <p className="mt-1 text-[11px] text-muted-foreground">实时生成中</p>
@@ -657,10 +708,10 @@ export function AgentWorkspace({
 
             <form
               data-testid="agent-composer"
-              className="shrink-0 border-t border-border/70 bg-card p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:p-4 sm:pb-4"
+              className="shrink-0 border-t border-border/70 bg-card p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:p-5 sm:pb-5"
               onSubmit={(event) => { event.preventDefault(); void sendMessage() }}
             >
-              <div className="flex items-end gap-2 rounded-md border bg-card p-2 focus-within:border-[var(--brand-mint)] focus-within:ring-2 focus-within:ring-[var(--brand-mint)]/20">
+              <div className="flex items-end gap-2 rounded-md border bg-card p-3 focus-within:border-[var(--brand-mint)] focus-within:ring-2 focus-within:ring-[var(--brand-mint)]/20">
                 <textarea
                   data-prefilled={initialDraft ? "true" : "false"}
                   value={draft}
@@ -675,7 +726,7 @@ export function AgentWorkspace({
                   maxLength={4_000}
                   rows={2}
                   placeholder="告诉我你现在最想解决什么"
-                  className="min-h-12 min-w-0 flex-1 resize-none border-0 bg-transparent px-1 py-1.5 text-sm leading-6 outline-none placeholder:text-muted-foreground"
+                  className="min-h-14 min-w-0 flex-1 resize-none border-0 bg-transparent px-1 py-1.5 text-base leading-7 outline-none placeholder:text-muted-foreground"
                 />
                 <Button type="submit" size="icon" aria-label="发送消息" title="发送消息" disabled={sending || loadingThread || !draft.trim()}>
                   {sending ? <LoaderCircle className="animate-spin" /> : <Send />}

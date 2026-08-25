@@ -1792,5 +1792,17 @@
       "path": "dev_repo/evidence/C-44/S1/verification.md, dev_repo/evidence/C-44/S1/verification.json",
       "description": "餐食目标路由、validate/save/verify 动作、所有权回读与 Agent 定向回归"
     }
+  ],
+  "C-44-S2": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-44/S2/verification.md, dev_repo/evidence/C-44/S2/verification.json",
+      "description": "主对话区扩容、可读性字号、已核验餐食回执与固定 composer；桌面/375px Browser 几何验收和全量定向回归通过"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-44/S2/agent-chat-desktop.png, dev_repo/evidence/C-44/S2/agent-chat-mobile-375.png, dev_repo/evidence/C-44/S2/agent-chat-empty-mobile-375.png",
+      "description": "桌面主对话工作区、375px 对话页和新会话空状态截图"
+    }
   ]
 }

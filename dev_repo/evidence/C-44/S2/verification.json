@@ -1,0 +1,31 @@
+{
+  "contract_id": "C-44-S2",
+  "status": "passed",
+  "tests": {
+    "npm run test:agent-chat-ui": "green",
+    "npm run test:agent": "green",
+    "npm run test:agent-kernel": "green",
+    "npm run test:agent-trace-ui": "green",
+    "npm run lint": "green",
+    "npm run typecheck": "green",
+    "npm run build": "green",
+    "git diff --check": "green"
+  },
+  "browser": {
+    "desktop": "passed",
+    "mobile_viewport": "375x812",
+    "mobile": "passed",
+    "horizontal_overflow": false,
+    "composer_outside_message_scroll_region": true
+  },
+  "screenshots": [
+    "agent-chat-desktop.png",
+    "agent-chat-mobile-375.png",
+    "agent-chat-empty-mobile-375.png"
+  ],
+  "red_lines_crossed": [],
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "return_to": "C-44-S3"
+}
