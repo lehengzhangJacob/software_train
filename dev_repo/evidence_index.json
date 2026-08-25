@@ -1811,5 +1811,17 @@
       "path": "dev_repo/evidence/C-44/S3/verification.md, dev_repo/evidence/C-44/S3/verification.json",
       "description": "全量 npm verify、既有桌面/375px Browser 几何验收和无发布/Issue 变更的最终收口"
     }
+  ],
+  "C-45-Release-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-45-Release/release-verification.json, dev_repo/release-notes-v0.1.9.md",
+      "description": "v0.1.9 本地发布门禁、Android 未签名 APK、云端部署、版本接口和账户门验证"
+    },
+    {
+      "type": "release",
+      "path": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.9",
+      "description": "正式 Release，包含未签名 Android APK 与 C-44 教练工作区三张截图证据"
+    }
   ]
 }

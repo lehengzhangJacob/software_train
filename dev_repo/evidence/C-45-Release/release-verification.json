@@ -1,0 +1,46 @@
+{
+  "contract_id": "C-45-Release",
+  "slice_id": "C-45-Release-S1",
+  "summary": "发布教练餐食记录与主对话工作区改造的 FoodMoment v0.1.9",
+  "source_commit": "aa02569",
+  "branch": "main",
+  "local_gates": {
+    "npm run release:check": "pass; migration status current, full verify, API checks and local production smoke passed",
+    "npx tsx --test scripts/android-update-contract.test.ts": "pass",
+    "android/.\\gradlew.bat assembleRelease": "pass; unsigned APK; versionCode 10/versionName 0.1.9; cloud URL baked",
+    "apk_sha256": "6CFEE64396DFBB16F60FC5A1EB7CCDCF0C26E6111CE0A3B7171F43AF0E27D0C7"
+  },
+  "cloud": {
+    "deployment": "20260825195155",
+    "access_status": 200,
+    "anonymous_api_status": 401,
+    "version": "0.1.9",
+    "build": "lHBbcMhzP6ZH7X9789kNn",
+    "content_timer": "enabled/active",
+    "account_gate": "Team A anonymous and authenticated checks passed"
+  },
+  "browser": {
+    "surface": "local Browser evidence from C-44",
+    "desktop": "1280x720; enlarged coach main conversation and receipt surface",
+    "mobile": "375x812; fixed composer, empty-state meal-record entry, no horizontal overflow",
+    "screenshots": [
+      "dev_repo/evidence/C-44/S2/agent-chat-desktop.png",
+      "dev_repo/evidence/C-44/S2/agent-chat-mobile-375.png",
+      "dev_repo/evidence/C-44/S2/agent-chat-empty-mobile-375.png"
+    ]
+  },
+  "release": {
+    "tag": "v0.1.9",
+    "name": "FoodMoment v0.1.9",
+    "url": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.9",
+    "draft": false,
+    "prerelease": false,
+    "assets": [
+      "app-release-unsigned.apk",
+      "agent-chat-desktop.png",
+      "agent-chat-mobile-375.png",
+      "agent-chat-empty-mobile-375.png"
+    ]
+  },
+  "issue_state": "No Issue is closed by this release; #3/#4/#5/#9/#10 remain open for external retest and #6/#7/#8 remain closed."
+}
