@@ -99,6 +99,9 @@ try {
   database.prepare("DELETE FROM memory_items WHERE user_id = ? AND category = ? AND content = ?").run(primaryUserId, "preference", candidateContent)
   const baselineThreadCount = Number(database.prepare("SELECT COUNT(*) AS count FROM agent_threads WHERE user_id = ?").get(primaryUserId).count)
   const providerRequests = []
+  const requestIncludesMemory = (request) => request?.messages?.some((message) => {
+    return JSON.stringify(message?.content ?? "").includes(candidateContent)
+  }) ?? false
 
   const providerPort = await reserveLoopbackPort()
   provider = createServer(async (request, response) => {
@@ -181,13 +184,14 @@ try {
     })
     assert(confirmed.response.status === 201 && confirmed.body.data?.memoryId === memoryId && confirmed.body.data?.isUserConfirmed === true, "Legacy candidate confirmation compatibility failed")
 
+    const duplicateRequestStart = providerRequests.length
     const duplicate = await jsonRequest(`${baseUrl}/api/agent/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ threadId, message: "这周也想保持清淡一点。" }),
     })
     assert(duplicate.response.status === 200, "Second Agent turn failed")
-    assert(providerRequests.length >= 2 && providerRequests[1].messages?.[0]?.content?.includes(candidateContent), "Automatic memory was not available to the next Agent turn")
+    assert(providerRequests.slice(duplicateRequestStart).some(requestIncludesMemory), "Automatic memory was not available to the next Agent turn")
     memories = exactMemories()
     assert(memories.length === 1, "Repeated inference duplicated the active memory")
     assert(duplicate.body.data?.assistantMessage?.memoryCandidates?.[0]?.memoryId === memoryId, "Repeated inference did not reuse the active memory")
@@ -199,13 +203,14 @@ try {
     })
     assert(disabled.response.status === 200 && disabled.body.data?.status === "disabled", "Automatic memory could not be disabled")
 
+    const suppressedRequestStart = providerRequests.length
     const suppressed = await jsonRequest(`${baseUrl}/api/agent/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ threadId, message: "继续给我一个晚餐建议。" }),
     })
     assert(suppressed.response.status === 200, "Suppression verification turn failed")
-    assert(providerRequests.length >= 3 && !providerRequests[2].messages?.[0]?.content?.includes(candidateContent), "Disabled memory remained in Agent context")
+    assert(providerRequests.slice(suppressedRequestStart).every((request) => !requestIncludesMemory(request)), "Disabled memory remained in Agent context")
     memories = exactMemories()
     assert(memories.length === 1 && memories[0].status === "disabled", "Disabled duplicate was recreated or reactivated")
     assert(suppressed.body.data?.assistantMessage?.memoryCandidates?.[0]?.memoryId === null, "Suppressed inference was linked to a durable memory")
