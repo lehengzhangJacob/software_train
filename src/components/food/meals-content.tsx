@@ -11,6 +11,7 @@ import {
   Trash2,
   UtensilsCrossed,
   Wheat,
+  X,
 } from "lucide-react"
 import { toast } from "sonner"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -483,55 +484,91 @@ export function MealsContent({ recordDate, initialMeals }: MealsContentProps) {
       )}
 
       <div className="flex items-center gap-2">
-        <Button type="button" onClick={() => setShowForm((visible) => !visible)} variant="outline" className="flex-1">
+        <Button
+          type="button"
+          onClick={() => setShowForm((visible) => !visible)}
+          aria-expanded={showForm}
+          aria-controls="manual-meal-form"
+          variant="outline"
+          className="flex-1 border-[var(--brand-mint)]/55 bg-[var(--brand-paper)] text-[var(--brand-heading)] hover:border-[var(--brand-mint-deep)] hover:bg-[var(--brand-mint-soft)]"
+        >
           <Plus className="mr-2 h-4 w-4" />
           手动录入
         </Button>
       </div>
 
       {showForm && (
-        <Card className="surface-card border-0 lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">手动录入食物</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="manual-food-name">食物名称</Label>
-                <Input id="manual-food-name" value={form.foodName} onChange={(event) => setForm((current) => ({ ...current, foodName: event.target.value }))} placeholder="如：鸡蛋、米饭" />
+        <Card id="manual-meal-form" data-testid="manual-meal-form" className="surface-card overflow-hidden border-[var(--brand-mint)]/45 lg:col-span-2">
+          <CardHeader className="border-b border-border/70 bg-[var(--brand-paper)] px-4 py-3 sm:px-5">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 items-start gap-3">
+                <span className="grid size-9 shrink-0 place-items-center rounded-md bg-[var(--brand-mint)] text-[var(--brand-plum)]">
+                  <UtensilsCrossed className="size-4" />
+                </span>
+                <div className="min-w-0">
+                  <CardTitle className="text-base text-[var(--brand-heading)]">手动录入食物</CardTitle>
+                  <p className="mt-1 text-xs leading-5 text-muted-foreground">补充一餐的基本信息和营养估算</p>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="manual-meal-type">餐别</Label>
-                <Select value={form.mealType} onValueChange={(value) => value && setForm((current) => ({ ...current, mealType: value }))}>
-                  <SelectTrigger id="manual-meal-type"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(MEAL_LABELS).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="manual-calories">热量（千卡）</Label>
-                <Input id="manual-calories" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} inputMode="decimal" maxLength={12} value={form.calories} onChange={(event) => setForm((current) => ({ ...current, calories: event.target.value }))} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="manual-portion">份量描述</Label>
-                <Input id="manual-portion" value={form.portionDesc} onChange={(event) => setForm((current) => ({ ...current, portionDesc: event.target.value }))} placeholder="如：1 碗约 200g" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="manual-protein">蛋白质（克）</Label>
-                <Input id="manual-protein" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} step="0.1" inputMode="decimal" maxLength={12} value={form.proteinG} onChange={(event) => setForm((current) => ({ ...current, proteinG: event.target.value }))} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="manual-fat">脂肪（克）</Label>
-                <Input id="manual-fat" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} step="0.1" inputMode="decimal" maxLength={12} value={form.fatG} onChange={(event) => setForm((current) => ({ ...current, fatG: event.target.value }))} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="manual-carbs">碳水（克）</Label>
-                <Input id="manual-carbs" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} step="0.1" inputMode="decimal" maxLength={12} value={form.carbsG} onChange={(event) => setForm((current) => ({ ...current, carbsG: event.target.value }))} />
-              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                aria-label="关闭手动录入"
+                title="关闭手动录入"
+                className="size-9 shrink-0 rounded-md text-muted-foreground hover:bg-[var(--brand-mint-soft)] hover:text-[var(--brand-heading)]"
+                onClick={resetForm}
+              >
+                <X className="size-4" />
+              </Button>
             </div>
+          </CardHeader>
+          <CardContent className="space-y-4 px-4 py-4 sm:px-5">
+            <fieldset className="space-y-3 rounded-lg border border-border/70 bg-white/65 p-3 sm:p-4">
+              <legend className="px-1 text-xs font-semibold text-[var(--brand-heading)]">基础信息</legend>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="manual-food-name">食物名称</Label>
+                  <Input className="h-11 rounded-md border-border/80 bg-white/80 px-3" id="manual-food-name" value={form.foodName} enterKeyHint="next" onChange={(event) => setForm((current) => ({ ...current, foodName: event.target.value }))} placeholder="如：鸡蛋、米饭" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="manual-meal-type">餐别</Label>
+                  <Select value={form.mealType} onValueChange={(value) => value && setForm((current) => ({ ...current, mealType: value }))}>
+                    <SelectTrigger id="manual-meal-type" className="h-11 w-full rounded-md border-border/80 bg-white/80 px-3 data-[size=default]:h-11"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(MEAL_LABELS).map(([value, label]) => (
+                        <SelectItem key={value} value={value}>{label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="manual-portion">份量描述</Label>
+                  <Input className="h-11 rounded-md border-border/80 bg-white/80 px-3" id="manual-portion" value={form.portionDesc} enterKeyHint="next" onChange={(event) => setForm((current) => ({ ...current, portionDesc: event.target.value }))} placeholder="如：1 碗约 200g" />
+                </div>
+              </div>
+            </fieldset>
+            <fieldset className="space-y-3 rounded-lg border border-border/70 bg-white/65 p-3 sm:p-4">
+              <legend className="px-1 text-xs font-semibold text-[var(--brand-heading)]">营养估算</legend>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="manual-calories">热量（千卡）</Label>
+                  <Input className="h-11 rounded-md border-border/80 bg-white/80 px-3" id="manual-calories" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} inputMode="decimal" enterKeyHint="next" maxLength={12} value={form.calories} onChange={(event) => setForm((current) => ({ ...current, calories: event.target.value }))} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="manual-protein">蛋白质（克）</Label>
+                  <Input className="h-11 rounded-md border-border/80 bg-white/80 px-3" id="manual-protein" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} step="0.1" inputMode="decimal" enterKeyHint="next" maxLength={12} value={form.proteinG} onChange={(event) => setForm((current) => ({ ...current, proteinG: event.target.value }))} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="manual-fat">脂肪（克）</Label>
+                  <Input className="h-11 rounded-md border-border/80 bg-white/80 px-3" id="manual-fat" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} step="0.1" inputMode="decimal" enterKeyHint="next" maxLength={12} value={form.fatG} onChange={(event) => setForm((current) => ({ ...current, fatG: event.target.value }))} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="manual-carbs">碳水（克）</Label>
+                  <Input className="h-11 rounded-md border-border/80 bg-white/80 px-3" id="manual-carbs" type="number" min={MEAL_NUTRITION_MIN} max={MEAL_NUTRITION_MAX} step="0.1" inputMode="decimal" enterKeyHint="done" maxLength={12} value={form.carbsG} onChange={(event) => setForm((current) => ({ ...current, carbsG: event.target.value }))} />
+                </div>
+              </div>
+            </fieldset>
             <Button type="button" onClick={handleManualSave} disabled={savingManual} className="w-full">
               <UtensilsCrossed className="mr-2 h-4 w-4" />
               {savingManual ? "保存中..." : "保存"}

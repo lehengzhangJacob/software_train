@@ -1,0 +1,42 @@
+{
+  "contract_id": "C-42",
+  "slice_id": "C-42-S2",
+  "scope": "branded profile menu and mobile-friendly manual meal form",
+  "checks": {
+    "test:mobile-ui": "passed",
+    "test:meal-ui": "passed",
+    "lint": "passed",
+    "typecheck": "passed",
+    "diff_check": "passed"
+  },
+  "browser": {
+    "desktop_profile_menu": {
+      "menu_visible": true,
+      "menu_width": 288,
+      "account_label": "当前账户",
+      "console_errors_and_warnings": 0,
+      "screenshot": "profile-menu-desktop.jpg"
+    },
+    "mobile_manual_meal": {
+      "viewport": "375x812",
+      "document_client_width": 360,
+      "document_scroll_width": 360,
+      "field_heights": {
+        "manual-food-name": 44,
+        "manual-meal-type": 44,
+        "manual-portion": 44,
+        "manual-calories": 44,
+        "manual-protein": 44,
+        "manual-fat": 44,
+        "manual-carbs": 44
+      },
+      "close_control_visible": true,
+      "console_errors_and_warnings": 0,
+      "screenshot": "manual-meal-mobile-375.jpg"
+    }
+  },
+  "notes": [
+    "The profile menu keeps existing navigation and logout behavior; the header uses a plain menu surface because Base UI GroupLabel requires a Group context in this version.",
+    "No meal API, Agent API, database, migration, or Issue state was changed."
+  ]
+}

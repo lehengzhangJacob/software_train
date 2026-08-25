@@ -1737,5 +1737,17 @@
       "path": "dev_repo/evidence/C-42/S1/agent-desktop.jpg, dev_repo/evidence/C-42/S1/agent-mobile-375.jpg",
       "description": "Agent 工作台桌面与 375px 移动端输入区布局证据"
     }
+  ],
+  "C-42-S2": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-42/S2/verification.md, dev_repo/evidence/C-42/S2/verification.json",
+      "description": "头像菜单品牌表面、触控尺寸与手动录餐分组字段；桌面/375px Browser 验收及控制台检查通过"
+    },
+    {
+      "type": "screenshot",
+      "path": "dev_repo/evidence/C-42/S2/profile-menu-desktop.jpg, dev_repo/evidence/C-42/S2/manual-meal-mobile-375.jpg",
+      "description": "统一后的个人菜单和 375px 手动录餐表单截图"
+    }
   ]
 }

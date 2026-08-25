@@ -126,23 +126,56 @@ export function Sidebar() {
   const avatar = displayName.slice(0, 1)
 
   const personalMenu = (
-    <DropdownMenuContent align="end" className="w-44">
-      <DropdownMenuItem onClick={() => router.push("/profile")}>
-        <UserRound />
+    <DropdownMenuContent
+      align="end"
+      sideOffset={10}
+      className="w-[min(18rem,calc(100vw-2rem))] min-w-0 rounded-xl border border-border/80 bg-card/95 p-1.5 shadow-[0_18px_45px_rgba(45,39,53,0.16)] backdrop-blur"
+    >
+      <div data-slot="dropdown-menu-label" className="px-3 py-2.5">
+        <div className="flex items-center gap-3">
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--brand-lavender-soft)] text-sm font-bold text-[var(--brand-lavender-deep)]">
+            {avatar}
+          </span>
+          <span className="min-w-0">
+            <span className="block text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--brand-mint-deep)]">
+              当前账户
+            </span>
+            <span className="mt-0.5 block truncate text-sm font-semibold text-[var(--brand-heading)]">
+              {displayName}
+            </span>
+          </span>
+        </div>
+      </div>
+      <DropdownMenuSeparator className="my-1 bg-border/70" />
+      <DropdownMenuItem
+        className="min-h-11 gap-3 rounded-md px-3 py-2 text-sm"
+        onClick={() => router.push("/profile")}
+      >
+        <UserRound className="text-[var(--brand-mint-deep)]" />
         个人档案
       </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={() => router.push("/settings")}>
-        <Settings2 />
+      <DropdownMenuSeparator className="my-1 bg-border/70" />
+      <DropdownMenuItem
+        className="min-h-11 gap-3 rounded-md px-3 py-2 text-sm"
+        onClick={() => router.push("/settings")}
+      >
+        <Settings2 className="text-[var(--brand-mint-deep)]" />
         AI 与工具
       </DropdownMenuItem>
-      <DropdownMenuItem onClick={() => router.push("/settings/memory")}>
-        <Brain />
+      <DropdownMenuItem
+        className="min-h-11 gap-3 rounded-md px-3 py-2 text-sm"
+        onClick={() => router.push("/settings/memory")}
+      >
+        <Brain className="text-[var(--brand-lavender-deep)]" />
         长期记忆
       </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={handleLogout}>
-        <LogOut />
+      <DropdownMenuSeparator className="my-1 bg-border/70" />
+      <DropdownMenuItem
+        variant="destructive"
+        className="min-h-11 gap-3 rounded-md px-3 py-2 text-sm"
+        onClick={handleLogout}
+      >
+        <LogOut className="text-[var(--brand-coral)]" />
         退出登录
       </DropdownMenuItem>
     </DropdownMenuContent>
