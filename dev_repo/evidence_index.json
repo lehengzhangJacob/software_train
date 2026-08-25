@@ -1823,5 +1823,12 @@
       "path": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.9",
       "description": "正式 Release，包含未签名 Android APK 与 C-44 教练工作区三张截图证据"
     }
+  ],
+  "C-46-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-46/S1/verification.md, dev_repo/evidence/C-46/S1/verification.json",
+      "description": "识别食品审核卡片显示 1、2、3、4 序号；序号仅来自当前审核列表并通过定向 UI、Lint、TypeScript 检查"
+    }
   ]
 }

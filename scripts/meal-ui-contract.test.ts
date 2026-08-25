@@ -26,3 +26,9 @@ test("manual and recognition inputs expose the shared bounds", () => {
   assert.match(mealsSource, /min=\{MEAL_NUTRITION_MIN\}/)
   assert.match(mealsSource, /toast\.error\(nutrition\.error\)/)
 })
+
+test("recognized food cards expose their visible list sequence", () => {
+  assert.match(mealsSource, /data-testid=\{`recognized-food-card-\$\{index \+ 1\}`\}/)
+  assert.match(mealsSource, /className="grid size-8 shrink-0 place-items-center rounded-full bg-\[var\(--brand-plum\)\] text-sm font-semibold text-\[var\(--brand-mint\)\]"/)
+  assert.match(mealsSource, /\{index \+ 1\}/)
+})

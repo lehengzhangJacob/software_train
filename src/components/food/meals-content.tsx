@@ -337,9 +337,13 @@ export function MealsContent({ recordDate, initialMeals }: MealsContentProps) {
             </div>
             <div className="space-y-4">
               {drafts.map((draft, index) => (
-                <div key={draft.id} className="rounded-md border bg-[var(--brand-paper)] p-4">
+                <div
+                  key={draft.id}
+                  data-testid={`recognized-food-card-${index + 1}`}
+                  className="rounded-md border bg-[var(--brand-paper)] p-4"
+                >
                   <div className="mb-4 flex items-center justify-between gap-3">
-                    <label className="flex min-w-0 cursor-pointer items-center gap-2 text-sm font-medium text-neutral-800">
+                    <label className="flex min-w-0 cursor-pointer items-center gap-3 text-sm font-medium text-neutral-800">
                       <input
                         type="checkbox"
                         className="size-4 accent-primary"
@@ -347,6 +351,12 @@ export function MealsContent({ recordDate, initialMeals }: MealsContentProps) {
                         disabled={savingDrafts}
                         onChange={(event) => updateDraft(draft.id, "selected", event.target.checked)}
                       />
+                      <span
+                        aria-hidden="true"
+                        className="grid size-8 shrink-0 place-items-center rounded-full bg-[var(--brand-plum)] text-sm font-semibold text-[var(--brand-mint)]"
+                      >
+                        {index + 1}
+                      </span>
                       <span className="truncate">识别项 {index + 1}</span>
                     </label>
       <div className="flex items-center gap-2 lg:col-span-2">

@@ -119,6 +119,9 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     └── C-44-S3 全量回归与证据归档 [completed：npm run verify；无发布/部署/Issue 状态变更]
         └── C-45-Release - FoodMoment v0.1.9 发布与云端部署 [completed：deploy 20260825195155；GitHub Release v0.1.9 与 APK/三张 UI 截图]
             └── C-45-Release-S1 版本同步、发布门禁、云端部署与 GitHub Release [completed：0.1.9、versionCode 10、发布门禁全绿]
+                └── C-46 - 识别食品审核卡片序号与 v0.1.10 发布 [in_progress]
+                    ├── C-46-S1 识别食品审核卡片增加 1、2、3、4 序号 [completed：序号合同、Lint、TypeScript 通过]
+                    └── C-46-Release-S1 版本同步、发布门禁、云端部署与 GitHub Release v0.1.10 [in_progress]
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

@@ -1,0 +1,21 @@
+{
+  "contract_id": "C-46",
+  "slice_id": "C-46-S1",
+  "status": "passed",
+  "verification": {
+    "recognized_card_sequence": "visible 1-based badge from drafts.map index",
+    "automation_selector": "recognized-food-card-{n}",
+    "persistence_boundary": "presentation-only; no MealRecord/API payload change",
+    "npx tsx --test scripts/meal-ui-contract.test.ts": "green",
+    "npm run lint": "green",
+    "npm run typecheck": "green",
+    "git diff --check": "green"
+  },
+  "issue_state": {
+    "open": [3, 4, 5, 9, 10],
+    "closed": [6, 7, 8],
+    "changed_by_contract": false
+  },
+  "red_lines_crossed": [],
+  "return_to": "C-46-Release-S1"
+}
