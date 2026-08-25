@@ -2,8 +2,8 @@
 
 ## Current execution override
 
-- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: none；C-40 已完成并回到 C-21；消息与 Trace 独立滚动，输入 composer 固定在聊天面板底部；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
+- Current contract: `C-41-Release - FoodMoment v0.1.7 发布` [in_progress]
+- Current slice: `C-41-Release-S1`；同步 Web/Android 版本、部署云端并创建带布局截图证据的 GitHub Release；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3/#4/#5/#9/#10 remain open until external testers confirm non-reproduction.
@@ -104,6 +104,8 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
             └── C-39-S3 本地/云端回归与截图证据 [completed：npm verify、deploy 20260825104923、Team A 计划 revision 2、三张截图]
         └── C-40 - 聊天输入区常驻不可滚动底部 [completed：npm verify；桌面/375px Browser 验收与截图证据]
             └── C-40-S1 布局、独立滚动与桌面/375px 回归 [completed：composer 在不可滚动 footer，消息/Trace 独立滚动]
+                └── C-41-Release - FoodMoment v0.1.7 发布 [in_progress]
+                    └── C-41-Release-S1 版本同步、云端部署与 GitHub Release [in_progress]
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

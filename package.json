@@ -1,6 +1,6 @@
 {
   "name": "food-tracker",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "private": true,
   "packageManager": "npm@11.6.2",
   "scripts": {
@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-  "verify": "npm run test:ai && npm run test:memory && npm run test:agent && npm run test:agent-trace && npm run test:agent-kernel && npm run test:agent-trace-ui && npm run test:agent-chat-ui && npm run test:recognition && npm run test:mcp && npm run test:ordering && npm run test:health && npm run test:meal-validation && npm run test:meal-ui && npm run test:calendar-meal-date && npm run test:navigation-motion && npm run test:access && npm run test:exercise-plan && npm run test:exercise-plan-ui && npm run test:article && npm run test:article-background && npm run test:two-week-demo && npm run lint && npm run typecheck && npm run build",
+    "verify": "npm run test:ai && npm run test:memory && npm run test:agent && npm run test:agent-trace && npm run test:agent-kernel && npm run test:agent-trace-ui && npm run test:agent-chat-ui && npm run test:recognition && npm run test:mcp && npm run test:ordering && npm run test:health && npm run test:meal-validation && npm run test:meal-ui && npm run test:calendar-meal-date && npm run test:navigation-motion && npm run test:access && npm run test:exercise-plan && npm run test:exercise-plan-ui && npm run test:article && npm run test:article-background && npm run test:two-week-demo && npm run lint && npm run typecheck && npm run build",
     "smoke": "node scripts/release-smoke.mjs",
     "test:ai": "tsx --test scripts/ai-settings.test.ts",
     "test:memory": "tsx --test scripts/memory-contract.test.ts",
