@@ -106,6 +106,21 @@ flowchart LR
 `completedCount/totalSteps/planCompleted`。勾选不修改 Agent 生成的 `plan_json`；新 revision
 拥有全新的 checklist，旧计划的完成投影仍可追溯。
 
+### Agent 目标、动作与核验（C-39 / ADR-0022）
+
+Agent 回合不是“模型文本返回后再猜测副作用”。请求先经过领域策略和目标路由；需要改变
+领域状态时，AgentKernel 在同一回合内按 `read -> validate -> act -> observe` 运行受控动作。
+运动计划使用 `validate_exercise_plan`、`save_exercise_plan` 和
+`verify_exercise_plan` 工具：保存动作创建新的 `AgentExercisePlan` revision 并让旧 active
+版本变为 `superseded`，回读动作必须确认当前账户、revision、日期和 active 状态后，最终回复
+才能说计划已经更新。普通 `/agent` 入口也可进入这个目标流，教练深链只提供当前计划上下文，
+不再是唯一的写入开关。
+
+动作工具只在目标路由明确需要时注册，拥有权来自服务端会话而不是模型参数。动作状态仅存在于
+当前回合；持久化真相仍是既有 `AgentMessage` 与 `AgentExercisePlan`。Canonical Trace 在目标
+识别、校验、提交、回读和终态边界各自发出事件，Friendly/Technical 视图只做投影，不制造固定
+阶段或补写不存在的工具调用。详见 ADR-0022。
+
 ### Agent 日更图文与 DashScope 生图（C-25 / ADR-0015）
 
 日更内容是 Agent Runtime 的独立派生流：服务端从允许的档案、餐食/活动聚合、active

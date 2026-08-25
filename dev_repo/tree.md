@@ -2,8 +2,8 @@
 
 ## Current execution override
 
-- Current contract: `C-21 - 集中修复 GitHub Issue #3 至 #8` [in_progress]
-- Current slice: 无；C-37-Release 已完成并返回 C-21；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
+- Current contract: `C-39 - 把 Agent 从 chat box 升级为可执行、可核验、可投影的领域 Agent` [in_progress]
+- Current slice: `C-39-A1`；C-38 的固定模板症状修补被放弃，当前进入 Goal/Action/Verify 运行时重构；Issues #3/#4/#5/#9/#10 仍保持开放等待外部复测
 - Parent contract: `C-03 - 本地个人营养 Agent` [completed]
 - Return path: `C-21`
 - Issue state: #6-#8 closed as completed after external confirmation; #3-#5 and #10 remain open until external testers confirm non-reproduction.
@@ -68,9 +68,9 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
         └── C-28-S3 云端验收与证据 [completed，return_to=C-27-S3]
 ```
 
-- 当前合同：`C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]`
-- 当前切片：无；C-37-Release 已完成并回到 C-21
-- 下一步：等待 Issues #3/#4/#5/#9/#10 外部复测；不关闭未确认的 Issue
+- 当前合同：`C-39 - Agent Goal/Action/Verify 运行时重构 [in_progress]`
+- 当前切片：`C-39-A1`；下一步为计划 action loop，随后再做 Trace 投影与云端验收
+- Issue 状态：#3/#4/#5/#9/#10 保持开放，不因本合同自动关闭
 - C-29 - 移动端中央记一餐入口、路线切换动效与 Team A 两周演示数据 [completed：UI 云端验收、375px 截图、Team A 56/14/7/3 数据回读与 B/C 隔离证据]
 - C-30 - 修复 Issue #9 计划页补记日期失效 [completed：日期参数、手动保存与清理云端回归、截图证据；Issue #9 保持 Open]
 - C-31 - 将每日阅读降为今天的二级 Tab [completed：一级导航收敛、移动底栏 2+中央+2、桌面云端截图与 DOM 验收]
@@ -97,6 +97,11 @@ C-21 - 集中修复 GitHub Issue #3 至 #8 [in_progress]
     ├── C-37-S4 真实事件到友好阶段/技术详情投影 [completed]
     ├── C-37-S5 云端 Browser 验收与截图证据 [completed：4 个友好阶段、16/16 spans、StepFun 搜索透明降级]
     └── C-37-Release-S1 推送 main、云端部署与 v0.1.6 GitHub Release [completed：deploy 20260824210817；APK 与四张 Trace 截图]
+        └── C-39 - Agent Goal/Action/Verify 运行时重构 [in_progress]
+            ├── C-39-A1 目标/动作/核验架构修宪 [in_progress：ADR-0022]
+            ├── C-39-S1 计划目标路由、validate/save/verify 动作工具与真实 revision 提交 [pending]
+            ├── C-39-S2 真实动作 Trace 投影与工作台显示 [pending]
+            └── C-39-S3 本地/云端回归与截图证据 [pending]
 - 已收口子合同（历史桶）：`C-02 发布收口`；`C-03 本地营养 Agent`；`C-04 Keep 风格全界面`；`C-05 聚焦导航与自动记忆`；`C-06 麦当劳点餐闭环`（含 A1/C-07/C-08/C-09/C-10/L4-A1/A2）；`C-11 云端交付与双端收口`（A1 修宪 652e53e / S1 部署通道 230ed10 / S2 访问门 732ec30 / S3 形态 B）[均 completed]
 
 ```text

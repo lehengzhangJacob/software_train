@@ -42,6 +42,7 @@ authorization boundary.
 - decisions/ADR-0001-private-course-boundary.md：本次修宪决策。
 - decisions/ADR-0018-background-daily-article-generation.md：日更文章后台生成与公开入队边界。
 - decisions/ADR-0021-agent-domain-policy-search-and-progressive-trace.md：Agent 领域范围、受控 Web Search 与渐进式 Trace 投影。
+- decisions/ADR-0022-agent-goal-action-verify-loop.md：Agent 目标识别、领域动作提交、回读核验与真实 Trace 边界。
 
 ## 置信度
 

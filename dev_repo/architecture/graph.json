@@ -7,10 +7,10 @@
     "return_to": "web_completion_audit"
   },
   "active_amendment": {
-    "contract_id": "C-28-A1",
-    "decision": "background_daily_article_generation",
+    "contract_id": "C-39-A1",
+    "decision": "agent_goal_action_verify_loop",
     "status": "accepted",
-    "return_to": "C-27-S3"
+    "return_to": "C-21"
   },
   "nodes": [
     {
@@ -684,6 +684,8 @@
         "后台整理非阻塞且失败静默，不影响对话主流程",
         "运动计划是安全的结构化 artifact；原始模型响应和隐藏推理不得持久化",
         "同一用户同一天的调整创建新 revision，旧 active 版本只标记 superseded",
+        "需要改变计划状态时必须经过目标路由、校验、提交和回读核验；未核验不得声称已更新",
+        "动作工具的拥有权来自服务端会话，模型不得通过参数选择其他用户",
         "日更批次按 user_id+content_date 幂等且 ready 恰好十篇",
         "日更公开 POST 只入队并快速返回，后台 job 执行正文/图片生成",
         "文章只使用允许的账户上下文；DashScope task/临时 URL 不进入消息或 SQLite",
@@ -695,6 +697,8 @@
         "AgentKernel runtime",
         "model provider adapter",
         "capability-gated tool loop",
+        "goal routing and domain action loop",
+        "commit and read-back verification",
         "canonical trace bridge",
         "structured exercise plan projection",
         "daily article enqueue and background generation",
@@ -710,9 +714,12 @@
         "TraceProjectionReducer",
         "FriendlyTraceProjection",
         "TechnicalTraceProjection",
-        "SSEProjection"
+        "SSEProjection",
+        "GoalRouter",
+        "DomainActionRegistry",
+        "CommitVerifier"
       ],
-      "runtime_flow": "API façade -> AgentIntentPolicy -> (safe off-topic reply | AgentKernel -> ModelProviderAdapter -> Context/ToolRegistry -> WebSearchAdapter when enabled -> ActionPolicy -> MCP/domain tools) -> Canonical AgentTraceEvent v1 -> SSE -> Friendly/Technical Trace Projection -> final AgentMessage",
+      "runtime_flow": "API façade -> AgentIntentPolicy/GoalRouter -> (safe off-topic reply | AgentKernel -> Context/ToolRegistry -> validate -> domain action commit -> read-back verify -> final AgentMessage) -> Canonical AgentTraceEvent v1 -> SSE -> Friendly/Technical Trace Projection",
       "capability_gate": {
         "autonomous_loop_requires": ["tool_calls", "verifiable_stream"],
         "web_search_requires": ["explicit current-research intent", "providerId=qwen", "DashScope enable_search support"],

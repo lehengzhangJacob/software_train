@@ -119,6 +119,7 @@ The earlier single-user statement is superseded by this amendment:
     `web_search` 或无关模型流程，能够明确转成饮食、健身或恢复目标的请求可重新进入 Agent。
 63. Agent 的领域提示词必须同时覆盖饮食、训练和恢复，并明确渐进、器械、恢复和安全边界；
     普通运动咨询不得被迫输出结构化运动计划，exercise-plan 模式仍须经过既有服务端校验。
+    需要安排或调整运动计划时，Agent 必须先经过目标路由，再由 validate -> save -> verify 动作闭环；没有回读核验不得声称计划已更新。
 64. `web_search` 只能由服务端白名单工具调用；首期仅允许显式支持 DashScope `enable_search`
     的 Qwen Provider，能力未知或失败时必须透明降级，不得伪称联网或把原始搜索 payload 传播。
 65. 搜索来源只能以清洗后的标题、来源 URL、摘要、时间和来源计数进入模型回答或 Trace；

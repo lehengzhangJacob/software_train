@@ -73,6 +73,11 @@
       "description": "Agent domain scope policy, guarded DashScope Web Search, and progressive Friendly/Technical Trace projections"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0022-agent-goal-action-verify-loop.md",
+      "node": "agent.runtime",
+      "description": "Agent goal routing, domain action commit, read-back verification, and real Trace boundaries"
+    },
+    {
       "path": "dev_repo/architecture/content-generation.md",
       "node": "agent.runtime",
       "description": "C-25 daily article context, content, image, trigger and retry contract"

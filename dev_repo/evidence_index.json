@@ -1668,5 +1668,12 @@
       "path": "dev_repo/evidence/C-37/Release/release-verification.json",
       "description": "npm verify、Android versionCode 7/assembleRelease、云端访问门与版本接口、Release draft/prerelease 状态和资产清单均已核验"
     }
+  ],
+  "C-39-A1": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0022-agent-goal-action-verify-loop.md",
+      "description": "Agent 目标识别、validate/save/verify 动作闭环、现有计划 revision 复用与真实 Trace 边界"
+    }
   ]
 }

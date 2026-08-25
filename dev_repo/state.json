@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-21",
+  "active_contract_id": "C-39",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -723,6 +723,28 @@
       "backfill_required": false,
       "issue_state": "No Issue is closed by this release; existing external retest status remains unchanged.",
       "latest_verification": "v0.1.6 source commit a75ff817; npm run verify, Android metadata/assembleRelease and release smoke passed; cloud deploy 20260824210817 reports /api/app/version=0.1.6/build wbWhERfGonZG5-QYEae4u; GitHub Release v0.1.6 includes unsigned APK and four C-37 Trace screenshots."
+    },
+    "C-39": {
+      "contract_id": "C-39",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "把 Agent 从 chat box 升级为可执行、可核验、可投影的领域 Agent",
+      "goal": "让 Agent 识别领域目标，按 read -> validate -> act -> observe 执行受控动作，在运动计划场景中真实创建 revision 并回读核验，同时让 Trace 只呈现真实运行事件。",
+      "current_slice": "C-39-A1",
+      "completed_slices": [],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "C-39-A1 / ADR-0022",
+      "data_model_delta": "none; reuse AgentThread, AgentMessage and AgentExercisePlan revision/source ownership semantics",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this contract; #3/#4/#5/#9/#10 remain open until external retest.",
+      "red_lines": [
+        "没有真实 save + verify 不得声称运动计划已更新",
+        "Trace 不得由固定模板补齐，也不得展示原始工具载荷、隐藏推理或凭据",
+        "不得新增第二套计划持久化真相"
+      ]
     }
   }
 }
