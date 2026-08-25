@@ -1773,5 +1773,17 @@
       "path": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.8",
       "description": "正式 Release，包含未签名 Android APK 与 C-42 六张桌面/375px UI 截图证据"
     }
+  ],
+  "C-44-A1": [
+    {
+      "type": "architecture",
+      "path": "dev_repo/architecture/decisions/ADR-0023-agent-meal-record-actions.md",
+      "description": "明确餐食记录目标、validate/save/verify 动作链、所有权和无需迁移的兼容边界"
+    },
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-44/A1/verification.md, dev_repo/evidence/C-44/A1/verification.json",
+      "description": "架构与运行时 JSON 解析、diff 检查和无数据模型变化验证"
+    }
   ]
 }

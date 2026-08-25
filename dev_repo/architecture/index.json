@@ -78,6 +78,11 @@
       "description": "Agent goal routing, domain action commit, read-back verification, and real Trace boundaries"
     },
     {
+      "path": "dev_repo/architecture/decisions/ADR-0023-agent-meal-record-actions.md",
+      "node": "agent.runtime",
+      "description": "Explicit Agent meal-record actions, MealRecord validation, read-back verification, and receipts"
+    },
+    {
       "path": "dev_repo/architecture/content-generation.md",
       "node": "agent.runtime",
       "description": "C-25 daily article context, content, image, trigger and retry contract"
@@ -287,6 +292,10 @@
     },
     {
       "glob": "src/lib/exercise/**",
+      "node": "backend.api"
+    },
+    {
+      "glob": "src/lib/food/meal-record-repository.ts",
       "node": "backend.api"
     },
     {

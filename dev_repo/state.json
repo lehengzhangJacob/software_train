@@ -2,7 +2,7 @@
   "campaign_id": "nutrition-agent",
   "root_goal": "将成熟饮食记录系统迁移为本地优先的个人营养 Agent",
   "root_contract_id": "C-01",
-  "active_contract_id": "C-21",
+  "active_contract_id": "C-44-S1",
   "status": "in_progress",
   "contracts": {
     "C-01": {
@@ -839,6 +839,60 @@
         "Android asset must be labeled unsigned",
         "Cloud version endpoint and release assets must match v0.1.8"
       ]
+    },
+    "C-44": {
+      "contract_id": "C-44",
+      "parent_contract_id": "C-21",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "让教练在明确请求下安全记录餐食，并放大聊天主工作区",
+      "goal": "在既有 Goal/Action/Verify 架构上增加 MealRecord 受控写入能力，同时提升教练工作台的主对话比例、可读性和餐食核验回执。",
+      "current_slice": "C-44-S1",
+      "completed_slices": ["C-44-A1"],
+      "deferred_slices": [],
+      "return_to": "C-21",
+      "architecture_amendment": "C-44-A1 / ADR-0023",
+      "data_model_delta": "none; reuse existing MealRecord and AgentMessage metadata semantics",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this contract; #3/#4/#5/#9/#10 remain open until external retest.",
+      "red_lines": [
+        "普通营养建议、食物提及或缺少关键值不得写入 MealRecord",
+        "写入必须经过 validate -> save -> verify，未核验不得成功回执",
+        "375px 聊天主区不得横向溢出，composer 必须留在不可滚动区"
+      ]
+    },
+    "C-44-A1": {
+      "contract_id": "C-44-A1",
+      "parent_contract_id": "C-44",
+      "root_campaign": "nutrition-agent",
+      "status": "completed",
+      "summary": "写入 Agent 餐食记录动作边界并确认无需数据迁移",
+      "current_slice": null,
+      "completed_slices": [],
+      "deferred_slices": [],
+      "return_to": "C-44-S1",
+      "architecture_amendment": "yes; ADR-0023",
+      "data_model_delta": "none",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this contract; external retest state is unchanged."
+    },
+    "C-44-S1": {
+      "contract_id": "C-44-S1",
+      "parent_contract_id": "C-44",
+      "root_campaign": "nutrition-agent",
+      "status": "in_progress",
+      "summary": "实现餐食目标路由、validate/save/verify 动作与真实回执",
+      "current_slice": "C-44-S1",
+      "completed_slices": [],
+      "deferred_slices": [],
+      "return_to": "C-44-S2",
+      "architecture_amendment": "C-44-A1 / ADR-0023",
+      "data_model_delta": "none; reuse MealRecord and AgentMessage metadata",
+      "migration_required": false,
+      "backfill_required": false,
+      "issue_state": "No Issue is closed by this contract; external retest state is unchanged."
     }
   }
 }

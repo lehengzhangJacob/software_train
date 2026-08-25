@@ -1,0 +1,17 @@
+{
+  "contract_id": "C-44-A1",
+  "status": "passed",
+  "architecture_amendment": "ADR-0023",
+  "data_model_delta": "none",
+  "migration_required": false,
+  "backfill_required": false,
+  "checks": {
+    "state_json": "green",
+    "evidence_index_json": "green",
+    "architecture_graph_json": "green",
+    "architecture_index_json": "green",
+    "git_diff_check": "green"
+  },
+  "red_lines_crossed": [],
+  "return_to": "C-44-S1"
+}

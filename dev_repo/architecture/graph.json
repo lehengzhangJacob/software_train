@@ -237,6 +237,7 @@
         "src/app/api/health/**",
         "src/app/api/app/version/**",
         "src/lib/app-version.ts",
+        "src/lib/food/meal-record-repository.ts",
         "src/lib/api*.ts",
         "src/lib/validation*.ts"
       ],
@@ -265,7 +266,8 @@
         "错误脱敏",
         "版本接口只公开非敏感元数据并禁止缓存",
         "运动计划 payload 必须由服务端校验后才能持久化",
-        "planId 按当前账户所有权校验，returnTo 只允许站内白名单"
+        "planId 按当前账户所有权校验，returnTo 只允许站内白名单",
+        "MealRecord 写入复用统一营养边界，userId 只来自服务端会话"
       ],
       "allowed_change_types": [
         "DTO validation",
@@ -685,6 +687,8 @@
         "运动计划是安全的结构化 artifact；原始模型响应和隐藏推理不得持久化",
         "同一用户同一天的调整创建新 revision，旧 active 版本只标记 superseded",
         "需要改变计划状态时必须经过目标路由、校验、提交和回读核验；未核验不得声称已更新",
+        "餐食写入只在明确 meal-record 目标下开放，且必须 validate -> save -> verify",
+        "缺少关键餐食值、普通营养咨询或批量隐式意图不得创建 MealRecord",
         "动作工具的拥有权来自服务端会话，模型不得通过参数选择其他用户",
         "日更批次按 user_id+content_date 幂等且 ready 恰好十篇",
         "日更公开 POST 只入队并快速返回，后台 job 执行正文/图片生成",
@@ -717,6 +721,7 @@
         "SSEProjection",
         "GoalRouter",
         "DomainActionRegistry",
+        "MealRecordActionRegistry",
         "CommitVerifier"
       ],
       "runtime_flow": "API façade -> AgentIntentPolicy/GoalRouter -> (safe off-topic reply | AgentKernel -> Context/ToolRegistry -> validate -> domain action commit -> read-back verify -> final AgentMessage) -> Canonical AgentTraceEvent v1 -> SSE -> Friendly/Technical Trace Projection",
