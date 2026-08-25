@@ -1713,5 +1713,17 @@
       "path": "dev_repo/evidence/C-40/S1/chat-composer-desktop.png, dev_repo/evidence/C-40/S1/chat-composer-mobile-375.png",
       "description": "桌面与 375px 移动端输入区常驻底部截图"
     }
+  ],
+  "C-41-Release-S1": [
+    {
+      "type": "verification",
+      "path": "dev_repo/evidence/C-41-Release/release-verification.json, dev_repo/release-notes-v0.1.7.md",
+      "description": "v0.1.7 本地发布门禁、云端部署、版本接口与 GitHub Release 验证"
+    },
+    {
+      "type": "release",
+      "path": "https://github.com/lehengzhangJacob/software_train/releases/tag/v0.1.7",
+      "description": "正式 Release，包含未签名 Android APK 与聊天输入区桌面/375px 截图资产"
+    }
   ]
 }
