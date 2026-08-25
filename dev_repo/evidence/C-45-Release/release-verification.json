@@ -7,7 +7,7 @@
   "local_gates": {
     "npm run release:check": "pass; migration status current, full verify, API checks and local production smoke passed",
     "npx tsx --test scripts/android-update-contract.test.ts": "pass",
-    "android/.\\gradlew.bat assembleRelease": "pass; unsigned APK; versionCode 10/versionName 0.1.9; cloud URL baked",
+    "android/gradlew.bat assembleRelease": "pass; unsigned APK; versionCode 10/versionName 0.1.9; cloud URL baked",
     "apk_sha256": "6CFEE64396DFBB16F60FC5A1EB7CCDCF0C26E6111CE0A3B7171F43AF0E27D0C7"
   },
   "cloud": {

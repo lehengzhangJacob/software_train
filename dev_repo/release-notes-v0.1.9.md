@@ -11,7 +11,7 @@
 
 - `npm run release:check`
 - `npx tsx --test scripts/android-update-contract.test.ts`
-- `android/.\gradlew.bat assembleRelease`（未签名 APK；`versionCode 10` / `versionName 0.1.9`）
+- `android/gradlew.bat assembleRelease`（未签名 APK；`versionCode 10` / `versionName 0.1.9`）
 - Cloud deploy: `20260825195155`
 - `/api/app/version`: `0.1.9` (`lHBbcMhzP6ZH7X9789kNn`)
 - Cloud gate: Team A anonymous/authenticated access checks all passed
